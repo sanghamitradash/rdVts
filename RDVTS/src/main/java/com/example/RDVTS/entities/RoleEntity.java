@@ -28,6 +28,9 @@ public class RoleEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = " user_level_id")
+    private Integer  userLevelId;
+
     @Column(name = "parent_role_id")
     private Integer parentRoleId;
 
@@ -67,26 +70,4 @@ public class RoleEntity {
     @UpdateTimestamp
     private Date updatedOn;
 
-    @Column(name = "is_deletion_request_access")
-    private boolean deletionRequestAccess;
-
-    @Column(name = "is_deletion_approval_access")
-    private boolean deletionApprovalAccess;
-
-    @Column(name = "is_addition_request_access")
-    private boolean additionRequestAccess;
-
-    @Column(name = "is_addition_approval_access")
-    private boolean additionApprovalAccess;
-
-    @Column(name = "is_survey_access")
-    private boolean surveyAccess;
-
-
-    @Column(name = "is_issue_resolution_access")
-    private boolean issueResolutionAccess;
-
-
-    @Column(name = "is_permission_access")
-    private boolean permissionAccess;
 }
