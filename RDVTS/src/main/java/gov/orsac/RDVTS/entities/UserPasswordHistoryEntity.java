@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserPasswordHistory {
+public class UserPasswordHistoryEntity {
 
     private Integer id;
     private Integer userId;

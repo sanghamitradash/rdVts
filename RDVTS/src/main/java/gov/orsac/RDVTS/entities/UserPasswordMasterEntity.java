@@ -13,31 +13,25 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "contractor_m")
-public class ContractorEntity {
+@Table(name = "user_password_m")
+public class UserPasswordMasterEntity {
 
     @Id
-    @SequenceGenerator(name = "contractor_m_sequence", sequenceName = "contractor_m_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contractor_m_sequence")
+    @SequenceGenerator(name = "user_password_m_seq", sequenceName = "user_password_m_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_password_m_seq")
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "userId")
+    private Integer userId;
 
-    @Column(name = "mobile")
-    private Long mobile;
+    @Column(name = "password")
+    private String password;
 
-    @Column(name = "address")
-    private String address;
+    @Column(name="is_active",nullable = false)
+    private Boolean isActive=true;
 
-    @Column(name = "g_contractor_id")
-    private Integer gContractorId;
-
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
-
-    @Column(name = "created_by")
+    @Column(name = "createdBy")
     private Integer createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -45,7 +39,7 @@ public class ContractorEntity {
     @CreationTimestamp
     private Date createdOn;
 
-    @Column(name = "updated_by")
+    @Column(name = "updatedBy")
     private Integer updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)
