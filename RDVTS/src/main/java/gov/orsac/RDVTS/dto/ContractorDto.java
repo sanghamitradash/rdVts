@@ -22,4 +22,12 @@ public class ContractorDto {
     private Date createdOn;
     private Integer updatedBy;
     private Date updatedOn;
+
+
+    private Integer userId;
+
+    private int page;
+    private int size;
+    private String sortOrder;
+    private String sortBy;
 }
