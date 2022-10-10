@@ -8,5 +8,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserEntity {
+
     private Integer id;
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private String email;
+    private Long mobile1;
+    private Long mobile2;
+    private String designationId;
 }
