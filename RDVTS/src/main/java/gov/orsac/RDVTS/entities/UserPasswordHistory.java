@@ -1,5 +1,4 @@
-package com.example.RDVTS.dto;
-
+package gov.orsac.RDVTS.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,14 +9,12 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContractorDto {
+public class UserPasswordHistory {
 
     private Integer id;
-    private String name;
-    private Long mobile;
-    private String address;
-    private Integer gContractorId;
-    private Boolean isActive = true;
+    private Integer userId;
+    private String password;
+    private Boolean isActive;
     private Integer createdBy;
     private Date createdOn;
     private Integer updatedBy;
