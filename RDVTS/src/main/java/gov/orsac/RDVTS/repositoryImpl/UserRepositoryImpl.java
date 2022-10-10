@@ -1,4 +1,4 @@
-package com.example.RDVTS.repositoryImpl;
+package gov.orsac.RDVTS.repositoryImpl;
 
 public class UserRepositoryImpl {
 }

@@ -1,4 +1,4 @@
-package com.example.RDVTS.serviceImpl;
+package gov.orsac.RDVTS.serviceImpl;
 
 public class UserServiceImpl {
 }

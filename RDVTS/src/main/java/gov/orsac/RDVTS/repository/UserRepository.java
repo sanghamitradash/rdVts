@@ -1,4 +1,4 @@
-package com.example.RDVTS.repository;
+package gov.orsac.RDVTS.repository;
 
 public interface UserRepository {
 }
