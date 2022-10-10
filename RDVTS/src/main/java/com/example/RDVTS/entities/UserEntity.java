@@ -16,5 +16,5 @@ public class UserEntity {
     private String email;
     private Long mobile1;
     private Long mobile2;
-    private String designationId;
+    private Integer designationId;
 }
