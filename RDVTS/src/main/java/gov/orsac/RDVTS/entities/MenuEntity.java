@@ -1,4 +1,4 @@
-package com.example.RDVTS.entities;
+package gov.orsac.RDVTS.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,42 +12,27 @@ import java.util.Date;
 
 @Data
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "role_m")
-public class RoleEntity {
+@NoArgsConstructor
+@Table(name = "menu_m")
+public class MenuEntity {
     @Id
-    @SequenceGenerator(name = "role_sequence", sequenceName = "role_m_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_sequence")
+    @SequenceGenerator(name = "menu_master_sequence", sequenceName = "menu_m_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "menu_master_sequence")
     @Column(name = "id")
     private Integer id;
 
     @Column(name = "name")
-    private String roleName;
+    private String name;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "parent_id")
+    private Integer parentId;
 
-    @Column(name = " user_level_id")
-    private Integer  userLevelId;
+    @Column(name = "module")
+    private String module;
 
-    @Column(name = "parent_role_id")
-    private Integer parentRoleId;
-
-    @Column(name = "can_edit")
-    private boolean canEdit;
-
-    @Column(name = "can_view")
-    private boolean canView;
-
-    @Column(name = "can_add")
-    private boolean canAdd;
-
-    @Column(name = "can_delete")
-    private boolean canDelete;
-
-    @Column(name = "can_approve")
-    private boolean canApprove;
+    @Column(name = "menu_order")
+    private Integer menuOrder;
 
     @Column(name = "is_active")
     private boolean isActive;
