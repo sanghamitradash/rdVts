@@ -1,4 +1,4 @@
-package com.example.RDVTS.controller;
+package gov.orsac.RDVTS.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
