@@ -28,7 +28,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
-dbschema: oiipcra_oltp
+dbschema: rdvts_oltp
 
 oiipcra-app:
   messages:
