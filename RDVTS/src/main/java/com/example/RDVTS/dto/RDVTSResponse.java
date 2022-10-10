@@ -10,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 public class RDVTSResponse {
 
         private int status;
-
         private ResponseEntity statusCode;
-
         private String message;
-
         public Object data ;
 }
