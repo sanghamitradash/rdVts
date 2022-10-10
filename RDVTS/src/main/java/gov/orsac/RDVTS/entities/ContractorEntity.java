@@ -34,8 +34,8 @@ public class ContractorEntity {
     @Column(name = "g_contractor_id")
     private Integer gContractorId;
 
-    @Column(name="is_active",nullable = false)
-    private Boolean isActive=true;
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 
     @Column(name = "created_by")
     private Integer createdBy;
