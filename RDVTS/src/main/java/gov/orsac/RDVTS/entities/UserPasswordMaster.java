@@ -1,4 +1,4 @@
-package com.example.RDVTS.entities;
+package gov.orsac.RDVTS.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserPasswordHistory {
+public class UserPasswordMaster {
 
     private Integer id;
     private Integer userId;
@@ -19,4 +19,5 @@ public class UserPasswordHistory {
     private Date createdOn;
     private Integer updatedBy;
     private Date updatedOn;
+
 }
