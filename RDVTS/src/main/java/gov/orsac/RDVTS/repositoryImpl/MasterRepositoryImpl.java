@@ -97,7 +97,7 @@ public class MasterRepositoryImpl implements MasterRepository {
     }
     public List<RoleMenuInfo> getRoleMenu(int userId, int roleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT m.name, m.parent_id, m,module, rm.role_id, rm.menu_id, rm.is_active as active, rm.created_by, rm.updated_by, rm.is_default" +
+        String qry = "SELECT rm.id,m.name, m.parent_id, m,module, rm.role_id, rm.menu_id, rm.is_active as active, rm.created_by, rm.updated_by, rm.is_default" +
                 " FROM rdvts_oltp.role_menu as rm" +
                 " LEFT JOIN menu_m as m ON rm.menu_id = m.id where rm.is_active=true ";
         if (roleId == -1) {
