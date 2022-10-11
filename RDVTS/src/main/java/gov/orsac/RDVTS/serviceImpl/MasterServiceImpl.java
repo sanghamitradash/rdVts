@@ -1,8 +1,6 @@
 package gov.orsac.RDVTS.serviceImpl;
 
-import gov.orsac.RDVTS.dto.MenuDto;
-import gov.orsac.RDVTS.dto.RoleDto;
-import gov.orsac.RDVTS.dto.RoleMenuDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.MenuEntity;
 import gov.orsac.RDVTS.entities.RoleEntity;
 import gov.orsac.RDVTS.entities.RoleMenuMaster;
@@ -144,9 +142,61 @@ public class MasterServiceImpl implements MasterService {
     }
 
     @Override
-    public List<RoleMenuDto> getAllMenuByRoleId(Integer userId, Integer roleId) {
-        List<RoleMenuDto> roleMenu = masterRepositoryImpl.getRoleMenu(userId, roleId);
+    public List<RoleMenuInfo> getAllMenuByRoleId(Integer userId, Integer roleId) {
+        List<RoleMenuInfo> roleMenu = masterRepositoryImpl.getRoleMenu(userId, roleId);
         return roleMenu;
+    }
+
+    @Override
+    public List<ParentMenuInfo> getMenuHierarchyByRole(Integer userId, Integer roleId) {
+        List<RoleMenuInfo> allMenuByRoleId = getAllMenuByRoleId(userId, roleId);
+        List<Integer> menuIdsByRoleId = new ArrayList<>();
+        for (int i = 0; i < allMenuByRoleId.size(); i++) {
+            menuIdsByRoleId.add(allMenuByRoleId.get(i).getMenuId());
+        }
+        List<ParentMenuInfo> parentMenuList = masterRepositoryImpl.getAllParentMenu(roleId);
+        List<ParentMenuInfo> finalList = new ArrayList<>();
+        Integer cnt = 0;
+        for (ParentMenuInfo parentMenuInfo : parentMenuList) {
+            if (menuIdsByRoleId.contains(parentMenuInfo.getValue())) {
+                List<HierarchyMenuInfo> childMenuList = masterRepositoryImpl.getHierarchyMenuListById(parentMenuInfo.getValue(), roleId);
+                if (childMenuList.size() > 0) {
+                    List<HierarchyMenuInfo> finalChildList = new ArrayList<>();
+                    int childCnt = 0;
+                    for (HierarchyMenuInfo hierarchyMenuInfo : childMenuList) {
+                        if (menuIdsByRoleId.contains(hierarchyMenuInfo.getValue())) {
+                            finalChildList.add(childCnt, hierarchyMenuInfo);
+                        }
+                    }
+                    parentMenuInfo.setChildren(finalChildList);
+                } else {
+                    parentMenuInfo.setChildren(new ArrayList<>());
+                }
+                finalList.add(cnt++, parentMenuInfo);
+            }
+        }
+        return finalList;
+    }
+    @Override
+    public List<ParentMenuInfo> getMenuHierarchyWithoutRoleId(Integer userId) {
+        List<ParentMenuInfo> parentMenuList = masterRepositoryImpl.getAllParentMenuWithoutRoleId();
+        List<ParentMenuInfo> finalList = new ArrayList<>();
+        Integer cnt = 0;
+        for (ParentMenuInfo parentMenuInfo : parentMenuList) {
+            List<HierarchyMenuInfo> childMenuList = masterRepositoryImpl.getHierarchyMenuListByIdWithoutRoleId(parentMenuInfo.getValue());
+            if (childMenuList.size() > 0) {
+                List<HierarchyMenuInfo> finalChildList = new ArrayList<>();
+                int childCnt = 0;
+                for (HierarchyMenuInfo hierarchyMenuInfo : childMenuList) {
+                    finalChildList.add(childCnt, hierarchyMenuInfo);
+                }
+                parentMenuInfo.setChildren(finalChildList);
+            } else {
+                parentMenuInfo.setChildren(new ArrayList<>());
+            }
+            finalList.add(cnt++, parentMenuInfo);
+        }
+        return finalList;
     }
 
 
