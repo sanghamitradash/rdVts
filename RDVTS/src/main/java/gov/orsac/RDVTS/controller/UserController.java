@@ -296,8 +296,9 @@ public class UserController {
                         userDto.setRoleId(dbUser.getRoleId());
                         userDto.setDesignationId(dbUser.getDesignationId());
                         userDto.setContractorId(dbUser.getContractorId());
+                        userDto.setUserId(dbUser.getId());
 
-                        List<RoleMenuInfo> roleMenuType = masterService.getAllMenuByRoleId(dbUser.getId(), dbUser.getRoleId());
+                        List<ParentMenuInfo> roleMenuType = masterService.getMenuHierarchyByRole(dbUser.getId(), dbUser.getRoleId());
                         List<RoleDto> roleByRoleId = masterService.getRoleByRoleId(dbUser.getRoleId());
 
                         result.put("user", userDto);
