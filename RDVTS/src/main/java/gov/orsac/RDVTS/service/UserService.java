@@ -17,13 +17,16 @@ public interface UserService {
 
     UserEntity saveUser(UserDto userSaveRequests) throws RecordExistException;
 
-    Page<UserInfoDto> getUserList(UserDto userDto);
+    List<UserDto> getUserList(UserDto userDto);
 
     UserEntity updateUser(int id, UserDto userDto) throws Exception;
+
+    UserEntity findUserByMobile(Long Mobile);
 
     List<UserAreaMappingEntity> createUserAreaMapping(List<UserAreaMappingEntity> userAreaMapping);
 
     Page<UserAreaMappingDto> getUserMappingAreaDetails(UserAreaMappingDto userAreaMapping);
+
     UserPasswordMasterEntity saveUserPassword(UserPasswordMasterDto userPasswordMasterDto);
 
     UserPasswordMasterDto getPasswordByUserId(Integer userId);

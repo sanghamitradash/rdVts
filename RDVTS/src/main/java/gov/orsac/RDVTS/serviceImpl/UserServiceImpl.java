@@ -107,8 +107,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Page<UserInfoDto> getUserList(UserDto userDto) {
-        Page<UserInfoDto> userList = userRepositoryImpl.getUserList(userDto);
+    public List<UserDto> getUserList(UserDto userDto) {
+        List<UserDto> userList = userRepositoryImpl.getUserList(userDto);
         return userList;
     }
 
@@ -130,15 +130,6 @@ public class UserServiceImpl implements UserService {
         existingUser.setUpdatedBy(userDto.getUpdatedBy());
         existingUser.setDesignationId(userDto.getDesignationId());
         existingUser.setContractorId(userDto.getContractorId());
-
-
-
-        /*Set<Role> userRoles = new HashSet<>();
-        for (Role role : userUpdateRequests.getRoles()) {
-            Role nextRole = roleRepo.findRoleById(role.getId());
-            userRoles.add(nextRole);
-        }*/
-        //existingUser.setRoles(userRoles);
         UserEntity save = userRepository.save(existingUser);
         return save;
     }
@@ -237,6 +228,12 @@ public class UserServiceImpl implements UserService {
 
         List<UserAreaMappingDto> userAreaInfo = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(UserAreaMappingDto.class));
         return new PageImpl<>(userAreaInfo,pageable,resultCount);
+    }
+
+
+    @Override
+    public UserEntity findUserByMobile(Long mobile) {
+        return userRepository.findUserByMobile(mobile);
     }
 
 
