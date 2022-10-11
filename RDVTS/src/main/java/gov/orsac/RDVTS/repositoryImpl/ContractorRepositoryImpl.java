@@ -36,9 +36,7 @@ public class ContractorRepositoryImpl {
     public Page<ContractorDto> getContractorDetails(ContractorDto contractorDto) {
         UserDto userDto = new UserDto();
         userDto.setId(contractorDto.getUserId());
-        userDto.setSortOrder("DESC");
-        userDto.setSortBy("id");
-        userDto.setSize(14);
+
 
         PageRequest pageable = PageRequest.of(contractorDto.getPage(), contractorDto.getSize(), Sort.Direction.fromString(contractorDto.getSortOrder()), contractorDto.getSortBy());
         Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
