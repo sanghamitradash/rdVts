@@ -19,4 +19,5 @@ public class UserPasswordMaster {
     private Date createdOn;
     private Integer updatedBy;
     private Date updatedOn;
+
 }
