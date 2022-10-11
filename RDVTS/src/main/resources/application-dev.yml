@@ -4,7 +4,7 @@ spring:
       ddl-auto: update
   datasource:
     password: Rdvt5@123
-    url: jdbc:postgresql://10.150.0.126:5432/rdvts?currentSchema=rdvts_oltp,public
+    url: jdbc:postgresql://10.150.2.15:5432/rdvts?currentSchema=rdvts_oltp,public
     username: app_rdvts
 
 

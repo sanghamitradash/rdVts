@@ -1,9 +1,9 @@
 package gov.orsac.RDVTS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.orsac.RDVTS.dto.RDVTSResponse;
-import gov.orsac.RDVTS.dto.UserDto;
-import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.ContractorEntity;
+import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +96,62 @@ public class UserController {
         }
         return rdvtsResponse;
     }
+
+    @PostMapping("/createUserAreaMapping")
+    public RDVTSResponse createUserAreaMapping(@RequestBody List<UserAreaMappingEntity> userAreaMapping) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<UserAreaMappingEntity>userArea = userService.createUserAreaMapping(userAreaMapping);
+            result.put("userArea", userArea);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage(" User Mapping Created Successfully");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getUserMappingAreaDetails")
+    public RDVTSResponse getUserMappingAreaDetails(@RequestBody UserAreaMappingDto userAreaMapping) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+
+            Page<UserAreaMappingDto> userAreaMappingList = userService.getUserMappingAreaDetails(userAreaMapping);
+            List<UserAreaMappingDto> userAreaList = userAreaMappingList.getContent();
+            if (!userAreaList.isEmpty() && userAreaList.size() > 0) {
+                result.put("UserAreaList", userAreaList);
+                result.put("currentPage", userAreaMappingList.getNumber());
+                result.put("totalItems", userAreaMappingList.getTotalElements());
+                result.put("totalPages", userAreaMappingList.getTotalPages());
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                result.put("UserAreaList", userAreaList);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                response.setMessage("Record not found.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 
 }
 
