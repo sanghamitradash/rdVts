@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.dto.ContractorDto;
 import gov.orsac.RDVTS.dto.UserAreaMappingDto;
 import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.entities.ContractorEntity;
 import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserEntity;
@@ -29,6 +30,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,6 +160,22 @@ public class UserServiceImpl implements UserService {
         existingId.setPassword(encoder.encode(userPasswordMasterDto.getPassword()));
         UserPasswordMasterEntity save = userPaswordMasterRepo.save(existingId);
         return save;
+    }
+
+    @Override
+    public UserAreaMappingEntity updateUserAreaMappingByUserId(Integer userId, UserAreaMappingDto userAreaMapping) {
+       UserAreaMappingEntity existingArea = userAreaMappingRepository.findByUserId(userId);
+        if(existingArea == null){
+            throw new RecordNotFoundException("existingArea", "userId", userId);
+        }
+        existingArea.setUserId(userAreaMapping.getUserId());
+        existingArea.setGDistId(userAreaMapping.getGDistId());
+        existingArea.setDistId(userAreaMapping.getDistId());
+        existingArea.setGBlockId(userAreaMapping.getGBlockId());
+        existingArea.setBlockId(userAreaMapping.getBlockId());
+        UserAreaMappingEntity save = userAreaMappingRepository.save(existingArea);
+        return save;
+
     }
 
     @Override

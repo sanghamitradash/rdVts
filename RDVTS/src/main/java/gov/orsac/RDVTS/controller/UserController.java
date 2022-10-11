@@ -264,7 +264,28 @@ public class UserController {
         return response;
     }
 
-
+    @PostMapping("/updateUserAreaMappingByUserId")
+    public RDVTSResponse updateUserAreaMappingByUserId(@RequestParam Integer userId, @RequestParam(name = "data") String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            UserAreaMappingDto userAreaMapping = objectMapper.readValue(data, UserAreaMappingDto.class);
+            UserAreaMappingEntity userAreaMappingEntity = userService.updateUserAreaMappingByUserId(userId, userAreaMapping);
+            result.put("userAreaMappingEntity", userAreaMappingEntity);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("UserArea Updated successfully.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
 
     @PostMapping("/login")
