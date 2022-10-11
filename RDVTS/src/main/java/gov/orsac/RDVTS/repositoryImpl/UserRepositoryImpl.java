@@ -30,7 +30,8 @@ public class UserRepositoryImpl {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String queryString = "";
-        queryString += "SELECT id, first_name as firstName, middle_name as middleName, last_name as lastName, email, mobile_1 as mobile1, mobile_2 as mobile2, designation_id as designationId, user_level_id as userLevelId, role_id as roleId, is_active as isactive, created_by, created_on, updated_by, updated_on, contractor_id as contractorId  \n" +
+        queryString += "SELECT id, first_name as firstName, middle_name as middleName, last_name as lastName, email, mobile_1 as mobile1, " +
+                "mobile_2 as mobile2, designation_id as designationId, user_level_id as userLevelId, role_id as roleId, is_active as isactive, created_by, created_on, updated_by, updated_on, contractor_id as contractorId  \n" +
                 "\t FROM rdvts_oltp.user_m  WHERE  is_active=true ";
 
         if(userDto.getId()>0){
