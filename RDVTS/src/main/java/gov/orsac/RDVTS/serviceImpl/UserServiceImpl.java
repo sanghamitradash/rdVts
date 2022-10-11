@@ -162,10 +162,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserAreaMappingEntity> createUserAreaMapping(List<UserAreaMappingEntity> userAreaMapping){
-         for(UserAreaMappingEntity userAreaMapping1 : userAreaMapping) {
-        userAreaMapping1.setGBlockId(2);
-        userAreaMapping1.setGDistId(2);
-         }
         return userAreaMappingRepository.saveAll(userAreaMapping);
 }
 
