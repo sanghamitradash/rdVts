@@ -156,9 +156,9 @@ public class UserController {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try{
-            UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordById(id);
+            //UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordById(id);
 
-            result.put("getPasswordByUserId", userPasswordMasterDto);
+            //result.put("getPasswordByUserId", userPasswordMasterDto);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
