@@ -8,6 +8,7 @@ import gov.orsac.RDVTS.repository.DesignationRepository;
 import gov.orsac.RDVTS.repositoryImpl.DesignationRepositoryImpl;
 import gov.orsac.RDVTS.service.DesignationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +25,14 @@ public class DesignationServiceImpl implements DesignationService {
 
     RDVTSResponse rdvtsResponse = new RDVTSResponse();
     NamedParameterJdbcTemplate namedJdbc;
+
     @Override
-    public DesignationEntity saveDesignation (DesignationEntity designationEntity){
+    public DesignationEntity saveDesignation(DesignationEntity designationEntity) {
         return designationRepository.save(designationEntity);
     }
 
 //    @Override
-//    public RDVTSResponse getAllDesignation(){
+//    public RDVTSResponse getAllDesignation() {
 //        List<DesignationEntity> designationEntityList = designationRepository.findAll();
 //        RDVTSResponse rdvtsResponse = new RDVTSResponse();
 //        rdvtsResponse.setMessage("");
@@ -40,14 +42,25 @@ public class DesignationServiceImpl implements DesignationService {
 //    }
 
     @Override
-    public List<DesignationEntity> getAllDesignationByUserLevelId(int userLevelId) {
-        return  designationRepository.findByUserLevelId(userLevelId);
+    public Page<DesignationDto> getDesignationList(DesignationDto designationDto) {
+        Page<DesignationDto> designationDtoPage = designationRepositoryImpl.getDesignationList(designationDto);
+        return designationDtoPage;
     }
 
     @Override
-    public  DesignationEntity updateDesignation (int id, DesignationDto designationDto) {
+    public List<DesignationEntity> getAllDesignationByUserLevelId(int userLevelId) {
+        return designationRepository.findByUserLevelId(userLevelId);
+    }
+
+    @Override
+    public DesignationEntity getDesignationById(int id) {
+        return designationRepository.findById(id);
+    }
+
+    @Override
+    public DesignationEntity updateDesignation(int id, DesignationDto designationDto) {
         DesignationEntity existingUser = designationRepository.findById(id);
-        if(existingUser == null){
+        if (existingUser == null) {
             throw new RecordNotFoundException("DesignationEntity", "id", id);
         }
         existingUser.setName(designationDto.getName());
