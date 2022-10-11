@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserPasswordMasterEntity updateUserPass(Integer userId, UserPasswordMasterDto userPasswordMasterDto) {
         UserPasswordMasterEntity existingId = userPaswordMasterRepo.findById(userId).orElseThrow(() -> new RecordNotFoundException("userId", "userId", userId));
-        UserPasswordMasterEntity saveHistory = userPaswordMasterRepoImpl.savePasswordInHistory(userId, userPasswordMasterDto);
+        int saveHistory = userPaswordMasterRepoImpl.savePasswordInHistory(userId, userPasswordMasterDto);
         existingId.setPassword(encoder.encode(userPasswordMasterDto.getPassword()));
         UserPasswordMasterEntity save = userPaswordMasterRepo.save(existingId);
         return save;
