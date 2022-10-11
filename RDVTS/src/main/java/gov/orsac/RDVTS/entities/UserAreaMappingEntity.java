@@ -60,4 +60,7 @@ public class UserAreaMappingEntity {
     private Date updatedOn;
 
 
+
+
+
 }
