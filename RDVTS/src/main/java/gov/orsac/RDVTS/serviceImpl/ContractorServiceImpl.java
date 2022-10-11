@@ -42,4 +42,9 @@ public class ContractorServiceImpl implements ContractorService {
         ContractorEntity save = contractorRepository.save(existingContract);
         return save;
     }
+
+    @Override
+    public ContractorDto getContractById(Integer contractId) {
+        return contractorRepositoryImpl.getContractById(contractId);
+    }
 }

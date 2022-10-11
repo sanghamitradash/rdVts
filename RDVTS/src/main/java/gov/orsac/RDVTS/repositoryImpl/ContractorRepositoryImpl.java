@@ -45,7 +45,7 @@ public class ContractorRepositoryImpl {
         String queryString = " ";
 
 
-        queryString = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on,cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
+        queryString = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on,um.id as userId, cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
                        "left join rdvts_oltp.user_m as um on um.contractor_id = cm.id  " +
                        "where cm.is_active = true " ;
 
@@ -75,4 +75,15 @@ public class ContractorRepositoryImpl {
         return new PageImpl<>(contractInfo,pageable,resultCount);
 
     }
+
+    public ContractorDto getContractById(Integer contractId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on,cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
+                     "WHERE cm.id=:contractId ";
+
+        sqlParam.addValue("contractId", contractId);
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ContractorDto.class));
+    }
 }
+
