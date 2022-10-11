@@ -11,10 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-
-
     private Integer id;
-
     private String firstName;
     private String middleName;
     private String lastName;
@@ -30,7 +27,5 @@ public class UserDto {
     private Date createdOn;
     private Integer updatedBy;
     private Date updatedOn;
-
-
-
+    private Integer userId;
 }

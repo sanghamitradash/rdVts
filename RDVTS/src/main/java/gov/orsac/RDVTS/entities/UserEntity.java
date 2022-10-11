@@ -21,6 +21,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_menu_sequence")
     @Column(name = "id")
     private Integer id;
+
     @Column(name = "first_name")
     private String firstName;
 
@@ -71,7 +72,5 @@ public class UserEntity {
     @Column(name = "updated_on")
     @UpdateTimestamp
     private Date updatedOn;
-
-
 
 }
