@@ -80,13 +80,6 @@ public class UserServiceImpl implements UserService {
         if (checkMobileNumberExists2(userSaveRequests.getMobile2())){
             throw new RecordExistException("User", "Mobile", userSaveRequests.getMobile2());
         }
-//        userSaveRequests.setPassword(encoder.encode(userSaveRequests.getPassword()));
-        /*Set<Role> userRoles = new HashSet<>();
-        for (Role role : userSaveRequests.getRoles()) {
-            Role nextRole = roleRepo.findRoleById(role.getId());
-            userRoles.add(nextRole);
-        }
-        userSaveRequests.setRoles(userRoles)*/;
         UserEntity user = new UserEntity();
         BeanUtils.copyProperties(userSaveRequests, user);
         return userRepository.save(user);
