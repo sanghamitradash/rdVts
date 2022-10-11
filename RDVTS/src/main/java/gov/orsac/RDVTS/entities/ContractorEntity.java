@@ -1,4 +1,4 @@
-package com.example.RDVTS.entities;
+package gov.orsac.RDVTS.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,24 +12,32 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserPasswordMaster {
+@Entity
+@Table(name = "contractor_m")
+public class ContractorEntity {
 
     @Id
-    @SequenceGenerator(name = "user_password_m_seq", sequenceName = "user_password_m_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_password_m_seq")
+    @SequenceGenerator(name = "contractor_m_sequence", sequenceName = "contractor_m_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contractor_m_sequence")
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "userId")
-    private Integer userId;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "password")
-    private String password;
+    @Column(name = "mobile")
+    private Long mobile;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "g_contractor_id")
+    private Integer gContractorId;
 
     @Column(name="is_active",nullable = false)
     private Boolean isActive=true;
 
-    @Column(name = "createdBy")
+    @Column(name = "created_by")
     private Integer createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -37,7 +45,7 @@ public class UserPasswordMaster {
     @CreationTimestamp
     private Date createdOn;
 
-    @Column(name = "updatedBy")
+    @Column(name = "updated_by")
     private Integer updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)

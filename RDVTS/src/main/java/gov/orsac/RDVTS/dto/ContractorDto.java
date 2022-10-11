@@ -1,4 +1,4 @@
-package com.example.RDVTS.dto;
+package gov.orsac.RDVTS.dto;
 
 public class ContractorDto {
 }

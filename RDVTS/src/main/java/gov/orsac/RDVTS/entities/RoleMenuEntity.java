@@ -1,4 +1,4 @@
-package com.example.RDVTS.entities;
+package gov.orsac.RDVTS.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
