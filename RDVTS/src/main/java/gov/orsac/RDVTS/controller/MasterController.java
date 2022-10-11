@@ -218,10 +218,10 @@ public class MasterController {
     }
 
     // Designation Master
-    @Autowired
-    private DesignationService designationService;
-
-    ObjectMapper objectMapper = new ObjectMapper();
+//    @Autowired
+//    private DesignationService designationService;
+//
+//    ObjectMapper objectMapper = new ObjectMapper();
 
     @PostMapping("/saveDesignation")
     public RDVTSResponse saveDesignation(@RequestBody DesignationEntity designationEntity) throws JsonProcessingException {
@@ -612,13 +612,6 @@ public class MasterController {
         return response;
     }
 
-
-
-
-
-
-
-}
     // PIU Master
     @Autowired
     private PiuService piuService;
