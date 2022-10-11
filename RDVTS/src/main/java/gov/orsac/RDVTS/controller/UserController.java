@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.RDVTSResponse;
 import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
 import gov.orsac.RDVTS.service.UserService;
@@ -142,6 +143,105 @@ public class UserController {
     }
 
 
+
+    @PostMapping("/saveUserPassword")
+    public RDVTSResponse saveUserPassword(@RequestParam String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        UserPasswordMasterEntity userPassM = new UserPasswordMasterEntity();
+        try{
+            UserPasswordMasterDto userPasswordMasterDto = objectMapper.readValue(data, UserPasswordMasterDto.class);
+
+            UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
+
+            result.put("saveUser", passwordObj);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+            response.setMessage("Password Created Successfully.");
+        } catch(Exception e){
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getPasswordByUserId")
+    public RDVTSResponse getPasswordByUserId(@RequestParam Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try{
+            UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(userId);
+
+            result.put("getPasswordByUserId", userPasswordMasterDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+        } catch(Exception e){
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getPasswordById")
+    public RDVTSResponse getPasswordById(@RequestParam Integer id) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try{
+            UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordById(id);
+
+            result.put("getPasswordByUserId", userPasswordMasterDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+        } catch(Exception e){
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/updatePassword")
+    public RDVTSResponse updateUserPass(@RequestParam Integer userId,
+                                    @RequestParam String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            UserPasswordMasterDto uerPasswordMasterDto = mapper.readValue(data, UserPasswordMasterDto.class);
+            UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userId, uerPasswordMasterDto);
+
+            result.put("updatePassword", updatedPassword);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Password Updated Successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
 }
 

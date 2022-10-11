@@ -59,7 +59,7 @@ public class ContractorController {
             Page<ContractorDto> contractorListPage = contractorService.getContractorDetails(contractorDto);
             List<ContractorDto> contractorList = contractorListPage.getContent();
             if (!contractorList.isEmpty() && contractorList.size() > 0) {
-                result.put("grievanceDtoList", contractorList);
+                result.put("contractorList", contractorList);
                 result.put("currentPage", contractorListPage.getNumber());
                 result.put("totalItems", contractorListPage.getTotalElements());
                 result.put("totalPages", contractorListPage.getTotalPages());
