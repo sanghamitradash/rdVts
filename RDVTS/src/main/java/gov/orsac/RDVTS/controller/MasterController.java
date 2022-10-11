@@ -423,6 +423,36 @@ public class MasterController {
         Map<String, Object> result = new HashMap<>();
         try {
             List<RoleMenuInfo> roleMenuType = masterService.getAllMenuByRoleId(userId, roleId);
+
+            if (!roleMenuType.isEmpty() && roleMenuType.size() > 0) {
+                result.put("RoleMenu", roleMenuType);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                response.setMessage("All RoleMenu");
+            } else {
+                result.put("RoleMenu", roleMenuType);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                response.setMessage("Record not found.");
+            }
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getMenuByRoleId")
+    public RDVTSResponse getMenuByRoleId(@RequestParam Integer userId, @RequestParam Integer roleId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<RoleMenuInfo> roleMenuType = masterService.getMenuByRoleId(userId, roleId);
+
             if (!roleMenuType.isEmpty() && roleMenuType.size() > 0) {
                 result.put("RoleMenu", roleMenuType);
                 response.setData(result);
@@ -470,6 +500,51 @@ public class MasterController {
         }
         return response;
     }
+
+
+    @PostMapping("/updateRoleMenu")
+    public RDVTSResponse updateRoleMenu(@RequestParam Integer roleId, @RequestParam(name = "data") String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            RoleMenuDto roleMenuDto = mapper.readValue(data, RoleMenuDto.class);
+            List<RoleMenuInfo> roleMenuType = masterService.getAllMenuByRoleIds(0, roleId);
+            for (RoleMenuInfo item : roleMenuType) {
+                if (!roleMenuDto.getMenuId().contains(item.getMenuId())) {
+                    // Deactivate the menu
+                    masterService.deactivateMenu(roleId, item.getMenuId(), false);
+                }
+            }
+            for (Integer item : roleMenuDto.getMenuId()) {
+                boolean hasAvailable = false;
+                for (RoleMenuInfo itemRM : roleMenuType) {
+                    if (itemRM.getMenuId() == item) {
+                        hasAvailable = true;
+                        //Set Menu Active
+                        masterService.deactivateMenu(roleId, item,true);
+                    }
+                }
+                if (!hasAvailable) {
+                    //save
+                    roleMenuDto.setRoleId(roleId);
+                    RoleMenuMaster roleMenuMObj = masterService.updateRoleMenu(roleMenuDto,item);
+                }
+            }
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+            response.setMessage("Role Menu Updated Successfully");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 
 
 

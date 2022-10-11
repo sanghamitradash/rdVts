@@ -29,7 +29,12 @@ public interface MasterService {
     //RoleMenu Master
     List<RoleMenuMaster> saveRoleMenu(RoleMenuDto roleMenuInfo);
     List<RoleMenuInfo> getAllMenuByRoleId(Integer userId, Integer id);
+    List<RoleMenuInfo> getMenuByRoleId(Integer userId, Integer id);
+
     List<ParentMenuInfo> getMenuHierarchyByRole(Integer userId, Integer roleId);
     List<ParentMenuInfo> getMenuHierarchyWithoutRoleId(Integer userId);
+    List<RoleMenuInfo> getAllMenuByRoleIds(Integer userId,Integer roleId);
+    Boolean deactivateMenu(int roleId, int menuId, boolean isActive);
+    RoleMenuMaster updateRoleMenu(RoleMenuDto roleMenuDto, Integer menuId);
 
 }
