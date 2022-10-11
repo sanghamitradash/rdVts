@@ -227,12 +227,8 @@ public class MasterController {
         return rdvtsResponse;
     }
 
-//    @GetMapping("/getAllDesignation")
-//    public RDVTSResponse getAllDesignation(){
-//        return designationService.getAllDesignation();
-//    }
-@PostMapping("/getAllDesignationByUserLevelId")
-public RDVTSResponse getAllDesignationByUserLevelId(@RequestParam int userLevelId) {
+    @PostMapping("/getAllDesignationByUserLevelId")
+    public RDVTSResponse getAllDesignationByUserLevelId(@RequestParam int userLevelId) {
     RDVTSResponse response = new RDVTSResponse();
     Map<String, Object> result = new HashMap<>();
     try {
@@ -257,6 +253,52 @@ public RDVTSResponse getAllDesignationByUserLevelId(@RequestParam int userLevelI
                 result);
     }
     return response;
+}
+    @PostMapping("/updateDesignation")
+    public RDVTSResponse updateDesignation(@RequestParam int id,
+                                           @RequestParam(name = "data") String data) {
+        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            DesignationDto updateDesignationDto = mapper.readValue(data, DesignationDto.class);
+            DesignationEntity updateDesignationEntity = designationService.updateDesignation(id, updateDesignationDto);
+            rdvtsResponse.setData(result);
+            rdvtsResponse.setStatus(1);
+            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            rdvtsResponse.setMessage("Designation Updated Successfully");
+        } catch (Exception e) {
+            rdvtsResponse = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return rdvtsResponse;
+    }
+
+    @PostMapping("/activateAndDeactivateDesignation")
+    public RDVTSResponse activateAndDeactivateDesignation(@RequestParam Integer id) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Boolean res = designationService.activateAndDeactivateDesignation(id);
+            if (res) {
+                response.setData(result);
+                response.setStatus(1);
+                response.setMessage("Designation Status Changed Successfully");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                response.setStatus(0);
+                response.setMessage("Something went wrong");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(), result);
+        }
+        return response;
+    }
 
     //UserLevel Master
     @PostMapping("/createUserLevel")
@@ -404,52 +446,7 @@ public RDVTSResponse getAllDesignationByUserLevelId(@RequestParam int userLevelI
     }
 
 
-}
 
-    @PostMapping("/updateDesignation")
-    public RDVTSResponse updateDesignation(@RequestParam int id,
-                                           @RequestParam(name = "data") String data) {
-        RDVTSResponse rdvtsResponse = new RDVTSResponse();
-        Map<String, Object> result = new HashMap<>();
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            DesignationDto updateDesignationDto = mapper.readValue(data, DesignationDto.class);
-            DesignationEntity updateDesignationEntity = designationService.updateDesignation(id, updateDesignationDto);
-            rdvtsResponse.setData(result);
-            rdvtsResponse.setStatus(1);
-            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            rdvtsResponse.setMessage("Designation Updated Successfully");
-        } catch (Exception e) {
-            rdvtsResponse = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(),
-                    result);
-        }
-        return rdvtsResponse;
-    }
 
-    @PostMapping("/activateAndDeactivateDesignation")
-    public RDVTSResponse activateAndDeactivateDesignation(@RequestParam Integer id) {
-        RDVTSResponse response = new RDVTSResponse();
-        Map<String, Object> result = new HashMap<>();
-        try {
-            Boolean res = designationService.activateAndDeactivateDesignation(id);
-            if (res) {
-                response.setData(result);
-                response.setStatus(1);
-                response.setMessage("Designation Status Changed Successfully");
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            } else {
-                response.setStatus(0);
-                response.setMessage("Something went wrong");
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
-            }
-        } catch (Exception e) {
-            response = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(), result);
-        }
-        return response;
-    }
 
 }
