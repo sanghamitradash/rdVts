@@ -34,7 +34,9 @@ public class UserController {
     private BCryptPasswordEncoder encoder;
 
     @PostMapping("/createUser")
-    public RDVTSResponse saveUser(@RequestParam(name = "data") String data, @RequestParam(name = "password") String password) {
+    public RDVTSResponse saveUser(@RequestParam(name = "userData") String data, @RequestParam(name = "password") String password,
+                                  @RequestParam(name = "userArea") UserAreaMappingEntity userArea) {
+
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         if (data != null && !data.isEmpty()) {
             Map<String, Object> result = new HashMap<>();
@@ -62,11 +64,47 @@ public class UserController {
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter proper mobile number 2!!",
                                 result);
+                    } else if(userDto.getUserLevelId()==1
+                            && userArea.getGStateId()==null
+                    && userArea.getGStateId().toString().isEmpty()){
+                        //For State
+
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter user state!!",
+                                result);
+                    }else if(userDto.getUserLevelId()==2
+                            && userArea.getGStateId()==null
+                            && userArea.getGStateId().toString().isEmpty()
+                            && userArea.getGDistId()==null
+                            && userArea.getGDistId().toString().isEmpty()){
+                        //District
+
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter user district!!",
+                                result);
+                    }else if(userDto.getUserLevelId()==3
+                            && userArea.getGStateId()==null
+                            && userArea.getGStateId().toString().isEmpty()
+                            && userArea.getGDistId()==null
+                            && userArea.getGDistId().toString().isEmpty()
+                            && userArea.getGBlockId()==null
+                            && userArea.getGBlockId().toString().isEmpty()){
+
+                        //Block
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter user block!!",
+                                result);
                     }
 
                     //Validate Email
 
+
                     UserEntity savedUser = userService.saveUser(userDto);
+
+                    //Save Password
                     userPasswordMasterDto.setUserId(savedUser.getId());
                     userPasswordMasterDto.setCreatedBy(savedUser.getId());
                     userPasswordMasterDto.setUpdatedBy(savedUser.getId());
@@ -74,6 +112,16 @@ public class UserController {
                     userPasswordMasterDto.setPassword(password);
                     UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
 
+                    //Save User Area Mapping
+                    userArea.setUserId(savedUser.getId());
+                    userArea.setCreatedBy(savedUser.getId());
+                    userArea.setUpdatedBy(savedUser.getId());
+                    userArea.setIsActive(true);
+                    List<UserAreaMappingEntity> userAreaMappingEntities = new ArrayList<>();
+                    userAreaMappingEntities.add(userArea);
+                    List<UserAreaMappingEntity> areaObj = userService.createUserAreaMapping(userAreaMappingEntities);
+
+                    //Return Data
                     UserDto returnDTO = new UserDto();
                     returnDTO.setUserId(savedUser.getId());
                     returnDTO.setDesignationId(savedUser.getDesignationId());
@@ -114,6 +162,7 @@ public class UserController {
         return rdvtsResponse;
     }
 
+
     @PostMapping("/getUserList")
     public RDVTSResponse getUserList(@RequestBody UserDto userDto) {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
@@ -133,6 +182,7 @@ public class UserController {
         }
         return rdvtsResponse;
     }
+
 
     @PostMapping("/updateUser")
     public RDVTSResponse updateUser(@RequestParam Integer id,

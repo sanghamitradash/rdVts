@@ -25,6 +25,12 @@ public class UserAreaMappingEntity {
     @Column(name = "user_id")
     private Integer userId;
 
+    @Column(name = "g_state_id")
+    private Integer gStateId;
+
+    @Column(name = "state_id")
+    private Integer stateId;
+
     @Column(name = "g_dist_id")
     private Integer gDistId;
 

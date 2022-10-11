@@ -11,6 +11,10 @@ public class UserAreaMappingDto {
 
     private Integer id;
     private Integer userId;
+    private Integer stateId;
+    private Integer gStateId;
+
+
     private Integer gDistId;
     private Integer distId;
     private Integer gBlockId;
