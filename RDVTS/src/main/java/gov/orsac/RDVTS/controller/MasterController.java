@@ -422,7 +422,7 @@ public class MasterController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoleMenuDto> roleMenuType = masterService.getAllMenuByRoleId(userId, roleId);
+            List<RoleMenuInfo> roleMenuType = masterService.getAllMenuByRoleId(userId, roleId);
             if (!roleMenuType.isEmpty() && roleMenuType.size() > 0) {
                 result.put("RoleMenu", roleMenuType);
                 response.setData(result);
@@ -436,6 +436,32 @@ public class MasterController {
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
                 response.setMessage("Record not found.");
             }
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getMenuHierarchy")
+    public RDVTSResponse getMenuHierarchy(@RequestParam Integer userId,
+                                            @RequestParam(name = "roleId", defaultValue = "0", required = false) Integer roleId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        List<ParentMenuInfo> parentMenuList = new ArrayList<>();
+        try {
+            if (roleId > 0) {
+                parentMenuList = masterService.getMenuHierarchyByRole(userId, roleId);
+            } else {
+                parentMenuList = masterService.getMenuHierarchyWithoutRoleId(userId);
+            }
+            result.put("menuList", parentMenuList);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Menu Information");
         } catch (Exception ex) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),

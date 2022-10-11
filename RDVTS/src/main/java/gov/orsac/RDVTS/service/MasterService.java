@@ -1,8 +1,6 @@
 package gov.orsac.RDVTS.service;
 
-import gov.orsac.RDVTS.dto.MenuDto;
-import gov.orsac.RDVTS.dto.RoleDto;
-import gov.orsac.RDVTS.dto.RoleMenuDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.MenuEntity;
 import gov.orsac.RDVTS.entities.RoleEntity;
 import gov.orsac.RDVTS.entities.RoleMenuMaster;
@@ -30,6 +28,8 @@ public interface MasterService {
 
     //RoleMenu Master
     List<RoleMenuMaster> saveRoleMenu(RoleMenuDto roleMenuInfo);
-    List<RoleMenuDto> getAllMenuByRoleId(Integer userId, Integer id);
+    List<RoleMenuInfo> getAllMenuByRoleId(Integer userId, Integer id);
+    List<ParentMenuInfo> getMenuHierarchyByRole(Integer userId, Integer roleId);
+    List<ParentMenuInfo> getMenuHierarchyWithoutRoleId(Integer userId);
 
 }

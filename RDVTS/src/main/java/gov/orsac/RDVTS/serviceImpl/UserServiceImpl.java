@@ -82,13 +82,6 @@ public class UserServiceImpl implements UserService {
         if (checkMobileNumberExists2(userSaveRequests.getMobile2())){
             throw new RecordExistException("User", "Mobile", userSaveRequests.getMobile2());
         }
-//        userSaveRequests.setPassword(encoder.encode(userSaveRequests.getPassword()));
-        /*Set<Role> userRoles = new HashSet<>();
-        for (Role role : userSaveRequests.getRoles()) {
-            Role nextRole = roleRepo.findRoleById(role.getId());
-            userRoles.add(nextRole);
-        }
-        userSaveRequests.setRoles(userRoles)*/;
         UserEntity user = new UserEntity();
         BeanUtils.copyProperties(userSaveRequests, user);
         return userRepository.save(user);
@@ -163,7 +156,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserPasswordMasterEntity updateUserPass(Integer userId, UserPasswordMasterDto userPasswordMasterDto) {
         UserPasswordMasterEntity existingId = userPaswordMasterRepo.findById(userId).orElseThrow(() -> new RecordNotFoundException("userId", "userId", userId));
-        UserPasswordMasterEntity saveHistory = userPaswordMasterRepoImpl.savePasswordInHistory(userId, userPasswordMasterDto);
+        int saveHistory = userPaswordMasterRepoImpl.savePasswordInHistory(userId, userPasswordMasterDto);
         existingId.setPassword(encoder.encode(userPasswordMasterDto.getPassword()));
         UserPasswordMasterEntity save = userPaswordMasterRepo.save(existingId);
         return save;
@@ -187,10 +180,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserAreaMappingEntity> createUserAreaMapping(List<UserAreaMappingEntity> userAreaMapping){
-         for(UserAreaMappingEntity userAreaMapping1 : userAreaMapping) {
-        userAreaMapping1.setGBlockId(2);
-        userAreaMapping1.setGDistId(2);
-         }
         return userAreaMappingRepository.saveAll(userAreaMapping);
 }
 
