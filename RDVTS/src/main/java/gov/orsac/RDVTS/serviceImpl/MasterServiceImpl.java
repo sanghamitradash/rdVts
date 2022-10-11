@@ -1,19 +1,20 @@
 package gov.orsac.RDVTS.serviceImpl;
 
-import gov.orsac.RDVTS.dto.MenuDto;
-import gov.orsac.RDVTS.dto.RoleDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.MenuEntity;
 import gov.orsac.RDVTS.entities.RoleEntity;
+import gov.orsac.RDVTS.entities.RoleMenuMaster;
+import gov.orsac.RDVTS.entities.UserLevelMaster;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
-import gov.orsac.RDVTS.repository.MasterRepository;
-import gov.orsac.RDVTS.repository.MenuRepository;
-import gov.orsac.RDVTS.repository.RoleRepository;
+import gov.orsac.RDVTS.repository.*;
+import gov.orsac.RDVTS.repositoryImpl.MasterRepositoryImpl;
 import gov.orsac.RDVTS.service.MasterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,6 +27,13 @@ public class MasterServiceImpl implements MasterService {
 
     @Autowired
     private MasterRepository masterRepository;
+
+    @Autowired
+    private UserLevelRepository userLevelRepository;
+    @Autowired
+    private MasterRepositoryImpl masterRepositoryImpl;
+    @Autowired
+    private RoleMenuRepository roleMenuRepository;
 
     @Override
     public RoleEntity saveRole(RoleEntity role) {
@@ -88,6 +96,135 @@ public class MasterServiceImpl implements MasterService {
         existingMenu.setActive(menuMaster.isActive());
         return menuRepository.save(existingMenu);
     }
+
+    @Override
+    public UserLevelMaster saveUserLevel(UserLevelMaster userLevel) {
+        userLevel.setActive(true);
+        UserLevelMaster userLevel1 = new UserLevelMaster();
+        BeanUtils.copyProperties(userLevel, userLevel1);
+        return userLevelRepository.save(userLevel1);
+    }
+    @Override
+    public UserLevelMaster updateUserLevel(int id, UserLevelMaster userLevel) {
+        UserLevelMaster existingUserLevel = userLevelRepository.findUserLevelById(id);
+        if (existingUserLevel == null) {
+            throw new RecordNotFoundException("UserLevel", "id", id);
+        }
+        existingUserLevel.setName(userLevel.getName());
+        existingUserLevel.setParentId(userLevel.getParentId());
+        existingUserLevel.setActive(userLevel.isActive());
+        existingUserLevel.setUpdatedBy(userLevel.getUpdatedBy());
+        return userLevelRepository.save(existingUserLevel);
+    }
+    @Override
+    public List<UserLevelMaster> getUserLevelById(int id) {
+
+        return masterRepository.getUserLevelById(id);
+    }
+    @Override
+    public List<UserLevelMaster> getAllUserLevel(int userId) {
+        Integer userLevelIdByUserId = masterRepositoryImpl.getUserLevelIdByUserId(userId);
+        return masterRepository.getAllUserLevel(userLevelIdByUserId);
+    }
+
+    @Override
+    public List<RoleMenuMaster> saveRoleMenu(RoleMenuDto roleMenuInfo) {
+        List<RoleMenuMaster> roleMenuMaster = new ArrayList<>();
+        for (int j = 0; j < roleMenuInfo.getMenuId().size(); j++) {
+            RoleMenuMaster roleMenu = new RoleMenuMaster();
+            roleMenu.setMenuId(roleMenuInfo.getMenuId().get(j));
+            roleMenu.setActive(true);
+            roleMenu.setCreatedBy(roleMenuInfo.getCreatedBy());
+            roleMenu.setRoleId(roleMenuInfo.getRoleId());
+            roleMenuMaster.add(roleMenu);
+        }
+        return roleMenuRepository.saveAll(roleMenuMaster);
+    }
+
+    @Override
+    public List<RoleMenuInfo> getAllMenuByRoleId(Integer userId, Integer roleId) {
+        List<RoleMenuInfo> roleMenu = masterRepositoryImpl.getRoleMenu(userId, roleId);
+        return roleMenu;
+    }
+    @Override
+    public List<RoleMenuInfo> getMenuByRoleId(Integer userId, Integer roleId) {
+        List<RoleMenuInfo> roleMenu = masterRepositoryImpl.getMenuByRoleId(userId, roleId);
+        return roleMenu;
+    }
+
+    @Override
+    public List<ParentMenuInfo> getMenuHierarchyByRole(Integer userId, Integer roleId) {
+        List<RoleMenuInfo> allMenuByRoleId = getAllMenuByRoleId(userId, roleId);
+        List<Integer> menuIdsByRoleId = new ArrayList<>();
+        for (int i = 0; i < allMenuByRoleId.size(); i++) {
+            menuIdsByRoleId.add(allMenuByRoleId.get(i).getMenuId());
+        }
+        List<ParentMenuInfo> parentMenuList = masterRepositoryImpl.getAllParentMenu(roleId);
+        List<ParentMenuInfo> finalList = new ArrayList<>();
+        Integer cnt = 0;
+        for (ParentMenuInfo parentMenuInfo : parentMenuList) {
+            if (menuIdsByRoleId.contains(parentMenuInfo.getValue())) {
+                List<HierarchyMenuInfo> childMenuList = masterRepositoryImpl.getHierarchyMenuListById(parentMenuInfo.getValue(), roleId);
+                if (childMenuList.size() > 0) {
+                    List<HierarchyMenuInfo> finalChildList = new ArrayList<>();
+                    int childCnt = 0;
+                    for (HierarchyMenuInfo hierarchyMenuInfo : childMenuList) {
+                        if (menuIdsByRoleId.contains(hierarchyMenuInfo.getValue())) {
+                            finalChildList.add(childCnt, hierarchyMenuInfo);
+                        }
+                    }
+                    parentMenuInfo.setChildren(finalChildList);
+                } else {
+                    parentMenuInfo.setChildren(new ArrayList<>());
+                }
+                finalList.add(cnt++, parentMenuInfo);
+            }
+        }
+        return finalList;
+    }
+    @Override
+    public List<ParentMenuInfo> getMenuHierarchyWithoutRoleId(Integer userId) {
+        List<ParentMenuInfo> parentMenuList = masterRepositoryImpl.getAllParentMenuWithoutRoleId();
+        List<ParentMenuInfo> finalList = new ArrayList<>();
+        Integer cnt = 0;
+        for (ParentMenuInfo parentMenuInfo : parentMenuList) {
+            List<HierarchyMenuInfo> childMenuList = masterRepositoryImpl.getHierarchyMenuListByIdWithoutRoleId(parentMenuInfo.getValue());
+            if (childMenuList.size() > 0) {
+                List<HierarchyMenuInfo> finalChildList = new ArrayList<>();
+                int childCnt = 0;
+                for (HierarchyMenuInfo hierarchyMenuInfo : childMenuList) {
+                    finalChildList.add(childCnt, hierarchyMenuInfo);
+                }
+                parentMenuInfo.setChildren(finalChildList);
+            } else {
+                parentMenuInfo.setChildren(new ArrayList<>());
+            }
+            finalList.add(cnt++, parentMenuInfo);
+        }
+        return finalList;
+    }
+
+    @Override
+    public List<RoleMenuInfo> getAllMenuByRoleIds(Integer userId, Integer roleId) {
+        List<RoleMenuInfo> roleMenu = masterRepositoryImpl.getRoleMenus(userId, roleId);
+        return roleMenu;
+    }
+    @Override
+    public Boolean deactivateMenu(int roleId, int menuId, boolean isActive) {
+        return masterRepositoryImpl.deactivateMenu(roleId, menuId, isActive);
+    }
+    @Override
+    public RoleMenuMaster updateRoleMenu(RoleMenuDto roleMenuDto, Integer menuId) {
+        RoleMenuMaster roleMenu = new RoleMenuMaster();
+        roleMenu.setMenuId(menuId);
+        roleMenu.setActive(true);
+        roleMenu.setCreatedBy(roleMenuDto.getCreatedBy());
+        roleMenu.setRoleId(roleMenuDto.getRoleId());
+
+        return roleMenuRepository.save(roleMenu);
+    }
+
+
 
 
 }

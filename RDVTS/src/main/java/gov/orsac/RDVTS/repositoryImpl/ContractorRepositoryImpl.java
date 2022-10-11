@@ -1,8 +1,9 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.ContractorDto;
-import gov.orsac.RDVTS.entities.ContractorEntity;
-import gov.orsac.RDVTS.repository.ContractorRepository;
+import gov.orsac.RDVTS.dto.UserDto;
+import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,12 +13,16 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContractorRepositoryImpl {
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
+
+    @Autowired
+    private UserService userService;
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
         String sqlStr = "SELECT COUNT(*) from (" + qryStr + ") as t";
@@ -29,6 +34,9 @@ public class ContractorRepositoryImpl {
     }
 
     public Page<ContractorDto> getContractorDetails(ContractorDto contractorDto) {
+        UserDto userDto = new UserDto();
+        userDto.setId(contractorDto.getUserId());
+
 
         PageRequest pageable = PageRequest.of(contractorDto.getPage(), contractorDto.getSize(), Sort.Direction.fromString(contractorDto.getSortOrder()), contractorDto.getSortBy());
         Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
@@ -36,7 +44,8 @@ public class ContractorRepositoryImpl {
         Integer  resultCount = 0;
         String queryString = " ";
 
-        queryString = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on,cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
+
+        queryString = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on,um.id as userId, cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
                        "left join rdvts_oltp.user_m as um on um.contractor_id = cm.id  " +
                        "where cm.is_active = true " ;
 
@@ -55,6 +64,9 @@ public class ContractorRepositoryImpl {
             sqlParam.addValue("gContractorId", contractorDto.getGContractorId());
         }
 
+
+
+
         queryString += " ORDER BY " + order.getProperty() + " " + order.getDirection().name();
         resultCount = count(queryString, sqlParam);
         queryString += " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
@@ -63,4 +75,15 @@ public class ContractorRepositoryImpl {
         return new PageImpl<>(contractInfo,pageable,resultCount);
 
     }
+
+    public ContractorDto getContractById(Integer contractId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on,cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
+                     "WHERE cm.id=:contractId ";
+
+        sqlParam.addValue("contractId", contractId);
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ContractorDto.class));
+    }
 }
+

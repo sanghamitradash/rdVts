@@ -30,5 +30,7 @@ public class UserInfoDto {
     private Integer updatedBy;
     private Date updatedOn;
 
+    private String password;
+
 
 }

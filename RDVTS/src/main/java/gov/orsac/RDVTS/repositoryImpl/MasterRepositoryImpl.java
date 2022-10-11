@@ -1,7 +1,7 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
-import gov.orsac.RDVTS.dto.MenuDto;
-import gov.orsac.RDVTS.dto.RoleDto;
+import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.UserLevelMaster;
 import gov.orsac.RDVTS.repository.MasterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -61,5 +61,127 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(MenuDto.class));
     }
 
+    @Override
+    public List<UserLevelMaster> getUserLevelById(Integer userLevelId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT id, name, parent_id, is_active as active, created_by, created_on, updated_by, updated_on " +
+                "FROM rdvts_oltp.user_level_m ";
+        if (userLevelId == -1) {
+            qry += " ORDER BY id ";
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UserLevelMaster.class));
+        } else {
+            qry += " WHERE id=:id";
+            sqlParam.addValue("id", userLevelId);
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UserLevelMaster.class));
+        }
+    }
+
+    @Override
+    public List<UserLevelMaster> getAllUserLevel(Integer userLevelId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String GetAllUserLevelQuery = String.format("WITH RECURSIVE user_level_org AS ( SELECT id," +
+                " name, parent_id, is_active, created_by, updated_by FROM  rdvts_oltp.user_level_m  WHERE id = %s" +
+                " UNION ALL" +
+                " SELECT e.id, e.name, e.parent_id, e.is_active, e.created_by, e.updated_by" +
+                " FROM rdvts_oltp.user_level_m e INNER JOIN user_level_org u ON u.id = e.parent_id )" +
+                " SELECT * FROM user_level_org;", userLevelId);
+        return namedJdbc.query(GetAllUserLevelQuery, sqlParam, new BeanPropertyRowMapper<>(UserLevelMaster.class));
+    }
+
+    public Integer getUserLevelIdByUserId(int userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT user_level_id FROM user_m WHERE id =:userId";
+        sqlParam.addValue("userId", userId);
+        return namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+    }
+    public List<RoleMenuInfo> getRoleMenu(int userId, int roleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT rm.id,m.name, m.parent_id, m,module, rm.role_id, rm.menu_id, rm.is_active as active, rm.created_by, rm.updated_by, rm.is_default" +
+                " FROM rdvts_oltp.role_menu as rm" +
+                " LEFT JOIN menu_m as m ON rm.menu_id = m.id where rm.is_active=true ";
+        if (roleId == -1) {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleMenuInfo.class));
+        } else {
+            qry += " AND role_id=:roleId ORDER BY rm.id";
+            sqlParam.addValue("roleId", roleId);
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleMenuInfo.class));
+        }
+    }
+    public List<RoleMenuInfo> getMenuByRoleId(int userId, int roleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry ="SELECT rm.id as id,m.name, m.parent_id,module, rm.role_id, m.id as menuId, rm.is_active as active," +
+                "rm.created_by, rm.updated_by, rm.is_default from rdvts_oltp.menu_m as m " +
+                "left join rdvts_oltp.role_menu as rm ON rm.menu_id = m.id and rm.role_id=:roleId and " +
+                "rm.is_active=true where m.is_active=true";
+            sqlParam.addValue("roleId", roleId);
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleMenuInfo.class));
+
+    }
+
+    public List<ParentMenuInfo> getAllParentMenu(Integer roleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module,roleMenu.is_default as isDefault " +
+                " FROM  rdvts_oltp.role_menu as roleMenu " +
+                " left join  rdvts_oltp.menu_m as menu on menu.id=roleMenu.menu_id " +
+                " WHERE parent_id = 0 AND menu.is_active = true";
+        if(roleId > 0){
+            qry+= " AND roleMenu.role_id=:roleId";
+            sqlParam.addValue("roleId", roleId);
+        }
+        qry+= "  order by menu.order ASC";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ParentMenuInfo.class));
+    }
+
+    public List<HierarchyMenuInfo> getHierarchyMenuListById(Integer parentId, Integer roleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module,roleMenu.is_default as isDefault" +
+                " FROM rdvts_oltp.menu_m as menu " +
+                " left join rdvts_oltp.role_menu as roleMenu on menu.id=roleMenu.menu_id " +
+                " WHERE parent_id =:parentId  AND menu.is_active = true  And role_id=:roleId ORDER BY menu.order ASC";
+        sqlParam.addValue("parentId", parentId);
+        sqlParam.addValue("roleId", roleId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(HierarchyMenuInfo.class));
+    }
+    public List<ParentMenuInfo> getAllParentMenuWithoutRoleId() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module,roleMenu.is_default as isDefault "+
+                " FROM  rdvts_oltp.menu_m as menu left join rdvts_oltp.role_menu as roleMenu on roleMenu.menu_id=menu.id WHERE parent_id = 0 "+
+                " AND menu.is_active = true  order by menu.id ASC";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ParentMenuInfo.class));
+    }
+
+    public List<HierarchyMenuInfo> getHierarchyMenuListByIdWithoutRoleId(Integer parentId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module" +
+//                " ,roleMenu.is_default as isDefault" +
+                " FROM rdvts_oltp.menu_m as menu " +
+                //" left join oiipcra_oltp.role_menu as roleMenu on menu.id=roleMenu.menu_id " +
+                " WHERE parent_id =:parentId  AND menu.is_active = true ORDER BY menu.id ASC";
+        sqlParam.addValue("parentId", parentId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(HierarchyMenuInfo.class));
+    }
+    public List<RoleMenuInfo> getRoleMenus(int userId, int roleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT m.name, m.parent_id, m,module, rm.role_id, rm.menu_id, rm.is_active as active, rm.created_by, rm.updated_by, rm.is_default" +
+                " FROM rdvts_oltp.role_menu as rm" +
+                " LEFT JOIN menu_m as m ON rm.menu_id = m.id where true ";
+        if (roleId == -1) {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleMenuInfo.class));
+        } else {
+            qry += " AND role_id=:roleId ORDER BY rm.id";
+            sqlParam.addValue("roleId", roleId);
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleMenuInfo.class));
+        }
+    }
+    public Boolean deactivateMenu(int roleId, int menuId, boolean isActive){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "UPDATE role_menu SET is_active = :isActive WHERE role_id =:roleId AND menu_id=:menuId";
+        sqlParam.addValue("roleId",roleId);
+        sqlParam.addValue("menuId",menuId);
+        sqlParam.addValue("isActive",isActive);
+        Integer update = namedJdbc.update(qry, sqlParam);
+        return update > 0;
+    }
 
 }

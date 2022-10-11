@@ -14,46 +14,22 @@ import java.util.Date;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "user_m")
-public class UserEntity {
+@Table(name = "role_menu")
+public class RoleMenuMaster {
     @Id
-    @SequenceGenerator(name = "user_menu_sequence", sequenceName = "user_m_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_menu_sequence")
+    @SequenceGenerator(name = "role_menu_sequence", sequenceName = "role_menu_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_menu_sequence")
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Column(name = "middle_name")
-    private String middleName;
-
-    @Column(name = "last_name")
-    private String lastName;
-
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "mobile_1")
-    private Long mobile1;
-
-    @Column(name = "mobile_2")
-    private Long mobile2;
-
-    @Column(name = "designation_id")
-    private Integer designationId;
-
-    @Column(name = "user_level_id")
-    public Integer userLevelId;
-
     @Column(name = "role_id")
-    public Integer roleId ;
+    private Integer roleId;
 
-    @Column(name="contractor_id")
-    public Integer contractorId ;
+    @Column(name = "menu_id")
+    private Integer menuId;
 
     @Column(name = "is_active")
-    private boolean isactive;
+    private boolean isActive;
 
     @Column(name = "created_by")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -72,5 +48,8 @@ public class UserEntity {
     @Column(name = "updated_on")
     @UpdateTimestamp
     private Date updatedOn;
+
+    @Column(name = "is_default")
+    private boolean isDefault;
 
 }

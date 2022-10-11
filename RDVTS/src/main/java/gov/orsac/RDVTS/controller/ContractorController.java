@@ -48,6 +48,26 @@ public class ContractorController {
         return response;
     }
 
+    @PostMapping("/getContractById")
+    public RDVTSResponse getContractById(@RequestParam(name = "contractId", required = false) Integer contractId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ContractorDto contractor = contractorService.getContractById(contractId);
+            result.put("contractor", contractor);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Contractor By Id");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
     //Contractor View ById, UserId, GContractId
 
     @PostMapping("/getContractorDetails")
