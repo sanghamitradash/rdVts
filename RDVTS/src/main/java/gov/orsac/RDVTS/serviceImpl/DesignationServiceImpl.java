@@ -1,8 +1,11 @@
 package gov.orsac.RDVTS.serviceImpl;
 
+import gov.orsac.RDVTS.dto.DesignationDto;
 import gov.orsac.RDVTS.dto.RDVTSResponse;
 import gov.orsac.RDVTS.entities.DesignationEntity;
+import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.DesignationRepository;
+import gov.orsac.RDVTS.repositoryImpl.DesignationRepositoryImpl;
 import gov.orsac.RDVTS.service.DesignationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,6 +17,9 @@ import java.util.List;
 public class DesignationServiceImpl implements DesignationService {
 
     @Autowired
+    private DesignationRepositoryImpl designationRepositoryImpl;
+
+    @Autowired
     private DesignationRepository designationRepository;
 
     RDVTSResponse rdvtsResponse = new RDVTSResponse();
@@ -23,13 +29,40 @@ public class DesignationServiceImpl implements DesignationService {
         return designationRepository.save(designationEntity);
     }
 
+//    @Override
+//    public RDVTSResponse getAllDesignation(){
+//        List<DesignationEntity> designationEntityList = designationRepository.findAll();
+//        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+//        rdvtsResponse.setMessage("");
+//        rdvtsResponse.setData(designationEntityList);
+//        rdvtsResponse.setStatus(1);
+//        return rdvtsResponse;
+//    }
+
     @Override
-    public RDVTSResponse getAllDesignation(){
-        List<DesignationEntity> designationEntityList = designationRepository.findAll();
-        RDVTSResponse rdvtsResponse = new RDVTSResponse();
-        rdvtsResponse.setMessage("");
-        rdvtsResponse.setData(designationEntityList);
-        rdvtsResponse.setStatus(1);
-        return rdvtsResponse;
+    public List<DesignationEntity> getAllDesignationByUserLevelId(int userLevelId) {
+        return  designationRepository.findByUserLevelId(userLevelId);
+    }
+
+    @Override
+    public  DesignationEntity updateDesignation (int id, DesignationDto designationDto) {
+        DesignationEntity existingUser = designationRepository.findById(id);
+        if(existingUser == null){
+            throw new RecordNotFoundException("DesignationEntity", "id", id);
+        }
+        existingUser.setName(designationDto.getName());
+        existingUser.setDescription(designationDto.getDescription());
+        existingUser.setParentId(designationDto.getParentId());
+        existingUser.setUserLevelId(designationDto.getUserLevelId());
+        existingUser.setUpdatedBy(designationDto.getUpdatedBy());
+
+
+        DesignationEntity save = designationRepository.save(existingUser);
+        return save;
+    }
+
+    @Override
+    public Boolean activateAndDeactivateDesignation(Integer id) {
+        return designationRepositoryImpl.activateAndDeactivateDesignation(id);
     }
 }
