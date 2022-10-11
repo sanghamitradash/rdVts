@@ -1,7 +1,9 @@
 package gov.orsac.RDVTS.service;
 
+import gov.orsac.RDVTS.dto.UserAreaMappingDto;
 import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
@@ -20,6 +22,10 @@ public interface UserService {
     UserEntity updateUser(int id, UserDto userDto) throws Exception;
 
     UserEntity findUserByMobile(Long Mobile);
+
+    List<UserAreaMappingEntity> createUserAreaMapping(List<UserAreaMappingEntity> userAreaMapping);
+
+    Page<UserAreaMappingDto> getUserMappingAreaDetails(UserAreaMappingDto userAreaMapping);
 
     UserPasswordMasterEntity saveUserPassword(UserPasswordMasterDto userPasswordMasterDto);
 

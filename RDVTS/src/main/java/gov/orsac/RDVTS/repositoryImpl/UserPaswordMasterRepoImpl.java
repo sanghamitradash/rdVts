@@ -35,26 +35,23 @@ public class UserPaswordMasterRepoImpl {
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserPasswordMasterDto.class));
     }
 
-    public UserPasswordMasterEntity savePasswordInHistory(Integer userId, UserPasswordMasterDto userPasswordMasterDto) {
+    public int savePasswordInHistory(Integer userId, UserPasswordMasterDto userPasswordMasterDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         UserPasswordMasterEntity userPasswordMasterEntity = new UserPasswordMasterEntity();
-        String qry = "INSERT INTO rdvts_oltp.user_password_log(user_id, password, is_active, created_by, updated_by, updated_on) " +
-                "select user_id,password, is_active, created_by, updated_by, updated_on from rdvts_oltp.user_password_m where user_id =:userId ";
-        sqlParam.addValue("userId", userId);
-        sqlParam.addValue("password", userPasswordMasterDto.getPassword());
-        sqlParam.addValue("isActive", userPasswordMasterDto.getIsActive());
-        sqlParam.addValue("createdBy", userPasswordMasterDto.getCreatedBy());
-        sqlParam.addValue("updatedBy", userPasswordMasterDto.getUpdatedBy());
-        sqlParam.addValue("updatedOn", userPasswordMasterDto.getUpdatedOn());
-        /*Integer count =*/ return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserPasswordMasterEntity.class));
-//
-//        if(count == 0){
-//            return null;
-//        }
-//        if(count == 1){
-//             BeanUtils.copyProperties(userPasswordMasterDto, userPasswordMasterEntity);
-//             return userPasswordMasterDto;
-//        }
-    }
-
+            String qry = "INSERT INTO rdvts_oltp.user_password_log(user_id, password, is_active, created_by, updated_by, updated_on) " +
+                    "select user_id,password, is_active, created_by, updated_by, updated_on from rdvts_oltp.user_password_m where user_id =:userId ";
+            sqlParam.addValue("userId", userId);
+    //        sqlParam.addValue("password", userPasswordMasterDto.getPassword());
+    //        sqlParam.addValue("isActive", userPasswordMasterDto.getIsActive());
+    //        sqlParam.addValue("createdBy", userPasswordMasterDto.getCreatedBy());
+    //        sqlParam.addValue("updatedBy", userPasswordMasterDto.getUpdatedBy());
+    //        sqlParam.addValue("updatedOn", userPasswordMasterDto.getUpdatedOn());
+            int update = namedJdbc.update(qry, sqlParam);
+            if(update>0){
+                return 1;
+            }
+            return 0;
+        }
 }
+
+
