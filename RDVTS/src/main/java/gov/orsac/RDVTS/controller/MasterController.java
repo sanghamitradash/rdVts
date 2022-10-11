@@ -1,11 +1,8 @@
 package gov.orsac.RDVTS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.orsac.RDVTS.dto.MenuDto;
-import gov.orsac.RDVTS.dto.RDVTSResponse;
-import gov.orsac.RDVTS.dto.RoleDto;
-import gov.orsac.RDVTS.entities.MenuEntity;
-import gov.orsac.RDVTS.entities.RoleEntity;
+import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.service.MasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +15,6 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.RDVTSResponse;
-import gov.orsac.RDVTS.entities.DesignationEntity;
 import gov.orsac.RDVTS.service.DesignationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +30,10 @@ import java.util.Map;
 public class MasterController {
     @Autowired
     private MasterService masterService;
+    @Autowired
+    private DesignationService designationService;
+
+    ObjectMapper objectMapper = new ObjectMapper();
 
     //Role Master
     @PostMapping("/saveRole")
@@ -201,10 +201,7 @@ public class MasterController {
         return response;
     }
 
-    @Autowired
-    private DesignationService designationService;
-
-    ObjectMapper objectMapper = new ObjectMapper();
+   //Designation Master
     @PostMapping("/saveDesignation")
     public RDVTSResponse saveTender(@RequestBody DesignationEntity designationEntity) throws JsonProcessingException {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
@@ -229,6 +226,152 @@ public class MasterController {
     public RDVTSResponse getAllDesignation(){
         return designationService.getAllDesignation();
     }
+
+    //UserLevel Master
+    @PostMapping("/createUserLevel")
+    public RDVTSResponse saveUserLevel(@RequestBody UserLevelMaster userLevel) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UserLevelMaster userLevelObj = masterService.saveUserLevel(userLevel);
+            result.put("userLevel", userLevelObj);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+            response.setMessage("New UserLevel Created");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/updateUserLevel")
+    public RDVTSResponse updateUserLevel(@RequestParam int id, @RequestParam(name = "data") String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            UserLevelMaster updateUserLevel = mapper.readValue(data, UserLevelMaster.class);
+            UserLevelMaster usrLevelObj = masterService.updateUserLevel(id, updateUserLevel);
+            result.put("userLevel", usrLevelObj);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+            response.setMessage("User Level Updated Successfully");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getUserLevelById")
+    public RDVTSResponse getUserLevelById(@RequestParam int id) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<UserLevelMaster> userLevelList = masterService.getUserLevelById(id);
+            if (!userLevelList.isEmpty() && userLevelList.size() > 0) {
+                result.put("userLevelById", userLevelList);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                result.put("userLevelById", userLevelList);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                response.setMessage("Record not found.");
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getAllUserLevel")
+    public RDVTSResponse getAllUserLevel(@RequestParam int userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<UserLevelMaster> userLevelList = masterService.getAllUserLevel(userId);
+            if (!userLevelList.isEmpty() && userLevelList.size() > 0) {
+                result.put("userLevelList", userLevelList);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                result.put("userLevelList", userLevelList);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                response.setMessage("Record not found.");
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    //RoleMenu Master
+    @PostMapping("/createRoleMenu")
+    public RDVTSResponse saveRoleMenu(@RequestBody RoleMenuDto roleMenuInfo) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<RoleMenuMaster> roleMenuMObj = masterService.saveRoleMenu(roleMenuInfo);
+            result.put("RoleMenu", roleMenuMObj);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+            response.setMessage("New RoleMenu Created");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+    @PostMapping("/getAllMenuByRoleId")
+    public RDVTSResponse getAllMenuByRoleId(@RequestParam Integer userId, @RequestParam Integer roleId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<RoleMenuDto> roleMenuType = masterService.getAllMenuByRoleId(userId, roleId);
+            if (!roleMenuType.isEmpty() && roleMenuType.size() > 0) {
+                result.put("RoleMenu", roleMenuType);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                response.setMessage("All RoleMenu");
+            } else {
+                result.put("RoleMenu", roleMenuType);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                response.setMessage("Record not found.");
+            }
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 
 }
