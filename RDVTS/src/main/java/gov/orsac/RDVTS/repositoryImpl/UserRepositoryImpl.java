@@ -25,22 +25,44 @@ public class UserRepositoryImpl {
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
 
-    public Page<UserInfoDto> getUserList(UserDto userDto) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-        PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        if (userDto!=null){
-            pageable = PageRequest.of(userDto.getPage(), userDto.getSize(), Sort.Direction.fromString(userDto.getSortOrder()), userDto.getSortBy());
-            order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+    public List<UserDto> getUserList(UserDto userDto) {
+
+
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String queryString = "";
+        queryString += "SELECT id, first_name as firstName, middle_name as middleName, last_name as lastName, email, mobile_1 as mobile1, " +
+                "mobile_2 as mobile2, designation_id as designationId, user_level_id as userLevelId, role_id as roleId, is_active as isactive, created_by, created_on, updated_by, updated_on, contractor_id as contractorId  \n" +
+                "\t FROM rdvts_oltp.user_m  WHERE  is_active=true ";
+
+        if(userDto.getId()>0){
+            queryString+="AND id=:id ";
+            sqlParam.addValue("id",userDto.getId());
         }
-        //For Default Page Load
+        if(userDto.getDesignationId()!= null && userDto.getDesignationId() > 0){
+            queryString+="AND getDesignationId=:getDesignationId ";
+            sqlParam.addValue("getDesignationId",userDto.getDesignationId());
+
+
+        }
+
+        if(userDto.getRoleId()!= null && userDto.getRoleId() > 0){
+            queryString+="AND roleId=:roleId ";
+            sqlParam.addValue("roleId",userDto.getRoleId());
+        }
+
+
+        if(userDto.getEmail() != null && !userDto.getEmail().isEmpty()){
+            queryString+="AND email=:email ";
+            sqlParam.addValue("email",userDto.getEmail());
+        }
+        if(userDto.getMobile1() != null && userDto.getMobile1()>0){
+            queryString+="AND mobile1=:mobile1 ";
+            sqlParam.addValue("mobile1",userDto.getMobile1());
+        }
+        return namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(UserDto.class));
 
 
 
-        // return new PageImpl<>(namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UserInfo.class)));
-//        List<UserInfo> userInfo=namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UserInfo.class));
-//        return new PageImpl<>(userInfo, pageable, resultCount);
-        return null;
     }
 
 

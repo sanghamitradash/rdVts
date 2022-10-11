@@ -8,14 +8,18 @@ import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
 import gov.orsac.RDVTS.exception.RecordExistException;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface UserService {
 
 
     UserEntity saveUser(UserDto userSaveRequests) throws RecordExistException;
 
-    Page<UserInfoDto> getUserList(UserDto userDto);
+    List<UserDto> getUserList(UserDto userDto);
 
     UserEntity updateUser(int id, UserDto userDto) throws Exception;
+
+    UserEntity findUserByMobile(Long Mobile);
 
     UserPasswordMasterEntity saveUserPassword(UserPasswordMasterDto userPasswordMasterDto);
 

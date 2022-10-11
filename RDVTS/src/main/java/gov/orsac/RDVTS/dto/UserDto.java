@@ -32,10 +32,5 @@ public class UserDto {
     private Date updatedOn;
 
 
-    private int page;
-    private int size;
-    private String sortOrder;
-    private String sortBy;
-
 
 }
