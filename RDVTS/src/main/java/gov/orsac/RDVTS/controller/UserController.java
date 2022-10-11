@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.dto.RDVTSResponse;
 import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
 import gov.orsac.RDVTS.entities.UserEntity;
+import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
 import gov.orsac.RDVTS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +26,8 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
     @PostMapping("/createUser")
     public RDVTSResponse saveUser(@RequestParam(name = "data") String data) {
@@ -52,12 +56,8 @@ public class UserController {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            Page<UserInfoDto> userListPage = userService.getUserList(userDto);
-            List<UserInfoDto> userList = userListPage.getContent();
+            List<UserDto> userList = userService.getUserList(userDto);
             result.put("userList", userList);
-            result.put("currentPage", userListPage.getNumber());
-            result.put("totalItems", userListPage.getTotalElements());
-            result.put("totalPages", userListPage.getTotalPages());
             rdvtsResponse.setData(result);
             rdvtsResponse.setStatus(1);
             rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -96,6 +96,52 @@ public class UserController {
         }
         return rdvtsResponse;
     }
+
+
+
+
+    @PostMapping("/login")
+    public RDVTSResponse loginUser(@RequestBody UserInfoDto request) {
+        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+        try {
+            Map<String, Object> result = new HashMap<>();
+            UserEntity  dbUser = userService.findUserByMobile(request.getMobile1());
+            if (dbUser != null && !dbUser.getEmail().isEmpty()) {
+                //UserPasswordMasterEntity userpassword = getPasswordByUserId(request.getMobile1());
+
+                //boolean verifyuserpassword = encoder.matches(request.getPassword(), userpassword.getPassword());
+                boolean verifyuserpassword = true;
+                if (verifyuserpassword == true) {
+
+                    UserDto userDto = new UserDto();
+                    userDto.setId(dbUser.getId());
+
+                    result.put("user", userDto);
+                   // result.put("menuList", parentMenuList);
+                    rdvtsResponse.setData(result);
+                    rdvtsResponse.setStatus(1);
+                    rdvtsResponse.setMessage("Login successfully !!!");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                } else {
+                    rdvtsResponse.setStatus(0);
+                    rdvtsResponse.setMessage("Wrong Password");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                }
+            } else {
+                rdvtsResponse.setStatus(0);
+                rdvtsResponse.setMessage("User Not Found !!!");
+                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            }
+
+        } catch (Exception e) {
+            rdvtsResponse.setStatus(0);
+            rdvtsResponse.setMessage("");
+            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        }
+        return rdvtsResponse;
+    }
+
+
 
 }
 
