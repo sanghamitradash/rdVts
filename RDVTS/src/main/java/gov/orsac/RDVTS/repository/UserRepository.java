@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.repository;
 
 import gov.orsac.RDVTS.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 
 public interface UserRepository extends JpaRepository<UserEntity,Integer> {
@@ -12,6 +13,10 @@ public interface UserRepository extends JpaRepository<UserEntity,Integer> {
     Boolean existsByMobile2(Long mobileNo);
 
     UserEntity findById(int id);
+
+
+    @Query(value = "select * from user_m where mobile_1=:mobile and is_active=true", nativeQuery = true)
+    UserEntity findUserByMobile(long mobile);
 
 
 
