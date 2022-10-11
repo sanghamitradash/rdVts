@@ -14,4 +14,6 @@ public interface UserPaswordMasterService {
 
     UserPasswordMasterDto getPasswordById(Integer id);
 
+    UserPasswordMasterEntity updateUser(Integer userId, UserPasswordMasterDto uerPasswordMasterDto);
+
 }
