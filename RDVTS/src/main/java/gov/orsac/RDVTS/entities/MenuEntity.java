@@ -35,7 +35,7 @@ public class MenuEntity {
     private Integer menuOrder;
 
     @Column(name = "is_active")
-    private boolean isActive;
+    private boolean active;
 
     @Column(name = "created_by")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

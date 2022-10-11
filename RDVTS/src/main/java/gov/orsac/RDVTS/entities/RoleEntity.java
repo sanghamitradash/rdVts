@@ -23,7 +23,7 @@ public class RoleEntity {
     private Integer id;
 
     @Column(name = "name")
-    private String roleName;
+    private String name;
 
     @Column(name = "description")
     private String description;
@@ -50,7 +50,7 @@ public class RoleEntity {
     private boolean canApprove;
 
     @Column(name = "is_active")
-    private boolean isActive;
+    private boolean active;
 
     @Column(name = "created_by")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
