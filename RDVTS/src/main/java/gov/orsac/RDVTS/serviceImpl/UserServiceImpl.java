@@ -3,15 +3,20 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserEntity;
+import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
 import gov.orsac.RDVTS.exception.RecordExistException;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
+import gov.orsac.RDVTS.repository.UserPaswordMasterRepo;
 import gov.orsac.RDVTS.repository.UserRepository;
+import gov.orsac.RDVTS.repositoryImpl.UserPaswordMasterRepoImpl;
 import gov.orsac.RDVTS.repositoryImpl.UserRepositoryImpl;
 import gov.orsac.RDVTS.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -25,6 +30,16 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepositoryImpl userRepositoryImpl;
+
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
+    @Autowired
+    private UserPaswordMasterRepoImpl userPaswordMasterRepoImpl;
+
+    @Autowired
+    private UserPaswordMasterRepo userPaswordMasterRepo;
+
     @Override
     public UserEntity saveUser(UserDto userSaveRequests) throws RecordExistException {
         if (checkEmailExists(userSaveRequests.getEmail())){
@@ -96,6 +111,39 @@ public class UserServiceImpl implements UserService {
         }*/
         //existingUser.setRoles(userRoles);
         UserEntity save = userRepository.save(existingUser);
+        return save;
+    }
+
+    @Override
+    public UserPasswordMasterEntity saveUserPassword(UserPasswordMasterDto userPasswordMasterDto){
+
+        userPasswordMasterDto.setPassword(encoder.encode(userPasswordMasterDto.getPassword()));
+        userPasswordMasterDto.setIsActive(true);
+        userPasswordMasterDto.setCreatedBy(1);
+        userPasswordMasterDto.setUpdatedBy(1);
+        UserPasswordMasterEntity userPasswordMasterEntity= new UserPasswordMasterEntity();
+        BeanUtils.copyProperties(userPasswordMasterDto, userPasswordMasterEntity);
+        return userPaswordMasterRepo.save(userPasswordMasterEntity);
+    }
+
+    @Override
+    public UserPasswordMasterDto getPasswordByUserId(Integer userId){
+        UserPasswordMasterDto userPasswordMasterDto = userPaswordMasterRepoImpl.getPasswordByUserId(userId);
+        return userPasswordMasterDto;
+    }
+
+    @Override
+    public UserPasswordMasterDto getPasswordById(Integer id){
+        UserPasswordMasterDto userPasswordMasterDto = userPaswordMasterRepoImpl.getPasswordById(id);
+        return userPasswordMasterDto;
+    }
+
+    @Override
+    public UserPasswordMasterEntity updateUserPass(Integer userId, UserPasswordMasterDto userPasswordMasterDto) {
+        UserPasswordMasterEntity existingId = userPaswordMasterRepo.findById(userId).orElseThrow(() -> new RecordNotFoundException("userId", "userId", userId));
+        UserPasswordMasterEntity saveHistory = userPaswordMasterRepoImpl.savePasswordInHistory(userId, userPasswordMasterDto);
+        existingId.setPassword(encoder.encode(userPasswordMasterDto.getPassword()));
+        UserPasswordMasterEntity save = userPaswordMasterRepo.save(existingId);
         return save;
     }
 

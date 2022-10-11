@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -14,7 +15,7 @@ public class UserPaswordMasterRepoImpl {
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
 
-    public UserPasswordMasterDto getPasswordByUserId(Integer userId){
+    public UserPasswordMasterDto getPasswordByUserId(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT  userPassM.id, userPassM.user_id, userPassM.password, userPassM.is_active, userPassM.created_by, userPassM.created_on, userPassM.updated_by, " +
@@ -24,7 +25,7 @@ public class UserPaswordMasterRepoImpl {
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserPasswordMasterDto.class));
     }
 
-    public UserPasswordMasterDto getPasswordById(Integer id){
+    public UserPasswordMasterDto getPasswordById(Integer id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT  userPassM.id, userPassM.user_id, userPassM.password, userPassM.is_active, userPassM.created_by, userPassM.created_on, userPassM.updated_by, " +
@@ -34,8 +35,9 @@ public class UserPaswordMasterRepoImpl {
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserPasswordMasterDto.class));
     }
 
-    public UserPasswordMasterEntity savePasswordInHistory(Integer userId, UserPasswordMasterDto userPasswordMasterDto){
+    public UserPasswordMasterEntity savePasswordInHistory(Integer userId, UserPasswordMasterDto userPasswordMasterDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        UserPasswordMasterEntity userPasswordMasterEntity = new UserPasswordMasterEntity();
         String qry = "INSERT INTO rdvts_oltp.user_password_log(user_id, password, is_active, created_by, updated_by, updated_on) " +
                 "select user_id,password, is_active, created_by, updated_by, updated_on from rdvts_oltp.user_password_m where user_id =:userId ";
         sqlParam.addValue("userId", userId);
@@ -44,7 +46,15 @@ public class UserPaswordMasterRepoImpl {
         sqlParam.addValue("createdBy", userPasswordMasterDto.getCreatedBy());
         sqlParam.addValue("updatedBy", userPasswordMasterDto.getUpdatedBy());
         sqlParam.addValue("updatedOn", userPasswordMasterDto.getUpdatedOn());
-        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserPasswordMasterEntity.class));
+        /*Integer count =*/ return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserPasswordMasterEntity.class));
+//
+//        if(count == 0){
+//            return null;
+//        }
+//        if(count == 1){
+//             BeanUtils.copyProperties(userPasswordMasterDto, userPasswordMasterEntity);
+//             return userPasswordMasterDto;
+//        }
     }
 
 }
