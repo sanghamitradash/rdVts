@@ -10,6 +10,7 @@ import gov.orsac.RDVTS.dto.UserInfoDto;
 import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
+import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,9 @@ public class UserController {
     private UserService userService;
     @Autowired
     private BCryptPasswordEncoder encoder;
+
+    @Autowired
+    private MasterService masterService;
 
     @PostMapping("/createUser")
     public RDVTSResponse saveUser(@RequestParam(name = "userData") String data, @RequestParam(name = "password") String password,
@@ -64,33 +68,33 @@ public class UserController {
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter proper mobile number 2!!",
                                 result);
-                    } else if(userDto.getUserLevelId()==1
-                            && userArea.getGStateId()==null
-                    && userArea.getGStateId().toString().isEmpty()){
+                    } else if (userDto.getUserLevelId() == 1
+                            && userArea.getGStateId() == null
+                            && userArea.getGStateId().toString().isEmpty()) {
                         //For State
 
                         rdvtsResponse = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter user state!!",
                                 result);
-                    }else if(userDto.getUserLevelId()==2
-                            && userArea.getGStateId()==null
+                    } else if (userDto.getUserLevelId() == 2
+                            && userArea.getGStateId() == null
                             && userArea.getGStateId().toString().isEmpty()
-                            && userArea.getGDistId()==null
-                            && userArea.getGDistId().toString().isEmpty()){
+                            && userArea.getGDistId() == null
+                            && userArea.getGDistId().toString().isEmpty()) {
                         //District
 
                         rdvtsResponse = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter user district!!",
                                 result);
-                    }else if(userDto.getUserLevelId()==3
-                            && userArea.getGStateId()==null
+                    } else if (userDto.getUserLevelId() == 3
+                            && userArea.getGStateId() == null
                             && userArea.getGStateId().toString().isEmpty()
-                            && userArea.getGDistId()==null
+                            && userArea.getGDistId() == null
                             && userArea.getGDistId().toString().isEmpty()
-                            && userArea.getGBlockId()==null
-                            && userArea.getGBlockId().toString().isEmpty()){
+                            && userArea.getGBlockId() == null
+                            && userArea.getGBlockId().toString().isEmpty()) {
 
                         //Block
                         rdvtsResponse = new RDVTSResponse(0,
@@ -215,7 +219,7 @@ public class UserController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<UserAreaMappingEntity>userArea = userService.createUserAreaMapping(userAreaMapping);
+            List<UserAreaMappingEntity> userArea = userService.createUserAreaMapping(userAreaMapping);
             result.put("userArea", userArea);
             response.setData(result);
             response.setStatus(1);
@@ -265,8 +269,6 @@ public class UserController {
     }
 
 
-
-
     @PostMapping("/login")
     public RDVTSResponse loginUser(@RequestBody UserInfoDto request) {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
@@ -292,9 +294,13 @@ public class UserController {
                         userDto.setDesignationId(dbUser.getDesignationId());
                         userDto.setContractorId(dbUser.getContractorId());
 
-                        // result.put("user", userDto);
-                        // result.put("menuList", parentMenuList);
-                        rdvtsResponse.setData(userDto);
+                        List<RoleMenuInfo> roleMenuType = masterService.getAllMenuByRoleId(dbUser.getId(), dbUser.getRoleId());
+                        List<RoleDto> roleByRoleId = masterService.getRoleByRoleId(dbUser.getRoleId());
+
+                        result.put("user", userDto);
+                        result.put("menu", roleMenuType);
+                        result.put("access", roleByRoleId.get(0));
+                        rdvtsResponse.setData(result);
                         rdvtsResponse.setStatus(1);
                         rdvtsResponse.setMessage("Login successfully!!");
                         rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

@@ -21,11 +21,11 @@ public class MasterRepositoryImpl implements MasterRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT id, name, description, parent_role_id,user_level_id, can_edit, can_add,can_view, can_delete, "+
                 "can_approve,created_by,created_on,updated_by,updated_on," +
-               " is_active as active FROM role_m ";
+               " is_active as active FROM role_m WHERE is_active = true ";
         if (roleId == -1) {
-            qry += " WHERE id>1 ORDER BY id ";
+            qry += " AND id>1 ORDER BY id ";
         } else {
-            qry += " WHERE id=:id ";
+            qry += " AND id=:id ";
             sqlParam.addValue("id", roleId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleDto.class));
@@ -91,14 +91,14 @@ public class MasterRepositoryImpl implements MasterRepository {
 
     public Integer getUserLevelIdByUserId(int userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT user_level_id FROM user_m WHERE id =:userId";
+        String qry = "SELECT user_level_id FROM rdvts_oltp.user_m WHERE id =:userId";
         sqlParam.addValue("userId", userId);
         return namedJdbc.queryForObject(qry, sqlParam, Integer.class);
     }
     public List<RoleMenuInfo> getRoleMenu(int userId, int roleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT m.name, m.parent_id, m,module, rm.role_id, rm.menu_id, rm.is_active as active, rm.created_by, rm.updated_by, rm.is_default" +
-                " FROM oiipcra_oltp.role_menu as rm" +
+                " FROM rdvts_oltp.role_menu as rm" +
                 " LEFT JOIN menu_m as m ON rm.menu_id = m.id where rm.is_active=true ";
         if (roleId == -1) {
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleMenuInfo.class));
@@ -112,8 +112,8 @@ public class MasterRepositoryImpl implements MasterRepository {
     public List<ParentMenuInfo> getAllParentMenu(Integer roleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module,roleMenu.is_default as isDefault " +
-                " FROM  oiipcra_oltp.role_menu as roleMenu " +
-                " left join  oiipcra_oltp.menu_m as menu on menu.id=roleMenu.menu_id " +
+                " FROM  rdvts_oltp.role_menu as roleMenu " +
+                " left join  rdvts_oltp.menu_m as menu on menu.id=roleMenu.menu_id " +
                 " WHERE parent_id = 0 AND menu.is_active = true";
         if(roleId > 0){
             qry+= " AND roleMenu.role_id=:roleId";
@@ -126,8 +126,8 @@ public class MasterRepositoryImpl implements MasterRepository {
     public List<HierarchyMenuInfo> getHierarchyMenuListById(Integer parentId, Integer roleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module,roleMenu.is_default as isDefault" +
-                " FROM oiipcra_oltp.menu_m as menu " +
-                " left join oiipcra_oltp.role_menu as roleMenu on menu.id=roleMenu.menu_id " +
+                " FROM rdvts_oltp.menu_m as menu " +
+                " left join rdvts_oltp.role_menu as roleMenu on menu.id=roleMenu.menu_id " +
                 " WHERE parent_id =:parentId  AND menu.is_active = true  And role_id=:roleId ORDER BY menu.order ASC";
         sqlParam.addValue("parentId", parentId);
         sqlParam.addValue("roleId", roleId);
@@ -136,8 +136,8 @@ public class MasterRepositoryImpl implements MasterRepository {
     public List<ParentMenuInfo> getAllParentMenuWithoutRoleId() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module " +
-                " FROM  oiipcra_oltp.menu_m as menu " +
-//                " left join  oiipcra_oltp.menu_m as menu on menu.id=roleMenu.menu_id " +
+                " FROM  rdvts_oltp.menu_m as menu " +
+//                " left join  rdvts_oltp.menu_m as menu on menu.id=roleMenu.menu_id " +
                 " WHERE parent_id = 0 AND menu.is_active = true";
         qry+= "  order by menu.id ASC";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ParentMenuInfo.class));
@@ -147,8 +147,8 @@ public class MasterRepositoryImpl implements MasterRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module" +
                 //" ,roleMenu.is_default as isDefault" +
-                " FROM oiipcra_oltp.menu_m as menu " +
-                //" left join oiipcra_oltp.role_menu as roleMenu on menu.id=roleMenu.menu_id " +
+                " FROM rdvts_oltp.menu_m as menu " +
+                //" left join rdvts_oltp.role_menu as roleMenu on menu.id=roleMenu.menu_id " +
                 " WHERE parent_id =:parentId  AND menu.is_active = true ORDER BY menu.id ASC";
         sqlParam.addValue("parentId", parentId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(HierarchyMenuInfo.class));
