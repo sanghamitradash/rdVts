@@ -105,8 +105,11 @@ public class UserController {
 
                     //Validate Email
 
-
                     UserEntity savedUser = userService.saveUser(userDto);
+
+                    userDto.setCreatedBy(savedUser.getId());
+                    userDto.setUpdatedBy(savedUser.getId());
+                    userService.updateUser(savedUser.getId(),userDto);
 
                     //Save Password
                     userPasswordMasterDto.setUserId(savedUser.getId());

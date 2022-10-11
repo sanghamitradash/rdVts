@@ -21,11 +21,11 @@ public class MasterRepositoryImpl implements MasterRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT id, name, description, parent_role_id,user_level_id, can_edit, can_add,can_view, can_delete, "+
                 "can_approve,created_by,created_on,updated_by,updated_on," +
-               " is_active as active FROM role_m WHERE is_active = true ";
+               " is_active as active FROM role_m ";
         if (roleId == -1) {
-            qry += " AND id>1 ORDER BY id ";
+            qry += " WHERE id>1 ORDER BY id ";
         } else {
-            qry += " AND id=:id ";
+            qry += " WHERE id=:id ";
             sqlParam.addValue("id", roleId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleDto.class));
