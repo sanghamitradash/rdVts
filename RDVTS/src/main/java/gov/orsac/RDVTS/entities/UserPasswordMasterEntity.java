@@ -12,7 +12,9 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserPasswordMaster {
+@Entity
+@Table(name = "user_password_m")
+public class UserPasswordMasterEntity {
 
     @Id
     @SequenceGenerator(name = "user_password_m_seq", sequenceName = "user_password_m_id_seq", allocationSize = 1)
