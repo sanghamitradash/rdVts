@@ -1,10 +1,8 @@
 package gov.orsac.RDVTS.service;
 
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.MenuEntity;
-import gov.orsac.RDVTS.entities.RoleEntity;
-import gov.orsac.RDVTS.entities.RoleMenuMaster;
-import gov.orsac.RDVTS.entities.UserLevelMaster;
+import gov.orsac.RDVTS.entities.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -36,5 +34,13 @@ public interface MasterService {
     List<RoleMenuInfo> getAllMenuByRoleIds(Integer userId,Integer roleId);
     Boolean deactivateMenu(int roleId, int menuId, boolean isActive);
     RoleMenuMaster updateRoleMenu(RoleMenuDto roleMenuDto, Integer menuId);
+
+    VTUVendorMasterEntity saveVTUVendor(VTUVendorMasterDto vendorMasterDto);
+
+    VTUVendorMasterDto getVTUVendorById(Integer id);
+
+    Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto);
+
+    VTUVendorMasterEntity updateVTUVendor(Integer id, VTUVendorMasterDto vtuVendorMasterDto);
 
 }
