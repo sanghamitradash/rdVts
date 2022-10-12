@@ -15,9 +15,9 @@ public class UserAreaMappingDto {
     private Integer gStateId;
 
 
-    private Integer gDistId;
+    private Integer gdistId;
     private Integer distId;
-    private Integer gBlockId;
+    private Integer gblockId;
     private Integer blockId;
     private Integer divisionId;
 
@@ -27,6 +27,8 @@ public class UserAreaMappingDto {
     private String gBlockName;
     private String blockName;
     private String divisionName;
+    private String gStateName;
+
 
     private int page;
     private int size;
