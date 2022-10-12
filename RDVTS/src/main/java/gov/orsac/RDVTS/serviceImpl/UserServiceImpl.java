@@ -1,12 +1,8 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 
-import gov.orsac.RDVTS.dto.ContractorDto;
-import gov.orsac.RDVTS.dto.UserAreaMappingDto;
-import gov.orsac.RDVTS.dto.UserDto;
-import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
-import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
 import gov.orsac.RDVTS.exception.RecordExistException;
@@ -16,9 +12,11 @@ import gov.orsac.RDVTS.repository.UserPaswordMasterRepo;
 import gov.orsac.RDVTS.repository.UserRepository;
 import gov.orsac.RDVTS.repositoryImpl.UserPaswordMasterRepoImpl;
 import gov.orsac.RDVTS.repositoryImpl.UserRepositoryImpl;
+import gov.orsac.RDVTS.service.EmailService;
 import gov.orsac.RDVTS.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -29,8 +27,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 
 @Service
@@ -47,6 +49,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
+
+    @Autowired
+    private EmailService emailService;
 
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
@@ -162,6 +167,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserAreaMappingEntity> createUserAreaMapping(List<UserAreaMappingEntity> userAreaMapping){
+         for(UserAreaMappingEntity userAreaMapping1 : userAreaMapping) {
+        userAreaMapping1.setGBlockId(2);
+        userAreaMapping1.setGDistId(2);
+         }
         return userAreaMappingRepository.saveAll(userAreaMapping);
 }
 
@@ -223,6 +232,51 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity findUserByMobile(Long mobile) {
         return userRepository.findUserByMobile(mobile);
+    }
+
+
+    @Override
+    public UserEntity findUserByMobileAndEmail(Long mobile, String email) {
+        return userRepository.findUserByMobileAndEmail(mobile,email);
+    }
+
+
+    @Override
+    public Integer sendOtpToUser(UserDto user) {
+        MailDto mailDto = new MailDto();
+        Random random = new Random();
+        int otp = random.nextInt(999999);
+        System.out.println(user.getId());
+
+        int id=user.getId();
+
+        UserEntity existingUser = userRepository.findById(id);
+        existingUser.setOtp(otp);
+        userRepository.save(existingUser);
+
+
+        mailDto.setRecipient(user.getEmail());
+        mailDto.setSubject("OTP for new password.");
+        String message = readMailBody("FORGOT_PWD_OTP_TEMPLATE.txt", user, otp);
+        mailDto.setMessage(message);
+        if (emailService.sendHtmlMail(mailDto)){
+            return otp;
+        }
+        return 0;
+        ///return otp;
+    }
+
+    public String readMailBody(String filename, UserDto user, Integer otp){
+        String mailBody = null;
+        try {
+            File resource = new ClassPathResource(filename).getFile();
+            mailBody = new String(Files.readAllBytes(resource.toPath()));
+            mailBody = mailBody.replace("{name}", user.getFirstName());
+            mailBody = mailBody.replace("{otp}", String.valueOf(otp));
+        }catch (IOException io){
+            System.out.println(io.getMessage());
+        }
+        return mailBody;
     }
 
 

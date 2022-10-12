@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ContractorEntity;
@@ -39,7 +40,11 @@ public class UserController {
 
     @PostMapping("/createUser")
     public RDVTSResponse saveUser(@RequestParam(name = "userData") String data, @RequestParam(name = "password") String password,
-                                  @RequestParam(name = "userArea") UserAreaMappingEntity userArea) {
+                                  @RequestParam(name = "userArea")  String userAreaData) {
+
+//        List<UserAreaMappingEntity> userArea;
+
+//        List<UserAreaMappingEntity> userArea;
 
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         if (data != null && !data.isEmpty()) {
@@ -48,7 +53,11 @@ public class UserController {
                 ObjectMapper mapper = new ObjectMapper();
                 UserDto userDto = mapper.readValue(data, UserDto.class);
 
+                List<UserAreaMappingRequestDTO> userArea = mapper.readValue(userAreaData, mapper.getTypeFactory().constructCollectionType(List.class, UserAreaMappingRequestDTO.class));
+
                 UserPasswordMasterDto userPasswordMasterDto = new UserPasswordMasterDto();
+
+
 
                 if (userDto.getMobile1() != null || userDto.getEmail() != null
                         || userDto.getDesignationId() != null || userDto.getRoleId() != null
@@ -68,9 +77,15 @@ public class UserController {
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter proper mobile number 2!!",
                                 result);
-                    } else if (userDto.getUserLevelId() == 1
-                            && userArea.getGStateId() == null
-                            && userArea.getGStateId().toString().isEmpty()) {
+                    }else if(userArea == null || userArea.size()<=0){
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter user area!!",
+                                result);
+                    }
+                    else if (userDto.getUserLevelId() == 1
+                            && userArea.get(0).getGStateId() == null
+                            && userArea.get(0).getGStateId().toString().isEmpty()) {
                         //For State
 
                         rdvtsResponse = new RDVTSResponse(0,
@@ -78,10 +93,10 @@ public class UserController {
                                 "Please enter user state!!",
                                 result);
                     } else if (userDto.getUserLevelId() == 2
-                            && userArea.getGStateId() == null
-                            && userArea.getGStateId().toString().isEmpty()
-                            && userArea.getGDistId() == null
-                            && userArea.getGDistId().toString().isEmpty()) {
+                            && userArea.get(0).getGStateId() == null
+                            && userArea.get(0).getGStateId().toString().isEmpty()
+                            && userArea.get(0).getGDistId() == null
+                            && userArea.get(0).getGDistId().toString().isEmpty()) {
                         //District
 
                         rdvtsResponse = new RDVTSResponse(0,
@@ -89,63 +104,74 @@ public class UserController {
                                 "Please enter user district!!",
                                 result);
                     } else if (userDto.getUserLevelId() == 3
-                            && userArea.getGStateId() == null
-                            && userArea.getGStateId().toString().isEmpty()
-                            && userArea.getGDistId() == null
-                            && userArea.getGDistId().toString().isEmpty()
-                            && userArea.getGBlockId() == null
-                            && userArea.getGBlockId().toString().isEmpty()) {
+                            && userArea.get(0).getGStateId() == null
+                            && userArea.get(0).getGStateId().toString().isEmpty()
+                            && userArea.get(0).getGDistId() == null
+                            && userArea.get(0).getGDistId().toString().isEmpty()
+                            && userArea.get(0).getGBlockId() == null
+                            && userArea.get(0).getGBlockId().toString().isEmpty()) {
 
                         //Block
                         rdvtsResponse = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter user block!!",
                                 result);
+                    }else {
+                        //Validate Email
+
+                        UserEntity savedUser = userService.saveUser(userDto);
+
+                        userDto.setCreatedBy(savedUser.getId());
+                        userDto.setUpdatedBy(savedUser.getId());
+                        userService.updateUser(savedUser.getId(),userDto);
+
+                        //Save Password
+                        userPasswordMasterDto.setUserId(savedUser.getId());
+                        userPasswordMasterDto.setCreatedBy(savedUser.getId());
+                        userPasswordMasterDto.setUpdatedBy(savedUser.getId());
+                        userPasswordMasterDto.setIsActive(true);
+                        userPasswordMasterDto.setPassword(password);
+                        UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
+
+                        //Save User Area Mapping
+                        List<UserAreaMappingEntity> userAreaMappingEntities = new ArrayList<>();
+                        for(UserAreaMappingRequestDTO item : userArea){
+                            UserAreaMappingEntity umEt= new UserAreaMappingEntity();
+                            umEt.setStateId(item.getStateId());
+                            umEt.setGStateId(item.getGStateId());
+                            umEt.setGDistId(item.getGDistId());
+                            umEt.setDistId(item.getDistId());
+                            umEt.setGBlockId(item.getGBlockId());
+                            umEt.setBlockId(item.getBlockId());
+                            umEt.setUserId(savedUser.getId());
+                            umEt.setCreatedBy(savedUser.getId());
+                            umEt.setUpdatedBy(savedUser.getId());
+                            umEt.setIsActive(true);
+                            userAreaMappingEntities.add(umEt);
+                        }
+
+                        List<UserAreaMappingEntity> areaObj = userService.createUserAreaMapping(userAreaMappingEntities);
+
+                        //Return Data
+                        UserDto returnDTO = new UserDto();
+                        returnDTO.setUserId(savedUser.getId());
+                        returnDTO.setDesignationId(savedUser.getDesignationId());
+                        returnDTO.setRoleId(savedUser.getRoleId());
+                        returnDTO.setUserLevelId(savedUser.getUserLevelId());
+                        returnDTO.setFirstName(savedUser.getFirstName());
+                        returnDTO.setMiddleName(savedUser.getMiddleName());
+                        returnDTO.setLastName(savedUser.getLastName());
+                        returnDTO.setMobile1(savedUser.getMobile1());
+                        returnDTO.setMobile2(savedUser.getMobile2());
+                        returnDTO.setEmail(savedUser.getEmail());
+                        result.put("user", returnDTO);
+                        result.put("UserAreaMapping",areaObj);
+
+                        rdvtsResponse.setData(result);
+                        rdvtsResponse.setStatus(1);
+                        rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+                        rdvtsResponse.setMessage("User Created Successfully!!");
                     }
-
-                    //Validate Email
-
-                    UserEntity savedUser = userService.saveUser(userDto);
-
-                    userDto.setCreatedBy(savedUser.getId());
-                    userDto.setUpdatedBy(savedUser.getId());
-                    userService.updateUser(savedUser.getId(),userDto);
-
-                    //Save Password
-                    userPasswordMasterDto.setUserId(savedUser.getId());
-                    userPasswordMasterDto.setCreatedBy(savedUser.getId());
-                    userPasswordMasterDto.setUpdatedBy(savedUser.getId());
-                    userPasswordMasterDto.setIsActive(true);
-                    userPasswordMasterDto.setPassword(password);
-                    UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
-
-                    //Save User Area Mapping
-                    userArea.setUserId(savedUser.getId());
-                    userArea.setCreatedBy(savedUser.getId());
-                    userArea.setUpdatedBy(savedUser.getId());
-                    userArea.setIsActive(true);
-                    List<UserAreaMappingEntity> userAreaMappingEntities = new ArrayList<>();
-                    userAreaMappingEntities.add(userArea);
-                    List<UserAreaMappingEntity> areaObj = userService.createUserAreaMapping(userAreaMappingEntities);
-
-                    //Return Data
-                    UserDto returnDTO = new UserDto();
-                    returnDTO.setUserId(savedUser.getId());
-                    returnDTO.setDesignationId(savedUser.getDesignationId());
-                    returnDTO.setRoleId(savedUser.getRoleId());
-                    returnDTO.setUserLevelId(savedUser.getUserLevelId());
-                    returnDTO.setFirstName(savedUser.getFirstName());
-                    returnDTO.setMiddleName(savedUser.getMiddleName());
-                    returnDTO.setLastName(savedUser.getLastName());
-                    returnDTO.setMobile1(savedUser.getMobile1());
-                    returnDTO.setMobile2(savedUser.getMobile2());
-                    returnDTO.setEmail(savedUser.getEmail());
-                    result.put("user", returnDTO);
-
-                    rdvtsResponse.setData(result);
-                    rdvtsResponse.setStatus(1);
-                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
-                    rdvtsResponse.setMessage("User Created Successfully!!");
 
                 } else {
                     rdvtsResponse = new RDVTSResponse(0,
@@ -154,6 +180,7 @@ public class UserController {
                             result);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 rdvtsResponse = new RDVTSResponse(0,
                         new ResponseEntity<>(HttpStatus.OK),
                         e.getMessage(),
@@ -428,6 +455,49 @@ public class UserController {
         }
         return response;
     }
+
+
+    @PostMapping("/sendOtpToUser")
+    public RDVTSResponse sendOtpToUser(@RequestBody(required = false) Map<String, String> param) {
+        RDVTSResponse oiipcraResponse = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        UserEntity user = userService.findUserByMobileAndEmail(Long.parseLong(param.get("mobile")), param.get("email"));
+        if (user != null) {
+            UserDto userDto=new UserDto();
+            userDto.setUserId(user.getId());
+            userDto.setFirstName(user.getFirstName());
+            int otp = userService.sendOtpToUser(userDto);
+            if (otp > 0) {
+                result.put("otp", otp);
+                oiipcraResponse.setData(result);
+                oiipcraResponse.setStatus(1);
+                oiipcraResponse.setMessage("OTP sent successfully !!!");
+                oiipcraResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                oiipcraResponse.setStatus(0);
+                oiipcraResponse.setData(result);
+                oiipcraResponse.setMessage("Something went wrong while sending otp !!!");
+                oiipcraResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            }
+            return oiipcraResponse;
+        } else {
+            oiipcraResponse.setStatus(0);
+            oiipcraResponse.setData(result);
+            oiipcraResponse.setMessage("User Not Found !!!");
+            oiipcraResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        }
+        return oiipcraResponse;
+    }
+
+
+
+
+
+
+
+
+
+
 
 }
 

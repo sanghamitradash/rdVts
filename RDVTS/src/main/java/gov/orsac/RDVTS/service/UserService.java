@@ -35,4 +35,8 @@ public interface UserService {
 
     UserPasswordMasterEntity updateUserPass(Integer userId, UserPasswordMasterDto uerPasswordMasterDto);
 
+    UserEntity findUserByMobileAndEmail(Long mobile, String email);
+
+    Integer sendOtpToUser(UserDto user);
+
 }

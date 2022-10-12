@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,6 +29,12 @@ public class UserAreaMappingDto {
     private String gBlockName;
     private String blockName;
     private String divisionName;
+
+    private Date createdOn;
+    private Date updatedOn;
+    private int createdBy;
+    private int updatedBy;
+    private Boolean isActive;
 
     private int page;
     private int size;
