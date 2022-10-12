@@ -94,7 +94,7 @@ public class UserRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, first_name, middle_name, last_name, email, mobile_1, mobile_2, designation_id, user_level_id, role_id, is_active, created_by, created_on, updated_by, updated_on, contractor_id, otp\n" +
-                "\t FROM rdvts_oltp.user_m where id=:userId; ";
+                "\t FROM rdvts_oltp.user_m where id=:userId and is_active=true; ";
 
         sqlParam.addValue("userId", userId);
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserDto.class));
@@ -104,7 +104,7 @@ public class UserRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, first_name, middle_name, last_name, email, mobile_1, mobile_2, designation_id, user_level_id, role_id, is_active, created_by, created_on, updated_by, updated_on, contractor_id, otp\n" +
-                "\t FROM rdvts_oltp.user_m where mobile_1=:mobile; ";
+                "\t FROM rdvts_oltp.user_m where mobile_1=:mobile and is_active=true; ";
 
         sqlParam.addValue("mobile", mobile);
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserDto.class));
@@ -114,7 +114,7 @@ public class UserRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, first_name, middle_name, last_name, email, mobile_1, mobile_2, designation_id, user_level_id, role_id, is_active, created_by, created_on, updated_by, updated_on, contractor_id, otp\n" +
-                "\t FROM rdvts_oltp.user_m where email=:email; ";
+                "\t FROM rdvts_oltp.user_m where email=:email and is_active=true; ";
 
         sqlParam.addValue("email", email);
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserEntity.class));
