@@ -2,11 +2,8 @@ package gov.orsac.RDVTS.serviceImpl;
 
 
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.dto.ContractorDto;
 import gov.orsac.RDVTS.dto.UserAreaMappingDto;
 import gov.orsac.RDVTS.dto.UserDto;
-import gov.orsac.RDVTS.dto.UserInfoDto;
-import gov.orsac.RDVTS.entities.ContractorEntity;
 import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
@@ -35,9 +32,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 
@@ -111,8 +106,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Page<UserDto> getUserList(UserDto userDto) {
-        return userRepositoryImpl.getUserList(userDto);
+    public Page<UserListDto> getUserList(UserListDto userListDto) {
+        return userRepositoryImpl.getUserList(userListDto);
       //  return userList;
     }
 

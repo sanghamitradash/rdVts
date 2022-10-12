@@ -203,9 +203,9 @@ public class UserController {
         Map<String, Object> result = new HashMap<>();
         try {
             UserDto userDto = userService.getUserByUserId(userId);
-
+            List<UserAreaMappingDto> userArea = userService.getUserAreaMappingByUserId(userId);
             result.put("user", userDto);
-            result.put("userArea", userDto);
+            result.put("userArea", userArea);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -241,12 +241,12 @@ public class UserController {
 
 
     @PostMapping("/getUserList")
-    public RDVTSResponse getUserList(@RequestBody UserDto userDto) {
+    public RDVTSResponse getUserList(@RequestBody UserListDto userListDto) {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            Page<UserDto> userList = userService.getUserList(userDto);
-            result.put("userList", userList);
+            Page<UserListDto> userListDtos = userService.getUserList(userListDto);
+            result.put("userList", userListDtos);
             rdvtsResponse.setData(result);
             rdvtsResponse.setStatus(1);
             rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

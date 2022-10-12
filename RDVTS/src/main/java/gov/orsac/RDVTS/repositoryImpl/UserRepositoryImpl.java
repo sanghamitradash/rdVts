@@ -37,42 +37,48 @@ public class UserRepositoryImpl {
         }
         return 0;
     }
-    public Page<UserDto> getUserList(UserDto userDto) {
+    public Page<UserListDto> getUserList(UserListDto userListDto) {
 
-        PageRequest pageable = PageRequest.of(userDto.getPage(), userDto.getSize(), Sort.Direction.fromString(userDto.getSortOrder()), userDto.getSortBy());
+        PageRequest pageable = PageRequest.of(userListDto.getPage(), userListDto.getSize(), Sort.Direction.fromString(userListDto.getSortOrder()), userListDto.getSortBy());
         Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         Integer  resultCount = 0;
         String queryString = " ";
 
-        queryString += "SELECT id,id as userId, first_name as firstName, middle_name as middleName, last_name as lastName, email, mobile_1 as mobile1, " +
-                "mobile_2 as mobile2, designation_id as designationId, user_level_id as userLevelId, role_id as roleId, is_active as isactive, created_by, created_on, updated_by, updated_on, contractor_id as contractorId  \n" +
-                "\t FROM rdvts_oltp.user_m  WHERE  is_active=true ";
+        queryString += "SELECT am.id,am.user_id,am.g_dist_id as gdistId,geoDist.g_district_name as gDistName,am.dist_id,dist.district_name as distName,\n" +
+                "am.g_block_id as gblockId,geoblock.g_block_name as gBlockName,am.block_id,block.block_name as blockName,am.division_id,am.g_state_id as gStateId,geo.state_name as gStateName,  \n" +
+                "am.state_id as stateId \n" +
+                "from rdvts_oltp.user_area_mapping as am \n" +
+                "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id = am.g_dist_id \n" +
+                "left join rdvts_oltp.district_boundary as dist on dist.dist_id = am.dist_id  \n" +
+                "left join rdvts_oltp.geo_block_m as geoblock on geoblock.id = am.g_block_id  \n" +
+                "left join rdvts_oltp.block_boundary as block on block.block_id = am.block_id  \n" +
+                "left join rdvts_oltp.geo_state_m as geo on geo.id =am.g_state_id where is_active=true  ";
 
-        if(userDto.getId()>0){
-            queryString+="AND id=:id ";
-            sqlParam.addValue("id",userDto.getId());
+        if(userListDto.getId()>0){
+            queryString+="AND am.id=:id ";
+            sqlParam.addValue("id",userListDto.getId());
         }
-        if(userDto.getDesignationId()!= null && userDto.getDesignationId() > 0){
-            queryString+="AND getDesignationId=:getDesignationId ";
-            sqlParam.addValue("getDesignationId",userDto.getDesignationId());
+        if(userListDto.getDesignationId()!= null && userListDto.getDesignationId() > 0){
+            queryString+="AND   getDesignationId=:getDesignationId ";
+            sqlParam.addValue("getDesignationId",userListDto.getDesignationId());
 
 
         }
 
-        if(userDto.getRoleId()!= null && userDto.getRoleId() > 0){
+        if(userListDto.getRoleId()!= null && userListDto.getRoleId() > 0){
             queryString+="AND roleId=:roleId ";
-            sqlParam.addValue("roleId",userDto.getRoleId());
+            sqlParam.addValue("roleId",userListDto.getRoleId());
         }
 
 
-        if(userDto.getEmail() != null && !userDto.getEmail().isEmpty()){
+        if(userListDto.getEmail() != null && !userListDto.getEmail().isEmpty()){
             queryString+="AND email=:email ";
-            sqlParam.addValue("email",userDto.getEmail());
+            sqlParam.addValue("email",userListDto.getEmail());
         }
-        if(userDto.getMobile1() != null && userDto.getMobile1()>0){
+        if(userListDto.getMobile1() != null && userListDto.getMobile1()>0){
             queryString+="AND mobile1=:mobile1 ";
-            sqlParam.addValue("mobile1",userDto.getMobile1());
+            sqlParam.addValue("mobile1",userListDto.getMobile1());
         }
 
 
@@ -80,8 +86,8 @@ public class UserRepositoryImpl {
         resultCount = count(queryString, sqlParam);
         queryString += " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
 
-        List<UserDto> userInfo = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(UserDto.class));
-        return new PageImpl<>(userInfo,pageable,resultCount);
+        List<UserListDto> userListDtos = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(UserListDto.class));
+        return new PageImpl<>(userListDtos,pageable,resultCount);
         //return namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(UserDto.class));
 
 
@@ -94,7 +100,7 @@ public class UserRepositoryImpl {
     public UserDto getUserByUserId(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "SELECT id, first_name, middle_name, last_name, email, mobile_1, mobile_2, designation_id, user_level_id, role_id, is_active, created_by, created_on, updated_by, updated_on, contractor_id, otp\n" +
+        String qry = "SELECT id, first_name, middle_name, last_name, email, mobile_1 as mobile1, mobile_2 as mobile2, designation_id as designationId , user_level_id, role_id as roleId , is_active as isactive, created_by, created_on, updated_by, updated_on, contractor_id as contractorId\n" +
                 "\t FROM rdvts_oltp.user_m where id=:userId and is_active=true; ";
 
         sqlParam.addValue("userId", userId);
@@ -127,7 +133,7 @@ public class UserRepositoryImpl {
 
     public List<UserAreaMappingDto> getUserAreaMappingByUserId(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT am.id,am.userId,am.g_dist_id as gdistId,geoDist.g_district_name as gDistName,am.dist_id,dist.district_name as distName,  " +
+        String qry = "SELECT am.id,am.user_id,am.g_dist_id as gdistId,geoDist.g_district_name as gDistName,am.dist_id,dist.district_name as distName,  " +
                 "am.g_block_id as gblockId,geoblock.g_block_name as gBlockName,am.block_id,block.block_name as blockName,am.division_id,am.g_state_id as gStateId,geo.state_name as gStateName,  " +
                 "am.state_id as stateId  " +
                 "from rdvts_oltp.user_area_mapping as am " +
@@ -138,7 +144,7 @@ public class UserRepositoryImpl {
                 "left join rdvts_oltp.geo_state_m as geo on geo.id =am.g_state_id ";
 
         if(userId >0){
-            qry +=" WHERE am.userId=:userId ";
+            qry +=" WHERE am.user_id=:userId ";
             sqlParam.addValue("userId",userId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UserAreaMappingDto.class));
