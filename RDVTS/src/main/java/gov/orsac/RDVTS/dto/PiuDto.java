@@ -8,17 +8,17 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DesignationDto {
+public class PiuDto {
 
     private Integer id;
 
+    private Integer gpiuId;
+
     private String name;
 
-    private String description;
+    private String sanctionDate;
 
-    private Integer parentId;
-
-    private Boolean isActive=true;
+    private Boolean isActive = true;
 
     private Integer createdBy;
 
@@ -27,11 +27,4 @@ public class DesignationDto {
     private Integer updatedBy;
 
     private Date updatedOn;
-
-    private Integer userLevelId;
-
-    private int page;
-    private int size;
-    private String sortOrder;
-    private String sortBy;
 }

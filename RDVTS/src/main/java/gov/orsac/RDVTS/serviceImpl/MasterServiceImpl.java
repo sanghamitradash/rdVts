@@ -146,6 +146,11 @@ public class MasterServiceImpl implements MasterService {
         List<RoleMenuInfo> roleMenu = masterRepositoryImpl.getRoleMenu(userId, roleId);
         return roleMenu;
     }
+    @Override
+    public List<RoleMenuInfo> getMenuByRoleId(Integer userId, Integer roleId) {
+        List<RoleMenuInfo> roleMenu = masterRepositoryImpl.getMenuByRoleId(userId, roleId);
+        return roleMenu;
+    }
 
     @Override
     public List<ParentMenuInfo> getMenuHierarchyByRole(Integer userId, Integer roleId) {
@@ -197,6 +202,26 @@ public class MasterServiceImpl implements MasterService {
             finalList.add(cnt++, parentMenuInfo);
         }
         return finalList;
+    }
+
+    @Override
+    public List<RoleMenuInfo> getAllMenuByRoleIds(Integer userId, Integer roleId) {
+        List<RoleMenuInfo> roleMenu = masterRepositoryImpl.getRoleMenus(userId, roleId);
+        return roleMenu;
+    }
+    @Override
+    public Boolean deactivateMenu(int roleId, int menuId, boolean isActive) {
+        return masterRepositoryImpl.deactivateMenu(roleId, menuId, isActive);
+    }
+    @Override
+    public RoleMenuMaster updateRoleMenu(RoleMenuDto roleMenuDto, Integer menuId) {
+        RoleMenuMaster roleMenu = new RoleMenuMaster();
+        roleMenu.setMenuId(menuId);
+        roleMenu.setActive(true);
+        roleMenu.setCreatedBy(roleMenuDto.getCreatedBy());
+        roleMenu.setRoleId(roleMenuDto.getRoleId());
+
+        return roleMenuRepository.save(roleMenu);
     }
 
 

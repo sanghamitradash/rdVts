@@ -39,4 +39,5 @@ public interface UserService {
 
     Integer sendOtpToUser(UserDto user);
 
+    UserAreaMappingEntity updateUserAreaMappingByUserId(Integer userId, UserAreaMappingDto userAreaMapping);
 }

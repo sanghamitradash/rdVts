@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
+import gov.orsac.RDVTS.dto.ContractorDto;
 import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,7 @@ public class UserRepositoryImpl {
 
 
     }
+
 
 
 }
