@@ -111,9 +111,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserDto> getUserList(UserDto userDto) {
-        List<UserDto> userList = userRepositoryImpl.getUserList(userDto);
-        return userList;
+    public Page<UserDto> getUserList(UserDto userDto) {
+        return userRepositoryImpl.getUserList(userDto);
+      //  return userList;
     }
 
     @Override
@@ -259,7 +259,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity findUserByMobileAndEmail(String email) {
-        return userRepository.findUserByMobileAndEmail(email);
+        //return userRepository.findUserByMobileAndEmail(email);
+        return userRepositoryImpl.getUserByemail(email);
     }
 
 

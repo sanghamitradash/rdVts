@@ -203,7 +203,9 @@ public class UserController {
         Map<String, Object> result = new HashMap<>();
         try {
             UserDto userDto = userService.getUserByUserId(userId);
+
             result.put("user", userDto);
+            result.put("userArea", userDto);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -243,7 +245,7 @@ public class UserController {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<UserDto> userList = userService.getUserList(userDto);
+            Page<UserDto> userList = userService.getUserList(userDto);
             result.put("userList", userList);
             rdvtsResponse.setData(result);
             rdvtsResponse.setStatus(1);
@@ -563,21 +565,21 @@ public class UserController {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         UserPasswordMasterDto uerPasswordMasterDto= new UserPasswordMasterDto();
-        UserDto userDto = userService.getUserBymobile(Long.parseLong(param.get("mobile")));
+       // UserDto userDto = userService.getUserBymobile(Long.parseLong(param.get("mobile")));
+        UserEntity userEntity = userService.findUserByMobileAndEmail(param.get("email"));
 
-        UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(userDto.getId());
+        UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(userEntity.getId());
 
-        if (!userDto.toString().isEmpty()) {
-            if (userDto.getOtp()==Integer.parseInt(param.get("otp"))){
-
-
+        if (!userEntity.toString().isEmpty()) {
+            if (userEntity.getOtp()==Integer.parseInt(param.get("otp"))){
             if (encoder.matches(param.get("password"), userPasswordMasterDto.getPassword())) {
                 rdvtsResponse.setStatus(0);
                 rdvtsResponse.setData(result);
                 rdvtsResponse.setMessage("New password shouldn't be same as old password !!!");
                 rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
             } else {
-                UserPasswordMasterEntity updatedPassword=userService.updateUserPass(userDto.getId(), uerPasswordMasterDto);
+               uerPasswordMasterDto.setPassword(param.get("password"));
+                UserPasswordMasterEntity updatedPassword=userService.updateUserPass(userEntity.getId(), uerPasswordMasterDto);
                 if (!updatedPassword.toString().isEmpty()) {
                     rdvtsResponse.setData(result);
                     rdvtsResponse.setStatus(1);

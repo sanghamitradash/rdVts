@@ -16,6 +16,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VehicleMasterDto {
+
+
     private Integer id;
 
     private String vehicleNo;
@@ -41,6 +43,9 @@ public class VehicleMasterDto {
     private Integer updatedBy;
 
     private Date updatedOn;
+
+    private Integer start;
+
 
 
 

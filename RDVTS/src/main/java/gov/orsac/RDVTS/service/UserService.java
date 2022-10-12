@@ -14,7 +14,7 @@ public interface UserService {
 
     UserEntity saveUser(UserDto userSaveRequests) throws RecordExistException;
 
-    List<UserDto> getUserList(UserDto userDto);
+    Page<UserDto> getUserList(UserDto userDto);
 
     UserEntity updateUser(int id, UserDto userDto) throws Exception;
 

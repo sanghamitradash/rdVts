@@ -29,4 +29,12 @@ public class UserDto {
     private Date updatedOn;
     private Integer userId;
     public Integer otp ;
+
+
+
+    private int page;
+    private int size;
+    private String sortOrder;
+    private String sortBy;
+
 }
