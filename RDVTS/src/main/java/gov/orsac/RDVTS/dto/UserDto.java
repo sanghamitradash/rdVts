@@ -28,4 +28,5 @@ public class UserDto {
     private Integer updatedBy;
     private Date updatedOn;
     private Integer userId;
+    public Integer otp ;
 }

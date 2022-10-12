@@ -1,10 +1,7 @@
 package gov.orsac.RDVTS.service;
 
-import gov.orsac.RDVTS.dto.UserAreaMappingDto;
-import gov.orsac.RDVTS.dto.UserDto;
-import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
-import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
 import gov.orsac.RDVTS.exception.RecordExistException;
@@ -35,9 +32,14 @@ public interface UserService {
 
     UserPasswordMasterEntity updateUserPass(Integer userId, UserPasswordMasterDto uerPasswordMasterDto);
 
-    UserEntity findUserByMobileAndEmail(Long mobile, String email);
+    UserEntity findUserByMobileAndEmail(String email);
 
     Integer sendOtpToUser(UserDto user);
+
+    UserDto getUserByUserId(Integer userId);
+    UserDto getUserBymobile(Long mobile);
+
+
 
     UserAreaMappingEntity updateUserAreaMappingByUserId(Integer userId, UserAreaMappingDto userAreaMapping);
 }

@@ -13,6 +13,8 @@ import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
 import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.UserService;
+import io.swagger.models.auth.In;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -21,10 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
@@ -194,6 +193,48 @@ public class UserController {
                     result);
         }
         return rdvtsResponse;
+    }
+
+    //get Function
+
+    @PostMapping("/getUserById")
+    public RDVTSResponse getContractById(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UserDto userDto = userService.getUserByUserId(userId);
+            result.put("user", userDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("User By Id");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getUserByMobile")
+    public RDVTSResponse getUserByMobile(@RequestParam(name = "mobile", required = false) Long mobile) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UserDto userDto = userService.getUserBymobile(mobile);
+            result.put("user", userDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("User By Id");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
     }
 
 
@@ -482,35 +523,91 @@ public class UserController {
 
 
     @PostMapping("/sendOtpToUser")
-    public RDVTSResponse sendOtpToUser(@RequestBody(required = false) Map<String, String> param) {
-        RDVTSResponse oiipcraResponse = new RDVTSResponse();
+    public RDVTSResponse sendOtpToUser(@RequestParam String email) {
+        RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
-        UserEntity user = userService.findUserByMobileAndEmail(Long.parseLong(param.get("mobile")), param.get("email"));
-        if (user != null) {
+        UserEntity user = userService.findUserByMobileAndEmail(email);
+        if (!user.toString().isEmpty()) {
+
+
             UserDto userDto=new UserDto();
-            userDto.setUserId(user.getId());
-            userDto.setFirstName(user.getFirstName());
-            int otp = userService.sendOtpToUser(userDto);
+            BeanUtils.copyProperties(user,userDto);
+           /* userDto.setId(user.getId());
+            userDto.setFirstName(user.getFirstName());*/
+            Integer otp = userService.sendOtpToUser(userDto);
             if (otp > 0) {
                 result.put("otp", otp);
-                oiipcraResponse.setData(result);
-                oiipcraResponse.setStatus(1);
-                oiipcraResponse.setMessage("OTP sent successfully !!!");
-                oiipcraResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                rdvtsResponse.setData(result);
+                rdvtsResponse.setStatus(1);
+                rdvtsResponse.setMessage("OTP sent successfully !!!");
+                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             } else {
-                oiipcraResponse.setStatus(0);
-                oiipcraResponse.setData(result);
-                oiipcraResponse.setMessage("Something went wrong while sending otp !!!");
-                oiipcraResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                rdvtsResponse.setStatus(0);
+                rdvtsResponse.setData(result);
+                rdvtsResponse.setMessage("Something went wrong while sending otp !!!");
+                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
             }
-            return oiipcraResponse;
+            return rdvtsResponse;
         } else {
-            oiipcraResponse.setStatus(0);
-            oiipcraResponse.setData(result);
-            oiipcraResponse.setMessage("User Not Found !!!");
-            oiipcraResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            rdvtsResponse.setStatus(0);
+            rdvtsResponse.setData(result);
+            rdvtsResponse.setMessage("User Not Found !!!");
+            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         }
-        return oiipcraResponse;
+        return rdvtsResponse;
+    }
+
+
+    @PostMapping("/resetPassword")
+    public RDVTSResponse resetUserPassword(@RequestBody(required = false) Map<String, String> param) {
+        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        UserPasswordMasterDto uerPasswordMasterDto= new UserPasswordMasterDto();
+        UserDto userDto = userService.getUserBymobile(Long.parseLong(param.get("mobile")));
+
+        UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(userDto.getId());
+
+        if (!userDto.toString().isEmpty()) {
+            if (userDto.getOtp()==Integer.parseInt(param.get("otp"))){
+
+
+            if (encoder.matches(param.get("password"), userPasswordMasterDto.getPassword())) {
+                rdvtsResponse.setStatus(0);
+                rdvtsResponse.setData(result);
+                rdvtsResponse.setMessage("New password shouldn't be same as old password !!!");
+                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
+            } else {
+                UserPasswordMasterEntity updatedPassword=userService.updateUserPass(userDto.getId(), uerPasswordMasterDto);
+                if (!updatedPassword.toString().isEmpty()) {
+                    rdvtsResponse.setData(result);
+                    rdvtsResponse.setStatus(1);
+                    rdvtsResponse.setMessage("Password reset successfully !!!");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                } else {
+                    rdvtsResponse.setStatus(0);
+                    rdvtsResponse.setData(result);
+                    rdvtsResponse.setMessage("Something went wrong while resetting password !!!");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                }
+            }
+
+            }
+            else {
+                rdvtsResponse.setStatus(0);
+                rdvtsResponse.setData(result);
+                rdvtsResponse.setMessage("Otp is not Correct Please Check Agin !!!");
+                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+            }
+
+
+        } else {
+            rdvtsResponse.setStatus(0);
+            rdvtsResponse.setData(result);
+            rdvtsResponse.setMessage("User Not Found !!!");
+            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        }
+        return rdvtsResponse;
     }
 
 

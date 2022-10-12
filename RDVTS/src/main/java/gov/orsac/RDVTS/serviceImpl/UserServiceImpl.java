@@ -258,34 +258,34 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserEntity findUserByMobileAndEmail(Long mobile, String email) {
-        return userRepository.findUserByMobileAndEmail(mobile,email);
+    public UserEntity findUserByMobileAndEmail(String email) {
+        return userRepository.findUserByMobileAndEmail(email);
     }
 
 
     @Override
     public Integer sendOtpToUser(UserDto user) {
-        MailDto mailDto = new MailDto();
+      //  MailDto mailDto = new MailDto();
         Random random = new Random();
         int otp = random.nextInt(999999);
-        System.out.println(user.getId());
+
 
         int id=user.getId();
-
+       // System.out.println(id);
         UserEntity existingUser = userRepository.findById(id);
         existingUser.setOtp(otp);
         userRepository.save(existingUser);
 
 
-        mailDto.setRecipient(user.getEmail());
-        mailDto.setSubject("OTP for new password.");
-        String message = readMailBody("FORGOT_PWD_OTP_TEMPLATE.txt", user, otp);
-        mailDto.setMessage(message);
-        if (emailService.sendHtmlMail(mailDto)){
-            return otp;
-        }
-        return 0;
-        ///return otp;
+//        mailDto.setRecipient(user.getEmail());
+//        mailDto.setSubject("OTP for new password.");
+//        String message = readMailBody("FORGOT_PWD_OTP_TEMPLATE.txt", user, otp);
+//        mailDto.setMessage(message);
+//        if (emailService.sendHtmlMail(mailDto)){
+//            return otp;
+//        }
+//        return 0;
+        return otp;
     }
 
     public String readMailBody(String filename, UserDto user, Integer otp){
@@ -299,6 +299,19 @@ public class UserServiceImpl implements UserService {
             System.out.println(io.getMessage());
         }
         return mailBody;
+    }
+
+
+    public UserDto getUserByUserId(Integer userId){
+
+            return userRepositoryImpl.getUserByUserId(userId);
+
+    }
+
+    public UserDto getUserBymobile(Long mobile){
+
+        return userRepositoryImpl.getUserBymobile(mobile);
+
     }
 
 

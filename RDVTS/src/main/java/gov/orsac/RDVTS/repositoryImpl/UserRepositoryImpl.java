@@ -68,4 +68,29 @@ public class UserRepositoryImpl {
 
 
 
+
+    public UserDto getUserByUserId(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT id, first_name, middle_name, last_name, email, mobile_1, mobile_2, designation_id, user_level_id, role_id, is_active, created_by, created_on, updated_by, updated_on, contractor_id, otp\n" +
+                "\t FROM rdvts_oltp.user_m where id=:userId; ";
+
+        sqlParam.addValue("userId", userId);
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserDto.class));
+    }
+
+    public UserDto getUserBymobile(Long mobile) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT id, first_name, middle_name, last_name, email, mobile_1, mobile_2, designation_id, user_level_id, role_id, is_active, created_by, created_on, updated_by, updated_on, contractor_id, otp\n" +
+                "\t FROM rdvts_oltp.user_m where mobile_1=:mobile; ";
+
+        sqlParam.addValue("mobile", mobile);
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserDto.class));
+    }
+
+
+
+
+
 }
