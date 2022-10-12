@@ -1,10 +1,7 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.MenuEntity;
-import gov.orsac.RDVTS.entities.RoleEntity;
-import gov.orsac.RDVTS.entities.RoleMenuMaster;
-import gov.orsac.RDVTS.entities.UserLevelMaster;
+import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.*;
 import gov.orsac.RDVTS.repositoryImpl.MasterRepositoryImpl;
@@ -12,6 +9,7 @@ import gov.orsac.RDVTS.service.MasterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +33,9 @@ public class MasterServiceImpl implements MasterService {
     @Autowired
     private RoleMenuRepository roleMenuRepository;
 
+    @Autowired
+    private VTUVendorMasterRepository vtuVendorRepository;
+
     @Override
     public RoleEntity saveRole(RoleEntity role) {
         return roleRepo.save(role);
@@ -45,6 +46,7 @@ public class MasterServiceImpl implements MasterService {
         List<RoleDto> role = masterRepository.getRoleByRoleId(id);
         return role;
     }
+
     @Override
     public RoleEntity updateRole(int id, RoleEntity role) {
         RoleEntity existingRole = roleRepo.findRoleById(id);
@@ -71,17 +73,20 @@ public class MasterServiceImpl implements MasterService {
         List<RoleDto> role = masterRepository.getRoleByUserLevelId(userLevelId);
         return role;
     }
+
     @Override
     public MenuEntity saveMenu(MenuEntity menuMaster) {
         menuMaster.setActive(true);
 
         return menuRepository.save(menuMaster);
     }
+
     @Override
     public List<MenuDto> getMenu(Integer userId, Integer id) {
         List<MenuDto> menu = masterRepository.getMenu(userId, id);
         return menu;
     }
+
     @Override
     public MenuEntity updateMenu(int id, MenuEntity menuMaster) {
         MenuEntity existingMenu = menuRepository.findMenuById(id);
@@ -104,6 +109,7 @@ public class MasterServiceImpl implements MasterService {
         BeanUtils.copyProperties(userLevel, userLevel1);
         return userLevelRepository.save(userLevel1);
     }
+
     @Override
     public UserLevelMaster updateUserLevel(int id, UserLevelMaster userLevel) {
         UserLevelMaster existingUserLevel = userLevelRepository.findUserLevelById(id);
@@ -116,11 +122,13 @@ public class MasterServiceImpl implements MasterService {
         existingUserLevel.setUpdatedBy(userLevel.getUpdatedBy());
         return userLevelRepository.save(existingUserLevel);
     }
+
     @Override
     public List<UserLevelMaster> getUserLevelById(int id) {
 
         return masterRepository.getUserLevelById(id);
     }
+
     @Override
     public List<UserLevelMaster> getAllUserLevel(int userId) {
         Integer userLevelIdByUserId = masterRepositoryImpl.getUserLevelIdByUserId(userId);
@@ -146,6 +154,7 @@ public class MasterServiceImpl implements MasterService {
         List<RoleMenuInfo> roleMenu = masterRepositoryImpl.getRoleMenu(userId, roleId);
         return roleMenu;
     }
+
     @Override
     public List<RoleMenuInfo> getMenuByRoleId(Integer userId, Integer roleId) {
         List<RoleMenuInfo> roleMenu = masterRepositoryImpl.getMenuByRoleId(userId, roleId);
@@ -182,6 +191,7 @@ public class MasterServiceImpl implements MasterService {
         }
         return finalList;
     }
+
     @Override
     public List<ParentMenuInfo> getMenuHierarchyWithoutRoleId(Integer userId) {
         List<ParentMenuInfo> parentMenuList = masterRepositoryImpl.getAllParentMenuWithoutRoleId();
@@ -209,10 +219,12 @@ public class MasterServiceImpl implements MasterService {
         List<RoleMenuInfo> roleMenu = masterRepositoryImpl.getRoleMenus(userId, roleId);
         return roleMenu;
     }
+
     @Override
     public Boolean deactivateMenu(int roleId, int menuId, boolean isActive) {
         return masterRepositoryImpl.deactivateMenu(roleId, menuId, isActive);
     }
+
     @Override
     public RoleMenuMaster updateRoleMenu(RoleMenuDto roleMenuDto, Integer menuId) {
         RoleMenuMaster roleMenu = new RoleMenuMaster();
@@ -224,7 +236,34 @@ public class MasterServiceImpl implements MasterService {
         return roleMenuRepository.save(roleMenu);
     }
 
+    @Override
+    public VTUVendorMasterEntity saveVTUVendor(VTUVendorMasterDto vendorMasterDto) {
+        vendorMasterDto.setIsActive(true);
+        vendorMasterDto.setCreatedBy(1);
+        vendorMasterDto.setUpdatedBy(1);
+        VTUVendorMasterEntity vendorMasterEntity = new VTUVendorMasterEntity();
+        BeanUtils.copyProperties(vendorMasterDto, vendorMasterEntity);
+        return vtuVendorRepository.save(vendorMasterEntity);
+    }
 
+    @Override
+    public VTUVendorMasterDto getVTUVendorById(Integer id) {
+        return masterRepositoryImpl.getVTUVendorById(id);
+    }
 
+    @Override
+    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto) {
+        return masterRepositoryImpl.getVTUVendorList(vtuVendorMasterDto);
+    }
 
+    @Override
+    public VTUVendorMasterEntity updateVTUVendor(Integer id, VTUVendorMasterDto vtuVendorMasterDto){
+        VTUVendorMasterEntity existingId = vtuVendorRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("id", "id", id));
+        existingId.setVtuVendorName(vtuVendorMasterDto.getVtuVendorName());
+        existingId.setVtuVendorAddress(vtuVendorMasterDto.getVtuVendorAddress());
+        existingId.setVtuVendorPhone(vtuVendorMasterDto.getVtuVendorPhone());
+        existingId.setCustomerCareNumber(vtuVendorMasterDto.getCustomerCareNumber());
+        VTUVendorMasterEntity save = vtuVendorRepository.save(existingId);
+        return save;
+    }
 }

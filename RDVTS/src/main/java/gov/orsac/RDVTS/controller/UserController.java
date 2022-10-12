@@ -231,6 +231,26 @@ public class UserController {
         return response;
     }
 
+    @PostMapping("/getUserAreaMappingByUserId")
+    public RDVTSResponse getUserAreaMappingByUserId(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+           List<UserAreaMappingDto> userArea = userService.getUserAreaMappingByUserId(userId);
+            result.put("userArea", userArea);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("UserArea By userId");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
     @PostMapping("/getUserMappingAreaDetails")
     public RDVTSResponse getUserMappingAreaDetails(@RequestBody UserAreaMappingDto userAreaMapping) {
         RDVTSResponse response = new RDVTSResponse();
