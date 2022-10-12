@@ -64,9 +64,6 @@ public class ContractorRepositoryImpl {
             sqlParam.addValue("gContractorId", contractorDto.getGContractorId());
         }
 
-
-
-
         queryString += " ORDER BY " + order.getProperty() + " " + order.getDirection().name();
         resultCount = count(queryString, sqlParam);
         queryString += " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
