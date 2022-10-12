@@ -52,6 +52,9 @@ public class UserEntity {
     @Column(name="contractor_id")
     public Integer contractorId ;
 
+    @Column(name="otp")
+    public Integer otp ;
+
     @Column(name = "is_active")
     private boolean isactive;
 

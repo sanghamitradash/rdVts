@@ -9,10 +9,28 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAreaMappingDto {
+public class UserListDto {
+
 
     private Integer id;
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private String email;
+    private Long mobile1;
+    private Long mobile2;
+    private Integer designationId;
+    public Integer userLevelId;
+    public Integer roleId ;
+    public Integer contractorId ;
+    private boolean isactive;
+    private Integer createdBy;
+    private Date createdOn;
+    private Integer updatedBy;
+    private Date updatedOn;
     private Integer userId;
+
+
     private Integer stateId;
     private Integer gStateId;
 
@@ -32,15 +50,11 @@ public class UserAreaMappingDto {
     private String gStateName;
 
 
-    private Date createdOn;
-    private Date updatedOn;
-    private int createdBy;
-    private int updatedBy;
     private Boolean isActive;
+
 
     private int page;
     private int size;
     private String sortOrder;
     private String sortBy;
-
 }

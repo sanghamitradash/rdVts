@@ -104,7 +104,7 @@ public class MasterRepositoryImpl implements MasterRepository {
 
     public Integer getUserLevelIdByUserId(int userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT user_level_id FROM user_m WHERE id =:userId";
+        String qry = "SELECT user_level_id FROM rdvts_oltp.user_m WHERE id =:userId";
         sqlParam.addValue("userId", userId);
         return namedJdbc.queryForObject(qry, sqlParam, Integer.class);
     }

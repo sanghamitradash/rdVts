@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ContractorEntity;
@@ -10,7 +11,10 @@ import gov.orsac.RDVTS.dto.UserInfoDto;
 import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
+import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.UserService;
+import io.swagger.models.auth.In;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,10 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
@@ -33,9 +34,16 @@ public class UserController {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
+    @Autowired
+    private MasterService masterService;
+
     @PostMapping("/createUser")
     public RDVTSResponse saveUser(@RequestParam(name = "userData") String data, @RequestParam(name = "password") String password,
-                                  @RequestParam(name = "userArea") UserAreaMappingEntity userArea) {
+                                  @RequestParam(name = "userArea")  String userAreaData) {
+
+//        List<UserAreaMappingEntity> userArea;
+
+//        List<UserAreaMappingEntity> userArea;
 
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         if (data != null && !data.isEmpty()) {
@@ -44,7 +52,11 @@ public class UserController {
                 ObjectMapper mapper = new ObjectMapper();
                 UserDto userDto = mapper.readValue(data, UserDto.class);
 
+                List<UserAreaMappingRequestDTO> userArea = mapper.readValue(userAreaData, mapper.getTypeFactory().constructCollectionType(List.class, UserAreaMappingRequestDTO.class));
+
                 UserPasswordMasterDto userPasswordMasterDto = new UserPasswordMasterDto();
+
+
 
                 if (userDto.getMobile1() != null || userDto.getEmail() != null
                         || userDto.getDesignationId() != null || userDto.getRoleId() != null
@@ -64,81 +76,101 @@ public class UserController {
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter proper mobile number 2!!",
                                 result);
-                    } else if(userDto.getUserLevelId()==1
-                            && userArea.getGStateId()==null
-                    && userArea.getGStateId().toString().isEmpty()){
+                    }else if(userArea == null || userArea.size()<=0){
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter user area!!",
+                                result);
+                    }
+                    else if (userDto.getUserLevelId() == 1
+                            && userArea.get(0).getGStateId() == null
+                            && userArea.get(0).getGStateId().toString().isEmpty()) {
                         //For State
 
                         rdvtsResponse = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter user state!!",
                                 result);
-                    }else if(userDto.getUserLevelId()==2
-                            && userArea.getGStateId()==null
-                            && userArea.getGStateId().toString().isEmpty()
-                            && userArea.getGDistId()==null
-                            && userArea.getGDistId().toString().isEmpty()){
+                    } else if (userDto.getUserLevelId() == 2
+                            && userArea.get(0).getGStateId() == null
+                            && userArea.get(0).getGStateId().toString().isEmpty()
+                            && userArea.get(0).getGDistId() == null
+                            && userArea.get(0).getGDistId().toString().isEmpty()) {
                         //District
 
                         rdvtsResponse = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter user district!!",
                                 result);
-                    }else if(userDto.getUserLevelId()==3
-                            && userArea.getGStateId()==null
-                            && userArea.getGStateId().toString().isEmpty()
-                            && userArea.getGDistId()==null
-                            && userArea.getGDistId().toString().isEmpty()
-                            && userArea.getGBlockId()==null
-                            && userArea.getGBlockId().toString().isEmpty()){
+                    } else if (userDto.getUserLevelId() == 3
+                            && userArea.get(0).getGStateId() == null
+                            && userArea.get(0).getGStateId().toString().isEmpty()
+                            && userArea.get(0).getGDistId() == null
+                            && userArea.get(0).getGDistId().toString().isEmpty()
+                            && userArea.get(0).getGBlockId() == null
+                            && userArea.get(0).getGBlockId().toString().isEmpty()) {
 
                         //Block
                         rdvtsResponse = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter user block!!",
                                 result);
+                    }else {
+                        //Validate Email
+
+                        UserEntity savedUser = userService.saveUser(userDto);
+
+                        userDto.setCreatedBy(savedUser.getId());
+                        userDto.setUpdatedBy(savedUser.getId());
+                        userService.updateUser(savedUser.getId(),userDto);
+
+                        //Save Password
+                        userPasswordMasterDto.setUserId(savedUser.getId());
+                        userPasswordMasterDto.setCreatedBy(savedUser.getId());
+                        userPasswordMasterDto.setUpdatedBy(savedUser.getId());
+                        userPasswordMasterDto.setIsActive(true);
+                        userPasswordMasterDto.setPassword(password);
+                        UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
+
+                        //Save User Area Mapping
+                        List<UserAreaMappingEntity> userAreaMappingEntities = new ArrayList<>();
+                        for(UserAreaMappingRequestDTO item : userArea){
+                            UserAreaMappingEntity umEt= new UserAreaMappingEntity();
+                            umEt.setStateId(item.getStateId());
+                            umEt.setGStateId(item.getGStateId());
+                            umEt.setGDistId(item.getGDistId());
+                            umEt.setDistId(item.getDistId());
+                            umEt.setGBlockId(item.getGBlockId());
+                            umEt.setBlockId(item.getBlockId());
+                            umEt.setUserId(savedUser.getId());
+                            umEt.setCreatedBy(savedUser.getId());
+                            umEt.setUpdatedBy(savedUser.getId());
+                            umEt.setIsActive(true);
+                            userAreaMappingEntities.add(umEt);
+                        }
+
+                        List<UserAreaMappingEntity> areaObj = userService.createUserAreaMapping(userAreaMappingEntities);
+
+                        //Return Data
+                        UserDto returnDTO = new UserDto();
+                        returnDTO.setUserId(savedUser.getId());
+                        returnDTO.setDesignationId(savedUser.getDesignationId());
+                        returnDTO.setRoleId(savedUser.getRoleId());
+                        returnDTO.setUserLevelId(savedUser.getUserLevelId());
+                        returnDTO.setFirstName(savedUser.getFirstName());
+                        returnDTO.setMiddleName(savedUser.getMiddleName());
+                        returnDTO.setLastName(savedUser.getLastName());
+                        returnDTO.setMobile1(savedUser.getMobile1());
+                        returnDTO.setMobile2(savedUser.getMobile2());
+                        returnDTO.setEmail(savedUser.getEmail());
+                        result.put("user", returnDTO);
+                        result.put("UserAreaMapping",areaObj);
+
+                        rdvtsResponse.setData(result);
+                        rdvtsResponse.setStatus(1);
+                        rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+                        rdvtsResponse.setMessage("User Created Successfully!!");
                     }
-
-                    //Validate Email
-
-
-                    UserEntity savedUser = userService.saveUser(userDto);
-
-                    //Save Password
-                    userPasswordMasterDto.setUserId(savedUser.getId());
-                    userPasswordMasterDto.setCreatedBy(savedUser.getId());
-                    userPasswordMasterDto.setUpdatedBy(savedUser.getId());
-                    userPasswordMasterDto.setIsActive(true);
-                    userPasswordMasterDto.setPassword(password);
-                    UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
-
-                    //Save User Area Mapping
-                    userArea.setUserId(savedUser.getId());
-                    userArea.setCreatedBy(savedUser.getId());
-                    userArea.setUpdatedBy(savedUser.getId());
-                    userArea.setIsActive(true);
-                    List<UserAreaMappingEntity> userAreaMappingEntities = new ArrayList<>();
-                    userAreaMappingEntities.add(userArea);
-                    List<UserAreaMappingEntity> areaObj = userService.createUserAreaMapping(userAreaMappingEntities);
-
-                    //Return Data
-                    UserDto returnDTO = new UserDto();
-                    returnDTO.setUserId(savedUser.getId());
-                    returnDTO.setDesignationId(savedUser.getDesignationId());
-                    returnDTO.setRoleId(savedUser.getRoleId());
-                    returnDTO.setUserLevelId(savedUser.getUserLevelId());
-                    returnDTO.setFirstName(savedUser.getFirstName());
-                    returnDTO.setMiddleName(savedUser.getMiddleName());
-                    returnDTO.setLastName(savedUser.getLastName());
-                    returnDTO.setMobile1(savedUser.getMobile1());
-                    returnDTO.setMobile2(savedUser.getMobile2());
-                    returnDTO.setEmail(savedUser.getEmail());
-                    result.put("user", returnDTO);
-
-                    rdvtsResponse.setData(result);
-                    rdvtsResponse.setStatus(1);
-                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
-                    rdvtsResponse.setMessage("User Created Successfully!!");
 
                 } else {
                     rdvtsResponse = new RDVTSResponse(0,
@@ -147,6 +179,7 @@ public class UserController {
                             result);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 rdvtsResponse = new RDVTSResponse(0,
                         new ResponseEntity<>(HttpStatus.OK),
                         e.getMessage(),
@@ -162,14 +195,58 @@ public class UserController {
         return rdvtsResponse;
     }
 
+    //get Function
+
+    @PostMapping("/getUserById")
+    public RDVTSResponse getContractById(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UserDto userDto = userService.getUserByUserId(userId);
+            List<UserAreaMappingDto> userArea = userService.getUserAreaMappingByUserId(userId);
+            result.put("user", userDto);
+            result.put("userArea", userArea);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("User By Id");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getUserByMobile")
+    public RDVTSResponse getUserByMobile(@RequestParam(name = "mobile", required = false) Long mobile) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UserDto userDto = userService.getUserBymobile(mobile);
+            result.put("user", userDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("User By Id");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
     @PostMapping("/getUserList")
-    public RDVTSResponse getUserList(@RequestBody UserDto userDto) {
+    public RDVTSResponse getUserList(@RequestBody UserListDto userListDto) {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<UserDto> userList = userService.getUserList(userDto);
-            result.put("userList", userList);
+            Page<UserListDto> userListDtos = userService.getUserList(userListDto);
+            result.put("userList", userListDtos);
             rdvtsResponse.setData(result);
             rdvtsResponse.setStatus(1);
             rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -215,7 +292,7 @@ public class UserController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<UserAreaMappingEntity>userArea = userService.createUserAreaMapping(userAreaMapping);
+            List<UserAreaMappingEntity> userArea = userService.createUserAreaMapping(userAreaMapping);
             result.put("userArea", userArea);
             response.setData(result);
             response.setStatus(1);
@@ -284,6 +361,7 @@ public class UserController {
         return response;
     }
 
+
     @PostMapping("/updateUserAreaMappingByUserId")
     public RDVTSResponse updateUserAreaMappingByUserId(@RequestParam Integer userId, @RequestParam(name = "data") String data) {
         RDVTSResponse response = new RDVTSResponse();
@@ -332,10 +410,15 @@ public class UserController {
                         userDto.setRoleId(dbUser.getRoleId());
                         userDto.setDesignationId(dbUser.getDesignationId());
                         userDto.setContractorId(dbUser.getContractorId());
+                        userDto.setUserId(dbUser.getId());
 
-                        // result.put("user", userDto);
-                        // result.put("menuList", parentMenuList);
-                        rdvtsResponse.setData(userDto);
+                        List<ParentMenuInfo> roleMenuType = masterService.getMenuHierarchyByRole(dbUser.getId(), dbUser.getRoleId());
+                        List<RoleDto> roleByRoleId = masterService.getRoleByRoleId(dbUser.getRoleId());
+
+                        result.put("user", userDto);
+                        result.put("menu", roleMenuType);
+                        result.put("access", roleByRoleId.get(0));
+                        rdvtsResponse.setData(result);
                         rdvtsResponse.setStatus(1);
                         rdvtsResponse.setMessage("Login successfully!!");
                         rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -459,6 +542,105 @@ public class UserController {
         }
         return response;
     }
+
+
+    @PostMapping("/sendOtpToUser")
+    public RDVTSResponse sendOtpToUser(@RequestParam String email) {
+        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        UserEntity user = userService.findUserByMobileAndEmail(email);
+        if (!user.toString().isEmpty()) {
+
+
+            UserDto userDto=new UserDto();
+            BeanUtils.copyProperties(user,userDto);
+           /* userDto.setId(user.getId());
+            userDto.setFirstName(user.getFirstName());*/
+            Integer otp = userService.sendOtpToUser(userDto);
+            if (otp > 0) {
+                result.put("otp", otp);
+                rdvtsResponse.setData(result);
+                rdvtsResponse.setStatus(1);
+                rdvtsResponse.setMessage("OTP sent successfully !!!");
+                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                rdvtsResponse.setStatus(0);
+                rdvtsResponse.setData(result);
+                rdvtsResponse.setMessage("Something went wrong while sending otp !!!");
+                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            }
+            return rdvtsResponse;
+        } else {
+            rdvtsResponse.setStatus(0);
+            rdvtsResponse.setData(result);
+            rdvtsResponse.setMessage("User Not Found !!!");
+            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        }
+        return rdvtsResponse;
+    }
+
+
+    @PostMapping("/resetPassword")
+    public RDVTSResponse resetUserPassword(@RequestBody(required = false) Map<String, String> param) {
+        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        UserPasswordMasterDto uerPasswordMasterDto= new UserPasswordMasterDto();
+       // UserDto userDto = userService.getUserBymobile(Long.parseLong(param.get("mobile")));
+        UserEntity userEntity = userService.findUserByMobileAndEmail(param.get("email"));
+
+        UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(userEntity.getId());
+
+        if (!userEntity.toString().isEmpty()) {
+            if (userEntity.getOtp()==Integer.parseInt(param.get("otp"))){
+            if (encoder.matches(param.get("password"), userPasswordMasterDto.getPassword())) {
+                rdvtsResponse.setStatus(0);
+                rdvtsResponse.setData(result);
+                rdvtsResponse.setMessage("New password shouldn't be same as old password !!!");
+                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
+            } else {
+               uerPasswordMasterDto.setPassword(param.get("password"));
+                UserPasswordMasterEntity updatedPassword=userService.updateUserPass(userEntity.getId(), uerPasswordMasterDto);
+                if (!updatedPassword.toString().isEmpty()) {
+                    rdvtsResponse.setData(result);
+                    rdvtsResponse.setStatus(1);
+                    rdvtsResponse.setMessage("Password reset successfully !!!");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                } else {
+                    rdvtsResponse.setStatus(0);
+                    rdvtsResponse.setData(result);
+                    rdvtsResponse.setMessage("Something went wrong while resetting password !!!");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                }
+            }
+
+            }
+            else {
+                rdvtsResponse.setStatus(0);
+                rdvtsResponse.setData(result);
+                rdvtsResponse.setMessage("Otp is not Correct Please Check Agin !!!");
+                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+            }
+
+
+        } else {
+            rdvtsResponse.setStatus(0);
+            rdvtsResponse.setData(result);
+            rdvtsResponse.setMessage("User Not Found !!!");
+            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        }
+        return rdvtsResponse;
+    }
+
+
+
+
+
+
+
+
+
+
 
 }
 
