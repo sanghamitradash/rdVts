@@ -169,13 +169,18 @@ public class UserServiceImpl implements UserService {
             throw new RecordNotFoundException("existingArea", "userId", userId);
         }
         existingArea.setUserId(userAreaMapping.getUserId());
-        existingArea.setGDistId(userAreaMapping.getGDistId());
+        existingArea.setGDistId(userAreaMapping.getGdistId());
         existingArea.setDistId(userAreaMapping.getDistId());
-        existingArea.setGBlockId(userAreaMapping.getGBlockId());
+        existingArea.setGBlockId(userAreaMapping.getGblockId());
         existingArea.setBlockId(userAreaMapping.getBlockId());
         UserAreaMappingEntity save = userAreaMappingRepository.save(existingArea);
         return save;
 
+    }
+
+    @Override
+    public List<UserAreaMappingDto> getUserAreaMappingByUserId(Integer userId) {
+        return userRepositoryImpl.getUserAreaMappingByUserId(userId);
     }
 
     @Override
@@ -214,14 +219,14 @@ public class UserServiceImpl implements UserService {
             sqlParam.addValue("distId", userAreaMapping.getDistId());
         }
 
-        if(userAreaMapping.getGDistId() != null && userAreaMapping.getGDistId() > 0){
+        if(userAreaMapping.getGdistId() != null && userAreaMapping.getGdistId() > 0){
             queryString += " AND um.g_dist_id=:gDistId ";
-            sqlParam.addValue("gDistId", userAreaMapping.getGDistId());
+            sqlParam.addValue("gDistId", userAreaMapping.getGdistId());
         }
 
-        if(userAreaMapping.getGBlockId() != null && userAreaMapping.getGBlockId() > 0){
+        if(userAreaMapping.getGblockId() != null && userAreaMapping.getGblockId() > 0){
             queryString += " AND um.g_block_id=:gBlockId ";
-            sqlParam.addValue("gBlockId", userAreaMapping.getGBlockId());
+            sqlParam.addValue("gBlockId", userAreaMapping.getGblockId());
         }
 
         if(userAreaMapping.getDivisionId() != null && userAreaMapping.getDivisionId() > 0){

@@ -1,8 +1,6 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
-import gov.orsac.RDVTS.dto.ContractorDto;
-import gov.orsac.RDVTS.dto.UserDto;
-import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -67,5 +65,23 @@ public class UserRepositoryImpl {
     }
 
 
+    public List<UserAreaMappingDto> getUserAreaMappingByUserId(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT am.id,am.userId,am.g_dist_id as gdistId,geoDist.g_district_name as gDistName,am.dist_id,dist.district_name as distName,  " +
+                "am.g_block_id as gblockId,geoblock.g_block_name as gBlockName,am.block_id,block.block_name as blockName,am.division_id,am.g_state_id as gStateId,geo.state_name as gStateName,  " +
+                "am.state_id as stateId  " +
+                "from rdvts_oltp.user_area_mapping as am " +
+                "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id = am.g_dist_id  " +
+                "left join rdvts_oltp.district_boundary as dist on dist.dist_id = am.dist_id  " +
+                "left join rdvts_oltp.geo_block_m as geoblock on geoblock.id = am.g_block_id  " +
+                "left join rdvts_oltp.block_boundary as block on block.block_id = am.block_id  " +
+                "left join rdvts_oltp.geo_state_m as geo on geo.id =am.g_state_id ";
 
-}
+        if(userId >0){
+            qry +=" WHERE am.userId=:userId ";
+            sqlParam.addValue("userId",userId);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UserAreaMappingDto.class));
+    }
+    }
+
