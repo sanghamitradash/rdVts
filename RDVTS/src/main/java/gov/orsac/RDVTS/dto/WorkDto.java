@@ -32,8 +32,7 @@ public class WorkDto {
 
     private Date updatedOn;
 
-    private int page;
-    private int size;
-    private String sortOrder;
-    private String sortBy;
+    private Integer offSet;
+    private Integer limit;
+    private Integer draw;
 }

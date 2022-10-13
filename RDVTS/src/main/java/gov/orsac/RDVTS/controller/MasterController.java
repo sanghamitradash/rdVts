@@ -247,22 +247,30 @@ public class MasterController {
     }
 
     @PostMapping("/getDesignationList")
-    public RDVTSResponse getDesignationList(@RequestBody DesignationDto designationDto) {
-        RDVTSResponse response = new RDVTSResponse();
+    public RDVTSListResponse getDesignationList(@RequestParam (name = "id") Integer id,
+                                                @RequestParam(name = "start") Integer start,
+                                                @RequestParam(name = "length") Integer length,
+                                                @RequestParam(name = "draw") Integer draw ) {
+        DesignationDto designationDto = new DesignationDto();
+        designationDto.setId(id);
+        designationDto.setOffSet(start);
+        designationDto.setLimit(length);
+        RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             Page<DesignationDto> designationDtoPage = designationService.getDesignationList(designationDto);
             List<DesignationDto> designationDtoList = designationDtoPage.getContent();
             result.put("DesignationDtoList", designationDtoList);
-            result.put("currentPage", designationDtoPage.getNumber());
-            result.put("totalItems", designationDtoPage.getTotalElements());
-            result.put("totalPages", designationDtoPage.getTotalPages());
             response.setData(result);
-            response.setStatus(1);
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("List of Designation.");
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(designationDtoPage.getTotalElements());
+            response.setRecordsTotal(designationDtoPage.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
         } catch (Exception e) {
-            response = new RDVTSResponse(0,
+            response = new RDVTSListResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
                     result);

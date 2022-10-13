@@ -38,20 +38,18 @@ public class DesignationRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
         Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
-        if (designationDto != null) {
-            pageable = PageRequest.of(designationDto.getPage(), designationDto.getSize(), Sort.Direction.fromString(designationDto.getSortOrder()), designationDto.getSortBy());
+            pageable = PageRequest.of(designationDto.getOffSet(), designationDto.getLimit(), Sort.Direction.fromString("desc"),"id");
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
-        }
         int resultCount = 0;
         String qry = "select * from rdvts_oltp.designation_m where is_active = true";
 
         resultCount = count(qry, sqlParam);
-        if (designationDto.getSize() > 0) {
-            qry += " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
+        if (designationDto.getLimit() > 0) {
+            qry += " LIMIT " + designationDto.getLimit() + " OFFSET " + designationDto.getOffSet();
         }
 
-        List<DesignationDto> designationDtos = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DesignationDto.class));
-        return new PageImpl<>(designationDtos, pageable, resultCount);
+        List<DesignationDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DesignationDto.class));
+        return new PageImpl<>(list, pageable, resultCount);
     }
 
 
