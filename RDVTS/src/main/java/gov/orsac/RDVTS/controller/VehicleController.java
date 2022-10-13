@@ -192,7 +192,7 @@ public class VehicleController {
         return response;
     }
     @PostMapping("/assignVehicleWork")
-    public RDVTSResponse assignVehicleWork(@RequestBody List<VehicleWorkMappingEntity> vehicleWorkMapping) {
+    public RDVTSResponse assignVehicleWork(@RequestBody List<VehicleWorkMappingDto> vehicleWorkMapping) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
