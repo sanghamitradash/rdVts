@@ -1,24 +1,29 @@
 package gov.orsac.RDVTS.controller;
 
 
-import gov.orsac.RDVTS.dto.RDVTSResponse;
-import gov.orsac.RDVTS.dto.UserAreaMappingDto;
-import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.service.DeviceService;
 import gov.orsac.RDVTS.service.LocationService;
+import gov.orsac.RDVTS.service.VehicleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/v1/location")
 public class LocationController {
-
+    @Autowired
     private LocationService locationService;
+
+    @Autowired
+    private VehicleService vehicleService;
+
+    @Autowired
+    private DeviceService deviceService;
 
     @PostMapping("/getLatestLocationRecord")
     public RDVTSResponse getLatestLocationRecord(@RequestParam(name = "deviceId", required = false) Integer deviceId,
@@ -27,29 +32,42 @@ public class LocationController {
         Map<String, Object> result = new HashMap<>();
         try {
             if (deviceId !=null){
-
-
-
-
+                List<DeviceDto> device = deviceService.getDeviceById(deviceId);
+                if(device.size()>0){
+                    if (device.get(0).getImeiNo1()!=null || device.get(0).getImeiNo2()!=null){
+                        VtuLocationDto vtuLocationDto = locationService.getLatestRecordByImeiNumber(device);
+                        response.setData(vtuLocationDto);
+                        response.setStatus(1);
+                        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                        response.setMessage("Device Latest Location");
+                    }
+                }
+                else {
+                    response = new RDVTSResponse(0,
+                            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                            "Device Id or Vechile Id is empty",
+                            result);
+                }
 
             } else if (vehicleId !=null) {
 
+                VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
 
 
-            } else if (deviceId !=null && vehicleId!=null) {
 
+            } else {
 
+                response = new RDVTSResponse(0,
+                        new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                        "Device Id or Vechile Id is empty",
+                        result);
 
             }
-            else {
 
 
 
-            }
 
 
-
-            response.setMessage("User By Id");
         } catch (Exception ex) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
