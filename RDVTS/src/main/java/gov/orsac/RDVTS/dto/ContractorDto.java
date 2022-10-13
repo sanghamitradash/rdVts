@@ -26,8 +26,4 @@ public class ContractorDto {
 
     private Integer userId;
 
-    private int page;
-    private int size;
-    private String sortOrder;
-    private String sortBy;
 }

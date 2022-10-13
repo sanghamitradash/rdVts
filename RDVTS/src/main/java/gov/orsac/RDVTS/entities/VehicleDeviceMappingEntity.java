@@ -14,49 +14,28 @@ import java.util.Date;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "user_m")
-public class UserEntity {
+@Table(name = "vehicle_device_mapping")
+public class VehicleDeviceMappingEntity {
+
     @Id
-    @SequenceGenerator(name = "user_menu_sequence", sequenceName = "user_m_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_menu_sequence")
+    @SequenceGenerator(name = "vehicle_device_mapping_sequence", sequenceName = "vehicle_device_mapping_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vehicle_device_mapping_sequence")
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "first_name")
-    private String firstName;
+    @Column(name = "vehicle_id")
+    private Integer vehicleId;
 
-    @Column(name = "middle_name")
-    private String middleName;
+    @Column(name = "device_id")
+    private Integer deviceId;
 
-    @Column(name = "last_name")
-    private String lastName;
+    @Column(name = "installation_date")
+    private Date installationDate;
 
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "mobile_1")
-    private Long mobile1;
-
-    @Column(name = "mobile_2")
-    private Long mobile2;
-
-    @Column(name = "designation_id")
-    private Integer designationId;
-
-    @Column(name = "user_level_id")
-    public Integer userLevelId;
-
-    @Column(name = "role_id")
-    public Integer roleId ;
-
-    @Column(name="contractor_id")
-    public Integer contractorId ;
-
-    @Column(name="otp")
-    public Integer otp ;
-
+    @Column(name = "installed_by")
+    private Integer installedBy;
     @Column(name = "is_active")
-    private boolean isactive;
+    private boolean active;
 
     @Column(name = "created_by")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -75,5 +54,4 @@ public class UserEntity {
     @Column(name = "updated_on")
     @UpdateTimestamp
     private Date updatedOn;
-
 }

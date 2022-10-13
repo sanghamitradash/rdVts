@@ -3,7 +3,9 @@ package gov.orsac.RDVTS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.ContractorDto;
+import gov.orsac.RDVTS.dto.ContractorFilterDto;
 import gov.orsac.RDVTS.dto.RDVTSResponse;
+import gov.orsac.RDVTS.dto.VehicleFilterDto;
 import gov.orsac.RDVTS.entities.ContractorEntity;
 import gov.orsac.RDVTS.service.ContractorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,19 +73,19 @@ public class ContractorController {
     //Contractor View ById, UserId, GContractId
 
     @PostMapping("/getContractorDetails")
-    public RDVTSResponse getContractorDetails(@RequestBody ContractorDto contractorDto) {
+    public RDVTSResponse getContractorDetails(@RequestParam(name = "userId",required = false) Integer userId,
+                                              @RequestParam(name = "gContractorId",required = false)Integer gContractorId) {
+        ContractorFilterDto contractor = new ContractorFilterDto();
+        contractor.setUserId(userId);
+        contractor.setGContractorId(gContractorId);
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-
-            Page<ContractorDto> contractorListPage = contractorService.getContractorDetails(contractorDto);
-            List<ContractorDto> contractorList = contractorListPage.getContent();
+            List<ContractorDto> contractorList = contractorService.getContractorDetails(contractor);
             if (!contractorList.isEmpty() && contractorList.size() > 0) {
                 result.put("contractorList", contractorList);
-                result.put("currentPage", contractorListPage.getNumber());
-                result.put("totalItems", contractorListPage.getTotalElements());
-                result.put("totalPages", contractorListPage.getTotalPages());
                 response.setData(result);
+                response.setMessage("Contractor List");
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             } else {
