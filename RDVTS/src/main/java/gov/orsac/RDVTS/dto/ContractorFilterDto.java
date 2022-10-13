@@ -12,5 +12,9 @@ public class ContractorFilterDto {
     Integer id;
     Integer userId;
     Integer gContractorId;
+
+    private Integer offSet;
+    private Integer limit;
+    private Integer draw;
 }
 

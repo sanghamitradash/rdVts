@@ -271,4 +271,14 @@ public class MasterServiceImpl implements MasterService {
     public List<DistrictBoundaryDto> getAllDistrict() {
         return masterRepositoryImpl.getAllDistrict();
     }
+
+    @Override
+    public List<BlockBoundaryDto> getBlockByDistId(Integer distId) {
+        return masterRepositoryImpl.getBlockByDistId(distId);
+    }
+
+    @Override
+    public List<DivisionDto> getDivisionBlockByDistId(Integer distId) {
+        return masterRepositoryImpl.getDivisionBlockByDistId(distId);
+    }
 }

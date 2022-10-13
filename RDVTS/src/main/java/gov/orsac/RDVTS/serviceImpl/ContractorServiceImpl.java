@@ -53,7 +53,7 @@ public class ContractorServiceImpl implements ContractorService {
     }
 
     @Override
-    public List<ContractorDto> getContractorDetails(ContractorFilterDto contractor) {
+    public Page<ContractorDto> getContractorDetails(ContractorFilterDto contractor) {
         return contractorRepository.getContractorDetails(contractor);
     }
 }
