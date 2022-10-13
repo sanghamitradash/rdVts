@@ -148,6 +148,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>rdvts</finalName>
 	</build>
 
 </project>
