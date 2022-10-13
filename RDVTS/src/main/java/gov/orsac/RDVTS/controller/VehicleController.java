@@ -1,10 +1,7 @@
 package gov.orsac.RDVTS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.orsac.RDVTS.dto.RDVTSResponse;
-import gov.orsac.RDVTS.dto.VehicleFilterDto;
-import gov.orsac.RDVTS.dto.VehicleMasterDto;
-import gov.orsac.RDVTS.dto.VehicleTypeDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.RoleEntity;
 import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
@@ -101,29 +98,39 @@ public class VehicleController {
         return response;
     }
     @PostMapping("/getVehicleList")
-    public RDVTSResponse getVehicleList(@RequestParam(name = "vehicleTypeId") Integer vehicleTypeId,
-                                        @RequestParam(name = "deviceId") Integer deviceId,
-                                        @RequestParam(name = "work_id") Integer workId) {
+    public RDVTSListResponse getVehicleList(@RequestParam(name = "vehicleTypeId") Integer vehicleTypeId,
+                                            @RequestParam(name = "deviceId") Integer deviceId,
+                                            @RequestParam(name = "workId") Integer workId,
+                                            @RequestParam(name = "start") Integer start,
+                                            @RequestParam(name = "length") Integer length,
+                                            @RequestParam(name = "draw") Integer draw) {
 
         VehicleFilterDto vehicle = new VehicleFilterDto();
         vehicle.setVehicleTypeId(vehicleTypeId);
         vehicle.setDeviceId(deviceId);
         vehicle.setWorkId(workId);
-        RDVTSResponse response = new RDVTSResponse();
+        vehicle.setLimit(length);
+        vehicle.setOffSet(start);
+        RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<VehicleMasterDto> vehicleList=vehicleService.getVehicleList(vehicle);
+            Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
+            List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
             result.put("vehicleList", vehicleList);
+            /*result.put("recordsFiltered", vehicleListPage.getTotalElements());
+            result.put("recordsTotal", vehicleListPage.getTotalElements());
+            result.put("draw", draw);*/
             response.setData(result);
             response.setMessage("Vehicle List");
             response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(vehicleListPage.getTotalElements());
+            response.setRecordsTotal(vehicleListPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
-            response = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(),
-                    result);
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),e.getMessage(),result);
         }
+
         return response;
     }
     @PostMapping("/getVehicleTypeList")
