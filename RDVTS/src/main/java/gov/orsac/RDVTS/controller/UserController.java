@@ -246,7 +246,12 @@ public class UserController {
         Map<String, Object> result = new HashMap<>();
         try {
             Page<UserListDto> userListDtos = userService.getUserList(userListDto);
-            result.put("userList", userListDtos);
+            List<UserListDto> userList = userListDtos.getContent();
+            result.put("userList", userList);
+            result.put("currentPage", userListDtos.getNumber());
+            result.put("totalItems", userListDtos.getTotalElements());
+            result.put("totalPages", userListDtos.getTotalPages());
+            //result.put("userList", userListDtos);
             rdvtsResponse.setData(result);
             rdvtsResponse.setStatus(1);
             rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

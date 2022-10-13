@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,9 +21,13 @@ public class UserListDto {
     private Long mobile1;
     private Long mobile2;
     private Integer designationId;
+    private String designation;
     public Integer userLevelId;
+    public String userLevel;
     public Integer roleId ;
+    public String role ;
     public Integer contractorId ;
+    public Integer contractor ;
     private boolean isactive;
     private Integer createdBy;
     private Date createdOn;
@@ -31,23 +36,30 @@ public class UserListDto {
     private Integer userId;
 
 
-    private Integer stateId;
-    private Integer gStateId;
 
 
-    private Integer gdistId;
-    private Integer distId;
-    private Integer gblockId;
-    private Integer blockId;
-    private Integer divisionId;
 
 
-    private String gDistName;
-    private String distName;
-    private String gBlockName;
-    private String blockName;
-    private String divisionName;
-    private String gStateName;
+//
+//    private Integer stateId;
+//    private Integer gStateId;
+//
+//
+//    private Integer gdistId;
+//    private Integer distId;
+//    private Integer gblockId;
+//    private Integer blockId;
+//    private Integer divisionId;
+//
+//
+//    private String gDistName;
+//    private String distName;
+//    private String gBlockName;
+//    private String blockName;
+//    private String divisionName;
+//    private String gStateName;
+
+    List<UserAreaMappingDto> userAreaMappingDtos;
 
 
     private Boolean isActive;

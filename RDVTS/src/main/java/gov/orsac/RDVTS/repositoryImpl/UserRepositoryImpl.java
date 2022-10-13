@@ -45,39 +45,44 @@ public class UserRepositoryImpl {
         Integer  resultCount = 0;
         String queryString = " ";
 
-        queryString += "SELECT am.id,am.user_id,am.g_dist_id as gdistId,geoDist.g_district_name as gDistName,am.dist_id,dist.district_name as distName,\n" +
-                "am.g_block_id as gblockId,geoblock.g_block_name as gBlockName,am.block_id,block.block_name as blockName,am.division_id,am.g_state_id as gStateId,geo.state_name as gStateName,  \n" +
-                "am.state_id as stateId \n" +
-                "from rdvts_oltp.user_area_mapping as am \n" +
-                "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id = am.g_dist_id \n" +
-                "left join rdvts_oltp.district_boundary as dist on dist.dist_id = am.dist_id  \n" +
-                "left join rdvts_oltp.geo_block_m as geoblock on geoblock.id = am.g_block_id  \n" +
-                "left join rdvts_oltp.block_boundary as block on block.block_id = am.block_id  \n" +
-                "left join rdvts_oltp.geo_state_m as geo on geo.id =am.g_state_id where is_active=true  ";
+        queryString += "SELECT um.*,uam.*,dm.name as designation_name,ulm.name as level_name,rm.name as role,cm.name as contractor_name\n" +
+                "\tFROM rdvts_oltp.user_m as um \n" +
+                "\tleft join rdvts_oltp.user_area_mapping as uam on um.id=uam.user_id\n" +
+                "\tleft join rdvts_oltp.designation_m as dm on dm.id=um.designation_id\n" +
+                "\tleft join rdvts_oltp.user_level_m as ulm on ulm.id=um.user_level_id\n" +
+                "\tleft join rdvts_oltp.role_m as rm on rm.id=um.role_id\n" +
+                "\tleft join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id " +
+                " where um.is_active=true  ";
 
-        if(userListDto.getId()>0){
-            queryString+="AND am.id=:id ";
+        if( userListDto.getId()!=null && userListDto.getId() > 0 ){
+            queryString+=" AND um.id=:id ";
             sqlParam.addValue("id",userListDto.getId());
         }
         if(userListDto.getDesignationId()!= null && userListDto.getDesignationId() > 0){
-            queryString+="AND   getDesignationId=:getDesignationId ";
+            queryString+=" AND   um.designation_id=:getDesignationId ";
             sqlParam.addValue("getDesignationId",userListDto.getDesignationId());
 
 
         }
 
         if(userListDto.getRoleId()!= null && userListDto.getRoleId() > 0){
-            queryString+="AND roleId=:roleId ";
+            queryString+=" AND um.role_id=:roleId ";
             sqlParam.addValue("roleId",userListDto.getRoleId());
         }
 
+        if(userListDto.getContractorId()!= null && userListDto.getContractorId() > 0){
+            queryString+=" AND um.contractor_id=:contractorId ";
+            sqlParam.addValue("contractorId",userListDto.getContractorId());
+        }
+
+
 
         if(userListDto.getEmail() != null && !userListDto.getEmail().isEmpty()){
-            queryString+="AND email=:email ";
+            queryString+=" AND um.email=:email ";
             sqlParam.addValue("email",userListDto.getEmail());
         }
         if(userListDto.getMobile1() != null && userListDto.getMobile1()>0){
-            queryString+="AND mobile1=:mobile1 ";
+            queryString+=" AND um.mobile1=:mobile1 ";
             sqlParam.addValue("mobile1",userListDto.getMobile1());
         }
 
