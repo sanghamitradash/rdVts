@@ -90,7 +90,7 @@ public class DeviceController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            DeviceDto device = deviceService.getDeviceById(deviceId);
+            List<DeviceDto> device = deviceService.getDeviceById(deviceId);
             List<DeviceAreaMappingDto> deviceArea = deviceService.getDeviceAreaByDeviceId(deviceId);
             result.put("device", device);
             result.put("deviceArea",deviceArea);
@@ -108,39 +108,57 @@ public class DeviceController {
     }
 
     @PostMapping("/getDeviceList")
-    public RDVTSResponse getDeviceList(@RequestBody DeviceListDto deviceDto) {
-        RDVTSResponse response = new RDVTSResponse();
+    public RDVTSListResponse getDeviceList(@RequestParam(name = "imeiNo1",required = false) Long imeiNo1,
+                                       @RequestParam(name = "simIccId1",required = false) Long simIccId1,
+                                       @RequestParam(name = "mobileNumber1",required = false)Long mobileNumber1,
+                                       @RequestParam(name = "imeiNo2",required = false) Long imeiNo2,
+                                       @RequestParam(name = "simIccId2",required = false)Long simIccId2,
+                                       @RequestParam(name = "mobileNumber2",required = false) Long mobileNumber2,
+                                       @RequestParam(name = "vtuVendorId",required = false) Integer vtuVendorId,
+                                       @RequestParam(name = "distId",required = false) Integer distId,
+                                       @RequestParam(name = "blockId",required = false) Integer blockId,
+                                       @RequestParam(name = "gDistId",required = false) Integer gDistId,
+                                       @RequestParam(name = "gBlockId", required = false) Integer gBlockId,
+                                       @RequestParam(name = "divisionId",required = false) Integer divisionId,
+                                       @RequestParam(name = "userId",required = false)Integer userId,
+                                       @RequestParam(name = "start") Integer start,
+                                       @RequestParam(name = "length") Integer length,
+                                       @RequestParam(name = "draw") Integer draw) {
+        DeviceListDto device = new DeviceListDto();
+        device.setImeiNo1(imeiNo1);
+        device.setSimIccId1(simIccId1);
+        device.setMobileNumber1(mobileNumber1);
+        device.setImeiNo2(imeiNo2);
+        device.setSimIccId2(simIccId2);
+        device.setMobileNumber2(mobileNumber2);
+        device.setVtuVendorId(vtuVendorId);
+        device.setDistId(distId);
+        device.setBlockId(blockId);
+        device.setGDistId(gDistId);
+        device.setGBlockId(gBlockId);
+        device.setDivisionId(divisionId);
+        device.setUserId(userId);
+        device.setLimit(length);
+        device.setOffSet(start);
+        RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
 
-            Page<DeviceDto> deviceListPage = deviceService.getDeviceList(deviceDto);
-            List<DeviceDto> deviceList = deviceListPage.getContent();
-            if (!deviceList.isEmpty() && deviceList.size() > 0) {
-                result.put("deviceList", deviceList);
-                result.put("currentPage", deviceListPage.getNumber());
-                result.put("totalItems", deviceListPage.getTotalElements());
-                result.put("totalPages", deviceListPage.getTotalPages());
-                response.setData(result);
-                response.setStatus(1);
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            } else {
-                result.put("deviceList", deviceList);
-                response.setData(result);
-                response.setStatus(1);
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-                response.setMessage("Record not found.");
-            }
+            Page<DeviceInfo> deviceListPage = deviceService.getDeviceList(device);
+            List<DeviceInfo> deviceList = deviceListPage.getContent();
+            //result.put("deviceList", deviceList);
+            response.setData(deviceList);
+            response.setMessage("Vehicle List");
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(deviceListPage.getTotalElements());
+            response.setRecordsTotal(deviceListPage.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
-            e.printStackTrace();
-            response = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(),
-                    result);
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
         return response;
     }
-
-
 
     //Update Device By ID
 
@@ -169,5 +187,27 @@ public class DeviceController {
         }
         return response;
     }
+
+    @PostMapping("/getUnassignedDeviceData")
+    public RDVTSResponse getUnassignedDeviceData(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+           List<DeviceDto>device = deviceService.getUnassignedDeviceData(userId);
+            result.put("device",device);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Get Unassigned Device Data");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 
 }

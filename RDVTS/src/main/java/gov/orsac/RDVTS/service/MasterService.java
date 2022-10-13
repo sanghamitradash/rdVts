@@ -43,4 +43,5 @@ public interface MasterService {
 
     VTUVendorMasterEntity updateVTUVendor(Integer id, VTUVendorMasterDto vtuVendorMasterDto);
 
+    List<DistrictBoundaryDto> getAllDistrict();
 }

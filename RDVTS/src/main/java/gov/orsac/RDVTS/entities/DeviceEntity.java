@@ -67,5 +67,8 @@ public class DeviceEntity {
     @UpdateTimestamp
     private Date updatedOn;
 
+    @Column(name = "device_no")
+    private Integer deviceNo;
+
 
 }

@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.service;
 
 import gov.orsac.RDVTS.dto.DeviceAreaMappingDto;
 import gov.orsac.RDVTS.dto.DeviceDto;
+import gov.orsac.RDVTS.dto.DeviceInfo;
 import gov.orsac.RDVTS.dto.DeviceListDto;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
@@ -15,7 +16,7 @@ public interface DeviceService {
 
     List<DeviceMappingEntity> saveDeviceMapping(List<DeviceMappingEntity> deviceMapping, Integer id);
 
-    DeviceDto getDeviceById(Integer deviceId);
+    List<DeviceDto> getDeviceById(Integer deviceId);
 
     List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId);
 
@@ -23,7 +24,8 @@ public interface DeviceService {
 
     Boolean deactivateDeviceArea(Integer id);
 
-    Page<DeviceDto> getDeviceList(DeviceListDto deviceDto);
+    Page<DeviceInfo> getDeviceList(DeviceListDto deviceDto);
 
 
+    List<DeviceDto> getUnassignedDeviceData(Integer userId);
 }

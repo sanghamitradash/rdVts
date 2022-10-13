@@ -22,6 +22,7 @@ public class DeviceDto {
     private Long mobileNumber2;
     private String modelName;
     private Integer vtuVendorId;
+    private Integer deviceNo;
 
     private Boolean isActive = true;
     private Integer createdBy;
