@@ -17,7 +17,7 @@ public interface VehicleService {
     List<VehicleWorkMappingEntity> assignVehicleWork(List<VehicleWorkMappingEntity> vehicleWorkMapping);
     VehicleMasterDto getVehicleByVId(Integer vehicleId);
     VehicleMaster updateVehicle(int id, VehicleMaster vehicle);
-    List<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle);
+    Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle);
     List<VehicleTypeDto> getVehicleTypeList();
     Page<VehicleMasterDto> getVehicleList1(VehicleMasterDto vehicle);
 }
