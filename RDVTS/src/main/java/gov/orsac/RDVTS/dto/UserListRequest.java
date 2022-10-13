@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.util.Date;
 
 @Data
@@ -12,34 +13,38 @@ import java.util.Date;
 @AllArgsConstructor
 public class UserListRequest {
 
-    private int id;
+    private Integer id;
     private String firstName;
     private String middleName;
     private String lastName;
     private String email;
     private Long mobile1;
     private Long mobile2;
+    private Integer designationId;
     private String designation;
+
+    public Integer userLevelId;
     public String userLevel;
+
+    public Integer roleId ;
     public String role ;
-    public int contractor ;
+
+    public Integer contractorId ;
+    public String contractor ;
     private boolean isactive;
 
-    private int searchId;
-    private int deptId;
 
-    private int userLevelId;
-    private int distId;
-    private int blockId;
-    private int gpId;
-    private int villageId;
-    private int divisionId;
-    private int subDivisionId;
-    private int sectionId;
-    private int page;
-    private int size;
-    private String sortOrder;
-    private String sortBy;
+
+    private Integer distId;
+    private Integer blockId;
+    private Integer gpId;
+    private Integer villageId;
+    private Integer divisionId;
+    private Integer subDivisionId;
+    private Integer sectionId;
+    private Integer offSet;
+    private Integer limit;
+    private Integer draw;
 
 
 }

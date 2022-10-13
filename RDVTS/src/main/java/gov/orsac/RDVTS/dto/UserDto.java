@@ -30,11 +30,11 @@ public class UserDto {
     private Integer userId;
     public Integer otp ;
 
-
-
-    private int page;
-    private int size;
-    private String sortOrder;
-    private String sortBy;
+//
+//
+//    private int page;
+//    private int size;
+//    private String sortOrder;
+//    private String sortBy;
 
 }
