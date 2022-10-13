@@ -43,8 +43,7 @@ public class DesignationServiceImpl implements DesignationService {
 
     @Override
     public Page<DesignationDto> getDesignationList(DesignationDto designationDto) {
-        Page<DesignationDto> designationDtoPage = designationRepositoryImpl.getDesignationList(designationDto);
-        return designationDtoPage;
+        return  designationRepositoryImpl.getDesignationList(designationDto);
     }
 
     @Override
