@@ -39,8 +39,12 @@ public interface MasterService {
 
     VTUVendorMasterDto getVTUVendorById(Integer id);
 
-    Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto);
+    Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto);
 
     VTUVendorMasterEntity updateVTUVendor(Integer id, VTUVendorMasterDto vtuVendorMasterDto);
 
+    List<DistrictBoundaryDto> getAllDistrict();
+    List<BlockBoundaryDto> getBlockByDistId(Integer distId);
+
+    List<DivisionDto> getDivisionBlockByDistId(Integer distId);
 }

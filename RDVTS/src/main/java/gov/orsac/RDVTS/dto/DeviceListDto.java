@@ -28,8 +28,9 @@ public class DeviceListDto {
     private Integer gDistId;
     private Integer gBlockId;
 
-    private int page;
-    private int size;
-    private String sortOrder;
-    private String sortBy;
+    private Integer userId;
+
+    private Integer offSet;
+    private Integer limit;
+    private Integer draw;
 }

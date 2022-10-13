@@ -276,12 +276,13 @@ public class MasterController {
         Map<String, Object> result = new HashMap<>();
         try {
             //List<Integer> userIdList = new ArrayList<>();
-            List<DesignationEntity> designationList = designationService.getAllDesignationByUserLevelId(userLevelId);
+            List<DesignationDto> designationList = designationService.getAllDesignationByUserLevelId(userLevelId);
             if (!designationList.isEmpty() && designationList.size() > 0) {
                 result.put("designationList", designationList);
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                response.setMessage("Designation By UserLevelId");
             } else {
                 result.put("designationList", designationList);
                 response.setData(result);
@@ -691,7 +692,7 @@ public class MasterController {
                     } else {
                         response = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
-                                "Please enter proper phone number or customer care!!",
+                                "Please enter proper phone number or customer care number!!",
                                 result);
                     }
                 } else {
@@ -741,33 +742,42 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorList")
-    public RDVTSResponse getVTUVendorList(@RequestBody VTUVendorMasterDto vtuVendorMasterDto){
-        RDVTSResponse response = new RDVTSResponse();
+    public RDVTSListResponse getVTUVendorList(@RequestParam(name = "vendorId", required = false) Integer vendorId,
+                                          @RequestParam(name = "deviceId", required = false) Integer deviceId,
+                                          @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
+                                          @RequestParam(name = "start") Integer start,
+                                          @RequestParam(name = "length") Integer length,
+                                          @RequestParam(name = "draw") Integer draw){
+
+        VTUVendorFilterDto vtuVendorFilterDto = new VTUVendorFilterDto();
+        vtuVendorFilterDto.setVendorId(vendorId);
+        vtuVendorFilterDto.setDeviceId(deviceId);
+        vtuVendorFilterDto.setVtuVendorName(vtuVendorName);
+        vtuVendorFilterDto.setLimit(length);
+        vtuVendorFilterDto.setOffSet(start);
+        RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try{
-            Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorMasterDto);
+            Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto);
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
-            if (!vendorList.isEmpty() && vendorList.size() > 0) {
+//            if (!vendorList.isEmpty() && vendorList.size() > 0) {
                 result.put("vendorList", vendorList);
-                result.put("currentPage", vendorListPage.getNumber());
-                result.put("totalItems", vendorListPage.getTotalElements());
-                result.put("totalPages", vendorListPage.getTotalPages());
                 response.setData(result);
+                response.setMessage("Vendor List");
                 response.setStatus(1);
+                response.setDraw(draw);
+                response.setRecordsFiltered(vendorListPage.getTotalElements());
+                response.setRecordsTotal(vendorListPage.getTotalElements());
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            } else {
-                result.put("vendorList", vendorList);
-                response.setData(result);
-                response.setStatus(1);
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-                response.setMessage("Record not found.");
-            }
+//            } else {
+//                result.put("vendorList", vendorList);
+//                response.setData(result);
+//                response.setStatus(1);
+//                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//                response.setMessage("Record not found.");
+//            }
         } catch (Exception e) {
-            e.printStackTrace();
-            response = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(),
-                    result);
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),e.getMessage(),result);
         }
         return response;
     }
@@ -793,6 +803,73 @@ public class MasterController {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
+    @PostMapping("/getAllDistrict")
+    public RDVTSResponse getAllDistrict() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<DistrictBoundaryDto> districtList = masterService.getAllDistrict();
+            if (!districtList.isEmpty() && districtList.size() > 0) {
+                result.put("districtList", districtList);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                result.put("districtList", districtList);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getBlockByDistId")
+    public RDVTSResponse getBlockByDistId(@RequestParam(name = "distId", required = false) Integer distId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<BlockBoundaryDto> block = masterService.getBlockByDistId(distId);
+            result.put("block", block);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Block By Dist");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getDivisionBlockByDistId")
+    public RDVTSResponse getDivisionBlockByDistId(@RequestParam(name = "distId", required = false) Integer distId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<DivisionDto> div = masterService.getDivisionBlockByDistId(distId);
+            result.put("div", div);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Division Block By Dist");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
                     result);
         }
         return response;

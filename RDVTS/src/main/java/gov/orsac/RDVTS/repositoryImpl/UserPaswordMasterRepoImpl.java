@@ -2,11 +2,11 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -14,6 +14,9 @@ public class UserPaswordMasterRepoImpl {
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
+
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
     public UserPasswordMasterDto getPasswordByUserId(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
@@ -46,6 +49,17 @@ public class UserPaswordMasterRepoImpl {
                 return 1;
             }
             return 0;
+        }
+
+        public Boolean savePassword(int existingUserId, UserPasswordMasterDto userPasswordMasterDto){
+            MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+            String password = encoder.encode(userPasswordMasterDto.getPassword());
+            String qry = "UPDATE rdvts_oltp.user_password_m " +
+                    " SET password=:password WHERE user_id =:existingUserId";
+            sqlParam.addValue("existingUserId", existingUserId);
+            sqlParam.addValue("password", password);
+            int update = namedJdbc.update(qry, sqlParam);
+            return update>0;
         }
 }
 

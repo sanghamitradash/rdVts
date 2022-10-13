@@ -248,12 +248,12 @@ public class MasterServiceImpl implements MasterService {
 
     @Override
     public VTUVendorMasterDto getVTUVendorById(Integer id) {
-        return masterRepositoryImpl.getVTUVendorById(id);
+        return masterRepository.getVTUVendorById(id);
     }
 
     @Override
-    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto) {
-        return masterRepositoryImpl.getVTUVendorList(vtuVendorMasterDto);
+    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto) {
+        return masterRepository.getVTUVendorList(vtuVendorFilterDto);
     }
 
     @Override
@@ -265,5 +265,20 @@ public class MasterServiceImpl implements MasterService {
         existingId.setCustomerCareNumber(vtuVendorMasterDto.getCustomerCareNumber());
         VTUVendorMasterEntity save = vtuVendorRepository.save(existingId);
         return save;
+    }
+
+    @Override
+    public List<DistrictBoundaryDto> getAllDistrict() {
+        return masterRepositoryImpl.getAllDistrict();
+    }
+
+    @Override
+    public List<BlockBoundaryDto> getBlockByDistId(Integer distId) {
+        return masterRepositoryImpl.getBlockByDistId(distId);
+    }
+
+    @Override
+    public List<DivisionDto> getDivisionBlockByDistId(Integer distId) {
+        return masterRepositoryImpl.getDivisionBlockByDistId(distId);
     }
 }

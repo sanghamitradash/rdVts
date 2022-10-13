@@ -207,46 +207,73 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
     }
 
-    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto){
-        UserDto userDto = new UserDto();
-        userDto.setId(vtuVendorMasterDto.getUserId());
+    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto){
+//        UserDto userDto = new UserDto();
+//        userDto.setId(vtuVendorMasterDto.getUserId());
 
-
-        PageRequest pageable = PageRequest.of(vtuVendorMasterDto.getPage(), vtuVendorMasterDto.getSize(), Sort.Direction.fromString(vtuVendorMasterDto.getSortOrder()), vtuVendorMasterDto.getSortBy());
-        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        Integer  resultCount = 0;
+        PageRequest pageable = null;
+
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(vtuVendorFilterDto.getOffSet(),vtuVendorFilterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+
+        int resultCount=0;
         String queryString = " ";
+        queryString = "SELECT DISTINCT vtuM.id as vendorId, vtuM.vtu_vendor_name as vtuVendorName , vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, vtuM.is_active, vtuM.created_by,  " +
+                "vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId, dev.model_name as deviceName FROM rdvts_oltp.vtu_vendor_m AS vtuM   " +
+                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id   " +
+                "WHERE vtuM.is_active = true ";
 
-
-        queryString = "SELECT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
-                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId " +
-                "FROM rdvts_oltp.vtu_vendor_m AS vtuM  " +
-                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id " +
-                "WHERE vtuM.is_active = true";
-
-        if(vtuVendorMasterDto.getId() != null && vtuVendorMasterDto.getId() > 0){
-            queryString += " AND vtuM.id=:id ";
-            sqlParam.addValue("id", vtuVendorMasterDto.getId());
+        if(vtuVendorFilterDto.getVendorId() != null && vtuVendorFilterDto.getVendorId() > 0){
+            queryString += " AND vtuM.id=:vendorId ";
+            sqlParam.addValue("vendorId", vtuVendorFilterDto.getVendorId());
         }
 
-        if(vtuVendorMasterDto.getDeviceId() != null && vtuVendorMasterDto.getDeviceId() > 0){
+        if(vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0){
             queryString += " AND dev.id=:deviceId ";
-            sqlParam.addValue("deviceId", vtuVendorMasterDto.getDeviceId());
+            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDeviceId());
         }
 
-        if(vtuVendorMasterDto.getVtuVendorName() != null){
+        if(vtuVendorFilterDto.getVtuVendorName() != null){
             queryString += " AND vtuM.vtu_vendor_name LIKE(:vtuVendorName) ";
-            sqlParam.addValue("vtuVendorName", vtuVendorMasterDto.getVtuVendorName());
+            sqlParam.addValue("vtuVendorName", vtuVendorFilterDto.getVtuVendorName());
         }
 
-        queryString += " ORDER BY " + order.getProperty() + " " + order.getDirection().name();
         resultCount = count(queryString, sqlParam);
-        queryString += " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
+        if (vtuVendorFilterDto.getLimit() > 0){
+            queryString += " LIMIT " +vtuVendorFilterDto.getLimit() + " OFFSET " + vtuVendorFilterDto.getOffSet();
+        }
 
-        List<VTUVendorMasterDto> vendorInfo = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
-        return new PageImpl<>(vendorInfo,pageable,resultCount);
-
+        List<VTUVendorMasterDto> list = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
+        return new PageImpl<>(list, pageable, resultCount);
     }
 
+    public List<DistrictBoundaryDto> getAllDistrict() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry ="SELECT dist.gid, dist.district_name as districtName,dist.district_code as districtCode,dist.state_name as stateName,  " +
+                "dist.state_code as stateCode, " +
+                "dist.dist_id as distId ,dist.state_id as stateId from rdvts_oltp.district_boundary as dist ";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DistrictBoundaryDto.class));
+    }
+
+    public List<BlockBoundaryDto> getBlockByDistId(Integer distId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT block.gid,block.block_name,block.block_code,block.district_name,block.district_code,block.state_name,  " +
+                     "block.state_code,block.dist_id,block.block_id from rdvts_oltp.block_boundary as block  " +
+                     "where block.dist_id =:distId ";
+        sqlParam.addValue("distId", distId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(BlockBoundaryDto.class));
+    }
+
+    public List<DivisionDto> getDivisionBlockByDistId(Integer distId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT div.id, div.division_name as divisionName,div.dist_id as distId,dist.district_name as distName,div.division_id from rdvts_oltp.division_m as div     " +
+                     "left join rdvts_oltp.district_boundary as dist on dist.dist_id = div.dist_id  "+
+                     "where div.dist_id =:distId ";
+        sqlParam.addValue("distId", distId);
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
+
+    }
 }
+
