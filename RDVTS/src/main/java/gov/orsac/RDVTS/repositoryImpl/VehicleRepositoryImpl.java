@@ -1,9 +1,6 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
-import gov.orsac.RDVTS.dto.RoleMenuInfo;
-import gov.orsac.RDVTS.dto.VehicleFilterDto;
-import gov.orsac.RDVTS.dto.VehicleMasterDto;
-import gov.orsac.RDVTS.dto.VehicleTypeDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -54,6 +52,35 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }
         return vehicle;
     }
+    @Override
+    public VehicleDeviceMappingDto getVehicleDeviceMapping(Integer vehicleId) {
+        VehicleDeviceMappingDto vehicleDevice = new VehicleDeviceMappingDto();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry ="SELECT id, vehicle_id, device_id, installation_date, installed_by, is_active, created_by, created_on, updated_by, updated_on " +
+                "FROM rdvts_oltp.vehicle_device_mapping where vehicle_id=:vehicleId ";
+
+        sqlParam.addValue("vehicleId", vehicleId);
+        try {
+            vehicleDevice = namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
+        }
+        catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return vehicleDevice;
+    }
+    @Override
+    public List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer vehicleId) {
+        List<VehicleWorkMappingDto> vehicleWork = new ArrayList<>();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry ="SELECT id, vehicle_id, work_id, start_time, end_time, start_date, end_date, is_active, created_by, created_on, updated_by, updated_on " +
+                "FROM rdvts_oltp.vehicle_work_mapping where vehicle_id=:vehicleId";
+
+        sqlParam.addValue("vehicleId", vehicleId);
+
+        return   namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
+
+
+    }
 
     @Override
     public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
@@ -83,5 +110,15 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry ="SELECT id, name FROM rdvts_oltp.vehicle_type where is_active=true ";
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleTypeDto.class));
+    }
+
+    @Override
+    public List<VehicleMasterDto> getUnAssignedVehicleData(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry ="select id,vehicle_no,model,chassis_no,engine_no from rdvts_oltp.vehicle_m " +
+                "where id NOT IN " +
+                "(select vehicle_id from rdvts_oltp.vehicle_device_mapping)";
+
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
     }
 }

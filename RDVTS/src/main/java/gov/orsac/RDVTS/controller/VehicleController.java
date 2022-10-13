@@ -6,9 +6,11 @@ import gov.orsac.RDVTS.entities.RoleEntity;
 import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.entities.VehicleWorkMappingEntity;
+import gov.orsac.RDVTS.repository.VehicleDeviceMappingRepository;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.VehicleService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,10 @@ import java.util.Map;
 public class VehicleController {
     @Autowired
     private VehicleService vehicleService;
+    @Autowired
+    private VehicleRepository vehicleRepository;
+    @Autowired
+    private VehicleDeviceMappingRepository vehicleDeviceMappingRepository;
     @PostMapping("/addVehicle")
     public RDVTSResponse saveVehicle(@RequestBody VehicleMaster vehicle) {
         RDVTSResponse response = new RDVTSResponse();
@@ -61,7 +67,11 @@ public class VehicleController {
 
         try {
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
+            VehicleDeviceMappingDto device=vehicleService.getVehicleDeviceMapping(vehicleId);
+            List<VehicleWorkMappingDto> work=vehicleService.getVehicleWorkMapping(vehicleId);
             result.put("vehicle", vehicle);
+            result.put("device",device);
+            result.put("work",work);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Vehicle By Id");
@@ -117,9 +127,6 @@ public class VehicleController {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
             result.put("vehicleList", vehicleList);
-            /*result.put("recordsFiltered", vehicleListPage.getTotalElements());
-            result.put("recordsTotal", vehicleListPage.getTotalElements());
-            result.put("draw", draw);*/
             response.setData(result);
             response.setMessage("Vehicle List");
             response.setStatus(1);
@@ -154,25 +161,36 @@ public class VehicleController {
     }
 
     @PostMapping("/assignVehicleDevice")
-    public RDVTSResponse assignVehicleDevice(@RequestBody VehicleDeviceMappingEntity vehicleDeviceMapping) {
+    public RDVTSResponse assignVehicleDevice(@RequestBody VehicleDeviceMappingDto vehicleDeviceMappingDto) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-/*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
-                    && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
-                VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
-                result.put("saveVehicleMapping", saveVehicleMapping);
-                response.setData(result);
-                response.setStatus(1);
-                response.setMessage("Assign Vehicle Device Created Successfully");
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-           /* }
-            else {
+            VehicleDeviceMappingEntity vehiclePresent= vehicleDeviceMappingRepository.findByVehicleId(vehicleDeviceMappingDto.getVehicleId());
+            if(vehiclePresent==null) {
+                VehicleDeviceMappingEntity devicePresent= vehicleDeviceMappingRepository.findByDeviceId(vehicleDeviceMappingDto.getDeviceId());
+                if(devicePresent==null) {
+                    VehicleDeviceMappingEntity vehicle = new VehicleDeviceMappingEntity();
+                    BeanUtils.copyProperties(vehicleDeviceMappingDto, vehicle);
+                    VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle);
+                    result.put("saveVehicleMapping", saveVehicleMapping);
+                    response.setData(result);
+                    response.setStatus(1);
+                    response.setMessage("Assign Vehicle Device Created Successfully");
+                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                }
+                else{
+                    response = new RDVTSResponse(0,
+                            new ResponseEntity<>(HttpStatus.OK),
+                            "Device is already assigned to a Vehicle...",
+                            result);
+                }
+            }
+            else{
                 response = new RDVTSResponse(0,
                         new ResponseEntity<>(HttpStatus.OK),
-                        "Vehicle Type,Vehicle No.,Vehicle Chassis No.,Vehicle Engine No.,Vehicle SpeedLiMit mandatory",
+                        "Vehicle is already assigned to a device...",
                         result);
-            }*/
+            }
         } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -182,25 +200,41 @@ public class VehicleController {
         return response;
     }
     @PostMapping("/assignVehicleWork")
-    public RDVTSResponse assignVehicleWork(@RequestBody List<VehicleWorkMappingEntity> vehicleWorkMapping) {
+    public RDVTSResponse assignVehicleWork(@RequestBody List<VehicleWorkMappingDto> vehicleWorkMapping) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-/*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
-                    && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
+
             List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(vehicleWorkMapping);
             result.put("saveVehicleMapping", saveVehicleWorkMapping);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Assign Vehicle Device Created Successfully");
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-           /* }
-            else {
-                response = new RDVTSResponse(0,
-                        new ResponseEntity<>(HttpStatus.OK),
-                        "Vehicle Type,Vehicle No.,Vehicle Chassis No.,Vehicle Engine No.,Vehicle SpeedLiMit mandatory",
-                        result);
-            }*/
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getUnAssignedVehicleData")
+    public RDVTSResponse getUnAssignedVehicleData(Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+
+            List<VehicleMasterDto> vehicleData= vehicleService.getUnAssignedVehicleData(userId);
+            result.put("vehicleData", vehicleData);
+            response.setData(result);
+            response.setStatus(1);
+            response.setMessage("Unassigned Vehicle");
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
         } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -209,6 +243,7 @@ public class VehicleController {
         }
         return response;
     }
+
 
     /*@PostMapping("/getVehicleList")
     public RDVTSResponse getVehicleList(@RequestBody VehicleMasterDto vehicle) {

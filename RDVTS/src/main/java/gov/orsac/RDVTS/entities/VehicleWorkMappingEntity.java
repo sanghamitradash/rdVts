@@ -1,6 +1,8 @@
 package gov.orsac.RDVTS.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +16,7 @@ import java.util.Date;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "vehicle_device_mapping")
+@Table(name = "vehicle_work_mapping")
 public class VehicleWorkMappingEntity {
     @Id
     @SequenceGenerator(name = "vehicle_work_mapping_sequence", sequenceName = "vehicle_work_mapping_id_seq", allocationSize = 1)
@@ -28,17 +30,19 @@ public class VehicleWorkMappingEntity {
     @Column(name = "work_id")
     private Integer workId;
 
-    @Column(name = "start_time")
+    @Column(name="start_time")
+//    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-mm-dd HH:MM:SS")
     private Date startTime;
 
-    @Column(name = "end_ime")
+    @Column(name = "end_time")
+//    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-mm-dd HH:MM:SS")
     private Date endTime;
 
     @Column(name = "startDate")
-    private Date start_date;
+    private Date startDate;
 
     @Column(name = "end_date")
-    private Date end_date;
+    private Date endDate;
 
     @Column(name = "is_active")
     private boolean active;
