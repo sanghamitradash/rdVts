@@ -68,7 +68,7 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public List<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
+       public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
               return vehicleRepository.getVehicleList(vehicle);
        }
 
