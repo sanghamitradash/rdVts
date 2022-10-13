@@ -256,4 +256,24 @@ public class MasterRepositoryImpl implements MasterRepository {
                 "dist.dist_id as distId ,dist.state_id as stateId from rdvts_oltp.district_boundary as dist ";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DistrictBoundaryDto.class));
     }
+
+    public List<BlockBoundaryDto> getBlockByDistId(Integer distId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT block.gid,block.block_name,block.block_code,block.district_name,block.district_code,block.state_name,  " +
+                     "block.state_code,block.dist_id,block.block_id from rdvts_oltp.block_boundary as block  " +
+                     "where block.dist_id =:distId ";
+        sqlParam.addValue("distId", distId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(BlockBoundaryDto.class));
+    }
+
+    public List<DivisionDto> getDivisionBlockByDistId(Integer distId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT div.id, div.division_name as divisionName,div.dist_id as distId,dist.district_name as distName,div.division_id from rdvts_oltp.division_m as div     " +
+                     "left join rdvts_oltp.district_boundary as dist on dist.dist_id = div.dist_id  "+
+                     "where div.dist_id =:distId ";
+        sqlParam.addValue("distId", distId);
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
+
+    }
 }
+
