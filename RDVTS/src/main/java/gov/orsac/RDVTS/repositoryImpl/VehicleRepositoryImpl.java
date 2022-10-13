@@ -90,10 +90,25 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             pageable = PageRequest.of(vehicle.getOffSet(),vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
-        String qry ="SELECT vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
-        "vm.chassis_no,vm.engine_no,vm.is_active as active," +
-        "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on " +
-        "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id";
+        String qry ="SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
+                "vm.chassis_no,vm.engine_no,vm.is_active as active," +
+                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on " +
+                "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
+                "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
+                "left join rdvts_oltp.vehicle_work_mapping as work on vm.id=work.vehicle_id where vm.is_active=true ";
+        if(vehicle.getVehicleTypeId()>0){
+            qry+=" vm.vehicle_type_id=:vehicleTypeId ";
+            sqlParam.addValue("vehicleTypeId",vehicle.getVehicleTypeId());
+        }
+        if(vehicle.getDeviceId()>0){
+            qry+=" device.device_id=:deviceId ";
+            sqlParam.addValue("deviceId",vehicle.getDeviceId());
+        }
+        if(vehicle.getWorkId()>0){
+            qry+=" work.work_id=:workId ";
+            sqlParam.addValue("workId",vehicle.getWorkId());
+        }
+
 
 
         resultCount = count(qry, sqlParam);
