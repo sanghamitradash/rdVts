@@ -39,7 +39,7 @@ public interface MasterService {
 
     VTUVendorMasterDto getVTUVendorById(Integer id);
 
-    Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto);
+    List<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto);
 
     VTUVendorMasterEntity updateVTUVendor(Integer id, VTUVendorMasterDto vtuVendorMasterDto);
 

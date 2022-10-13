@@ -207,18 +207,12 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
     }
 
-    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto){
-        UserDto userDto = new UserDto();
-        userDto.setId(vtuVendorMasterDto.getUserId());
+    public List<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto){
+//        UserDto userDto = new UserDto();
+//        userDto.setId(vtuVendorMasterDto.getUserId());
 
-
-        PageRequest pageable = PageRequest.of(vtuVendorMasterDto.getPage(), vtuVendorMasterDto.getSize(), Sort.Direction.fromString(vtuVendorMasterDto.getSortOrder()), vtuVendorMasterDto.getSortBy());
-        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        Integer  resultCount = 0;
         String queryString = " ";
-
-
         queryString = "SELECT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
                 "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId " +
                 "FROM rdvts_oltp.vtu_vendor_m AS vtuM  " +
@@ -235,18 +229,12 @@ public class MasterRepositoryImpl implements MasterRepository {
             sqlParam.addValue("deviceId", vtuVendorMasterDto.getDeviceId());
         }
 
-        if(vtuVendorMasterDto.getVtuVendorName() != null){
+        if(vtuVendorMasterDto.getVtuVendorName() != null && !vtuVendorMasterDto.getVtuVendorName().isEmpty()){
             queryString += " AND vtuM.vtu_vendor_name LIKE(:vtuVendorName) ";
             sqlParam.addValue("vtuVendorName", vtuVendorMasterDto.getVtuVendorName());
         }
 
-        queryString += " ORDER BY " + order.getProperty() + " " + order.getDirection().name();
-        resultCount = count(queryString, sqlParam);
-        queryString += " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
-
-        List<VTUVendorMasterDto> vendorInfo = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
-        return new PageImpl<>(vendorInfo,pageable,resultCount);
-
+        return namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
     }
 
 }

@@ -248,12 +248,12 @@ public class MasterServiceImpl implements MasterService {
 
     @Override
     public VTUVendorMasterDto getVTUVendorById(Integer id) {
-        return masterRepositoryImpl.getVTUVendorById(id);
+        return masterRepository.getVTUVendorById(id);
     }
 
     @Override
-    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto) {
-        return masterRepositoryImpl.getVTUVendorList(vtuVendorMasterDto);
+    public List<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto) {
+        return masterRepository.getVTUVendorList(vtuVendorMasterDto);
     }
 
     @Override

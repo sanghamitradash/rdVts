@@ -691,7 +691,7 @@ public class MasterController {
                     } else {
                         response = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
-                                "Please enter proper phone number or customer care!!",
+                                "Please enter proper phone number or customer care number!!",
                                 result);
                     }
                 } else {
@@ -741,17 +741,20 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorList")
-    public RDVTSResponse getVTUVendorList(@RequestBody VTUVendorMasterDto vtuVendorMasterDto){
+    public RDVTSResponse getVTUVendorList(@RequestParam(name = "id", required = false) Integer id,
+                                          @RequestParam(name = "deviceId", required = false) Integer deviceId,
+                                          @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName){
+
+        VTUVendorMasterDto vtuVendorMasterDto = new VTUVendorMasterDto();
+        vtuVendorMasterDto.setId(id);
+        vtuVendorMasterDto.setDeviceId(deviceId);
+        vtuVendorMasterDto.setVtuVendorName(vtuVendorName);
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try{
-            Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorMasterDto);
-            List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
+            List<VTUVendorMasterDto> vendorList = masterService.getVTUVendorList(vtuVendorMasterDto);
             if (!vendorList.isEmpty() && vendorList.size() > 0) {
                 result.put("vendorList", vendorList);
-                result.put("currentPage", vendorListPage.getNumber());
-                result.put("totalItems", vendorListPage.getTotalElements());
-                result.put("totalPages", vendorListPage.getTotalPages());
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
