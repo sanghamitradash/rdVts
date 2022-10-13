@@ -661,4 +661,138 @@ public class MasterController {
 //        }
 //        return rdvtsResponse;
 //    }
+
+
+    @PostMapping("/createVTUVendor")
+    public RDVTSResponse saveVTUVendor(@RequestParam String data){
+        RDVTSResponse response = new RDVTSResponse();
+        if (data != null && !data.isEmpty()) {
+            Map<String, Object> result = new HashMap<>();
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                VTUVendorMasterDto vendorMasterDto = mapper.readValue(data, VTUVendorMasterDto.class);
+                VTUVendorMasterEntity vendorMasterEntity = new VTUVendorMasterEntity();
+
+                if (vendorMasterDto.getVtuVendorName() != null && vendorMasterDto.getVtuVendorAddress() != null && vendorMasterDto.getVtuVendorPhone() != null &&
+                        vendorMasterDto.getCustomerCareNumber() != null && !vendorMasterDto.getVtuVendorName().isEmpty() && !vendorMasterDto.getVtuVendorAddress().isEmpty()
+                        && !vendorMasterDto.getVtuVendorPhone().toString().isEmpty() && !vendorMasterDto.getCustomerCareNumber().toString().isEmpty()) {
+
+                    if (vendorMasterDto.getVtuVendorPhone().toString().length() == 10 && vendorMasterDto.getCustomerCareNumber().toString().length() == 10) {
+                       vendorMasterEntity = masterService.saveVTUVendor(vendorMasterDto);
+                        result.put("saveVendor", vendorMasterEntity);
+                        response.setData(result);
+                        response.setStatus(1);
+                        response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+                        response.setMessage("VTUVendor Created Successfully!!");
+                    } else {
+                        response = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter proper phone number or customer care!!",
+                                result);
+                    }
+                } else {
+                    response = new RDVTSResponse(0,
+                            new ResponseEntity<>(HttpStatus.OK),
+                            "Vendor Name, Address, Phone Number, Customer Care Number are mandatory!!",
+                            result);
+                }
+
+            } catch (Exception e) {
+                response = new RDVTSResponse(0,
+                        new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                        e.getMessage(),
+                        result);
+            }
+        } else {
+            Map<String, Object> result = new HashMap<>();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.OK),
+                    "No Data found!!",
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getVTUVendorById")
+    public RDVTSResponse getVTUVendorById(@RequestParam Integer id){
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            VTUVendorMasterDto vtuVendorMasterDto = masterService.getVTUVendorById(id);
+
+            result.put("getVTUVendorById", vtuVendorMasterDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getVTUVendorList")
+    public RDVTSResponse getVTUVendorList(@RequestBody VTUVendorMasterDto vtuVendorMasterDto){
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+            Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorMasterDto);
+            List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
+            if (!vendorList.isEmpty() && vendorList.size() > 0) {
+                result.put("vendorList", vendorList);
+                result.put("currentPage", vendorListPage.getNumber());
+                result.put("totalItems", vendorListPage.getTotalElements());
+                result.put("totalPages", vendorListPage.getTotalPages());
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                result.put("vendorList", vendorList);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                response.setMessage("Record not found.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/updateVTUVendor")
+    public RDVTSResponse updateVTUVendor(@RequestParam Integer id,
+                                        @RequestParam String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            VTUVendorMasterDto vtuVendorMasterDto = mapper.readValue(data, VTUVendorMasterDto.class);
+            VTUVendorMasterEntity updateVendor = masterService.updateVTUVendor(id, vtuVendorMasterDto);
+
+            result.put("updateVTUVendor", updateVendor);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Vendor Updated Successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 }

@@ -4,6 +4,10 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.UserLevelMaster;
 import gov.orsac.RDVTS.repository.MasterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -15,6 +19,15 @@ import java.util.List;
 public class MasterRepositoryImpl implements MasterRepository {
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
+
+    public int count(String qryStr, MapSqlParameterSource sqlParam) {
+        String sqlStr = "SELECT COUNT(*) from (" + qryStr + ") as t";
+        Integer intRes = namedJdbc.queryForObject(sqlStr, sqlParam, Integer.class);
+        if (null != intRes) {
+            return intRes;
+        }
+        return 0;
+    }
 
     @Override
     public List<RoleDto> getRoleByRoleId(Integer roleId) {
@@ -182,6 +195,58 @@ public class MasterRepositoryImpl implements MasterRepository {
         sqlParam.addValue("isActive",isActive);
         Integer update = namedJdbc.update(qry, sqlParam);
         return update > 0;
+    }
+
+    public VTUVendorMasterDto getVTUVendorById(Integer id){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry ="SELECT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
+                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on " +
+                "FROM rdvts_oltp.vtu_vendor_m AS vtuM WHERE id =:id";
+        sqlParam.addValue("id", id);
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
+    }
+
+    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto){
+        UserDto userDto = new UserDto();
+        userDto.setId(vtuVendorMasterDto.getUserId());
+
+
+        PageRequest pageable = PageRequest.of(vtuVendorMasterDto.getPage(), vtuVendorMasterDto.getSize(), Sort.Direction.fromString(vtuVendorMasterDto.getSortOrder()), vtuVendorMasterDto.getSortBy());
+        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        Integer  resultCount = 0;
+        String queryString = " ";
+
+
+        queryString = "SELECT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
+                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId " +
+                "FROM rdvts_oltp.vtu_vendor_m AS vtuM  " +
+                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id " +
+                "WHERE vtuM.is_active = true";
+
+        if(vtuVendorMasterDto.getId() != null && vtuVendorMasterDto.getId() > 0){
+            queryString += " AND vtuM.id=:id ";
+            sqlParam.addValue("id", vtuVendorMasterDto.getId());
+        }
+
+        if(vtuVendorMasterDto.getDeviceId() != null && vtuVendorMasterDto.getDeviceId() > 0){
+            queryString += " AND dev.id=:deviceId ";
+            sqlParam.addValue("deviceId", vtuVendorMasterDto.getDeviceId());
+        }
+
+        if(vtuVendorMasterDto.getVtuVendorName() != null){
+            queryString += " AND vtuM.vtu_vendor_name LIKE(:vtuVendorName) ";
+            sqlParam.addValue("vtuVendorName", vtuVendorMasterDto.getVtuVendorName());
+        }
+
+        queryString += " ORDER BY " + order.getProperty() + " " + order.getDirection().name();
+        resultCount = count(queryString, sqlParam);
+        queryString += " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
+
+        List<VTUVendorMasterDto> vendorInfo = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
+        return new PageImpl<>(vendorInfo,pageable,resultCount);
+
     }
 
 }
