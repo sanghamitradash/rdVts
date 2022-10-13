@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.DesignationDto;
+import gov.orsac.RDVTS.dto.RDVTSListResponse;
 import gov.orsac.RDVTS.dto.RDVTSResponse;
 import gov.orsac.RDVTS.dto.WorkDto;
 import gov.orsac.RDVTS.entities.DesignationEntity;
@@ -20,7 +21,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/v1/master")
+@RequestMapping("/api/v1/work")
 public class WorkController {
     @Autowired
     private WorkService workService;
@@ -48,22 +49,32 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkList")
-    public RDVTSResponse getWorkList(@RequestBody WorkDto workDto) {
-        RDVTSResponse response = new RDVTSResponse();
+    public RDVTSListResponse getWorkList(@RequestParam (name = "id")Integer id,
+                                         @RequestParam (name = "workId")Integer workId,
+                                         @RequestParam(name = "start") Integer start,
+                                         @RequestParam(name = "length") Integer length,
+                                         @RequestParam(name = "draw") Integer draw) {
+        WorkDto workDto = new WorkDto();
+        workDto.setId(id);
+        workDto.setWorkId(workId);
+        workDto.setOffSet(start);
+        workDto.setLimit(length);
+        RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             Page<WorkDto> workDtoPage = workService.getWorkList(workDto);
             List<WorkDto> workDtoList = workDtoPage.getContent();
             result.put("WorkDtoList", workDtoList);
-            result.put("currentPage", workDtoPage.getNumber());
-            result.put("totalItems", workDtoPage.getTotalElements());
-            result.put("totalPages", workDtoPage.getTotalPages());
             response.setData(result);
-            response.setStatus(1);
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("List of Work.");
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(workDtoPage.getTotalElements());
+            response.setRecordsTotal(workDtoPage.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
         } catch (Exception e) {
-            response = new RDVTSResponse(0,
+            response = new RDVTSListResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
                     result);
@@ -76,14 +87,14 @@ public class WorkController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            WorkEntity workEntity = workService.getWorkById(id);
-            if (workEntity != null) {
-                result.put("workEntity", workEntity);
+            List<WorkDto> workDto = workService.getWorkById(id);
+            if (!workDto.isEmpty() && workDto.size() > 0) {
+                result.put("workDto", workDto);
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             } else {
-                result.put("workList", workEntity);
+                result.put("workList", workDto);
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));

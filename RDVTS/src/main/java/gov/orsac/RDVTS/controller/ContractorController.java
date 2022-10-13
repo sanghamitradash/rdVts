@@ -2,8 +2,7 @@ package gov.orsac.RDVTS.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.orsac.RDVTS.dto.ContractorDto;
-import gov.orsac.RDVTS.dto.RDVTSResponse;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ContractorEntity;
 import gov.orsac.RDVTS.service.ContractorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,34 +70,30 @@ public class ContractorController {
     //Contractor View ById, UserId, GContractId
 
     @PostMapping("/getContractorDetails")
-    public RDVTSResponse getContractorDetails(@RequestBody ContractorDto contractorDto) {
-        RDVTSResponse response = new RDVTSResponse();
+    public RDVTSListResponse getContractorDetails(@RequestParam(name = "userId",required = false) Integer userId,
+                                              @RequestParam(name = "gContractorId",required = false)Integer gContractorId,
+                                              @RequestParam(name = "start") Integer start,
+                                              @RequestParam(name = "length") Integer length,
+                                              @RequestParam(name = "draw") Integer draw) {
+        ContractorFilterDto contractor = new ContractorFilterDto();
+        contractor.setUserId(userId);
+        contractor.setGContractorId(gContractorId);
+        contractor.setLimit(length);
+        contractor.setOffSet(start);
+        RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-
-            Page<ContractorDto> contractorListPage = contractorService.getContractorDetails(contractorDto);
+            Page<ContractorDto> contractorListPage = contractorService.getContractorDetails(contractor);
             List<ContractorDto> contractorList = contractorListPage.getContent();
-            if (!contractorList.isEmpty() && contractorList.size() > 0) {
-                result.put("contractorList", contractorList);
-                result.put("currentPage", contractorListPage.getNumber());
-                result.put("totalItems", contractorListPage.getTotalElements());
-                result.put("totalPages", contractorListPage.getTotalPages());
-                response.setData(result);
-                response.setStatus(1);
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            } else {
-                result.put("contractorList", contractorList);
-                response.setData(result);
-                response.setStatus(1);
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-                response.setMessage("Record not found.");
-            }
+            response.setData(contractorList);
+            response.setMessage("contractor List");
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(contractorListPage.getTotalElements());
+            response.setRecordsTotal(contractorListPage.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
-            e.printStackTrace();
-            response = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(),
-                    result);
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
         return response;
     }

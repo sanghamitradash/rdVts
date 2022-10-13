@@ -15,7 +15,7 @@ public interface DesignationService {
 
     Page<DesignationDto> getDesignationList(DesignationDto designationDto);
 
-    List<DesignationEntity> getAllDesignationByUserLevelId(int userLevelId);
+    List<DesignationDto> getAllDesignationByUserLevelId(int userLevelId);
 
     DesignationEntity getDesignationById(int id);
 

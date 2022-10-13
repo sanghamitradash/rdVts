@@ -1,9 +1,7 @@
 package gov.orsac.RDVTS.serviceImpl;
 
-import gov.orsac.RDVTS.dto.DesignationDto;
 import gov.orsac.RDVTS.dto.RDVTSResponse;
 import gov.orsac.RDVTS.dto.WorkDto;
-import gov.orsac.RDVTS.entities.DesignationEntity;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.WorkRepository;
@@ -13,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class WorkServiceImpl implements WorkService {
@@ -36,8 +36,8 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public WorkEntity getWorkById(int id) {
-        return workRepository.findById(id);
+    public List<WorkDto> getWorkById(int id) {
+        return workRepositoryImpl.getWorkById(id);
     }
 
     @Override

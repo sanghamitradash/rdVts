@@ -126,8 +126,11 @@ public class VehicleController {
         try {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
-            result.put("vehicleList", vehicleList);
-            response.setData(result);
+           // result.put("vehicleList", vehicleList);
+            /*result.put("recordsFiltered", vehicleListPage.getTotalElements());
+            result.put("recordsTotal", vehicleListPage.getTotalElements());
+            result.put("draw", draw);*/
+            response.setData(vehicleList);
             response.setMessage("Vehicle List");
             response.setStatus(1);
             response.setDraw(draw);
@@ -161,36 +164,25 @@ public class VehicleController {
     }
 
     @PostMapping("/assignVehicleDevice")
-    public RDVTSResponse assignVehicleDevice(@RequestBody VehicleDeviceMappingDto vehicleDeviceMappingDto) {
+    public RDVTSResponse assignVehicleDevice(@RequestBody VehicleDeviceMappingEntity vehicleDeviceMapping) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            VehicleDeviceMappingEntity vehiclePresent= vehicleDeviceMappingRepository.findByVehicleId(vehicleDeviceMappingDto.getVehicleId());
-            if(vehiclePresent==null) {
-                VehicleDeviceMappingEntity devicePresent= vehicleDeviceMappingRepository.findByDeviceId(vehicleDeviceMappingDto.getDeviceId());
-                if(devicePresent==null) {
-                    VehicleDeviceMappingEntity vehicle = new VehicleDeviceMappingEntity();
-                    BeanUtils.copyProperties(vehicleDeviceMappingDto, vehicle);
-                    VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle);
-                    result.put("saveVehicleMapping", saveVehicleMapping);
-                    response.setData(result);
-                    response.setStatus(1);
-                    response.setMessage("Assign Vehicle Device Created Successfully");
-                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                }
-                else{
-                    response = new RDVTSResponse(0,
-                            new ResponseEntity<>(HttpStatus.OK),
-                            "Device is already assigned to a Vehicle...",
-                            result);
-                }
-            }
-            else{
+/*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
+                    && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
+                VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
+                result.put("saveVehicleMapping", saveVehicleMapping);
+                response.setData(result);
+                response.setStatus(1);
+                response.setMessage("Assign Vehicle Device Created Successfully");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+           /* }
+            else {
                 response = new RDVTSResponse(0,
                         new ResponseEntity<>(HttpStatus.OK),
-                        "Vehicle is already assigned to a device...",
+                        "Vehicle Type,Vehicle No.,Vehicle Chassis No.,Vehicle Engine No.,Vehicle SpeedLiMit mandatory",
                         result);
-            }
+            }*/
         } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -200,41 +192,25 @@ public class VehicleController {
         return response;
     }
     @PostMapping("/assignVehicleWork")
-    public RDVTSResponse assignVehicleWork(@RequestBody List<VehicleWorkMappingDto> vehicleWorkMapping) {
+    public RDVTSResponse assignVehicleWork(@RequestBody List<VehicleWorkMappingEntity> vehicleWorkMapping) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-
+/*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
+                    && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
             List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(vehicleWorkMapping);
             result.put("saveVehicleMapping", saveVehicleWorkMapping);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Assign Vehicle Device Created Successfully");
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            response = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(),
-                    result);
-        }
-        return response;
-    }
-
-    @PostMapping("/getUnAssignedVehicleData")
-    public RDVTSResponse getUnAssignedVehicleData(Integer userId) {
-        RDVTSResponse response = new RDVTSResponse();
-        Map<String, Object> result = new HashMap<>();
-        try {
-
-            List<VehicleMasterDto> vehicleData= vehicleService.getUnAssignedVehicleData(userId);
-            result.put("vehicleData", vehicleData);
-            response.setData(result);
-            response.setStatus(1);
-            response.setMessage("Unassigned Vehicle");
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-
+           /* }
+            else {
+                response = new RDVTSResponse(0,
+                        new ResponseEntity<>(HttpStatus.OK),
+                        "Vehicle Type,Vehicle No.,Vehicle Chassis No.,Vehicle Engine No.,Vehicle SpeedLiMit mandatory",
+                        result);
+            }*/
         } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -243,7 +219,6 @@ public class VehicleController {
         }
         return response;
     }
-
 
     /*@PostMapping("/getVehicleList")
     public RDVTSResponse getVehicleList(@RequestBody VehicleMasterDto vehicle) {

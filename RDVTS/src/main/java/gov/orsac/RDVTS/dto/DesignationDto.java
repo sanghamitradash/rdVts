@@ -30,8 +30,7 @@ public class DesignationDto {
 
     private Integer userLevelId;
 
-    private int page;
-    private int size;
-    private String sortOrder;
-    private String sortBy;
+    private Integer offSet;
+    private Integer limit;
+    private Integer draw;
 }

@@ -43,13 +43,13 @@ public class DesignationServiceImpl implements DesignationService {
 
     @Override
     public Page<DesignationDto> getDesignationList(DesignationDto designationDto) {
-        Page<DesignationDto> designationDtoPage = designationRepositoryImpl.getDesignationList(designationDto);
-        return designationDtoPage;
+        return  designationRepositoryImpl.getDesignationList(designationDto);
     }
 
     @Override
-    public List<DesignationEntity> getAllDesignationByUserLevelId(int userLevelId) {
-        return designationRepository.findByUserLevelId(userLevelId);
+    public List<DesignationDto> getAllDesignationByUserLevelId(int userLevelId) {
+        List<DesignationDto> designationDtoList= designationRepositoryImpl.getDesignationByUserLevelId(userLevelId);
+        return designationDtoList;
     }
 
     @Override
