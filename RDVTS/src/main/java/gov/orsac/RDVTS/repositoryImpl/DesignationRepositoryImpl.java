@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.DesignationDto;
+import gov.orsac.RDVTS.dto.RoleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -51,5 +52,21 @@ public class DesignationRepositoryImpl {
 
         List<DesignationDto> designationDtos = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DesignationDto.class));
         return new PageImpl<>(designationDtos, pageable, resultCount);
+    }
+
+
+    public List<DesignationDto> getDesignationByUserLevelId(int userLevelId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "";
+        if (userLevelId == -1) {
+            qry += "SELECT id, name, description, parent_id,created_by,created_on,updated_by,updated_on, user_level_id as userLevelId,is_active as active FROM rdvts_oltp.designation_m ";
+            /* " WHERE true AND id>1 Order BY id";*/
+        } else {
+            qry += "SELECT id, name, description, parent_id, created_by,created_on,updated_by,updated_on, user_level_id as userLevelId,is_active as active FROM rdvts_oltp.designation_m  " +
+                    " WHERE true AND user_level_id =:userLevelId  ";
+            /*   "AND id>1 ORDER BY id";*/
+            sqlParam.addValue("userLevelId", userLevelId);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DesignationDto.class));
     }
 }
