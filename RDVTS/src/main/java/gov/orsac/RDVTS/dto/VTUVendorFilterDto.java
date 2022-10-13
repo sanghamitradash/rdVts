@@ -5,16 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ContractorFilterDto {
+@AllArgsConstructor
+public class VTUVendorFilterDto {
 
-    Integer id;
-    Integer userId;
-    Integer gContractorId;
+    private Integer vendorId;
+    private Integer deviceId;
+    private String vtuVendorName;
 
     private Integer offSet;
     private Integer limit;
     private Integer draw;
 }
-

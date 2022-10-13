@@ -17,5 +17,5 @@ public interface ContractorService {
 
     ContractorDto getContractById(Integer contractId);
 
-    List<ContractorDto> getContractorDetails(ContractorFilterDto contractor);
+    Page<ContractorDto> getContractorDetails(ContractorFilterDto contractor);
 }

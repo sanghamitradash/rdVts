@@ -12,9 +12,13 @@ public class VTUVendorMasterDto {
 
     private Integer id;
 
+    private Integer vendorId;
+
     private Integer userId;
 
     private Integer deviceId;
+
+    private String deviceName;
 
     private String vtuVendorName;
 
@@ -34,8 +38,4 @@ public class VTUVendorMasterDto {
 
     private Date updatedOn;
 
-    private int page;
-    private int size;
-    private String sortOrder;
-    private String sortBy;
 }

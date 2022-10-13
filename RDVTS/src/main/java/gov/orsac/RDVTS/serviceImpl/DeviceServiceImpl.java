@@ -2,11 +2,13 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.DeviceAreaMappingDto;
 import gov.orsac.RDVTS.dto.DeviceDto;
+import gov.orsac.RDVTS.dto.DeviceInfo;
 import gov.orsac.RDVTS.dto.DeviceListDto;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.DeviceAreaMappingRepository;
+import gov.orsac.RDVTS.repository.DeviceMasterRepository;
 import gov.orsac.RDVTS.repository.DeviceRepository;
 import gov.orsac.RDVTS.repositoryImpl.DeviceRepositoryImpl;
 import gov.orsac.RDVTS.service.DeviceService;
@@ -26,6 +28,9 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
     private DeviceRepositoryImpl deviceRepositoryImpl;
+
+    @Autowired
+    private DeviceMasterRepository deviceMasterRepository;
 
     @Autowired
     private DeviceAreaMappingRepository deviceAreaMappingRepository;
@@ -49,7 +54,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public DeviceDto getDeviceById(Integer deviceId) {
+    public List<DeviceDto> getDeviceById(Integer deviceId) {
         return deviceRepositoryImpl.getDeviceById(deviceId);
     }
 
@@ -69,6 +74,7 @@ public class DeviceServiceImpl implements DeviceService {
         existingDevice.setSimIccId1(deviceDto.getSimIccId1());
         existingDevice.setSimIccId2(deviceDto.getSimIccId2());
         existingDevice.setVtuVendorId(deviceDto.getVtuVendorId());
+        existingDevice.setDeviceNo(deviceDto.getDeviceNo());
         DeviceEntity save = deviceRepository.save(existingDevice);
         return save;
 
@@ -82,8 +88,13 @@ public class DeviceServiceImpl implements DeviceService {
 
 
     @Override
-    public Page<DeviceDto> getDeviceList(DeviceListDto deviceDto) {
-        return deviceRepositoryImpl.getDeviceList(deviceDto);
+    public Page<DeviceInfo> getDeviceList(DeviceListDto deviceDto) {
+        return deviceMasterRepository.getDeviceList(deviceDto);
+    }
+
+    @Override
+    public List <DeviceDto> getUnassignedDeviceData(Integer userId) {
+        return deviceMasterRepository.getUnassignedDeviceData(userId);
     }
 
 
