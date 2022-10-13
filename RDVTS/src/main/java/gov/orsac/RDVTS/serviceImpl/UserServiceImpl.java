@@ -106,8 +106,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Page<UserListDto> getUserList(UserListDto userListDto) {
-        return userRepositoryImpl.getUserList(userListDto);
+    public Page<UserInfoDto> getUserList(UserListRequest userListRequest) {
+        return userRepositoryImpl.getUserList(userListRequest);
       //  return userList;
     }
 
@@ -121,14 +121,12 @@ public class UserServiceImpl implements UserService {
         }
         existingUser.setFirstName(userDto.getFirstName());
         existingUser.setLastName(userDto.getLastName());
-        existingUser.setEmail(userDto.getEmail());
         existingUser.setMiddleName(userDto.getMiddleName());
-        existingUser.setMobile1(userDto.getMobile1());
-        existingUser.setMobile2(userDto.getMobile2());
         existingUser.setUserLevelId(userDto.getUserLevelId());
         existingUser.setUpdatedBy(userDto.getUpdatedBy());
         existingUser.setDesignationId(userDto.getDesignationId());
         existingUser.setContractorId(userDto.getContractorId());
+        existingUser.setRoleId(userDto.getRoleId());
         UserEntity save = userRepository.save(existingUser);
         return save;
     }
@@ -160,8 +158,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserPasswordMasterEntity updateUserPass(Integer userId, UserPasswordMasterDto userPasswordMasterDto) {
         UserPasswordMasterEntity existingId = userPaswordMasterRepo.findById(userId).orElseThrow(() -> new RecordNotFoundException("userId", "userId", userId));
+
         int saveHistory = userPaswordMasterRepoImpl.savePasswordInHistory(userId, userPasswordMasterDto);
+
         existingId.setPassword(encoder.encode(userPasswordMasterDto.getPassword()));
+
         UserPasswordMasterEntity save = userPaswordMasterRepo.save(existingId);
         return save;
     }
@@ -255,7 +256,10 @@ public class UserServiceImpl implements UserService {
     public UserEntity findUserByMobile(Long mobile) {
         return userRepository.findUserByMobile(mobile);
     }
-
+    @Override
+    public Boolean deactivateAreaMapping(Integer id) {
+        return userRepositoryImpl.deactivateAreaByUserId(id);
+    }
 
     @Override
     public UserEntity findUserByMobileAndEmail(String email) {
@@ -266,7 +270,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Integer sendOtpToUser(UserDto user) {
-      //  MailDto mailDto = new MailDto();
+       MailDto mailDto = new MailDto();
         Random random = new Random();
         int otp = random.nextInt(999999);
 
@@ -278,15 +282,15 @@ public class UserServiceImpl implements UserService {
         userRepository.save(existingUser);
 
 
-//        mailDto.setRecipient(user.getEmail());
-//        mailDto.setSubject("OTP for new password.");
-//        String message = readMailBody("FORGOT_PWD_OTP_TEMPLATE.txt", user, otp);
-//        mailDto.setMessage(message);
-//        if (emailService.sendHtmlMail(mailDto)){
-//            return otp;
-//        }
-//        return 0;
-        return otp;
+        mailDto.setRecipient(user.getEmail());
+        mailDto.setSubject("OTP for new password.");
+        String message = readMailBody("FORGOT_PWD_OTP_TEMPLATE.txt", user, otp);
+        mailDto.setMessage(message);
+        if (emailService.sendHtmlMail(mailDto)){
+            return otp;
+        }
+        return 0;
+        //return otp;
     }
 
     public String readMailBody(String filename, UserDto user, Integer otp){
@@ -303,7 +307,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public UserDto getUserByUserId(Integer userId){
+    public UserInfoDto getUserByUserId(Integer userId){
 
             return userRepositoryImpl.getUserByUserId(userId);
 

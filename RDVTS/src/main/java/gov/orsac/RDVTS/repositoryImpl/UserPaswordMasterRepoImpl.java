@@ -41,11 +41,6 @@ public class UserPaswordMasterRepoImpl {
             String qry = "INSERT INTO rdvts_oltp.user_password_log(user_id, password, is_active, created_by, updated_by, updated_on) " +
                     "select user_id,password, is_active, created_by, updated_by, updated_on from rdvts_oltp.user_password_m where user_id =:userId ";
             sqlParam.addValue("userId", userId);
-    //        sqlParam.addValue("password", userPasswordMasterDto.getPassword());
-    //        sqlParam.addValue("isActive", userPasswordMasterDto.getIsActive());
-    //        sqlParam.addValue("createdBy", userPasswordMasterDto.getCreatedBy());
-    //        sqlParam.addValue("updatedBy", userPasswordMasterDto.getUpdatedBy());
-    //        sqlParam.addValue("updatedOn", userPasswordMasterDto.getUpdatedOn());
             int update = namedJdbc.update(qry, sqlParam);
             if(update>0){
                 return 1;

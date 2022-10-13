@@ -14,9 +14,10 @@ public interface UserService {
 
     UserEntity saveUser(UserDto userSaveRequests) throws RecordExistException;
 
-    Page<UserListDto> getUserList(UserListDto userListDto);
+    Page<UserInfoDto> getUserList(UserListRequest userListRequest);
 
     UserEntity updateUser(int id, UserDto userDto) throws Exception;
+    Boolean deactivateAreaMapping(Integer id);
 
     UserEntity findUserByMobile(Long Mobile);
 
@@ -36,7 +37,7 @@ public interface UserService {
 
     Integer sendOtpToUser(UserDto user);
 
-    UserDto getUserByUserId(Integer userId);
+    UserInfoDto getUserByUserId(Integer userId);
     UserDto getUserBymobile(Long mobile);
 
 
