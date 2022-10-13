@@ -1,16 +1,21 @@
 package gov.orsac.RDVTS.service;
 
 import gov.orsac.RDVTS.dto.ContractorDto;
+import gov.orsac.RDVTS.dto.ContractorFilterDto;
 import gov.orsac.RDVTS.entities.ContractorEntity;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface ContractorService {
 
     ContractorEntity createContractor(ContractorEntity contractorEntity);
 
-    Page<ContractorDto> getContractorDetails(ContractorDto contractorDto);
+
 
     ContractorEntity updateContractorById(Integer id, ContractorDto contractorDto);
 
     ContractorDto getContractById(Integer contractId);
+
+    List<ContractorDto> getContractorDetails(ContractorFilterDto contractor);
 }

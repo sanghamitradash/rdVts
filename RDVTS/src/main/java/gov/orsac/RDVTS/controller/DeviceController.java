@@ -41,7 +41,7 @@ public class DeviceController {
                         && !deviceDto.getImeiNo2().toString().isEmpty() && !deviceDto.getMobileNumber1().toString().isEmpty() &&
                         !deviceDto.getMobileNumber2().toString().isEmpty() && !deviceDto.getSimIccId1().toString().isEmpty() && !deviceDto.getSimIccId2().toString().isEmpty() && !deviceDto.getModelName().isEmpty()) {
 
-                    if (deviceDto.getMobileNumber1().toString().length() != 10 && deviceDto.getMobileNumber2().toString().length() != 10) {
+                    if (deviceDto.getMobileNumber1().toString().length() == 10 && deviceDto.getMobileNumber2().toString().length() == 10) {
                         DeviceEntity deviceEntity = deviceService.addDevice(deviceDto);
                         List<DeviceMappingEntity> deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(), deviceEntity.getId());
                         result.put("deviceEntity", deviceEntity);
@@ -51,12 +51,12 @@ public class DeviceController {
                         response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                         response.setMessage(" Device Added Successfully");
                     }
-                    else{
+                    else {
                         response = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter proper mobile number !!",
                                 result);
-                    }
+                        }
                 }
                 else{
                     response = new RDVTSResponse(0,
