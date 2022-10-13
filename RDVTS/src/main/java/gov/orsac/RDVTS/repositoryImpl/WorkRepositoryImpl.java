@@ -36,7 +36,6 @@ public class WorkRepositoryImpl {
         }
         int resultCount = 0;
         String qry = "select id, g_work_id as workId,g_work_name as workName,is_active,created_by,updated_by,created_on,updated_on from rdvts_oltp.work_m where is_active = true";
-
         resultCount = count(qry, sqlParam);
         if (workDto.getSize() > 0) {
             qry += " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();

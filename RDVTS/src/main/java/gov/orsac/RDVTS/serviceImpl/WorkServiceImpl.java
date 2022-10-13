@@ -1,9 +1,7 @@
 package gov.orsac.RDVTS.serviceImpl;
 
-import gov.orsac.RDVTS.dto.DesignationDto;
 import gov.orsac.RDVTS.dto.RDVTSResponse;
 import gov.orsac.RDVTS.dto.WorkDto;
-import gov.orsac.RDVTS.entities.DesignationEntity;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.WorkRepository;

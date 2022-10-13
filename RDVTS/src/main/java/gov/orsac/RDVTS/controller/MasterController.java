@@ -276,12 +276,13 @@ public class MasterController {
         Map<String, Object> result = new HashMap<>();
         try {
             //List<Integer> userIdList = new ArrayList<>();
-            List<DesignationEntity> designationList = designationService.getAllDesignationByUserLevelId(userLevelId);
+            List<DesignationDto> designationList = designationService.getAllDesignationByUserLevelId(userLevelId);
             if (!designationList.isEmpty() && designationList.size() > 0) {
                 result.put("designationList", designationList);
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                response.setMessage("Designation By UserLevelId");
             } else {
                 result.put("designationList", designationList);
                 response.setData(result);
