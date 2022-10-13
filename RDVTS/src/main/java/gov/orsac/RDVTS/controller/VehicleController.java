@@ -116,11 +116,11 @@ public class VehicleController {
         try {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
-            result.put("vehicleList", vehicleList);
+           // result.put("vehicleList", vehicleList);
             /*result.put("recordsFiltered", vehicleListPage.getTotalElements());
             result.put("recordsTotal", vehicleListPage.getTotalElements());
             result.put("draw", draw);*/
-            response.setData(result);
+            response.setData(vehicleList);
             response.setMessage("Vehicle List");
             response.setStatus(1);
             response.setDraw(draw);

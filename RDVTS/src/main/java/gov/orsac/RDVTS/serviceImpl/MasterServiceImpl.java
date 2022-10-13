@@ -266,4 +266,9 @@ public class MasterServiceImpl implements MasterService {
         VTUVendorMasterEntity save = vtuVendorRepository.save(existingId);
         return save;
     }
+
+    @Override
+    public List<DistrictBoundaryDto> getAllDistrict() {
+        return masterRepositoryImpl.getAllDistrict();
+    }
 }
