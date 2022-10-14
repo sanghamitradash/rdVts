@@ -730,7 +730,7 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorById")
-    public RDVTSResponse getVTUVendorById(@RequestParam Integer id, Integer userId){
+    public RDVTSResponse getVTUVendorById(@RequestParam Integer id) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -754,12 +754,12 @@ public class MasterController {
 
     @PostMapping("/getVTUVendorList")
     public RDVTSListResponse getVTUVendorList(@RequestParam(name = "vendorId", required = false) Integer vendorId,
-                                              @RequestParam(name = "userId",required = false) Integer userId,
+                                              @RequestParam(name = "userId", required = false) Integer userId,
                                               @RequestParam(name = "deviceId", required = false) Integer deviceId,
                                               @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
                                               @RequestParam(name = "start") Integer start,
                                               @RequestParam(name = "length") Integer length,
-                                              @RequestParam(name = "draw") Integer draw){
+                                              @RequestParam(name = "draw") Integer draw) {
 
         VTUVendorFilterDto vtuVendorFilterDto = new VTUVendorFilterDto();
         vtuVendorFilterDto.setVendorId(vendorId);
@@ -888,19 +888,84 @@ public class MasterController {
         return response;
     }
 
+    //Geo Master
     @PostMapping("/addGeoMaster")
     public RDVTSResponse saveGeoMaster(@RequestBody GeoMasterEntity geoMaster) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-                GeoMasterEntity geoMasterEntity = geoMasterService.saveGeoMaster(geoMaster);
-                result.put("geoMasterEntity", geoMasterEntity);
-                response.setData(result);
-                response.setStatus(1);
-                response.setMessage("Geo Master Created Successfully");
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            GeoMasterEntity geoMasterEntity = geoMasterService.saveGeoMaster(geoMaster);
+            result.put("geoMasterEntity", geoMasterEntity);
+            response.setData(result);
+            response.setStatus(1);
+            response.setMessage("Geo Master Created Successfully");
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
         } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/updateGeoMaster")
+    public RDVTSResponse updateGeoMaster(@RequestParam int id,
+                                         @RequestParam(name = "data") String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            GeoMasterDto updateGeoMasterDto = mapper.readValue(data,GeoMasterDto.class);
+            GeoMasterEntity geoMasterEntity = geoMasterService.updateGeoMaster(id, updateGeoMasterDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Geo Master Updated Successfully");
+        } catch (Exception e){
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getAllGeoMasterByAllId")
+    public RDVTSResponse getAllGeoMasterByAllId(@RequestParam(name = "id", required = false) Integer id,
+                                                    @RequestParam(name = "geoWorkId", required = false) Integer geoWorkId,
+                                                    @RequestParam(name = "geoDistId", required = false) Integer geoDistId,
+                                                    @RequestParam(name = "geoBlockId", required = false) Integer geoBlockId,
+                                                    @RequestParam(name = "geoPiuId", required = false) Integer geoPiuId,
+                                                    @RequestParam(name = "geoContractorId", required = false) Integer geoContractorId,
+                                                    @RequestParam(name = "workId", required = false) Integer workId,
+                                                    @RequestParam(name = "piuId", required = false) Integer piuId,
+                                                    @RequestParam(name = "distId", required = false) Integer distId,
+                                                    @RequestParam(name = "blockId", required = false) Integer blockId,
+                                                    @RequestParam(name = "roadId", required = false) Integer roadId ) {
+        GeoMasterDto geoMasterDto = new GeoMasterDto();
+        geoMasterDto.setId(id);
+        geoMasterDto.setGeoWorkId(geoWorkId);
+        geoMasterDto.setGeoDistId(geoDistId);
+        geoMasterDto.setGeoBlockId(geoBlockId);
+        geoMasterDto.setGeoPiuId(geoPiuId);
+        geoMasterDto.setGeoContractorId(geoContractorId);
+        geoMasterDto.setWorkId(workId);
+        geoMasterDto.setPiuId(piuId);
+        geoMasterDto.setDistId(distId);
+        geoMasterDto.setBlockId(blockId);
+        geoMasterDto.setRoadId(roadId);
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+            List<GeoMasterDto> geoMasterDtoList = geoMasterService.getAllGeoMasterByAllId(geoMasterDto);
+            result.put("geoMasterDtoList", geoMasterDtoList);
+            response.setData(geoMasterDtoList);
+            response.setMessage("Geo Master List");
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+        } catch (Exception e){
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
