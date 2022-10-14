@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class RoadServiceImpl implements RoadService {
@@ -36,8 +38,8 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public RoadMasterDto getRoadById(Integer roadId) {
-        return roadRepositoryImpl.getRoadById(roadId);
+    public List<RoadMasterDto> getRoadById(Integer roadId, Integer userId) {
+        return roadRepositoryImpl.getRoadById(roadId, userId);
     }
 
     @Override
@@ -57,7 +59,7 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public Page<RoadMasterDto> getRoadList(RoadFilterDto road) {
-        return null;
+    public Page<RoadMasterDto> getRoadList(RoadFilterDto roadFilterDto) {
+        return roadRepository.getRoadList(roadFilterDto);
     }
 }
