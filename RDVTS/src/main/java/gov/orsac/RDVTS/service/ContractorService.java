@@ -15,7 +15,7 @@ public interface ContractorService {
 
     ContractorEntity updateContractorById(Integer id, ContractorDto contractorDto);
 
-    ContractorDto getContractById(Integer contractId);
+    ContractorDto getContractById(Integer contractId,Integer userId);
 
     Page<ContractorDto> getContractorDetails(ContractorFilterDto contractor);
 }

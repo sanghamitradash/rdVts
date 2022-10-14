@@ -54,13 +54,13 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public List<DeviceDto> getDeviceById(Integer deviceId) {
-        return deviceRepositoryImpl.getDeviceById(deviceId);
+    public List<DeviceDto> getDeviceById(Integer deviceId,Integer userId) {
+        return deviceRepositoryImpl.getDeviceById(deviceId,userId);
     }
 
     @Override
-    public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId) {
-        return deviceRepositoryImpl.getDeviceAreaByDeviceId(deviceId);
+    public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId,Integer userId) {
+        return deviceRepositoryImpl.getDeviceAreaByDeviceId(deviceId,userId);
     }
 
     @Override

@@ -20,6 +20,8 @@ public class DeviceInfo {
     private String modelName;
     private Integer vtuVendorId;
 
+    private Integer deviceNo;
+
     private String vtuVendorName;
     private String vendorAddress;
     private Long vendorPhone;

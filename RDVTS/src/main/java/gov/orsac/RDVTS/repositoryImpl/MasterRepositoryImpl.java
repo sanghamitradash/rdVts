@@ -201,8 +201,14 @@ public class MasterRepositoryImpl implements MasterRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry ="SELECT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
-                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on " +
-                "FROM rdvts_oltp.vtu_vendor_m AS vtuM WHERE id =:id";
+                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId, dev.model_name as deviceName " +
+                "FROM rdvts_oltp.vtu_vendor_m AS vtuM " +
+                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id " +
+                "WHERE vtuM.is_active = true ";
+
+        if(id>0){
+            qry+=" AND vtuM.id=:id";
+        }
         sqlParam.addValue("id", id);
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
     }
@@ -274,6 +280,21 @@ public class MasterRepositoryImpl implements MasterRepository {
         sqlParam.addValue("distId", distId);
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
 
+    }
+
+    public List<StateDto> getAllState() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT state.id, state.state_name from rdvts_oltp.state_m as state ";
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(StateDto.class));
+    }
+
+    public List<DistrictBoundaryDto> getDistByStateId(Integer stateId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT dist.dist_id, dist.district_name from rdvts_oltp.district_boundary as dist  " +
+                "left join rdvts_oltp.state_m as state on state.id = dist.state_id  " +
+                "where state.id=:stateId ";
+        sqlParam.addValue("stateId", stateId);
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DistrictBoundaryDto.class));
     }
 }
 

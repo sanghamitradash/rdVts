@@ -6,6 +6,7 @@ import gov.orsac.RDVTS.dto.DeviceInfo;
 import gov.orsac.RDVTS.dto.DeviceListDto;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
+import io.swagger.models.auth.In;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -16,9 +17,9 @@ public interface DeviceService {
 
     List<DeviceMappingEntity> saveDeviceMapping(List<DeviceMappingEntity> deviceMapping, Integer id);
 
-    List<DeviceDto> getDeviceById(Integer deviceId);
+    List<DeviceDto> getDeviceById(Integer deviceId, Integer userId);
 
-    List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId);
+    List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId, Integer userId);
 
     DeviceEntity updateDeviceById(Integer id, DeviceDto deviceDto);
 
