@@ -29,7 +29,7 @@ public class RoadMasterDto {
 
     private Double roadWidth;
 
-    private Integer gRoadId;
+    private Integer groadId;
 
     private Integer geoMasterId;
 

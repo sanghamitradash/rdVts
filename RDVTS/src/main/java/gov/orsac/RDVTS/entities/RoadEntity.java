@@ -48,7 +48,7 @@ public class RoadEntity {
     private Double roadWidth;
 
     @Column(name = "g_road_id")
-    private Integer gRoadId;
+    private Integer groadId;
 
     @Column(name = "geo_master_id")
     private Integer geoMasterId;
