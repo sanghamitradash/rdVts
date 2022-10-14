@@ -5,14 +5,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class VTUVendorFilterDto {
+@NoArgsConstructor
+public class RoadFilterDto {
 
-    private Integer vendorId;
+    private Integer id;
+
     private Integer userId;
-    private Integer deviceId;
-    private String vtuVendorName;
+
+    private String roadName;
+
+    private Double roadLength;
+
+    private Double roadLocation;
 
     private Integer offSet;
     private Integer limit;
