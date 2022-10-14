@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class VTUVendorFilterDto {
 
     private Integer vendorId;
+    private Integer userId;
     private Integer deviceId;
     private String vtuVendorName;
 
