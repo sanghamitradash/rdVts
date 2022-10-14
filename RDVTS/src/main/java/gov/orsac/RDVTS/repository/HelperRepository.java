@@ -9,6 +9,6 @@ public interface HelperRepository {
     Integer getUserLevelByUserId(Integer userId);
     List<Integer> getLowerUserLevelIdsByUserLevelId(Integer userLevelId,Integer userId);
     List<Integer> getLowerUserByUserId(List<Integer> userLevelId);
-    List<DesignationDto> getLowerDesignation(Integer userId);
-    List<RoleDto>getLowerRole(Integer userId);
+    List<DesignationDto> getLowerDesignation(Integer userId,Integer designationId);
+    List<RoleDto>getLowerRole(Integer userId,Integer roleId);
 }

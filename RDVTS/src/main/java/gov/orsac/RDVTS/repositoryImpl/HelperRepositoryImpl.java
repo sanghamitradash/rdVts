@@ -44,18 +44,24 @@ public class HelperRepositoryImpl implements HelperRepository {
     }
 
     @Override
-    public List<DesignationDto> getLowerDesignation(Integer userId) {
+    public List<DesignationDto> getLowerDesignation(Integer userId,Integer designationId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String query = " ";
-        sqlParam.addValue("userId",userId);
+        String query = "WITH RECURSIVE designation_org AS ( SELECT id, name,description, parent_id, is_active, created_by, updated_by " +
+                "FROM  rdvts_oltp.designation_m  WHERE id =:designationId UNION ALL SELECT e.id, e.name,e.description, e.parent_id, e.is_active, e.created_by," +
+                "e.updated_by FROM rdvts_oltp.designation_m e INNER JOIN designation_org u ON u.id = e.parent_id )" +
+                "SELECT id,name,description,parent_id FROM designation_org ";
+        sqlParam.addValue("designationId",designationId);
         return namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(DesignationDto.class));
     }
 
     @Override
-    public List<RoleDto> getLowerRole(Integer userId) {
+    public List<RoleDto> getLowerRole(Integer userId,Integer roleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String query = " ";
-        sqlParam.addValue("userId",userId);
+        String query = "WITH RECURSIVE role_org AS ( SELECT id, name, parent_role_id, is_active, created_by, updated_by " +
+                "FROM  rdvts_oltp.role_m  WHERE id =:roleId UNION ALL SELECT e.id, e.name, e.parent_role_id, e.is_active, e.created_by," +
+                "e.updated_by FROM rdvts_oltp.role_m e INNER JOIN role_org u ON u.id = e.parent_role_id )" +
+                "SELECT id,name,parent_role_id FROM role_org ";
+        sqlParam.addValue("roleId",roleId);
         return namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(RoleDto.class));
     }
 }

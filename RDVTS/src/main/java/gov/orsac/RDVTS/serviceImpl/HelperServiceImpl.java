@@ -30,12 +30,12 @@ public class HelperServiceImpl implements HelperService {
     }
 
     @Override
-    public List<DesignationDto> getLowerDesignation(Integer userId) {
-        return helperRepository.getLowerDesignation(userId);
+    public List<DesignationDto> getLowerDesignation(Integer userId,Integer designationId) {
+        return helperRepository.getLowerDesignation(userId,designationId);
     }
 
     @Override
-    public List<RoleDto> getLowerRole(Integer userId) {
-        return helperRepository.getLowerRole(userId);
+    public List<RoleDto> getLowerRole(Integer userId,Integer roleId) {
+        return helperRepository.getLowerRole(userId,roleId);
     }
 }

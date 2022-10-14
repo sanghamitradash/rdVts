@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.InvalidKeyException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class HelperController {
     private HelperService helperService;
 
     @PostMapping("/getUserLevelByUserId")
-    public RDVTSResponse getDesignationById(@RequestParam int userId) {
+    public RDVTSResponse getDesignationById(@RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -50,7 +51,7 @@ public class HelperController {
 
     }
     @PostMapping("/getLowerUserLevelIdsByUserLevelId")
-    public RDVTSResponse getLowerUserLevelIdsByUserLevelId(@RequestParam int userLevelId,@RequestParam int userId) {
+    public RDVTSResponse getLowerUserLevelIdsByUserLevelId(@RequestParam Integer userLevelId,@RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -77,7 +78,7 @@ public class HelperController {
 
     }
     @PostMapping("/getLowerUserByUserId")
-    public RDVTSResponse getLowerUserByUserId(@RequestParam int userId) {
+    public RDVTSResponse getLowerUserByUserId(@RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -103,12 +104,12 @@ public class HelperController {
         return response;
 
     }
-    @PostMapping("/getLowerDesignation")
-    public RDVTSResponse getLowerDesignation(@RequestParam int userId) {
+    @PostMapping("/getLowerDesignationByDesignationId")
+    public RDVTSResponse getLowerDesignation(@RequestParam Integer userId,@RequestParam Integer designationId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<DesignationDto> designation = helperService.getLowerDesignation(userId);
+            List<DesignationDto> designation = helperService.getLowerDesignation(userId,designationId);
             if (designation != null) {
                 result.put("designation", designation);
                 response.setData(result);
@@ -130,12 +131,12 @@ public class HelperController {
         return response;
 
     }
-    @PostMapping("/getLowerRole")
-    public RDVTSResponse getLowerRole(@RequestParam int userId) {
+    @PostMapping("/getLowerRoleByRoleId")
+    public RDVTSResponse getLowerRole(@RequestParam Integer userId,@RequestParam Integer roleId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoleDto> role = helperService.getLowerRole(userId);
+            List<RoleDto> role = helperService.getLowerRole(userId,roleId);
             if (role != null) {
                 result.put("role", role);
                 response.setData(result);
