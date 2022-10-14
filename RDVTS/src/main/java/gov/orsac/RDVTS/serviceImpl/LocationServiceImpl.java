@@ -7,6 +7,7 @@ import gov.orsac.RDVTS.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -20,6 +21,13 @@ public class LocationServiceImpl implements LocationService {
        VtuLocationDto vtuLocationDto= locationRepository.getLatestRecordByImeiNumber(deviceDtoList);
 
         return vtuLocationDto;
+    }
+
+
+    public List<VtuLocationDto> getLocationRecordByDateTime(List<DeviceDto> deviceDtoList,Date startTime, Date endTime){
+
+        List<VtuLocationDto> vtuLocationDtoList= locationRepository.getLocationRecordByDateTime(deviceDtoList,startTime,endTime);
+        return vtuLocationDtoList;
     }
 
 
