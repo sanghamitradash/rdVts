@@ -61,7 +61,7 @@ public class VehicleController {
         return response;
     }
     @PostMapping("/getVehicleByVId")
-    public RDVTSResponse getVehicleByVId(@RequestParam Integer vehicleId) {
+    public RDVTSResponse getVehicleByVId(@RequestParam Integer vehicleId,@RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
 
@@ -113,7 +113,8 @@ public class VehicleController {
                                             @RequestParam(name = "workId") Integer workId,
                                             @RequestParam(name = "start") Integer start,
                                             @RequestParam(name = "length") Integer length,
-                                            @RequestParam(name = "draw") Integer draw) {
+                                            @RequestParam(name = "draw") Integer draw,
+                                            @RequestParam(name = "userId") Integer userId) {
 
         VehicleFilterDto vehicle = new VehicleFilterDto();
         vehicle.setVehicleTypeId(vehicleTypeId);
@@ -144,7 +145,7 @@ public class VehicleController {
         return response;
     }
     @PostMapping("/getVehicleTypeList")
-    public RDVTSResponse getVehicleTypeList() {
+    public RDVTSResponse getVehicleTypeList(@RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
