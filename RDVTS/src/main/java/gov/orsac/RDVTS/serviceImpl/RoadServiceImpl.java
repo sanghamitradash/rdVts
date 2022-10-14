@@ -30,4 +30,9 @@ public class RoadServiceImpl implements RoadService {
         BeanUtils.copyProperties(roadMasterDto, roadEntity);
         return roadRepository.save(roadEntity);
     }
+
+    @Override
+    public RoadMasterDto getRoadById(Integer roadId) {
+        return roadRepositoryImpl.getRoadById(roadId);
+    }
 }
