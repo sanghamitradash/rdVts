@@ -286,4 +286,9 @@ public class MasterServiceImpl implements MasterService {
     public List<StateDto> getAllState() {
         return masterRepositoryImpl.getAllState();
     }
+
+    @Override
+    public List<DistrictBoundaryDto> getDistByStateId(Integer stateId) {
+        return masterRepositoryImpl.getDistByStateId(stateId);
+    }
 }
