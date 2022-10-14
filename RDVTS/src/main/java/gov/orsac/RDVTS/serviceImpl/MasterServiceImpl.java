@@ -279,8 +279,8 @@ public class MasterServiceImpl implements MasterService {
     }
 
     @Override
-    public List<DivisionDto> getDivisionBlockByDistId(Integer distId) {
-        return masterRepositoryImpl.getDivisionBlockByDistId(distId);
+    public List<DivisionDto> getDivisionByDistId(Integer distId) {
+        return masterRepositoryImpl.getDivisionByDistId(distId);
     }
 
     @Override
@@ -292,4 +292,12 @@ public class MasterServiceImpl implements MasterService {
     public List<DistrictBoundaryDto> getDistByStateId(Integer stateId) {
         return masterRepositoryImpl.getDistByStateId(stateId);
     }
+
+    @Override
+    public List<BlockBoundaryDto> getListOfBlockByListOfDistId(List<Integer> distId) {
+        List<Integer> blockIds = masterRepositoryImpl.getListOfBlockIds(distId);
+        return masterRepositoryImpl.getListOfBlockByListOfDistId(blockIds);
+    }
+
+
 }
