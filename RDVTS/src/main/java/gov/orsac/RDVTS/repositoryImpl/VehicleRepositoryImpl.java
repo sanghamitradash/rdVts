@@ -154,4 +154,27 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
     }
+
+    @Override
+    public List<VehicleMasterDto> getVehicleById(Integer id, Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        List<VehicleMasterDto> vehicle;
+        String qry = "SELECT ve.id, ve.vehicle_no, ve.vehicle_type_id, ve.model, ve.speed_limit, ve.chassis_no, ve.engine_no, ve.engine_no, ve.is_active, ve.is_active, ve.created_by, " +
+                "ve.created_on, ve.updated_by, ve.updated_on " +
+                "FROM rdvts_oltp.vehicle_m AS ve WHERE ve.is_active = true";
+
+        if(id>0) {
+            qry += " AND ve.id=:id";
+        }
+        sqlParam.addValue("id", id);
+        sqlParam.addValue("userId", userId);
+        try {
+            vehicle = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
+        }
+        catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return vehicle;
+    }
+
 }

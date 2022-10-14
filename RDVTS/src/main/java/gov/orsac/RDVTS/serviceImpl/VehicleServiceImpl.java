@@ -118,4 +118,11 @@ public class VehicleServiceImpl implements VehicleService {
        public Page<VehicleMasterDto> getVehicleList1(VehicleMasterDto vehicle) {
               return null;
        }
+
+       @Override
+       public List<VehicleMasterDto> getVehicleById(Integer id, Integer userId) {
+              return vehicleRepository.getVehicleById(id, userId);
+       }
+
+
 }

@@ -39,8 +39,8 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public RoadMasterDto getRoadById(Integer roadId) {
-        return roadRepositoryImpl.getRoadById(roadId);
+    public List<RoadMasterDto> getRoadById(Integer roadId, Integer userId) {
+        return roadRepositoryImpl.getRoadById(roadId, userId);
     }
 
     @Override
@@ -60,8 +60,8 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public Page<RoadMasterDto> getRoadList(RoadFilterDto road) {
-        return null;
+    public Page<RoadMasterDto> getRoadList(RoadFilterDto roadFilterDto) {
+        return roadRepository.getRoadList(roadFilterDto);
     }
     @Override
     public List<GeoMasterDto> getWorkByroadIds(List<Integer> roadIds){
