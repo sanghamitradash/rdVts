@@ -53,4 +53,6 @@ public interface MasterService {
     List<DistrictBoundaryDto> getDistByStateId(Integer stateId);
 
     List<BlockBoundaryDto> getListOfBlockByListOfDistId(List<Integer> distId);
+
+    List<DivisionDto> getListOfDivisionByListOfDistId(List<Integer> distId);
 }

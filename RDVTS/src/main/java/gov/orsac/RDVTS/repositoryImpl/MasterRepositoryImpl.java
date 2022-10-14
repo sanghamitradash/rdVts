@@ -313,23 +313,34 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DistrictBoundaryDto.class));
     }
 
-    public List<BlockBoundaryDto> getListOfBlockByListOfDistId(List<Integer> distId) {
-        List<Integer> blockIds = new ArrayList<>();
+    public List<BlockBoundaryDto> getListOfBlockByListOfDistId(List<Integer> distIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT block.gid,block.block_name,block.block_code,block.district_name,block.district_code,block.state_name,  " +
                      "block.state_code,block.dist_id,block.block_id from rdvts_oltp.block_boundary as block  ";
 
-        if (blockIds != null && !blockIds.isEmpty()) {
-            qry += " AND block.dist_id IN (:blockIds)";
-            sqlParam.addValue("blockIds", blockIds);
+        if (distIds != null && !distIds.isEmpty()) {
+            qry += " WHERE block.dist_id IN (:distIds)";
+            sqlParam.addValue("distIds", distIds);
         }
-       return null;
+       return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(BlockBoundaryDto.class));
     }
     public List<Integer> getListOfBlockIds(List<Integer> distId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT DISTINCT block.block_id FROM rdvts_oltp.block_boundary as block  WHERE block.dist_id=:distId";
         sqlParam.addValue("distId", distId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<DivisionDto> getListOfDivisionByListOfDistId(List<Integer> distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT div.id, div.division_name as divisionName,div.dist_id as distId,dist.district_name as distName,div.division_id from rdvts_oltp.division_m as div   " +
+                "left join rdvts_oltp.district_boundary as dist on dist.dist_id = div.dist_id" ;
+
+        if (distIds != null && !distIds.isEmpty()) {
+            qry += " WHERE div.dist_id IN (:distIds)";
+            sqlParam.addValue("distIds", distIds);
+        }
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
     }
 }
 
