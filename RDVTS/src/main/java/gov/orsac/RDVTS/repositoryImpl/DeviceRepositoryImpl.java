@@ -30,12 +30,12 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return 0;
     }
 
-    public List<DeviceDto> getDeviceById(Integer deviceId) {
+    public List<DeviceDto> getDeviceById(Integer deviceId,Integer userId) {
         List<DeviceDto> device;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2, " +
-                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,  " +
+                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no as deviceNo,  " +
                 "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,  " +
                 "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber  " +
                 "from rdvts_oltp.device_m as dm   " +
@@ -46,6 +46,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             qry+=" AND dm.id=:deviceId";
         }
         sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("userId",userId);
         try {
             device = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
         }
@@ -55,7 +56,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return device;
     }
 
-    public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId) {
+    public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId,Integer userId) {
         List<DeviceAreaMappingDto> device ;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT dam.id, dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, block.district_name as distName, " +
@@ -70,6 +71,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             qry+=" AND dam.device_id=:deviceId";
         }
         sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("userId",userId);
         try {
             device = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));
         }

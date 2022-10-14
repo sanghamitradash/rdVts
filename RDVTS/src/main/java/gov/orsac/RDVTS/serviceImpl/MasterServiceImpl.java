@@ -253,6 +253,7 @@ public class MasterServiceImpl implements MasterService {
 
     @Override
     public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto) {
+
         return masterRepository.getVTUVendorList(vtuVendorFilterDto);
     }
 
@@ -280,5 +281,15 @@ public class MasterServiceImpl implements MasterService {
     @Override
     public List<DivisionDto> getDivisionBlockByDistId(Integer distId) {
         return masterRepositoryImpl.getDivisionBlockByDistId(distId);
+    }
+
+    @Override
+    public List<StateDto> getAllState() {
+        return masterRepositoryImpl.getAllState();
+    }
+
+    @Override
+    public List<DistrictBoundaryDto> getDistByStateId(Integer stateId) {
+        return masterRepositoryImpl.getDistByStateId(stateId);
     }
 }

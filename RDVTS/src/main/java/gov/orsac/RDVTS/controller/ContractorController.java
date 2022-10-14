@@ -48,11 +48,12 @@ public class ContractorController {
     }
 
     @PostMapping("/getContractById")
-    public RDVTSResponse getContractById(@RequestParam(name = "contractId", required = false) Integer contractId) {
+    public RDVTSResponse getContractById(@RequestParam(name = "contractId", required = false) Integer contractId,
+                                         @RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            ContractorDto contractor = contractorService.getContractById(contractId);
+            ContractorDto contractor = contractorService.getContractById(contractId,userId);
             result.put("contractor", contractor);
             response.setData(result);
             response.setStatus(1);
@@ -71,10 +72,10 @@ public class ContractorController {
 
     @PostMapping("/getContractorDetails")
     public RDVTSListResponse getContractorDetails(@RequestParam(name = "userId",required = false) Integer userId,
-                                              @RequestParam(name = "gContractorId",required = false)Integer gContractorId,
-                                              @RequestParam(name = "start") Integer start,
-                                              @RequestParam(name = "length") Integer length,
-                                              @RequestParam(name = "draw") Integer draw) {
+                                                  @RequestParam(name = "gContractorId",required = false)Integer gContractorId,
+                                                  @RequestParam(name = "start") Integer start,
+                                                  @RequestParam(name = "length") Integer length,
+                                                  @RequestParam(name = "draw") Integer draw) {
         ContractorFilterDto contractor = new ContractorFilterDto();
         contractor.setUserId(userId);
         contractor.setGContractorId(gContractorId);

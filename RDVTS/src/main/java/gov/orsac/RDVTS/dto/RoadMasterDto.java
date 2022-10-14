@@ -13,6 +13,8 @@ public class RoadMasterDto {
 
     private Integer id;
 
+    private Integer userId;
+
     private Integer packageId;
 
     private String packageName;

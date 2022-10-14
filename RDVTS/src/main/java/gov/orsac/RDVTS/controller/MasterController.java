@@ -751,14 +751,16 @@ public class MasterController {
 
     @PostMapping("/getVTUVendorList")
     public RDVTSListResponse getVTUVendorList(@RequestParam(name = "vendorId", required = false) Integer vendorId,
-                                          @RequestParam(name = "deviceId", required = false) Integer deviceId,
-                                          @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
-                                          @RequestParam(name = "start") Integer start,
-                                          @RequestParam(name = "length") Integer length,
-                                          @RequestParam(name = "draw") Integer draw){
+                                              @RequestParam(name = "userId",required = false) Integer userId,
+                                              @RequestParam(name = "deviceId", required = false) Integer deviceId,
+                                              @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
+                                              @RequestParam(name = "start") Integer start,
+                                              @RequestParam(name = "length") Integer length,
+                                              @RequestParam(name = "draw") Integer draw){
 
         VTUVendorFilterDto vtuVendorFilterDto = new VTUVendorFilterDto();
         vtuVendorFilterDto.setVendorId(vendorId);
+        vtuVendorFilterDto.setUserId(userId);
         vtuVendorFilterDto.setDeviceId(deviceId);
         vtuVendorFilterDto.setVtuVendorName(vtuVendorName);
         vtuVendorFilterDto.setLimit(length);
@@ -769,8 +771,8 @@ public class MasterController {
             Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto);
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
 //            if (!vendorList.isEmpty() && vendorList.size() > 0) {
-                result.put("vendorList", vendorList);
-                response.setData(result);
+//                result.put("vendorList", vendorList);
+                response.setData(vendorList);
                 response.setMessage("Vendor List");
                 response.setStatus(1);
                 response.setDraw(draw);
@@ -883,5 +885,49 @@ public class MasterController {
         return response;
     }
 
+    @PostMapping("/getAllState")
+    public RDVTSResponse getAllState() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<StateDto> state = masterService.getAllState();
+            if (!state.isEmpty() && state.size() > 0) {
+                result.put("state", state);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                result.put("state", state);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
+    @PostMapping("/getDistByStateId")
+    public RDVTSResponse getDistByStateId(@RequestParam(name = "stateId", required = false) Integer stateId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<DistrictBoundaryDto> dist = masterService.getDistByStateId(stateId);
+            result.put("dist", dist);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Dist By StateId");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 }
