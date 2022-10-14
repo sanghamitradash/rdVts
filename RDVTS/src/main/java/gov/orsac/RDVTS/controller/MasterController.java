@@ -883,5 +883,29 @@ public class MasterController {
         return response;
     }
 
-
+    @PostMapping("/getAllState")
+    public RDVTSResponse getAllState() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<StateDto> state = masterService.getAllState();
+            if (!state.isEmpty() && state.size() > 0) {
+                result.put("state", state);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                result.put("state", state);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
 }

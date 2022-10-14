@@ -6,6 +6,7 @@ import gov.orsac.RDVTS.entities.RoadEntity;
 import gov.orsac.RDVTS.entities.VTUVendorMasterEntity;
 import gov.orsac.RDVTS.service.RoadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -93,6 +94,44 @@ public class RoadController {
 //        }
 //        return response;
 //    }
+
+    @PostMapping("/getRoadList")
+    public RDVTSListResponse getRoadList(@RequestParam(name = "id",required = false) Integer id,
+                                           @RequestParam(name = "userId",required = false) Integer userId,
+                                           @RequestParam(name = "roadName",required = false)String roadName,
+                                           @RequestParam(name = "roadLength",required = false) Double roadLength,
+                                           @RequestParam(name = "roadLocation",required = false)Double roadLocation,
+                                           @RequestParam(name = "start") Integer start,
+                                           @RequestParam(name = "length") Integer length,
+                                           @RequestParam(name = "draw") Integer draw) {
+        RoadFilterDto road = new RoadFilterDto();
+        road.setId(id);
+        road.setUserId(userId);
+        road.setRoadName(roadName);
+        road.setRoadLength(roadLength);
+        road.setRoadLocation(roadLocation);
+        road.setUserId(userId);
+        road.setLimit(length);
+        road.setOffSet(start);
+        RDVTSListResponse response = new RDVTSListResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+
+            Page<RoadMasterDto> roadPageList = roadService.getRoadList(road);
+            List<RoadMasterDto> roadList = roadPageList.getContent();
+            //result.put("deviceList", deviceList);
+            response.setData(roadList);
+            response.setMessage("Road List");
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(roadPageList.getTotalElements());
+            response.setRecordsTotal(roadPageList.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+        } catch (Exception e) {
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
+        }
+        return response;
+    }
 
 
 }

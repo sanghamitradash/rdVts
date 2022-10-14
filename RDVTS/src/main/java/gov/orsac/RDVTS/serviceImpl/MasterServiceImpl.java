@@ -281,4 +281,9 @@ public class MasterServiceImpl implements MasterService {
     public List<DivisionDto> getDivisionBlockByDistId(Integer distId) {
         return masterRepositoryImpl.getDivisionBlockByDistId(distId);
     }
+
+    @Override
+    public List<StateDto> getAllState() {
+        return masterRepositoryImpl.getAllState();
+    }
 }
