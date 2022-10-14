@@ -37,7 +37,7 @@ public interface MasterService {
 
     VTUVendorMasterEntity saveVTUVendor(VTUVendorMasterDto vendorMasterDto);
 
-    VTUVendorMasterDto getVTUVendorById(Integer id);
+    List<VTUVendorMasterDto> getVTUVendorById(Integer id, Integer userId);
 
     Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto);
 

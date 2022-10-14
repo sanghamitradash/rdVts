@@ -4,6 +4,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.UserLevelMaster;
 import gov.orsac.RDVTS.repository.MasterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -198,9 +199,9 @@ public class MasterRepositoryImpl implements MasterRepository {
         return update > 0;
     }
 
-    public VTUVendorMasterDto getVTUVendorById(Integer id){
+    public List<VTUVendorMasterDto> getVTUVendorById(Integer id, Integer userId){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-
+        List<VTUVendorMasterDto> vendor;
         String qry ="SELECT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
                 "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId, dev.model_name as deviceName " +
                 "FROM rdvts_oltp.vtu_vendor_m AS vtuM " +
@@ -211,7 +212,13 @@ public class MasterRepositoryImpl implements MasterRepository {
             qry+=" AND vtuM.id=:id";
         }
         sqlParam.addValue("id", id);
-        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
+        sqlParam.addValue("userId",userId);
+        try{
+            vendor = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
+        } catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return vendor;
     }
 
     public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto){
