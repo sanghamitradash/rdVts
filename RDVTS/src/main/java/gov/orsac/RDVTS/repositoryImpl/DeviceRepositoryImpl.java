@@ -30,7 +30,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return 0;
     }
 
-    public List<DeviceDto> getDeviceById(Integer deviceId) {
+    public List<DeviceDto> getDeviceById(Integer deviceId,Integer userId) {
         List<DeviceDto> device;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
@@ -46,6 +46,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             qry+=" AND dm.id=:deviceId";
         }
         sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("userId",userId);
         try {
             device = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
         }
@@ -55,7 +56,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return device;
     }
 
-    public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId) {
+    public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId,Integer userId) {
         List<DeviceAreaMappingDto> device ;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT dam.id, dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, block.district_name as distName, " +
@@ -70,6 +71,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             qry+=" AND dam.device_id=:deviceId";
         }
         sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("userId",userId);
         try {
             device = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));
         }

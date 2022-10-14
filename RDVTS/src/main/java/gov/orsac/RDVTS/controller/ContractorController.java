@@ -48,11 +48,12 @@ public class ContractorController {
     }
 
     @PostMapping("/getContractById")
-    public RDVTSResponse getContractById(@RequestParam(name = "contractId", required = false) Integer contractId) {
+    public RDVTSResponse getContractById(@RequestParam(name = "contractId", required = false) Integer contractId,
+                                         @RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            ContractorDto contractor = contractorService.getContractById(contractId);
+            ContractorDto contractor = contractorService.getContractById(contractId,userId);
             result.put("contractor", contractor);
             response.setData(result);
             response.setStatus(1);

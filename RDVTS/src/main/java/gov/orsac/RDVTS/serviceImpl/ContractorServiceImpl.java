@@ -48,8 +48,8 @@ public class ContractorServiceImpl implements ContractorService {
     }
 
     @Override
-    public ContractorDto getContractById(Integer contractId) {
-        return contractorRepository.getContractById(contractId);
+    public ContractorDto getContractById(Integer contractId,Integer userId) {
+        return contractorRepository.getContractById(contractId,userId);
     }
 
     @Override
