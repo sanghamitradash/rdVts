@@ -193,6 +193,35 @@ public class VehicleController {
         }
         return response;
     }
+    @PostMapping("/assignVehicleOwner")
+    public RDVTSResponse assignVehicleOwner(@RequestBody VehicleDeviceMappingEntity vehicleDeviceMapping) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+/*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
+                    && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
+            VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
+            result.put("saveVehicleMapping", saveVehicleMapping);
+            response.setData(result);
+            response.setStatus(1);
+            response.setMessage("Assign Vehicle Device Created Successfully");
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+           /* }
+            else {
+                response = new RDVTSResponse(0,
+                        new ResponseEntity<>(HttpStatus.OK),
+                        "Vehicle Type,Vehicle No.,Vehicle Chassis No.,Vehicle Engine No.,Vehicle SpeedLiMit mandatory",
+                        result);
+            }*/
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
     @PostMapping("/assignVehicleWork")
     public RDVTSResponse assignVehicleWork(@RequestBody List<VehicleWorkMappingDto> vehicleWorkMapping) {
         RDVTSResponse response = new RDVTSResponse();

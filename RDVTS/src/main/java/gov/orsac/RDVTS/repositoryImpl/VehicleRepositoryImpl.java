@@ -121,7 +121,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }
 
         //Validation on basis of userLevel and lower level user
-        UserInfoDto user=userRepositoryImpl.getUserByUserId(vehicle.getUserId());
+      /*  UserInfoDto user=userRepositoryImpl.getUserByUserId(vehicle.getUserId());
         if(user.userLevelId==5){
             qry+="and owner.contractor_id=:contractorId ";
             sqlParam.addValue("contractorId",vehicle.getUserId());
@@ -130,7 +130,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
            List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());
            qry+=" and owner.user_id IN (:userIdList) ";
            sqlParam.addValue("userIdList",userIdList);
-        }
+        }*/
 
 
 
