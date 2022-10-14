@@ -730,13 +730,13 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorById")
-    public RDVTSResponse getVTUVendorById(@RequestParam Integer id){
+    public RDVTSResponse getVTUVendorById(@RequestParam Integer id, Integer userId){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            VTUVendorMasterDto vtuVendorMasterDto = masterService.getVTUVendorById(id);
+            List<VTUVendorMasterDto> vtuVendorMasterDto = masterService.getVTUVendorById(id, userId);
 
             result.put("getVTUVendorById", vtuVendorMasterDto);
             response.setData(result);
