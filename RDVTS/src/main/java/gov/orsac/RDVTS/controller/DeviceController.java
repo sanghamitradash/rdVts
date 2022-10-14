@@ -86,12 +86,13 @@ public class DeviceController {
     //Get Device Details By ID
 
     @PostMapping("/getDeviceById")
-    public RDVTSResponse getDeviceById(@RequestParam(name = "deviceId", required = false) Integer deviceId) {
+    public RDVTSResponse getDeviceById(@RequestParam(name = "deviceId", required = false) Integer deviceId,
+                                       @RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<DeviceDto> device = deviceService.getDeviceById(deviceId);
-            List<DeviceAreaMappingDto> deviceArea = deviceService.getDeviceAreaByDeviceId(deviceId);
+            List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
+            List<DeviceAreaMappingDto> deviceArea = deviceService.getDeviceAreaByDeviceId(deviceId,userId);
             result.put("device", device);
             result.put("deviceArea",deviceArea);
             response.setData(result);
