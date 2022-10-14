@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ContractorRepository {
 
-    ContractorDto getContractById(Integer contractId,Integer userId);
+    List<ContractorDto> getContractById(Integer contractId,Integer userId);
 
     Page<ContractorDto> getContractorDetails(ContractorFilterDto contractor);
 }

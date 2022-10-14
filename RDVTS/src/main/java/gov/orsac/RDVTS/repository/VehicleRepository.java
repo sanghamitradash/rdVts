@@ -13,4 +13,6 @@ public interface VehicleRepository {
     Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle);
     List<VehicleTypeDto> getVehicleTypeList();
     List<VehicleMasterDto> getUnAssignedVehicleData(Integer userId);
+
+    List<VehicleMasterDto> getVehicleById(Integer id, Integer userId);
 }
