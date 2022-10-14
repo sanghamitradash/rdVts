@@ -107,7 +107,6 @@ public class RoadController {
         road.setRoadName(roadName);
         road.setRoadLength(roadLength);
         road.setRoadLocation(roadLocation);
-        road.setUserId(userId);
         road.setLimit(length);
         road.setOffSet(start);
         RDVTSListResponse response = new RDVTSListResponse();

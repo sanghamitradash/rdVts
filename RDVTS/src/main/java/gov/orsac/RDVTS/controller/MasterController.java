@@ -751,14 +751,16 @@ public class MasterController {
 
     @PostMapping("/getVTUVendorList")
     public RDVTSListResponse getVTUVendorList(@RequestParam(name = "vendorId", required = false) Integer vendorId,
-                                          @RequestParam(name = "deviceId", required = false) Integer deviceId,
-                                          @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
-                                          @RequestParam(name = "start") Integer start,
-                                          @RequestParam(name = "length") Integer length,
-                                          @RequestParam(name = "draw") Integer draw){
+                                              @RequestParam(name = "userId",required = false) Integer userId,
+                                              @RequestParam(name = "deviceId", required = false) Integer deviceId,
+                                              @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
+                                              @RequestParam(name = "start") Integer start,
+                                              @RequestParam(name = "length") Integer length,
+                                              @RequestParam(name = "draw") Integer draw){
 
         VTUVendorFilterDto vtuVendorFilterDto = new VTUVendorFilterDto();
         vtuVendorFilterDto.setVendorId(vendorId);
+        vtuVendorFilterDto.setUserId(userId);
         vtuVendorFilterDto.setDeviceId(deviceId);
         vtuVendorFilterDto.setVtuVendorName(vtuVendorName);
         vtuVendorFilterDto.setLimit(length);
@@ -769,8 +771,8 @@ public class MasterController {
             Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto);
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
 //            if (!vendorList.isEmpty() && vendorList.size() > 0) {
-                result.put("vendorList", vendorList);
-                response.setData(result);
+//                result.put("vendorList", vendorList);
+                response.setData(vendorList);
                 response.setMessage("Vendor List");
                 response.setStatus(1);
                 response.setDraw(draw);
