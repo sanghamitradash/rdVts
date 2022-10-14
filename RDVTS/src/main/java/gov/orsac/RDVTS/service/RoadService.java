@@ -9,5 +9,5 @@ public interface RoadService {
 
     RoadMasterDto getRoadById(Integer roadId);
 
-//    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
+    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
 }
