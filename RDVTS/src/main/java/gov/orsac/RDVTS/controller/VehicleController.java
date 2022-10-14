@@ -6,9 +6,11 @@ import gov.orsac.RDVTS.entities.RoleEntity;
 import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.entities.VehicleWorkMappingEntity;
+import gov.orsac.RDVTS.repository.VehicleDeviceMappingRepository;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.VehicleService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,10 @@ import java.util.Map;
 public class VehicleController {
     @Autowired
     private VehicleService vehicleService;
+    @Autowired
+    private VehicleRepository vehicleRepository;
+    @Autowired
+    private VehicleDeviceMappingRepository vehicleDeviceMappingRepository;
     @PostMapping("/addVehicle")
     public RDVTSResponse saveVehicle(@RequestBody VehicleMaster vehicle) {
         RDVTSResponse response = new RDVTSResponse();
@@ -61,7 +67,11 @@ public class VehicleController {
 
         try {
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
+            VehicleDeviceMappingDto device=vehicleService.getVehicleDeviceMapping(vehicleId);
+            List<VehicleWorkMappingDto> work=vehicleService.getVehicleWorkMapping(vehicleId);
             result.put("vehicle", vehicle);
+            result.put("device",device);
+            result.put("work",work);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Vehicle By Id");
@@ -182,7 +192,7 @@ public class VehicleController {
         return response;
     }
     @PostMapping("/assignVehicleWork")
-    public RDVTSResponse assignVehicleWork(@RequestBody List<VehicleWorkMappingEntity> vehicleWorkMapping) {
+    public RDVTSResponse assignVehicleWork(@RequestBody List<VehicleWorkMappingDto> vehicleWorkMapping) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
