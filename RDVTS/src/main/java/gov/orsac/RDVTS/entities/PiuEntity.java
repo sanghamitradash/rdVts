@@ -17,8 +17,8 @@ import java.util.Date;
 public class PiuEntity {
 
     @Id
-    @SequenceGenerator(name = "designation_m_sequence", sequenceName = "designation_m_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "designation_m_sequence")
+    @SequenceGenerator(name = "piu_id_sequence", sequenceName = "piu_id_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "piu_id_sequence")
     @Column(name = "id")
     private Integer id;
 
