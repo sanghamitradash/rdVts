@@ -74,7 +74,7 @@ public class ContractorRepositoryImpl implements ContractorRepository {
 
     }
 */
-    public ContractorDto getContractById(Integer contractId) {
+    public ContractorDto getContractById(Integer contractId,Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on,cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
