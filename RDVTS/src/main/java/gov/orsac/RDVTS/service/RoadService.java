@@ -7,5 +7,7 @@ public interface RoadService {
 
     RoadEntity saveRoad(RoadMasterDto roadMasterDto);
 
-    RoadMasterDto getDeviceById(Integer roadId);
+    RoadMasterDto getRoadById(Integer roadId);
+
+//    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
 }

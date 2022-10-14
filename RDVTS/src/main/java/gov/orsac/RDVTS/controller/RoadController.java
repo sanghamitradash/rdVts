@@ -53,7 +53,7 @@ public class RoadController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            RoadMasterDto road = roadService.getDeviceById(roadId);
+            RoadMasterDto road = roadService.getRoadById(roadId);
             result.put("road", road);
             response.setData(result);
             response.setStatus(1);
@@ -67,6 +67,32 @@ public class RoadController {
         }
         return response;
     }
+
+//    @PostMapping("/updateRoad")
+//    public RDVTSResponse updateRoad(@RequestParam Integer id,
+//                                    @RequestParam String data) {
+//        RDVTSResponse response = new RDVTSResponse();
+//        Map<String, Object> result = new HashMap<>();
+//        try {
+//            ObjectMapper mapper = new ObjectMapper();
+//
+//            RoadMasterDto roadMasterDto = mapper.readValue(data, RoadMasterDto.class);
+//            RoadMasterDto updateRoad = roadService.updateRoad(id, roadMasterDto);
+//
+//            result.put("updateRoad", updateRoad);
+//            response.setData(result);
+//            response.setStatus(1);
+//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//            response.setMessage("Road Updated Successfully");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            response = new RDVTSResponse(0,
+//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+//                    e.getMessage(),
+//                    result);
+//        }
+//        return response;
+//    }
 
 
 }

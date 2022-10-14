@@ -32,7 +32,7 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public RoadMasterDto getDeviceById(Integer roadId) {
-        return roadRepositoryImpl.getDeviceById(roadId);
+    public RoadMasterDto getRoadById(Integer roadId) {
+        return roadRepositoryImpl.getRoadById(roadId);
     }
 }
