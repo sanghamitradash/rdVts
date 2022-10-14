@@ -295,8 +295,13 @@ public class MasterServiceImpl implements MasterService {
 
     @Override
     public List<BlockBoundaryDto> getListOfBlockByListOfDistId(List<Integer> distId) {
-        List<Integer> blockIds = masterRepositoryImpl.getListOfBlockIds(distId);
-        return masterRepositoryImpl.getListOfBlockByListOfDistId(blockIds);
+        //List<Integer> distIds = masterRepositoryImpl.getListOfBlockIds(distId);
+        return masterRepositoryImpl.getListOfBlockByListOfDistId(distId);
+    }
+
+    @Override
+    public List<DivisionDto> getListOfDivisionByListOfDistId(List<Integer> distId) {
+        return masterRepositoryImpl.getListOfDivisionByListOfDistId(distId);
     }
 
 
