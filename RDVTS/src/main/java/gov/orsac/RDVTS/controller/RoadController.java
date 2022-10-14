@@ -47,11 +47,11 @@ public class RoadController {
     }
 
     @PostMapping("/getRoadById")
-    public RDVTSResponse getRoadById(@RequestParam(name = "roadId", required = false) Integer roadId) {
+    public RDVTSResponse getRoadById(@RequestParam(name = "roadId", required = false) Integer roadId, Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            RoadMasterDto road = roadService.getRoadById(roadId);
+            List<RoadMasterDto> road = roadService.getRoadById(roadId, userId);
             result.put("road", road);
             response.setData(result);
             response.setStatus(1);

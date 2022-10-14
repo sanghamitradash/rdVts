@@ -15,6 +15,6 @@ public interface MasterRepository {
     List<MenuDto> getMenu(Integer userId,Integer id);
     List<UserLevelMaster> getUserLevelById(Integer userLevelId);
     List<UserLevelMaster> getAllUserLevel(Integer userLevelId);
-    VTUVendorMasterDto getVTUVendorById(Integer id);
+    List<VTUVendorMasterDto> getVTUVendorById(Integer id, Integer userId);
     Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto);
 }

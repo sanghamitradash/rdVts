@@ -7,6 +7,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.MenuEntity;
 import gov.orsac.RDVTS.entities.PiuEntity;
 import gov.orsac.RDVTS.entities.RoleEntity;
+import gov.orsac.RDVTS.service.GeoMasterService;
 import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.PiuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,8 @@ public class MasterController {
     private MasterService masterService;
     @Autowired
     private DesignationService designationService;
+    @Autowired
+    private GeoMasterService geoMasterService;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -223,8 +226,8 @@ public class MasterController {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-                if (designationEntity.getName() != null || designationEntity.getDescription() != null || designationEntity.getUserLevelId() != null
-                    || designationEntity.getName().isEmpty() || designationEntity.getDescription().isEmpty() || designationEntity.getUserLevelId().toString().isEmpty()) {
+                if (designationEntity.getName() != null && designationEntity.getDescription() != null && designationEntity.getUserLevelId() != null
+                    && designationEntity.getName().isEmpty() && designationEntity.getDescription().isEmpty() && designationEntity.getUserLevelId().toString().isEmpty()) {
 
                     DesignationEntity designationEntity1 = designationService.saveDesignation(designationEntity);
                     result.put("designationEntity1", designationEntity1);
@@ -727,13 +730,13 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorById")
-    public RDVTSResponse getVTUVendorById(@RequestParam Integer id){
+    public RDVTSResponse getVTUVendorById(@RequestParam Integer id, Integer userId){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            VTUVendorMasterDto vtuVendorMasterDto = masterService.getVTUVendorById(id);
+            List<VTUVendorMasterDto> vtuVendorMasterDto = masterService.getVTUVendorById(id, userId);
 
             result.put("getVTUVendorById", vtuVendorMasterDto);
             response.setData(result);
@@ -880,6 +883,27 @@ public class MasterController {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/addGeoMaster")
+    public RDVTSResponse saveGeoMaster(@RequestBody GeoMasterEntity geoMaster) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+                GeoMasterEntity geoMasterEntity = geoMasterService.saveGeoMaster(geoMaster);
+                result.put("geoMasterEntity", geoMasterEntity);
+                response.setData(result);
+                response.setStatus(1);
+                response.setMessage("Geo Master Created Successfully");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
                     result);
         }
         return response;
