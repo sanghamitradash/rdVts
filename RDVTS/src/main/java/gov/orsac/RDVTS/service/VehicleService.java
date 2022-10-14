@@ -17,6 +17,11 @@ public interface VehicleService {
     List<VehicleWorkMappingEntity> assignVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException;
     VehicleMasterDto getVehicleByVId(Integer vehicleId);
     VehicleDeviceMappingDto getVehicleDeviceMapping(Integer vehicleId);
+
+    List<VehicleDeviceMappingDto> getVehicleDeviceMappingList(List<Integer> vehicleId);
+
+
+
     List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer vehicleId);
 
     VehicleMaster updateVehicle(int id, VehicleMaster vehicle);

@@ -54,6 +54,10 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
+    public List<DeviceDto> getDeviceByIds(List<Integer> deviceId,Integer userId) {
+        return deviceRepositoryImpl.getDeviceByIds(deviceId,userId);
+    }
+    @Override
     public List<DeviceDto> getDeviceById(Integer deviceId,Integer userId) {
         return deviceRepositoryImpl.getDeviceById(deviceId,userId);
     }

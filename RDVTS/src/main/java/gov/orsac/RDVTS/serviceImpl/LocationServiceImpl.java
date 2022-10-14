@@ -16,17 +16,17 @@ public class LocationServiceImpl implements LocationService {
     @Autowired
     LocationRepositoryImpl locationRepository;
     @Override
-    public VtuLocationDto getLatestRecordByImeiNumber(List<DeviceDto> deviceDtoList){
+    public List<VtuLocationDto> getLatestRecordByImeiNumber(List<Long> imei2,List<Long> imei1){
 
-       VtuLocationDto vtuLocationDto= locationRepository.getLatestRecordByImeiNumber(deviceDtoList);
+       List<VtuLocationDto> vtuLocationDto= locationRepository.getLatestRecordByImeiNumber(imei2,imei1);
 
         return vtuLocationDto;
     }
 
 
-    public List<VtuLocationDto> getLocationRecordByDateTime(List<DeviceDto> deviceDtoList,Date startTime, Date endTime){
+    public List<VtuLocationDto> getLocationRecordByDateTime(List<Long> imei1,List<Long> imei2,Date startTime, Date endTime){
 
-        List<VtuLocationDto> vtuLocationDtoList= locationRepository.getLocationRecordByDateTime(deviceDtoList,startTime,endTime);
+        List<VtuLocationDto> vtuLocationDtoList= locationRepository.getLocationRecordByDateTime(imei2,imei1,startTime,endTime);
         return vtuLocationDtoList;
     }
 
