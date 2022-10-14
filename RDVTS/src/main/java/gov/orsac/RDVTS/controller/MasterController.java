@@ -226,20 +226,20 @@ public class MasterController {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-                if (designationEntity.getName() != null && designationEntity.getDescription() != null && designationEntity.getUserLevelId() != null
+            if (designationEntity.getName() != null && designationEntity.getDescription() != null && designationEntity.getUserLevelId() != null
                     && designationEntity.getName().isEmpty() && designationEntity.getDescription().isEmpty() && designationEntity.getUserLevelId().toString().isEmpty()) {
 
-                    DesignationEntity designationEntity1 = designationService.saveDesignation(designationEntity);
-                    result.put("designationEntity1", designationEntity1);
-                    rdvtsResponse.setData(designationEntity1);
-                    rdvtsResponse.setStatus(1);
-                    rdvtsResponse.setMessage("Designation Entered Successfully");
-                } else {
-                    rdvtsResponse = new RDVTSResponse(0,
-                            new ResponseEntity<>(HttpStatus.OK),
-                            "Designation Name, Description, User Level are Mandatory !!",
-                            result);
-                    }
+                DesignationEntity designationEntity1 = designationService.saveDesignation(designationEntity);
+                result.put("designationEntity1", designationEntity1);
+                rdvtsResponse.setData(designationEntity1);
+                rdvtsResponse.setStatus(1);
+                rdvtsResponse.setMessage("Designation Entered Successfully");
+            } else {
+                rdvtsResponse = new RDVTSResponse(0,
+                        new ResponseEntity<>(HttpStatus.OK),
+                        "Designation Name, Description, User Level are Mandatory !!",
+                        result);
+            }
         } catch (Exception e) {
             rdvtsResponse = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -250,10 +250,10 @@ public class MasterController {
     }
 
     @PostMapping("/getDesignationList")
-    public RDVTSListResponse getDesignationList(@RequestParam (name = "id") Integer id,
+    public RDVTSListResponse getDesignationList(@RequestParam(name = "id") Integer id,
                                                 @RequestParam(name = "start") Integer start,
                                                 @RequestParam(name = "length") Integer length,
-                                                @RequestParam(name = "draw") Integer draw ) {
+                                                @RequestParam(name = "draw") Integer draw) {
         DesignationDto designationDto = new DesignationDto();
         designationDto.setId(id);
         designationDto.setOffSet(start);
@@ -327,7 +327,7 @@ public class MasterController {
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
                 response.setMessage("Record not found.");
-                }
+            }
         } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -501,6 +501,7 @@ public class MasterController {
         }
         return response;
     }
+
     @PostMapping("/getAllMenuByRoleId")
     public RDVTSResponse getAllMenuByRoleId(@RequestParam Integer userId, @RequestParam Integer roleId) {
         RDVTSResponse response = new RDVTSResponse();
@@ -561,7 +562,7 @@ public class MasterController {
 
     @PostMapping("/getMenuHierarchy")
     public RDVTSResponse getMenuHierarchy(@RequestParam Integer userId,
-                                            @RequestParam(name = "roleId", defaultValue = "0", required = false) Integer roleId) {
+                                          @RequestParam(name = "roleId", defaultValue = "0", required = false) Integer roleId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<ParentMenuInfo> parentMenuList = new ArrayList<>();
@@ -606,13 +607,13 @@ public class MasterController {
                     if (itemRM.getMenuId() == item) {
                         hasAvailable = true;
                         //Set Menu Active
-                        masterService.deactivateMenu(roleId, item,true);
+                        masterService.deactivateMenu(roleId, item, true);
                     }
                 }
                 if (!hasAvailable) {
                     //save
                     roleMenuDto.setRoleId(roleId);
-                    RoleMenuMaster roleMenuMObj = masterService.updateRoleMenu(roleMenuDto,item);
+                    RoleMenuMaster roleMenuMObj = masterService.updateRoleMenu(roleMenuDto, item);
                 }
             }
             response.setData(result);
@@ -680,7 +681,7 @@ public class MasterController {
 
 
     @PostMapping("/createVTUVendor")
-    public RDVTSResponse saveVTUVendor(@RequestParam String data){
+    public RDVTSResponse saveVTUVendor(@RequestParam String data) {
         RDVTSResponse response = new RDVTSResponse();
         if (data != null && !data.isEmpty()) {
             Map<String, Object> result = new HashMap<>();
@@ -694,7 +695,7 @@ public class MasterController {
                         && !vendorMasterDto.getVtuVendorPhone().toString().isEmpty() && !vendorMasterDto.getCustomerCareNumber().toString().isEmpty()) {
 
                     if (vendorMasterDto.getVtuVendorPhone().toString().length() == 10 && vendorMasterDto.getCustomerCareNumber().toString().length() == 10) {
-                       vendorMasterEntity = masterService.saveVTUVendor(vendorMasterDto);
+                        vendorMasterEntity = masterService.saveVTUVendor(vendorMasterDto);
                         result.put("saveVendor", vendorMasterEntity);
                         response.setData(result);
                         response.setStatus(1);
@@ -730,7 +731,7 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorById")
-    public RDVTSResponse getVTUVendorById(@RequestParam Integer id){
+    public RDVTSResponse getVTUVendorById(@RequestParam Integer id) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -754,12 +755,12 @@ public class MasterController {
 
     @PostMapping("/getVTUVendorList")
     public RDVTSListResponse getVTUVendorList(@RequestParam(name = "vendorId", required = false) Integer vendorId,
-                                              @RequestParam(name = "userId",required = false) Integer userId,
+                                              @RequestParam(name = "userId", required = false) Integer userId,
                                               @RequestParam(name = "deviceId", required = false) Integer deviceId,
                                               @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
                                               @RequestParam(name = "start") Integer start,
                                               @RequestParam(name = "length") Integer length,
-                                              @RequestParam(name = "draw") Integer draw){
+                                              @RequestParam(name = "draw") Integer draw) {
 
         VTUVendorFilterDto vtuVendorFilterDto = new VTUVendorFilterDto();
         vtuVendorFilterDto.setVendorId(vendorId);
@@ -770,18 +771,18 @@ public class MasterController {
         vtuVendorFilterDto.setOffSet(start);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
-        try{
+        try {
             Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto);
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
 //            if (!vendorList.isEmpty() && vendorList.size() > 0) {
 //                result.put("vendorList", vendorList);
-                response.setData(vendorList);
-                response.setMessage("Vendor List");
-                response.setStatus(1);
-                response.setDraw(draw);
-                response.setRecordsFiltered(vendorListPage.getTotalElements());
-                response.setRecordsTotal(vendorListPage.getTotalElements());
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setData(vendorList);
+            response.setMessage("Vendor List");
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(vendorListPage.getTotalElements());
+            response.setRecordsTotal(vendorListPage.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 //            } else {
 //                result.put("vendorList", vendorList);
 //                response.setData(result);
@@ -790,14 +791,14 @@ public class MasterController {
 //                response.setMessage("Record not found.");
 //            }
         } catch (Exception e) {
-            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),e.getMessage(),result);
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
         return response;
     }
 
     @PostMapping("/updateVTUVendor")
     public RDVTSResponse updateVTUVendor(@RequestParam Integer id,
-                                        @RequestParam String data) {
+                                         @RequestParam String data) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -888,17 +889,18 @@ public class MasterController {
         return response;
     }
 
+    //Geo Master
     @PostMapping("/addGeoMaster")
     public RDVTSResponse saveGeoMaster(@RequestBody GeoMasterEntity geoMaster) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-                GeoMasterEntity geoMasterEntity = geoMasterService.saveGeoMaster(geoMaster);
-                result.put("geoMasterEntity", geoMasterEntity);
-                response.setData(result);
-                response.setStatus(1);
-                response.setMessage("Geo Master Created Successfully");
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            GeoMasterEntity geoMasterEntity = geoMasterService.saveGeoMaster(geoMaster);
+            result.put("geoMasterEntity", geoMasterEntity);
+            response.setData(result);
+            response.setStatus(1);
+            response.setMessage("Geo Master Created Successfully");
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
         } catch (Exception e) {
             response = new RDVTSResponse(0,
@@ -908,6 +910,71 @@ public class MasterController {
         }
         return response;
     }
+
+    @PostMapping("/updateGeoMaster")
+    public RDVTSResponse updateGeoMaster(@RequestParam int id,
+                                         @RequestParam(name = "data") String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            GeoMasterDto updateGeoMasterDto = mapper.readValue(data,GeoMasterDto.class);
+            GeoMasterEntity geoMasterEntity = geoMasterService.updateGeoMaster(id, updateGeoMasterDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Geo Master Updated Successfully");
+        } catch (Exception e){
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getAllGeoMasterByAllId")
+    public RDVTSResponse getAllGeoMasterByAllId(@RequestParam(name = "id", required = false) Integer id,
+                                                    @RequestParam(name = "geoWorkId", required = false) Integer geoWorkId,
+                                                    @RequestParam(name = "geoDistId", required = false) Integer geoDistId,
+                                                    @RequestParam(name = "geoBlockId", required = false) Integer geoBlockId,
+                                                    @RequestParam(name = "geoPiuId", required = false) Integer geoPiuId,
+                                                    @RequestParam(name = "geoContractorId", required = false) Integer geoContractorId,
+                                                    @RequestParam(name = "workId", required = false) Integer workId,
+                                                    @RequestParam(name = "piuId", required = false) Integer piuId,
+                                                    @RequestParam(name = "distId", required = false) Integer distId,
+                                                    @RequestParam(name = "blockId", required = false) Integer blockId,
+                                                    @RequestParam(name = "roadId", required = false) Integer roadId ) {
+        GeoMasterDto geoMasterDto = new GeoMasterDto();
+        geoMasterDto.setId(id);
+        geoMasterDto.setGeoWorkId(geoWorkId);
+        geoMasterDto.setGeoDistId(geoDistId);
+        geoMasterDto.setGeoBlockId(geoBlockId);
+        geoMasterDto.setGeoPiuId(geoPiuId);
+        geoMasterDto.setGeoContractorId(geoContractorId);
+        geoMasterDto.setWorkId(workId);
+        geoMasterDto.setPiuId(piuId);
+        geoMasterDto.setDistId(distId);
+        geoMasterDto.setBlockId(blockId);
+        geoMasterDto.setRoadId(roadId);
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+            List<GeoMasterDto> geoMasterDtoList = geoMasterService.getAllGeoMasterByAllId(geoMasterDto);
+            result.put("geoMasterDtoList", geoMasterDtoList);
+            response.setData(geoMasterDtoList);
+            response.setMessage("Geo Master List");
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+        } catch (Exception e){
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
     @PostMapping("/getAllState")
     public RDVTSResponse getAllState() {
