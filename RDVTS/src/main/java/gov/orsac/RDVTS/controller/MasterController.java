@@ -910,4 +910,24 @@ public class MasterController {
         }
         return response;
     }
+
+    @PostMapping("/getDistByStateId")
+    public RDVTSResponse getDistByStateId(@RequestParam(name = "stateId", required = false) Integer stateId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<DistrictBoundaryDto> dist = masterService.getDistByStateId(stateId);
+            result.put("dist", dist);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Dist By StateId");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 }
