@@ -20,7 +20,7 @@ public interface UserRepository extends JpaRepository<UserEntity,Integer> {
     UserEntity findUserByMobileAndEmail(String email);
 
 
-    @Query(value = "select * from user_m where mobile_1=:mobile and is_active=true", nativeQuery = true)
+    @Query(value = "select * from user_m where mobile_1=:mobile", nativeQuery = true)
     UserEntity findUserByMobile(long mobile);
 
 

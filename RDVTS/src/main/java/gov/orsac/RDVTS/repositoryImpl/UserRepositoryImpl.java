@@ -37,57 +37,79 @@ public class UserRepositoryImpl {
         }
         return 0;
     }
-    public Page<UserListDto> getUserList(UserListDto userListDto) {
-
-        PageRequest pageable = PageRequest.of(userListDto.getPage(), userListDto.getSize(), Sort.Direction.fromString(userListDto.getSortOrder()), userListDto.getSortBy());
-        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+    public Page<UserInfoDto> getUserList(UserListRequest userListRequest) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        Integer  resultCount = 0;
+        PageRequest pageable = null;
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(userListRequest.getOffSet(),userListRequest.getLimit(), Sort.Direction.fromString("desc"), "id");
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        int resultCount=0;
+
         String queryString = " ";
 
-        queryString += "SELECT am.id,am.user_id,am.g_dist_id as gdistId,geoDist.g_district_name as gDistName,am.dist_id,dist.district_name as distName,\n" +
-                "am.g_block_id as gblockId,geoblock.g_block_name as gBlockName,am.block_id,block.block_name as blockName,am.division_id,am.g_state_id as gStateId,geo.state_name as gStateName,  \n" +
-                "am.state_id as stateId \n" +
-                "from rdvts_oltp.user_area_mapping as am \n" +
-                "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id = am.g_dist_id \n" +
-                "left join rdvts_oltp.district_boundary as dist on dist.dist_id = am.dist_id  \n" +
-                "left join rdvts_oltp.geo_block_m as geoblock on geoblock.id = am.g_block_id  \n" +
-                "left join rdvts_oltp.block_boundary as block on block.block_id = am.block_id  \n" +
-                "left join rdvts_oltp.geo_state_m as geo on geo.id =am.g_state_id where is_active=true  ";
+        queryString += "SELECT  um.id, um.first_name, um.middle_name, um.last_name, um.email, um.mobile_1 as mobile1, um.mobile_2 as mobile2 ,\n" +
+                "um.designation_id as designationId , um.user_level_id, um.role_id as roleId , um.is_active as isactive, um.created_by , \n" +
+                "um.created_on, um.updated_by, um.updated_on, um.contractor_id as contractorId,dm.name as designation,ulm.name as userLevel ,\n" +
+                "rm.name as role,cm.name as contractor \n" +
+                "\t FROM rdvts_oltp.user_m as um \n" +
+                "\t left join rdvts_oltp.designation_m as dm on dm.id=um.designation_id \n" +
+                "\t left join rdvts_oltp.user_level_m as ulm on ulm.id=um.user_level_id \n" +
+                "\t left join rdvts_oltp.role_m as rm on rm.id=um.role_id \n" +
+                "\t left join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id where um.is_active=true ";
 
-        if(userListDto.getId()>0){
-            queryString+="AND am.id=:id ";
-            sqlParam.addValue("id",userListDto.getId());
+//        if (roleId==1){
+//
+//
+//
+//        }
+//
+//        else {
+//
+//            if (userlevel)
+//
+//
+//        }
+
+        if( userListRequest.getId()!= null && userListRequest.getId() > 0 ){
+            queryString+=" AND um.id=:id ";
+            sqlParam.addValue("id",userListRequest.getId());
         }
-        if(userListDto.getDesignationId()!= null && userListDto.getDesignationId() > 0){
-            queryString+="AND   getDesignationId=:getDesignationId ";
-            sqlParam.addValue("getDesignationId",userListDto.getDesignationId());
+        if(userListRequest.getDesignationId()!= null && userListRequest.getDesignationId() > 0){
+            queryString+=" AND   um.designation_id=:getDesignationId ";
+            sqlParam.addValue("getDesignationId",userListRequest.getDesignationId());
 
 
-        }
-
-        if(userListDto.getRoleId()!= null && userListDto.getRoleId() > 0){
-            queryString+="AND roleId=:roleId ";
-            sqlParam.addValue("roleId",userListDto.getRoleId());
-        }
-
-
-        if(userListDto.getEmail() != null && !userListDto.getEmail().isEmpty()){
-            queryString+="AND email=:email ";
-            sqlParam.addValue("email",userListDto.getEmail());
-        }
-        if(userListDto.getMobile1() != null && userListDto.getMobile1()>0){
-            queryString+="AND mobile1=:mobile1 ";
-            sqlParam.addValue("mobile1",userListDto.getMobile1());
         }
 
+        if(userListRequest.getRoleId()!= null && userListRequest.getRoleId() > 0){
+            queryString+=" AND um.role_id=:roleId ";
+            sqlParam.addValue("roleId",userListRequest.getRoleId());
+        }
 
-        queryString += " ORDER BY " + order.getProperty() + " " + order.getDirection().name();
+        if(userListRequest.getContractorId()!= null && userListRequest.getContractorId() > 0){
+            queryString+=" AND um.contractor_id=:contractorId ";
+            sqlParam.addValue("contractorId",userListRequest.getContractorId());
+        }
+
+
+
+        if(userListRequest.getEmail() != null && !userListRequest.getEmail().isEmpty()){
+            queryString+=" AND um.email=:email ";
+            sqlParam.addValue("email",userListRequest.getEmail());
+        }
+        if(userListRequest.getMobile1() != null){
+            queryString+=" AND um.mobile1=:mobile1 ";
+            sqlParam.addValue("mobile1",userListRequest.getMobile1());
+        }
+
+
         resultCount = count(queryString, sqlParam);
-        queryString += " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
+        if (userListRequest.getLimit() > 0){
+            queryString += " LIMIT " +userListRequest.getLimit() + " OFFSET " + userListRequest.getOffSet();
+        }
 
-        List<UserListDto> userListDtos = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(UserListDto.class));
-        return new PageImpl<>(userListDtos,pageable,resultCount);
+        List<UserInfoDto> userListRequests = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(UserInfoDto.class));
+        return new PageImpl<>(userListRequests,pageable,resultCount);
         //return namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(UserDto.class));
 
 
@@ -97,14 +119,21 @@ public class UserRepositoryImpl {
 
 
 
-    public UserDto getUserByUserId(Integer userId) {
+    public UserInfoDto getUserByUserId(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "SELECT id, first_name, middle_name, last_name, email, mobile_1 as mobile1, mobile_2 as mobile2, designation_id as designationId , user_level_id, role_id as roleId , is_active as isactive, created_by, created_on, updated_by, updated_on, contractor_id as contractorId\n" +
-                "\t FROM rdvts_oltp.user_m where id=:userId and is_active=true; ";
+        String qry = "SELECT  um.id, um.first_name, um.middle_name, um.last_name, um.email, um.mobile_1 as mobile1, um.mobile_2 as mobile2,\n" +
+                "um.designation_id as designationId , um.user_level_id, um.role_id as roleId , um.is_active as isactive, um.created_by, \n" +
+                "um.created_on, um.updated_by, um.updated_on, um.contractor_id as contractorId,dm.name as designation,ulm.name as userLevel,\n" +
+                "rm.name as role,cm.name as contractor\n" +
+                "\tFROM rdvts_oltp.user_m as um \n" +
+                "\tleft join rdvts_oltp.designation_m as dm on dm.id=um.designation_id\n" +
+                "\tleft join rdvts_oltp.user_level_m as ulm on ulm.id=um.user_level_id\n" +
+                "\tleft join rdvts_oltp.role_m as rm on rm.id=um.role_id\n" +
+                "\tleft join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id where um.is_active=true and um.id=:userId; ";
 
         sqlParam.addValue("userId", userId);
-        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserDto.class));
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserInfoDto.class));
     }
 
     public UserDto getUserBymobile(Long mobile) {
@@ -125,6 +154,14 @@ public class UserRepositoryImpl {
 
         sqlParam.addValue("email", email);
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserEntity.class));
+    }
+
+    public boolean deactivateAreaByUserId(int id){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "UPDATE rdvts_oltp.user_area_mapping SET is_active = false WHERE user_id=:id";
+        sqlParam.addValue("id",id);
+        Integer update = namedJdbc.update(qry, sqlParam);
+        return update>0;
     }
 
 
