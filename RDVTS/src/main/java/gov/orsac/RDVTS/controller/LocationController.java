@@ -36,7 +36,9 @@ public class LocationController {
                 if(device.size()>0){
                     if (device.get(0).getImeiNo1()!=null || device.get(0).getImeiNo2()!=null){
                         VtuLocationDto vtuLocationDto = locationService.getLatestRecordByImeiNumber(device);
-                        response.setData(vtuLocationDto);
+
+                        result.put("user", vtuLocationDto);
+                        response.setData(result);
                         response.setStatus(1);
                         response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                         response.setMessage("Device Latest Location");
@@ -51,9 +53,9 @@ public class LocationController {
 
             } else if (vehicleId !=null) {
 
-                VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
+                VehicleDeviceMappingDto device=vehicleService.getVehicleDeviceMapping(vehicleId);
 
-
+                //VtuLocationDto vtuLocationDto = locationService.getLatestRecordByImeiNumber(device);
 
             } else {
 
@@ -69,6 +71,7 @@ public class LocationController {
 
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),
