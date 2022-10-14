@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.RDVTSResponse;
+import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.WorkDto;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
@@ -55,5 +56,11 @@ public class WorkServiceImpl implements WorkService {
         WorkEntity save = workRepository.save(existingWork);
         return save;
     }
+
+    @Override
+    public List<VehicleWorkMappingDto> getVehicleBywork(List<Integer> workIds){
+         return workRepositoryImpl.getVehicleBywork(workIds);
+    }
+
 
 }

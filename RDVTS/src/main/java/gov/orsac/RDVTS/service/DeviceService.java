@@ -17,6 +17,7 @@ public interface DeviceService {
 
     List<DeviceMappingEntity> saveDeviceMapping(List<DeviceMappingEntity> deviceMapping, Integer id);
 
+    List<DeviceDto> getDeviceByIds(List<Integer> deviceId, Integer userId);
     List<DeviceDto> getDeviceById(Integer deviceId, Integer userId);
 
     List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId, Integer userId);
