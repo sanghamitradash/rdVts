@@ -773,9 +773,17 @@ public class MasterController {
         try{
             Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto);
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
+            List<VTUVendorMasterDto> finalVendorList=new ArrayList<>();
+            Integer start1=start;
+            for(VTUVendorMasterDto vtu:vendorList){
+
+                start1=start1+1;
+                vtu.setSlNo(start1);
+                finalVendorList.add(vtu);
+            }
 //            if (!vendorList.isEmpty() && vendorList.size() > 0) {
 //                result.put("vendorList", vendorList);
-                response.setData(vendorList);
+                response.setData(finalVendorList);
                 response.setMessage("Vendor List");
                 response.setStatus(1);
                 response.setDraw(draw);
