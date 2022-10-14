@@ -277,5 +277,11 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
 
     }
+
+    public List<StateDto> getAllState() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT state.id, state.state_name from rdvts_oltp.state_m as state ";
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(StateDto.class));
+    }
 }
 

@@ -110,21 +110,21 @@ public class DeviceController {
 
     @PostMapping("/getDeviceList")
     public RDVTSListResponse getDeviceList(@RequestParam(name = "imeiNo1",required = false) Long imeiNo1,
-                                       @RequestParam(name = "simIccId1",required = false) Long simIccId1,
-                                       @RequestParam(name = "mobileNumber1",required = false)Long mobileNumber1,
-                                       @RequestParam(name = "imeiNo2",required = false) Long imeiNo2,
-                                       @RequestParam(name = "simIccId2",required = false)Long simIccId2,
-                                       @RequestParam(name = "mobileNumber2",required = false) Long mobileNumber2,
-                                       @RequestParam(name = "vtuVendorId",required = false) Integer vtuVendorId,
-                                       @RequestParam(name = "distId",required = false) Integer distId,
-                                       @RequestParam(name = "blockId",required = false) Integer blockId,
-                                       @RequestParam(name = "gDistId",required = false) Integer gDistId,
-                                       @RequestParam(name = "gBlockId", required = false) Integer gBlockId,
-                                       @RequestParam(name = "divisionId",required = false) Integer divisionId,
-                                       @RequestParam(name = "userId",required = false)Integer userId,
-                                       @RequestParam(name = "start") Integer start,
-                                       @RequestParam(name = "length") Integer length,
-                                       @RequestParam(name = "draw") Integer draw) {
+                                           @RequestParam(name = "simIccId1",required = false) Long simIccId1,
+                                           @RequestParam(name = "mobileNumber1",required = false)Long mobileNumber1,
+                                           @RequestParam(name = "imeiNo2",required = false) Long imeiNo2,
+                                           @RequestParam(name = "simIccId2",required = false)Long simIccId2,
+                                           @RequestParam(name = "mobileNumber2",required = false) Long mobileNumber2,
+                                           @RequestParam(name = "vtuVendorId",required = false) Integer vtuVendorId,
+                                           @RequestParam(name = "distId",required = false) Integer distId,
+                                           @RequestParam(name = "blockId",required = false) Integer blockId,
+                                           @RequestParam(name = "gDistId",required = false) Integer gDistId,
+                                           @RequestParam(name = "gBlockId", required = false) Integer gBlockId,
+                                           @RequestParam(name = "divisionId",required = false) Integer divisionId,
+                                           @RequestParam(name = "userId",required = false)Integer userId,
+                                           @RequestParam(name = "start") Integer start,
+                                           @RequestParam(name = "length") Integer length,
+                                           @RequestParam(name = "draw") Integer draw) {
         DeviceListDto device = new DeviceListDto();
         device.setImeiNo1(imeiNo1);
         device.setSimIccId1(simIccId1);

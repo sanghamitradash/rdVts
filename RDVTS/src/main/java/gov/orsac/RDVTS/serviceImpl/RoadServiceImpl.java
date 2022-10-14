@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.serviceImpl;
 
+import gov.orsac.RDVTS.dto.RoadFilterDto;
 import gov.orsac.RDVTS.dto.RoadMasterDto;
 import gov.orsac.RDVTS.dto.VTUVendorMasterDto;
 import gov.orsac.RDVTS.entities.RoadEntity;
@@ -11,6 +12,7 @@ import gov.orsac.RDVTS.service.RoadService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,5 +54,10 @@ public class RoadServiceImpl implements RoadService {
         existingId.setGeoMasterId(roadMasterDto.getGeoMasterId());
         RoadEntity save = roadRepository.save(existingId);
         return save;
+    }
+
+    @Override
+    public Page<RoadMasterDto> getRoadList(RoadFilterDto road) {
+        return null;
     }
 }
