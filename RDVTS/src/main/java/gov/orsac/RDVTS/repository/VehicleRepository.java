@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface VehicleRepository {
     VehicleMasterDto getVehicleByVId(Integer vehicleId);
-    VehicleDeviceMappingDto getVehicleDeviceMapping(Integer vehicleId);
+    VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId);
     List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer vehicleId);
     Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle);
     List<VehicleTypeDto> getVehicleTypeList();

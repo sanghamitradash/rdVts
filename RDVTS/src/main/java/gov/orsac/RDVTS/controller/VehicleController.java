@@ -67,7 +67,7 @@ public class VehicleController {
 
         try {
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
-            VehicleDeviceMappingDto device=vehicleService.getVehicleDeviceMapping(vehicleId);
+            VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
             List<VehicleWorkMappingDto> work=vehicleService.getVehicleWorkMapping(vehicleId);
             result.put("vehicle", vehicle);
             result.put("device",device);
@@ -122,6 +122,7 @@ public class VehicleController {
         vehicle.setWorkId(workId);
         vehicle.setLimit(length);
         vehicle.setOffSet(start);
+        vehicle.setUserId(userId);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
