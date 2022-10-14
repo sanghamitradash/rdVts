@@ -27,12 +27,13 @@ public class LocationController {
 
     @PostMapping("/getLatestLocationRecord")
     public RDVTSResponse getLatestLocationRecord(@RequestParam(name = "deviceId", required = false) Integer deviceId,
-                                                 @RequestParam(name = "vehicleId", required = false) Integer vehicleId) {
+                                                 @RequestParam(name = "vehicleId", required = false) Integer vehicleId,
+                                                 @RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             if (deviceId !=null){
-                List<DeviceDto> device = deviceService.getDeviceById(deviceId);
+                List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
                 if(device.size()>0){
                     if (device.get(0).getImeiNo1()!=null || device.get(0).getImeiNo2()!=null){
                         VtuLocationDto vtuLocationDto = locationService.getLatestRecordByImeiNumber(device);
