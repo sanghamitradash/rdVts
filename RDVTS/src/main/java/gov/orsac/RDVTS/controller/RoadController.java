@@ -25,9 +25,9 @@ public class RoadController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
             try {
+                RoadEntity roadEntity = new RoadEntity();
                 ObjectMapper mapper = new ObjectMapper();
                 RoadMasterDto roadMasterDto = mapper.readValue(data, RoadMasterDto.class);
-                RoadEntity roadEntity = new RoadEntity();
 
                 roadEntity = roadService.saveRoad(roadMasterDto);
                 result.put("saveRoad", roadEntity);
@@ -35,8 +35,6 @@ public class RoadController {
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
                 response.setMessage("Road Created Successfully!!");
-
-
             } catch (Exception e) {
                 response = new RDVTSResponse(0,
                         new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
