@@ -207,34 +207,46 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
     }
 
-    public List<VTUVendorMasterDto> getVTUVendorList(VTUVendorMasterDto vtuVendorMasterDto){
+    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto){
 //        UserDto userDto = new UserDto();
 //        userDto.setId(vtuVendorMasterDto.getUserId());
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        PageRequest pageable = null;
+
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(vtuVendorFilterDto.getOffSet(),vtuVendorFilterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+
+        int resultCount=0;
         String queryString = " ";
-        queryString = "SELECT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
-                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId " +
-                "FROM rdvts_oltp.vtu_vendor_m AS vtuM  " +
-                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id " +
-                "WHERE vtuM.is_active = true";
+        queryString = "SELECT DISTINCT vtuM.id as vendorId, vtuM.vtu_vendor_name as vtuVendorName , vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, vtuM.is_active, vtuM.created_by,  " +
+                "vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId, dev.model_name as deviceName FROM rdvts_oltp.vtu_vendor_m AS vtuM   " +
+                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id   " +
+                "WHERE vtuM.is_active = true ";
 
-        if(vtuVendorMasterDto.getId() != null && vtuVendorMasterDto.getId() > 0){
-            queryString += " AND vtuM.id=:id ";
-            sqlParam.addValue("id", vtuVendorMasterDto.getId());
+        if(vtuVendorFilterDto.getVendorId() != null && vtuVendorFilterDto.getVendorId() > 0){
+            queryString += " AND vtuM.id=:vendorId ";
+            sqlParam.addValue("vendorId", vtuVendorFilterDto.getVendorId());
         }
 
-        if(vtuVendorMasterDto.getDeviceId() != null && vtuVendorMasterDto.getDeviceId() > 0){
+        if(vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0){
             queryString += " AND dev.id=:deviceId ";
-            sqlParam.addValue("deviceId", vtuVendorMasterDto.getDeviceId());
+            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDeviceId());
         }
 
-        if(vtuVendorMasterDto.getVtuVendorName() != null && !vtuVendorMasterDto.getVtuVendorName().isEmpty()){
+        if(vtuVendorFilterDto.getVtuVendorName() != null){
             queryString += " AND vtuM.vtu_vendor_name LIKE(:vtuVendorName) ";
-            sqlParam.addValue("vtuVendorName", vtuVendorMasterDto.getVtuVendorName());
+            sqlParam.addValue("vtuVendorName", vtuVendorFilterDto.getVtuVendorName());
         }
 
-        return namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
+        resultCount = count(queryString, sqlParam);
+        if (vtuVendorFilterDto.getLimit() > 0){
+            queryString += " LIMIT " +vtuVendorFilterDto.getLimit() + " OFFSET " + vtuVendorFilterDto.getOffSet();
+        }
+
+        List<VTUVendorMasterDto> list = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
+        return new PageImpl<>(list, pageable, resultCount);
     }
 
 }

@@ -741,36 +741,42 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorList")
-    public RDVTSResponse getVTUVendorList(@RequestParam(name = "id", required = false) Integer id,
+    public RDVTSListResponse getVTUVendorList(@RequestParam(name = "vendorId", required = false) Integer vendorId,
                                           @RequestParam(name = "deviceId", required = false) Integer deviceId,
-                                          @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName){
+                                          @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
+                                          @RequestParam(name = "start") Integer start,
+                                          @RequestParam(name = "length") Integer length,
+                                          @RequestParam(name = "draw") Integer draw){
 
-        VTUVendorMasterDto vtuVendorMasterDto = new VTUVendorMasterDto();
-        vtuVendorMasterDto.setId(id);
-        vtuVendorMasterDto.setDeviceId(deviceId);
-        vtuVendorMasterDto.setVtuVendorName(vtuVendorName);
-        RDVTSResponse response = new RDVTSResponse();
+        VTUVendorFilterDto vtuVendorFilterDto = new VTUVendorFilterDto();
+        vtuVendorFilterDto.setVendorId(vendorId);
+        vtuVendorFilterDto.setDeviceId(deviceId);
+        vtuVendorFilterDto.setVtuVendorName(vtuVendorName);
+        vtuVendorFilterDto.setLimit(length);
+        vtuVendorFilterDto.setOffSet(start);
+        RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try{
-            List<VTUVendorMasterDto> vendorList = masterService.getVTUVendorList(vtuVendorMasterDto);
-            if (!vendorList.isEmpty() && vendorList.size() > 0) {
+            Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto);
+            List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
+//            if (!vendorList.isEmpty() && vendorList.size() > 0) {
                 result.put("vendorList", vendorList);
                 response.setData(result);
+                response.setMessage("Vendor List");
                 response.setStatus(1);
+                response.setDraw(draw);
+                response.setRecordsFiltered(vendorListPage.getTotalElements());
+                response.setRecordsTotal(vendorListPage.getTotalElements());
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            } else {
-                result.put("vendorList", vendorList);
-                response.setData(result);
-                response.setStatus(1);
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-                response.setMessage("Record not found.");
-            }
+//            } else {
+//                result.put("vendorList", vendorList);
+//                response.setData(result);
+//                response.setStatus(1);
+//                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//                response.setMessage("Record not found.");
+//            }
         } catch (Exception e) {
-            e.printStackTrace();
-            response = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(),
-                    result);
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),e.getMessage(),result);
         }
         return response;
     }
