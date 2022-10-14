@@ -97,15 +97,15 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
                 "left join rdvts_oltp.vehicle_work_mapping as work on vm.id=work.vehicle_id where vm.is_active=true ";
         if(vehicle.getVehicleTypeId()>0){
-            qry+=" vm.vehicle_type_id=:vehicleTypeId ";
+            qry+=" and vm.vehicle_type_id=:vehicleTypeId ";
             sqlParam.addValue("vehicleTypeId",vehicle.getVehicleTypeId());
         }
         if(vehicle.getDeviceId()>0){
-            qry+=" device.device_id=:deviceId ";
+            qry+=" and device.device_id=:deviceId ";
             sqlParam.addValue("deviceId",vehicle.getDeviceId());
         }
         if(vehicle.getWorkId()>0){
-            qry+=" work.work_id=:workId ";
+            qry+=" and work.work_id=:workId ";
             sqlParam.addValue("workId",vehicle.getWorkId());
         }
 

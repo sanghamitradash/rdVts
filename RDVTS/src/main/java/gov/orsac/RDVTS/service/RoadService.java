@@ -11,6 +11,7 @@ public interface RoadService {
 
     RoadMasterDto getRoadById(Integer roadId);
 
+    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
     Page<RoadMasterDto> getRoadList(RoadFilterDto road);
 
 //    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);

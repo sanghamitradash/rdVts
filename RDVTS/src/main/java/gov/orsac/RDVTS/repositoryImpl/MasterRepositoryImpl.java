@@ -204,7 +204,11 @@ public class MasterRepositoryImpl implements MasterRepository {
                 "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId, dev.model_name as deviceName " +
                 "FROM rdvts_oltp.vtu_vendor_m AS vtuM " +
                 "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id " +
-                "WHERE vtuM.id =:id";
+                "WHERE vtuM.is_active = true ";
+
+        if(id>0){
+            qry+=" AND vtuM.id=:id";
+        }
         sqlParam.addValue("id", id);
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
     }

@@ -3,7 +3,6 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.RoadEntity;
-import gov.orsac.RDVTS.entities.VTUVendorMasterEntity;
 import gov.orsac.RDVTS.service.RoadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,9 +27,9 @@ public class RoadController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
             try {
+                RoadEntity roadEntity = new RoadEntity();
                 ObjectMapper mapper = new ObjectMapper();
                 RoadMasterDto roadMasterDto = mapper.readValue(data, RoadMasterDto.class);
-                RoadEntity roadEntity = new RoadEntity();
 
                 roadEntity = roadService.saveRoad(roadMasterDto);
                 result.put("saveRoad", roadEntity);
@@ -38,8 +37,6 @@ public class RoadController {
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
                 response.setMessage("Road Created Successfully!!");
-
-
             } catch (Exception e) {
                 response = new RDVTSResponse(0,
                         new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -69,31 +66,31 @@ public class RoadController {
         return response;
     }
 
-//    @PostMapping("/updateRoad")
-//    public RDVTSResponse updateRoad(@RequestParam Integer id,
-//                                    @RequestParam String data) {
-//        RDVTSResponse response = new RDVTSResponse();
-//        Map<String, Object> result = new HashMap<>();
-//        try {
-//            ObjectMapper mapper = new ObjectMapper();
-//
-//            RoadMasterDto roadMasterDto = mapper.readValue(data, RoadMasterDto.class);
-//            RoadMasterDto updateRoad = roadService.updateRoad(id, roadMasterDto);
-//
-//            result.put("updateRoad", updateRoad);
-//            response.setData(result);
-//            response.setStatus(1);
-//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-//            response.setMessage("Road Updated Successfully");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            response = new RDVTSResponse(0,
-//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                    e.getMessage(),
-//                    result);
-//        }
-//        return response;
-//    }
+    @PostMapping("/updateRoad")
+    public RDVTSResponse updateRoad(@RequestParam Integer id,
+                                    @RequestParam String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            RoadMasterDto roadMasterDto = mapper.readValue(data, RoadMasterDto.class);
+            RoadEntity updateRoad = roadService.updateRoad(id, roadMasterDto);
+
+            result.put("updateRoad", updateRoad);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Road Updated Successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
     @PostMapping("/getRoadList")
     public RDVTSListResponse getRoadList(@RequestParam(name = "id",required = false) Integer id,
@@ -110,7 +107,6 @@ public class RoadController {
         road.setRoadName(roadName);
         road.setRoadLength(roadLength);
         road.setRoadLocation(roadLocation);
-        road.setUserId(userId);
         road.setLimit(length);
         road.setOffSet(start);
         RDVTSListResponse response = new RDVTSListResponse();
