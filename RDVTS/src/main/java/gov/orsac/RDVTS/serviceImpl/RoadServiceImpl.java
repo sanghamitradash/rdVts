@@ -59,7 +59,7 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public Page<RoadMasterDto> getRoadList(RoadFilterDto road) {
-        return null;
+    public Page<RoadMasterDto> getRoadList(RoadFilterDto roadFilterDto) {
+        return roadRepository.getRoadList(roadFilterDto);
     }
 }

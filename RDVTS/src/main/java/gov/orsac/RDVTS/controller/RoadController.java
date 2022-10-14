@@ -101,19 +101,18 @@ public class RoadController {
                                            @RequestParam(name = "start") Integer start,
                                            @RequestParam(name = "length") Integer length,
                                            @RequestParam(name = "draw") Integer draw) {
-        RoadFilterDto road = new RoadFilterDto();
-        road.setId(id);
-        road.setUserId(userId);
-        road.setRoadName(roadName);
-        road.setRoadLength(roadLength);
-        road.setRoadLocation(roadLocation);
-        road.setLimit(length);
-        road.setOffSet(start);
+        RoadFilterDto roadFilterDto = new RoadFilterDto();
+        roadFilterDto.setId(id);
+        roadFilterDto.setUserId(userId);
+        roadFilterDto.setRoadName(roadName);
+        roadFilterDto.setRoadLength(roadLength);
+        roadFilterDto.setRoadLocation(roadLocation);
+        roadFilterDto.setLimit(length);
+        roadFilterDto.setOffSet(start);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-
-            Page<RoadMasterDto> roadPageList = roadService.getRoadList(road);
+            Page<RoadMasterDto> roadPageList = roadService.getRoadList(roadFilterDto);
             List<RoadMasterDto> roadList = roadPageList.getContent();
             //result.put("deviceList", deviceList);
             response.setData(roadList);
