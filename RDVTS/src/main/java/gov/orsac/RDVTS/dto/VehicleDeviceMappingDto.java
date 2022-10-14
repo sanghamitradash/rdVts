@@ -1,10 +1,12 @@
 package gov.orsac.RDVTS.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Column;
 import javax.persistence.Temporal;
@@ -14,15 +16,18 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkDto {
-
+public class VehicleDeviceMappingDto {
     private Integer id;
 
-    private Integer workId;
+    private Integer vehicleId;
 
-    private String workName;
+    private Integer deviceId;
 
-    private Boolean isActive=true;
+    private Date installationDate;
+
+    private Integer installedBy;
+
+    private boolean active;
 
     private Integer createdBy;
 
@@ -31,8 +36,4 @@ public class WorkDto {
     private Integer updatedBy;
 
     private Date updatedOn;
-
-    private Integer offSet;
-    private Integer limit;
-    private Integer draw;
 }

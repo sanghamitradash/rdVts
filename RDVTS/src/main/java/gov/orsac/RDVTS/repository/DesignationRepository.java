@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.repository;
 
 import gov.orsac.RDVTS.dto.DesignationDto;
 import gov.orsac.RDVTS.entities.DesignationEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

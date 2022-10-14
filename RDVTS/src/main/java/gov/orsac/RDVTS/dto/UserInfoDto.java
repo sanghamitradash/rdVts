@@ -20,10 +20,15 @@ public class UserInfoDto {
     private String email;
     private Long mobile1;
     private Long mobile2;
+    private Integer designationId;
     private String designation;
+    public Integer userLevelId;
     public String userLevel;
+    public Integer roleId ;
     public String role ;
-    public Integer contractor ;
+    public Integer contractorId ;
+    public String contractor ;
+
     private boolean isactive;
     private Integer createdBy;
     private Date createdOn;

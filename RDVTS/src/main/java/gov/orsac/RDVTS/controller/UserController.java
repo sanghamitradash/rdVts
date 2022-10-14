@@ -39,7 +39,7 @@ public class UserController {
 
     @PostMapping("/createUser")
     public RDVTSResponse saveUser(@RequestParam(name = "userData") String data, @RequestParam(name = "password") String password,
-                                  @RequestParam(name = "userArea")  String userAreaData) {
+                                  @RequestParam(name = "userArea") String userAreaData) {
 
 //        List<UserAreaMappingEntity> userArea;
 
@@ -55,7 +55,6 @@ public class UserController {
                 List<UserAreaMappingRequestDTO> userArea = mapper.readValue(userAreaData, mapper.getTypeFactory().constructCollectionType(List.class, UserAreaMappingRequestDTO.class));
 
                 UserPasswordMasterDto userPasswordMasterDto = new UserPasswordMasterDto();
-
 
 
                 if (userDto.getMobile1() != null || userDto.getEmail() != null
@@ -76,13 +75,12 @@ public class UserController {
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter proper mobile number 2!!",
                                 result);
-                    }else if(userArea == null || userArea.size()<=0){
+                    } else if (userArea == null || userArea.size() <= 0) {
                         rdvtsResponse = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter user area!!",
                                 result);
-                    }
-                    else if (userDto.getUserLevelId() == 1
+                    } else if (userDto.getUserLevelId() == 1
                             && userArea.get(0).getGStateId() == null
                             && userArea.get(0).getGStateId().toString().isEmpty()) {
                         //For State
@@ -115,14 +113,14 @@ public class UserController {
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter user block!!",
                                 result);
-                    }else {
+                    } else {
                         //Validate Email
 
                         UserEntity savedUser = userService.saveUser(userDto);
 
                         userDto.setCreatedBy(savedUser.getId());
                         userDto.setUpdatedBy(savedUser.getId());
-                        userService.updateUser(savedUser.getId(),userDto);
+                        userService.updateUser(savedUser.getId(), userDto);
 
                         //Save Password
                         userPasswordMasterDto.setUserId(savedUser.getId());
@@ -134,8 +132,8 @@ public class UserController {
 
                         //Save User Area Mapping
                         List<UserAreaMappingEntity> userAreaMappingEntities = new ArrayList<>();
-                        for(UserAreaMappingRequestDTO item : userArea){
-                            UserAreaMappingEntity umEt= new UserAreaMappingEntity();
+                        for (UserAreaMappingRequestDTO item : userArea) {
+                            UserAreaMappingEntity umEt = new UserAreaMappingEntity();
                             umEt.setStateId(item.getStateId());
                             umEt.setGStateId(item.getGStateId());
                             umEt.setGDistId(item.getGDistId());
@@ -163,8 +161,9 @@ public class UserController {
                         returnDTO.setMobile1(savedUser.getMobile1());
                         returnDTO.setMobile2(savedUser.getMobile2());
                         returnDTO.setEmail(savedUser.getEmail());
+                        returnDTO.setContractorId(savedUser.getContractorId());
                         result.put("user", returnDTO);
-                        result.put("UserAreaMapping",areaObj);
+                        result.put("UserAreaMapping", areaObj);
 
                         rdvtsResponse.setData(result);
                         rdvtsResponse.setStatus(1);
@@ -202,9 +201,9 @@ public class UserController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            UserDto userDto = userService.getUserByUserId(userId);
+            UserInfoDto userInfoDto = userService.getUserByUserId(userId);
             List<UserAreaMappingDto> userArea = userService.getUserAreaMappingByUserId(userId);
-            result.put("user", userDto);
+            result.put("user", userInfoDto);
             result.put("userArea", userArea);
             response.setData(result);
             response.setStatus(1);
@@ -241,47 +240,225 @@ public class UserController {
 
 
     @PostMapping("/getUserList")
-    public RDVTSResponse getUserList(@RequestBody UserListDto userListDto) {
-        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+
+
+    public RDVTSListResponse getUserList(@RequestParam(name = "id", required = false) Integer id,
+                                         @RequestParam(name = "designationId", required = false) Integer designationId,
+                                         @RequestParam(name = "roleId", required = false) Integer roleId,
+                                         @RequestParam(name = "contractorId", required = false) Integer contractorId,
+                                         @RequestParam(name = "email", required = false) String email,
+                                         @RequestParam(name = "mobile1", required = false) Long mobile1,
+                                         @RequestParam(name = "start") Integer start,
+                                         @RequestParam(name = "length") Integer length,
+                                         @RequestParam(name = "draw") Integer draw) {
+        RDVTSListResponse response = new RDVTSListResponse();
+
+        UserListRequest userListDto = new UserListRequest();
+
+        userListDto.setId(id);
+        userListDto.setDesignationId(designationId);
+        userListDto.setRoleId(roleId);
+        userListDto.setContractorId(contractorId);
+        userListDto.setEmail(email);
+        userListDto.setMobile1(mobile1);
+
+        userListDto.setLimit(length);
+        userListDto.setOffSet(start);
+
+
         Map<String, Object> result = new HashMap<>();
         try {
-            Page<UserListDto> userListDtos = userService.getUserList(userListDto);
-            result.put("userList", userListDtos);
-            rdvtsResponse.setData(result);
-            rdvtsResponse.setStatus(1);
-            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            rdvtsResponse.setMessage("List of Users.");
+            Page<UserInfoDto> userInfoDtos = userService.getUserList(userListDto);
+            List<UserInfoDto> userList = userInfoDtos.getContent();
+            result.put("userList", userList);
+            response.setData(result);
+            response.setMessage("User List");
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(userInfoDtos.getTotalElements());
+            response.setRecordsTotal(userInfoDtos.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
-            rdvtsResponse = new RDVTSResponse(0,
+            response = new RDVTSListResponse(0,
                     new ResponseEntity<>(HttpStatus.OK),
                     e.getMessage(),
                     result);
         }
-        return rdvtsResponse;
+        return response;
     }
 
 
     @PostMapping("/updateUser")
-    public RDVTSResponse updateUser(@RequestParam Integer id,
-                                    @RequestParam(name = "data") String data) {
+    public RDVTSResponse updateUser(@RequestParam(name = "userData") String data,
+                                    @RequestParam(name = "userArea", required = false) String userAreaData) {
+//        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+//        Map<String, Object> result = new HashMap<>();
+//        try {
+//            ObjectMapper mapper = new ObjectMapper();
+//            UserDto userDto = mapper.readValue(data, UserDto.class);
+//            UserEntity updatedUser = userService.updateUser(id, userDto);
+//            //userService.deactivateAreaMapping(updatedUser.getId());
+//            //List<UserAreaMapping> userAreaMappingInfo = userService.saveUserAreaMapping(userUpdateRequest.getUserAreaMapping(), updatedUser.getId());
+//            result.put("user", updatedUser);
+//            //result.put("userAreaMappingInfo", userAreaMappingInfo);
+//            rdvtsResponse.setData(result);
+//            rdvtsResponse.setStatus(1);
+//            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//            rdvtsResponse.setMessage("User Updated Successfully");
+//        } catch (Exception e) {
+//            rdvtsResponse = new RDVTSResponse(0,
+//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+//                    e.getMessage(),
+//                    result);
+//        }
+//        return rdvtsResponse;
+
+
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
-        Map<String, Object> result = new HashMap<>();
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            UserDto userDto = mapper.readValue(data, UserDto.class);
-            UserEntity updatedUser = userService.updateUser(id, userDto);
-            //userService.deactivateAreaMapping(updatedUser.getId());
-            //List<UserAreaMapping> userAreaMappingInfo = userService.saveUserAreaMapping(userUpdateRequest.getUserAreaMapping(), updatedUser.getId());
-            result.put("user", updatedUser);
-            //result.put("userAreaMappingInfo", userAreaMappingInfo);
-            rdvtsResponse.setData(result);
-            rdvtsResponse.setStatus(1);
-            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            rdvtsResponse.setMessage("User Updated Successfully");
-        } catch (Exception e) {
+        if (data != null && !data.isEmpty()) {
+            Map<String, Object> result = new HashMap<>();
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                UserDto userDto = mapper.readValue(data, UserDto.class);
+
+                List<UserAreaMappingRequestDTO> userArea = mapper.readValue(userAreaData, mapper.getTypeFactory().constructCollectionType(List.class, UserAreaMappingRequestDTO.class));
+
+//                UserPasswordMasterDto userPasswordMasterDto = new UserPasswordMasterDto();
+
+
+                if (userDto.getMobile1() != null || userDto.getEmail() != null
+                        || userDto.getDesignationId() != null || userDto.getRoleId() != null
+                        || userDto.getFirstName() != null || userDto.getUserLevelId() != null ||
+                        !userDto.getMobile1().toString().isEmpty()
+                        || !userDto.getDesignationId().toString().isEmpty() || !userDto.getRoleId().toString().isEmpty() ||
+                        !userDto.getUserLevelId().toString().isEmpty()
+                        || !userDto.getEmail().isEmpty() || !userDto.getFirstName().isEmpty()) {
+
+                    if (userDto.getMobile1().toString().length() != 10) {
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter proper mobile number 1!!",
+                                result);
+                    } else if (userDto.getMobile2().toString().length() != 10) {
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter proper mobile number 2!!",
+                                result);
+                    } else if (userArea == null || userArea.size() <= 0) {
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter user area!!",
+                                result);
+                    } else if (userDto.getUserLevelId() == 1
+                            && userArea.get(0).getGStateId() == null
+                            && userArea.get(0).getGStateId().toString().isEmpty()) {
+                        //For State
+
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter user state!!",
+                                result);
+                    } else if (userDto.getUserLevelId() == 2
+                            && userArea.get(0).getGStateId() == null
+                            && userArea.get(0).getGStateId().toString().isEmpty()
+                            && userArea.get(0).getGDistId() == null
+                            && userArea.get(0).getGDistId().toString().isEmpty()) {
+                        //District
+
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter user district!!",
+                                result);
+                    } else if (userDto.getUserLevelId() == 3
+                            && userArea.get(0).getGStateId() == null
+                            && userArea.get(0).getGStateId().toString().isEmpty()
+                            && userArea.get(0).getGDistId() == null
+                            && userArea.get(0).getGDistId().toString().isEmpty()
+                            && userArea.get(0).getGBlockId() == null
+                            && userArea.get(0).getGBlockId().toString().isEmpty()) {
+
+                        //Block
+                        rdvtsResponse = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Please enter user block!!",
+                                result);
+                    } else {
+                        //Validate Email
+
+//                        UserEntity savedUser = userService.saveUser(userDto);
+//
+                        userDto.setCreatedBy(userDto.getId());
+                        userDto.setUpdatedBy(userDto.getId());
+                        UserEntity savedUser = userService.updateUser(userDto.getId(), userDto);
+                        userService.deactivateAreaMapping(savedUser.getId());
+                        //Save Password
+//                        userPasswordMasterDto.setUserId(savedUser.getId());
+//                        userPasswordMasterDto.setCreatedBy(savedUser.getId());
+//                        userPasswordMasterDto.setUpdatedBy(savedUser.getId());
+//                        userPasswordMasterDto.setIsActive(true);
+//                        userPasswordMasterDto.setPassword(password);
+                        //  UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
+
+                        //Save User Area Mapping
+
+
+                        List<UserAreaMappingEntity> userAreaMappingEntities = new ArrayList<>();
+                        for (UserAreaMappingRequestDTO item : userArea) {
+                            UserAreaMappingEntity umEt = new UserAreaMappingEntity();
+                            umEt.setStateId(item.getStateId());
+                            umEt.setGStateId(item.getGStateId());
+                            umEt.setGDistId(item.getGDistId());
+                            umEt.setDistId(item.getDistId());
+                            umEt.setGBlockId(item.getGBlockId());
+                            umEt.setBlockId(item.getBlockId());
+                            umEt.setUserId(savedUser.getId());
+                            umEt.setCreatedBy(savedUser.getId());
+                            umEt.setUpdatedBy(savedUser.getId());
+                            umEt.setIsActive(true);
+                            userAreaMappingEntities.add(umEt);
+                        }
+
+                        List<UserAreaMappingEntity> areaObj = userService.createUserAreaMapping(userAreaMappingEntities);
+
+                        //Return Data
+                        UserDto returnDTO = new UserDto();
+                        returnDTO.setUserId(savedUser.getId());
+                        returnDTO.setDesignationId(savedUser.getDesignationId());
+                        returnDTO.setRoleId(savedUser.getRoleId());
+                        returnDTO.setUserLevelId(savedUser.getUserLevelId());
+                        returnDTO.setFirstName(savedUser.getFirstName());
+                        returnDTO.setMiddleName(savedUser.getMiddleName());
+                        returnDTO.setLastName(savedUser.getLastName());
+                        returnDTO.setMobile1(savedUser.getMobile1());
+                        returnDTO.setMobile2(savedUser.getMobile2());
+                        returnDTO.setEmail(savedUser.getEmail());
+                        result.put("user", returnDTO);
+                        result.put("UserAreaMapping", areaObj);
+
+                        rdvtsResponse.setData(result);
+                        rdvtsResponse.setStatus(1);
+                        rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+                        rdvtsResponse.setMessage("User Created Successfully!!");
+                    }
+
+                } else {
+                    rdvtsResponse = new RDVTSResponse(0,
+                            new ResponseEntity<>(HttpStatus.OK),
+                            "User First Name, Mobile Number, Email, Designation, User Level, User Role, Password are mandatory!!",
+                            result);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                rdvtsResponse = new RDVTSResponse(0,
+                        new ResponseEntity<>(HttpStatus.OK),
+                        e.getMessage(),
+                        result);
+            }
+        } else {
+            Map<String, Object> result = new HashMap<>();
             rdvtsResponse = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(),
+                    new ResponseEntity<>(HttpStatus.OK),
+                    "No Data found!!",
                     result);
         }
         return rdvtsResponse;
@@ -313,7 +490,7 @@ public class UserController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-           List<UserAreaMappingDto> userArea = userService.getUserAreaMappingByUserId(userId);
+            List<UserAreaMappingDto> userArea = userService.getUserAreaMappingByUserId(userId);
             result.put("userArea", userArea);
             response.setData(result);
             response.setStatus(1);
@@ -398,40 +575,58 @@ public class UserController {
             try {
                 Map<String, Object> result = new HashMap<>();
                 UserEntity dbUser = userService.findUserByMobile(request.getMobile1());
-                if (dbUser != null && !dbUser.getEmail().isEmpty()) {
-                    UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(dbUser.getId());
-                    boolean verifyuserpassword = encoder.matches(request.getPassword(), userPasswordMasterDto.getPassword());
-                    if (verifyuserpassword == true) {
+                if (dbUser.isIsactive() == false) {
+                    rdvtsResponse.setStatus(0);
+                    rdvtsResponse.setMessage("User Is Not Active!!");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                } else {
+                    if (dbUser != null && !dbUser.getEmail().isEmpty()) {
+                        UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(dbUser.getId());
+                        boolean verifyuserpassword = encoder.matches(request.getPassword(), userPasswordMasterDto.getPassword());
+                        if (verifyuserpassword == true) {
 
-                        UserDto userDto = new UserDto();
-                        userDto.setId(dbUser.getId());
-                        userDto.setMobile1(dbUser.getMobile1());
-                        userDto.setFirstName(dbUser.getFirstName());
-                        userDto.setRoleId(dbUser.getRoleId());
-                        userDto.setDesignationId(dbUser.getDesignationId());
-                        userDto.setContractorId(dbUser.getContractorId());
-                        userDto.setUserId(dbUser.getId());
+                            UserDto userDto = new UserDto();
+                            userDto.setId(dbUser.getId());
+                            userDto.setMobile1(dbUser.getMobile1());
+                            userDto.setMobile2(dbUser.getMobile2());
+                            userDto.setEmail(dbUser.getEmail());
+                            userDto.setFirstName(dbUser.getFirstName());
+                            userDto.setMiddleName(dbUser.getMiddleName());
+                            userDto.setLastName(dbUser.getLastName());
+                            userDto.setRoleId(dbUser.getRoleId());
+                            userDto.setDesignationId(dbUser.getDesignationId());
+                            userDto.setUserLevelId(dbUser.getUserLevelId());
+                            userDto.setContractorId(dbUser.getContractorId());
+                            userDto.setIsactive(dbUser.isIsactive());
 
-                        List<ParentMenuInfo> roleMenuType = masterService.getMenuHierarchyByRole(dbUser.getId(), dbUser.getRoleId());
-                        List<RoleDto> roleByRoleId = masterService.getRoleByRoleId(dbUser.getRoleId());
+                            userDto.setCreatedBy(dbUser.getCreatedBy());
+                            userDto.setCreatedOn(dbUser.getCreatedOn());
+                            userDto.setUpdatedOn(dbUser.getUpdatedOn());
+                            userDto.setUpdatedBy(dbUser.getUpdatedBy());
 
-                        result.put("user", userDto);
-                        result.put("menu", roleMenuType);
-                        result.put("access", roleByRoleId.get(0));
-                        rdvtsResponse.setData(result);
-                        rdvtsResponse.setStatus(1);
-                        rdvtsResponse.setMessage("Login successfully!!");
-                        rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+                            List<ParentMenuInfo> roleMenuType = masterService.getMenuHierarchyByRole(dbUser.getId(), dbUser.getRoleId());
+                            List<RoleDto> roleByRoleId = masterService.getRoleByRoleId(dbUser.getRoleId());
+
+                            result.put("user", userDto);
+                            result.put("menu", roleMenuType);
+                            result.put("access", roleByRoleId.get(0));
+                            rdvtsResponse.setData(result);
+                            rdvtsResponse.setStatus(1);
+                            rdvtsResponse.setMessage("Login successfully!!");
+                            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                        } else {
+                            rdvtsResponse.setStatus(0);
+                            rdvtsResponse.setMessage("Wrong Password Entered!!");
+                            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                        }
                     } else {
                         rdvtsResponse.setStatus(0);
-                        rdvtsResponse.setMessage("Wrong Password Entered!!");
+                        rdvtsResponse.setMessage("User Not Found!!");
                         rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                     }
-                } else {
-                    rdvtsResponse.setStatus(0);
-                    rdvtsResponse.setMessage("User Not Found!!");
-                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                 }
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -552,8 +747,8 @@ public class UserController {
         if (!user.toString().isEmpty()) {
 
 
-            UserDto userDto=new UserDto();
-            BeanUtils.copyProperties(user,userDto);
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(user, userDto);
            /* userDto.setId(user.getId());
             userDto.setFirstName(user.getFirstName());*/
             Integer otp = userService.sendOtpToUser(userDto);
@@ -584,45 +779,46 @@ public class UserController {
     public RDVTSResponse resetUserPassword(@RequestBody(required = false) Map<String, String> param) {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
-        UserPasswordMasterDto uerPasswordMasterDto= new UserPasswordMasterDto();
-       // UserDto userDto = userService.getUserBymobile(Long.parseLong(param.get("mobile")));
+
         UserEntity userEntity = userService.findUserByMobileAndEmail(param.get("email"));
 
         UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(userEntity.getId());
 
         if (!userEntity.toString().isEmpty()) {
-            if (userEntity.getOtp()==Integer.parseInt(param.get("otp"))){
-            if (encoder.matches(param.get("password"), userPasswordMasterDto.getPassword())) {
-                rdvtsResponse.setStatus(0);
-                rdvtsResponse.setData(result);
-                rdvtsResponse.setMessage("New password shouldn't be same as old password !!!");
-                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
-            } else {
-               uerPasswordMasterDto.setPassword(param.get("password"));
-                UserPasswordMasterEntity updatedPassword=userService.updateUserPass(userEntity.getId(), uerPasswordMasterDto);
-                if (!updatedPassword.toString().isEmpty()) {
-                    rdvtsResponse.setData(result);
-                    rdvtsResponse.setStatus(1);
-                    rdvtsResponse.setMessage("Password reset successfully !!!");
-                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                } else {
+            if (userEntity.getOtp() == Integer.parseInt(param.get("otp"))) {
+
+                boolean verifyuserpassword = encoder.matches(param.get("password"), userPasswordMasterDto.getPassword());
+
+
+                if (verifyuserpassword) {
                     rdvtsResponse.setStatus(0);
                     rdvtsResponse.setData(result);
-                    rdvtsResponse.setMessage("Something went wrong while resetting password !!!");
-                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                }
-            }
+                    rdvtsResponse.setMessage("New password shouldn't be same as old password !!!");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
+                } else {
 
-            }
-            else {
+                    userPasswordMasterDto.setPassword(param.get("password"));
+
+                    UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userEntity.getId(), userPasswordMasterDto);
+                    if (!updatedPassword.toString().isEmpty()) {
+                        rdvtsResponse.setData(updatedPassword);
+                        rdvtsResponse.setStatus(1);
+                        rdvtsResponse.setMessage("Password reset successfully !!!");
+                        rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                    } else {
+                        rdvtsResponse.setStatus(0);
+                        rdvtsResponse.setData(result);
+                        rdvtsResponse.setMessage("Something went wrong while resetting password !!!");
+                        rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                    }
+                }
+
+            } else {
                 rdvtsResponse.setStatus(0);
                 rdvtsResponse.setData(result);
-                rdvtsResponse.setMessage("Otp is not Correct Please Check Agin !!!");
+                rdvtsResponse.setMessage("Otp is not Correct Please Check Again !!!");
                 rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-
             }
-
-
         } else {
             rdvtsResponse.setStatus(0);
             rdvtsResponse.setData(result);
@@ -631,15 +827,6 @@ public class UserController {
         }
         return rdvtsResponse;
     }
-
-
-
-
-
-
-
-
-
 
 
 }
