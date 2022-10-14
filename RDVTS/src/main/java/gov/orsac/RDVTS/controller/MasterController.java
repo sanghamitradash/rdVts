@@ -766,15 +766,15 @@ public class MasterController {
         vtuVendorFilterDto.setUserId(userId);
         vtuVendorFilterDto.setDeviceId(deviceId);
         vtuVendorFilterDto.setVtuVendorName(vtuVendorName);
-        vtuVendorFilterDto.setLimit(length);
         vtuVendorFilterDto.setOffSet(start);
+        vtuVendorFilterDto.setLimit(length);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try{
             Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto);
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
 //            if (!vendorList.isEmpty() && vendorList.size() > 0) {
-//                result.put("vendorList", vendorList);
+                result.put("vendorList", vendorList);
                 response.setData(vendorList);
                 response.setMessage("Vendor List");
                 response.setStatus(1);

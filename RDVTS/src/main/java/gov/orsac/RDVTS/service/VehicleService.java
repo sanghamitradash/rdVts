@@ -24,4 +24,6 @@ public interface VehicleService {
     List<VehicleTypeDto> getVehicleTypeList();
     List<VehicleMasterDto> getUnAssignedVehicleData(Integer userId);
     Page<VehicleMasterDto> getVehicleList1(VehicleMasterDto vehicle);
+
+    List<VehicleMasterDto> getVehicleById(Integer id, Integer userId);
 }
