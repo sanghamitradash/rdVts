@@ -283,5 +283,14 @@ public class MasterRepositoryImpl implements MasterRepository {
         String qry = "SELECT state.id, state.state_name from rdvts_oltp.state_m as state ";
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(StateDto.class));
     }
+
+    public List<DistrictBoundaryDto> getDistByStateId(Integer stateId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT dist.dist_id, dist.district_name from rdvts_oltp.district_boundary as dist  " +
+                "left join rdvts_oltp.state_m as state on state.id = dist.state_id  " +
+                "where state.id=:stateId ";
+        sqlParam.addValue("stateId", stateId);
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DistrictBoundaryDto.class));
+    }
 }
 
