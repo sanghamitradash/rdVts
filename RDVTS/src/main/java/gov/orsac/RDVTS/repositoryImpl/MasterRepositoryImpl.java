@@ -249,4 +249,11 @@ public class MasterRepositoryImpl implements MasterRepository {
         return new PageImpl<>(list, pageable, resultCount);
     }
 
+    public List<DistrictBoundaryDto> getAllDistrict() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry ="SELECT dist.gid, dist.district_name as districtName,dist.district_code as districtCode,dist.state_name as stateName,  " +
+                "dist.state_code as stateCode, " +
+                "dist.dist_id as distId ,dist.state_id as stateId from rdvts_oltp.district_boundary as dist ";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DistrictBoundaryDto.class));
+    }
 }

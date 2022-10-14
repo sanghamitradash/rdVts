@@ -1,7 +1,15 @@
 package gov.orsac.RDVTS.repository;
 
+import gov.orsac.RDVTS.dto.ContractorDto;
+import gov.orsac.RDVTS.dto.ContractorFilterDto;
 import gov.orsac.RDVTS.entities.ContractorEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ContractorRepository extends JpaRepository<ContractorEntity,Integer> {
+import java.util.List;
+
+public interface ContractorRepository {
+
+    ContractorDto getContractById(Integer contractId);
+
+    List<ContractorDto> getContractorDetails(ContractorFilterDto contractor);
 }
