@@ -73,6 +73,12 @@ public class VehicleServiceImpl implements VehicleService {
        public VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId) {
               return vehicleRepository.getVehicleDeviceMapping(vehicleId);
        }
+
+       @Override
+       public List<VehicleDeviceMappingDto> getVehicleDeviceMappingList(List<Integer> vehicleId) {
+              return vehicleRepository.getVehicleDeviceMappingList(vehicleId);
+       }
+
        @Override
        public List<VehicleWorkMappingDto>  getVehicleWorkMapping(Integer vehicleId) {
               return vehicleRepository.getVehicleWorkMapping(vehicleId);

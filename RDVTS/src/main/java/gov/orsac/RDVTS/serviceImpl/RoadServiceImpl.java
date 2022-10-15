@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.serviceImpl;
 
+import gov.orsac.RDVTS.dto.GeoMasterDto;
 import gov.orsac.RDVTS.dto.RoadFilterDto;
 import gov.orsac.RDVTS.dto.RoadMasterDto;
 import gov.orsac.RDVTS.dto.VTUVendorMasterDto;
@@ -61,5 +62,9 @@ public class RoadServiceImpl implements RoadService {
     @Override
     public Page<RoadMasterDto> getRoadList(RoadFilterDto roadFilterDto) {
         return roadRepository.getRoadList(roadFilterDto);
+    }
+    @Override
+    public List<GeoMasterDto> getWorkByroadIds(List<Integer> roadIds){
+        return roadRepositoryImpl.getWorkByroadIds(roadIds);
     }
 }
