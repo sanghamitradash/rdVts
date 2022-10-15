@@ -233,6 +233,25 @@ public class DeviceController {
         return response;
     }
 
+    @PostMapping("/getDeviceUserLevel")
+    public RDVTSResponse getDeviceUserLevel() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+          //  List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
+           // result.put("device", device);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Device By Id");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
 
 }

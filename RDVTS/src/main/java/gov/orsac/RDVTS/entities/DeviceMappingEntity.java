@@ -36,6 +36,9 @@ public class DeviceMappingEntity {
     @Column(name = "division_id")
     private Integer divisionId;
 
+    @Column(name = "state_id")
+    private Integer stateId;
+
     @Column(name = "g_dist_id")
     private Integer gdistId;
 
