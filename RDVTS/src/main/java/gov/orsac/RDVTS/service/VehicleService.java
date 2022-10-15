@@ -1,10 +1,7 @@
 package gov.orsac.RDVTS.service;
 
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.RoleEntity;
-import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
-import gov.orsac.RDVTS.entities.VehicleMaster;
-import gov.orsac.RDVTS.entities.VehicleWorkMappingEntity;
+import gov.orsac.RDVTS.entities.*;
 import io.swagger.models.auth.In;
 import org.springframework.data.domain.Page;
 
@@ -14,6 +11,7 @@ import java.util.List;
 public interface VehicleService {
     VehicleMaster saveVehicle(VehicleMaster vehicle);
     VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping);
+    VehicleOwnerMappingEntity assignVehicleOwner(VehicleOwnerMappingDto vehicleOwnerMapping);
     List<VehicleWorkMappingEntity> assignVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException;
     VehicleMasterDto getVehicleByVId(Integer vehicleId);
     VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId);

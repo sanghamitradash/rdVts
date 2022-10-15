@@ -2,10 +2,7 @@ package gov.orsac.RDVTS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.RoleEntity;
-import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
-import gov.orsac.RDVTS.entities.VehicleMaster;
-import gov.orsac.RDVTS.entities.VehicleWorkMappingEntity;
+import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.repository.VehicleDeviceMappingRepository;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.service.MasterService;
@@ -194,17 +191,17 @@ public class VehicleController {
         return response;
     }
     @PostMapping("/assignVehicleOwner")
-    public RDVTSResponse assignVehicleOwner(@RequestBody VehicleDeviceMappingEntity vehicleDeviceMapping) {
+    public RDVTSResponse assignVehicleOwner(@RequestBody VehicleOwnerMappingDto vehicleOwnerMappingDto) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
 /*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
                     && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
-            VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
-            result.put("saveVehicleMapping", saveVehicleMapping);
+            VehicleOwnerMappingEntity saveVehicleOwnerMapping = vehicleService.assignVehicleOwner(vehicleOwnerMappingDto);
+            result.put("saveVehicleOwner", saveVehicleOwnerMapping);
             response.setData(result);
             response.setStatus(1);
-            response.setMessage("Assign Vehicle Device Created Successfully");
+            response.setMessage("Assign Vehicle Owner Created Successfully");
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
            /* }
             else {
