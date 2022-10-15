@@ -153,17 +153,18 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             sqlParam.addValue("imeiNo2", deviceDto.getImeiNo2());
         }
 
-        if(deviceDto.getSimIccId1() != null && deviceDto.getSimIccId1() > 0){
-            qry += " AND dm.sim_icc_id_1=:simIccId1 ";
+        if(deviceDto.getSimIccId1() != null){
+            qry += " AND dm.sim_icc_id_1 LIKE(:simIccId1) ";
             sqlParam.addValue("simIccId1", deviceDto.getSimIccId1());
         }
 
-        if(deviceDto.getSimIccId2() != null && deviceDto.getSimIccId2() > 0){
-            qry += " AND dm.sim_icc_id_2=:simIccId2 ";
+        if(deviceDto.getSimIccId2() != null) {
+            qry += " AND dm.sim_icc_id_2 LIKE(:simIccId2) ";
             sqlParam.addValue("simIccId2", deviceDto.getSimIccId2());
+
         }
 
-        if(deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0){
+            if(deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0){
             qry += " AND dm.mobile_number_1=:mobileNumber1 ";
             sqlParam.addValue("mobileNumber1", deviceDto.getMobileNumber1());
         }
@@ -208,6 +209,17 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                         "where id NOT IN " +
                         "(select device_id from rdvts_oltp.vehicle_device_mapping) ";
         return namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
+    }
+
+    @Override
+    public List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String query = "SELECT dv.id, dv.device_id,dv.vehicle_id,vm.vehicle_no,dv.installation_date,dv.installed_by,dv.is_active as active,dv.created_by,dv.created_on, " +
+                "dv.updated_by,dv.updated_on from rdvts_oltp.vehicle_device_mapping as dv  " +
+                "left join rdvts_oltp.vehicle_m as vm on vm.id = dv.vehicle_id WHERE dv.device_id=:deviceId AND dv.is_active=true  " ;
+        sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("userId",userId);
+        return namedJdbc.query(query,sqlParam,new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
     }
 }
 
