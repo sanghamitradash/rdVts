@@ -774,7 +774,7 @@ public class MasterController {
             Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto);
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
 //            if (!vendorList.isEmpty() && vendorList.size() > 0) {
-                result.put("vendorList", vendorList);
+//                result.put("vendorList", vendorList);
                 response.setData(vendorList);
                 response.setMessage("Vendor List");
                 response.setStatus(1);
