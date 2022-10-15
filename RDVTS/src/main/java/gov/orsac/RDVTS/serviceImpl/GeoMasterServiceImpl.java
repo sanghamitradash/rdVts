@@ -44,8 +44,13 @@ public class GeoMasterServiceImpl implements GeoMasterService {
         return save;
     }
 
-
-    public List<GeoMasterDto> getAllGeoMasterByAllId(GeoMasterDto geoMasterDto){
-        return geoMasterRepositoryImpl.getAllGeoMasterByAllId(geoMasterDto);
+    @Override
+    public List<GeoMasterDto> getAllGeoMasterByAllId(int id, int geoWorkId, int geoDistId, int geoBlockId, int geoPiuId, int geoContractorId, int workId, int piuId, int distId, int blockId, int roadId) {
+        return geoMasterRepositoryImpl.getAllGeoMasterByAllId(id,geoWorkId,geoDistId,geoBlockId,geoPiuId,geoContractorId,workId,piuId,distId,blockId,roadId);
     }
+
+
+/*    public List<GeoMasterDto> getAllGeoMasterByAllId(GeoMasterDto geoMasterDto){
+        return geoMasterRepositoryImpl.getAllGeoMasterByAllId(geoMasterDto);
+    }*/
 }
