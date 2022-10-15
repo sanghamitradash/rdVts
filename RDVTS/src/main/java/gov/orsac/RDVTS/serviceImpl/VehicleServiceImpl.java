@@ -4,6 +4,8 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.*;
+import gov.orsac.RDVTS.repositoryImpl.UserRepositoryImpl;
+import gov.orsac.RDVTS.service.HelperService;
 import gov.orsac.RDVTS.service.VehicleService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,10 @@ public class VehicleServiceImpl implements VehicleService {
        private VehicleWorkMappingRepository vehicleWorkMappingRepository;
        @Autowired
        private VehicleOwnerMappingRepository vehicleOwnerMappingRepository;
+       @Autowired
+       private UserRepositoryImpl userRepositoryImpl;
+       @Autowired
+       private HelperService helperService;
        @Override
        public VehicleMaster saveVehicle(VehicleMaster vehicle) {
         return vehicleMasterSaveRepository.save(vehicle);
@@ -85,6 +91,102 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
+       public List<LocationDto> getLocation(Integer vehicleId) throws ParseException {
+              List<LocationDto> locationList=new ArrayList<>();
+
+              for(int i=0;i<2;i++){
+                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
+                     LocationDto location=new LocationDto();
+                     location.setDateTime(dateTime);
+                     location.setLatitude(21.7787878);
+                     location.setLongitude(80.676767);
+                     location.setSpeed(20);
+                     location.setDistanceTravelledToday(200.5);
+                     location.setDistanceTravelledTotal(5000.2);
+                     location.setAvgDistanceTravelled(300.0);
+                     location.setAvgSpeed(30.2);
+                     locationList.add(location);
+              }
+              return locationList;
+       }
+
+       @Override
+       public List<AlertDto> getAlert(Integer vehicleId) throws ParseException {
+              List<AlertDto> alertList=new ArrayList<>();
+
+              for(int i=0;i<2;i++){
+                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
+                     AlertDto alert=new AlertDto();
+                     alert.setVmmId(1);
+                     alert.setAlertTypeId(1);
+                     alert.setLatitude(20.78378783);
+                     alert.setLongitude(81.78278278728);
+                     alert.setAltitude(21.877878);
+                     alert.setAccuracy(21.76737);
+                     alert.setSpeed(20.2);
+                     alert.setGpsDtm(dateTime);
+                     alert.setActive(true);
+                     alert.setResolve(true);
+                     alert.setResolvedBy(1);
+
+
+                     alertList.add(alert);
+              }
+              return alertList;
+       }
+
+       @Override
+       public List<VehicleDeviceInfo> getVehicleDeviceMappingAssignedList(Integer vehicleId) throws ParseException {
+              List<VehicleDeviceInfo> vehicleList=new ArrayList<>();
+
+              for(int i=0;i<2;i++){
+                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
+                     VehicleDeviceInfo vehicle=new VehicleDeviceInfo();
+                     vehicle.setVehicleId(1);
+                     vehicle.setDeviceId(1);
+                     vehicle.setInstallationDate(dateTime);
+                     vehicle.setImeiNo1(12345678910L);
+                     vehicle.setImeiNo2(12345678910L);
+                     vehicle.setSimIccId1("6726832t873232t");
+                     vehicle.setSimIccId2("896298270923g");
+                     vehicle.setMobileNumber1(12345678910L);
+                     vehicle.setMobileNumber2(12345678910L);
+                     vehicle.setModelName("OnePlus9");
+                     vehicle.setDeviceNo(123);
+
+                     vehicleList.add(vehicle);
+              }
+              return vehicleList;
+       }
+
+       @Override
+       public List<VehicleWorkMappingDto> getVehicleWorkMappingList(Integer vehicleId) throws ParseException {
+              List<VehicleWorkMappingDto> workList=new ArrayList<>();
+
+              for(int i=0;i<2;i++){
+                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
+                     VehicleWorkMappingDto work=new VehicleWorkMappingDto();
+                     work.setWorkId(1);
+                     work.setVehicleId(1);
+                     work.setWorkName("Test");
+                     work.setStartTime("2022-10-11 11:12:00");
+                     work.setEndTime("2022-10-25 11:12:00");
+                     work.setStartDate(dateTime);
+                     work.setEndDate(dateTime);
+                     work.setActive(true);
+
+
+
+                     workList.add(work);
+              }
+              return workList;
+       }
+
+       @Override
        public VehicleMaster updateVehicle(int id, VehicleMaster vehicle) {
               VehicleMaster existingVehicle= vehicleMasterSaveRepository.findVehicleById(id);
               if (existingVehicle == null) {
@@ -114,7 +216,12 @@ public class VehicleServiceImpl implements VehicleService {
 
        @Override
        public List<VehicleMasterDto> getUnAssignedVehicleData(Integer userId) {
-              return vehicleRepository.getUnAssignedVehicleData(userId);
+              List<Integer> userIdList=new ArrayList<>();
+              UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
+              if(user.getUserLevelId()!=5){
+                     userIdList=helperService.getLowerUserByUserId(userId);
+              }
+              return vehicleRepository.getUnAssignedVehicleData(userIdList,userId);
        }
 
        @Override

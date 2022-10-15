@@ -25,7 +25,7 @@ public class VehicleDeviceMappingDto {
 
     private Date installationDate;
 
-    private Integer installedBy;
+    private String installedBy;
 
     private boolean active;
 
@@ -36,4 +36,5 @@ public class VehicleDeviceMappingDto {
     private Integer updatedBy;
 
     private Date updatedOn;
+    private Date deactivationDate;
 }
