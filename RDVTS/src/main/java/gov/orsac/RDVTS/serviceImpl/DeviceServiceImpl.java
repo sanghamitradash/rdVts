@@ -1,11 +1,9 @@
 package gov.orsac.RDVTS.serviceImpl;
 
-import gov.orsac.RDVTS.dto.DeviceAreaMappingDto;
-import gov.orsac.RDVTS.dto.DeviceDto;
-import gov.orsac.RDVTS.dto.DeviceInfo;
-import gov.orsac.RDVTS.dto.DeviceListDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
+import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.DeviceAreaMappingRepository;
 import gov.orsac.RDVTS.repository.DeviceMasterRepository;
@@ -45,14 +43,18 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public List<DeviceMappingEntity> saveDeviceMapping(List<DeviceMappingEntity> deviceMapping, Integer id) {
-        for (DeviceMappingEntity deviceArea1 : deviceMapping) {
+    public DeviceMappingEntity saveDeviceMapping(DeviceMappingEntity deviceMapping, Integer id) {
+      /*  for (DeviceMappingEntity deviceArea1 : deviceMapping) {
             deviceArea1.setDeviceId(id);
             deviceArea1.setIsActive(true);
-        }
-        return deviceAreaMappingRepository.saveAll(deviceMapping);
+        }*/
+        return deviceAreaMappingRepository.save(deviceMapping);
     }
 
+    @Override
+    public List<DeviceDto> getDeviceByIds(List<Integer> deviceId,Integer userId) {
+        return deviceRepositoryImpl.getDeviceByIds(deviceId,userId);
+    }
     @Override
     public List<DeviceDto> getDeviceById(Integer deviceId,Integer userId) {
         return deviceRepositoryImpl.getDeviceById(deviceId,userId);
@@ -95,6 +97,11 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public List <DeviceDto> getUnassignedDeviceData(Integer userId) {
         return deviceMasterRepository.getUnassignedDeviceData(userId);
+    }
+
+    @Override
+    public List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
+        return deviceMasterRepository.getVehicleDeviceMappingByDeviceId(deviceId,userId);
     }
 
 

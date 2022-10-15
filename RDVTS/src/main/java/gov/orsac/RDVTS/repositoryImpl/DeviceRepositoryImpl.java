@@ -30,6 +30,33 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return 0;
     }
 
+    public List<DeviceDto> getDeviceByIds(List<Integer> deviceId,Integer userId) {
+        List<DeviceDto> device;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2, " +
+                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no as deviceNo,  " +
+                "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,  " +
+                "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber, " +
+                "dm.created_by,dm.created_on,dm.updated_by,dm.updated_on  " +
+                "from rdvts_oltp.device_m as dm   " +
+                "left join rdvts_oltp.vtu_vendor_m as vtu on vtu.id = dm.vtu_vendor_id  " +
+                "WHERE dm.is_active = true ";
+
+        if(deviceId.size()>0){
+            qry+=" AND dm.id IN (:deviceId)";
+        }
+        sqlParam.addValue("deviceId", deviceId);
+//        sqlParam.addValue("userId",userId);
+        try {
+            device = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
+        }
+        catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return device;
+    }
+
     public List<DeviceDto> getDeviceById(Integer deviceId,Integer userId) {
         List<DeviceDto> device;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
@@ -56,6 +83,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         }
         return device;
     }
+
 
     public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId,Integer userId) {
         List<DeviceAreaMappingDto> device ;
@@ -125,17 +153,18 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             sqlParam.addValue("imeiNo2", deviceDto.getImeiNo2());
         }
 
-        if(deviceDto.getSimIccId1() != null && deviceDto.getSimIccId1() > 0){
-            qry += " AND dm.sim_icc_id_1=:simIccId1 ";
+        if(deviceDto.getSimIccId1() != null){
+            qry += " AND dm.sim_icc_id_1 LIKE(:simIccId1) ";
             sqlParam.addValue("simIccId1", deviceDto.getSimIccId1());
         }
 
-        if(deviceDto.getSimIccId2() != null && deviceDto.getSimIccId2() > 0){
-            qry += " AND dm.sim_icc_id_2=:simIccId2 ";
+        if(deviceDto.getSimIccId2() != null) {
+            qry += " AND dm.sim_icc_id_2 LIKE(:simIccId2) ";
             sqlParam.addValue("simIccId2", deviceDto.getSimIccId2());
+
         }
 
-        if(deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0){
+            if(deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0){
             qry += " AND dm.mobile_number_1=:mobileNumber1 ";
             sqlParam.addValue("mobileNumber1", deviceDto.getMobileNumber1());
         }
@@ -180,6 +209,17 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                         "where id NOT IN " +
                         "(select device_id from rdvts_oltp.vehicle_device_mapping) ";
         return namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
+    }
+
+    @Override
+    public List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String query = "SELECT dv.id, dv.device_id,dv.vehicle_id,vm.vehicle_no,dv.installation_date,dv.installed_by,dv.is_active as active,dv.created_by,dv.created_on, " +
+                "dv.updated_by,dv.updated_on from rdvts_oltp.vehicle_device_mapping as dv  " +
+                "left join rdvts_oltp.vehicle_m as vm on vm.id = dv.vehicle_id WHERE dv.device_id=:deviceId AND dv.is_active=true  " ;
+        sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("userId",userId);
+        return namedJdbc.query(query,sqlParam,new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
     }
 }
 

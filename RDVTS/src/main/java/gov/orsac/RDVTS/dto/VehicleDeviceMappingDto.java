@@ -36,4 +36,6 @@ public class VehicleDeviceMappingDto {
     private Integer updatedBy;
 
     private Date updatedOn;
+
+    private String  vehicleNo;
 }
