@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.repository.VehicleRepository;
+import gov.orsac.RDVTS.serviceImpl.HelperServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,10 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
+    @Autowired
+    private UserRepositoryImpl userRepositoryImpl;
+    @Autowired
+    private HelperServiceImpl helperServiceImpl;
 
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
@@ -53,15 +58,18 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return vehicle;
     }
     @Override
-    public VehicleDeviceMappingDto getVehicleDeviceMapping(Integer vehicleId) {
-        VehicleDeviceMappingDto vehicleDevice = new VehicleDeviceMappingDto();
+    public VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId) {
+        VehicleDeviceInfo vehicleDevice = new VehicleDeviceInfo();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry ="SELECT id, vehicle_id, device_id, installation_date, installed_by, is_active, created_by, created_on, updated_by, updated_on " +
-                "FROM rdvts_oltp.vehicle_device_mapping where vehicle_id=:vehicleId ";
+        String qry ="SELECT vd.id, vd.vehicle_id, vd.device_id, vd.installation_date,vd.installed_by,device.imei_no_1 as imeiNo1,device.sim_icc_id_1 as simIccId1,"+
+                "device.mobile_number_1 as mobileNumber1,device.imei_no_2 as imeiNo2,device.sim_icc_id_2 as simIccId2,"+
+                "device.mobile_number_2 as mobileNumber2,device.model_name,device.device_no as deviceNo " +
+                "FROM rdvts_oltp.vehicle_device_mapping as vd " +
+                "left join rdvts_oltp.device_m as device on vd.device_id=device.id where vehicle_id=:vehicleId ";
 
         sqlParam.addValue("vehicleId", vehicleId);
         try {
-            vehicleDevice = namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
+            vehicleDevice = namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceInfo.class));
         }
         catch (EmptyResultDataAccessException e){
             return null;
@@ -90,8 +98,10 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer vehicleId) {
         List<VehicleWorkMappingDto> vehicleWork = new ArrayList<>();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry ="SELECT id, vehicle_id, work_id, start_time, end_time, start_date, end_date, is_active, created_by, created_on, updated_by, updated_on " +
-                "FROM rdvts_oltp.vehicle_work_mapping where vehicle_id=:vehicleId";
+        String qry ="SELECT workM.id,workM.vehicle_id,workM.work_id,workM.start_time,workM.end_time,workM.start_date," +
+                "workM.end_date,work.g_work_name as workName,workM.is_active as active " +
+                "FROM rdvts_oltp.vehicle_work_mapping  as workM " +
+                "left join rdvts_oltp.work_m as work on work.id=workM.work_id where vehicle_id=:vehicleId";
 
         sqlParam.addValue("vehicleId", vehicleId);
 
@@ -113,7 +123,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on " +
                 "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
-                "left join rdvts_oltp.vehicle_work_mapping as work on vm.id=work.vehicle_id where vm.is_active=true ";
+                "left join rdvts_oltp.vehicle_work_mapping as work on vm.id=work.vehicle_id " +
+                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id where vm.is_active=true ";
         if(vehicle.getVehicleTypeId()>0){
             qry+=" and vm.vehicle_type_id=:vehicleTypeId ";
             sqlParam.addValue("vehicleTypeId",vehicle.getVehicleTypeId());
@@ -126,6 +137,18 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             qry+=" and work.work_id=:workId ";
             sqlParam.addValue("workId",vehicle.getWorkId());
         }
+
+        //Validation on basis of userLevel and lower level user
+      /*  UserInfoDto user=userRepositoryImpl.getUserByUserId(vehicle.getUserId());
+        if(user.userLevelId==5){
+            qry+="and owner.contractor_id=:contractorId ";
+            sqlParam.addValue("contractorId",vehicle.getUserId());
+        }
+        else{
+           List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());
+           qry+=" and owner.user_id IN (:userIdList) ";
+           sqlParam.addValue("userIdList",userIdList);
+        }*/
 
 
 
