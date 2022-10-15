@@ -5,13 +5,17 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ContractorEntity;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
+import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.service.DeviceService;
+import gov.orsac.RDVTS.service.VehicleService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +27,9 @@ public class DeviceController {
 
     @Autowired
     private DeviceService deviceService;
+
+    @Autowired
+    private VehicleService vehicleService;
 
     //Add Device
 
@@ -43,13 +50,20 @@ public class DeviceController {
 
                     if (deviceDto.getMobileNumber1().toString().length() == 10 && deviceDto.getMobileNumber2().toString().length() == 10) {
                         DeviceEntity deviceEntity = deviceService.addDevice(deviceDto);
-                        List<DeviceMappingEntity> deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(), deviceEntity.getId());
-                        result.put("deviceEntity", deviceEntity);
-                        result.put("deviceMapping", deviceMapping);
-                        response.setData(result);
-                        response.setStatus(1);
-                        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                        response.setMessage(" Device Added Successfully");
+                        DeviceMappingEntity deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(), deviceEntity.getId());
+                        VehicleDeviceMappingEntity vehicle = new VehicleDeviceMappingEntity();
+                        BeanUtils.copyProperties(deviceDto.getVehicleDeviceMapping(), vehicle);
+                        vehicle.setDeviceId(deviceEntity.getId());
+                        if (vehicle.getDeviceId() != null && vehicle.getInstallationDate() != null && vehicle.getInstalledBy() != null && vehicle.getVehicleId() != null) {
+                            VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle);
+                            result.put("deviceEntity", deviceEntity);
+                            result.put("deviceMapping", deviceMapping);
+                            result.put("deviceVehicleMapping",saveVehicleMapping);
+                            response.setData(result);
+                            response.setStatus(1);
+                            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                            response.setMessage(" Device Added Successfully");
+                        }
                     }
                     else {
                         response = new RDVTSResponse(0,
@@ -93,8 +107,10 @@ public class DeviceController {
         try {
             List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
             List<DeviceAreaMappingDto> deviceArea = deviceService.getDeviceAreaByDeviceId(deviceId,userId);
+            List<VehicleDeviceMappingDto> vehicle  = deviceService.getVehicleDeviceMappingByDeviceId(deviceId,userId);
             result.put("device", device);
             result.put("deviceArea",deviceArea);
+            result.put("vehicle",vehicle);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -110,10 +126,10 @@ public class DeviceController {
 
     @PostMapping("/getDeviceList")
     public RDVTSListResponse getDeviceList(@RequestParam(name = "imeiNo1",required = false) Long imeiNo1,
-                                           @RequestParam(name = "simIccId1",required = false) Long simIccId1,
+                                           @RequestParam(name = "simIccId1",required = false) String simIccId1,
                                            @RequestParam(name = "mobileNumber1",required = false)Long mobileNumber1,
                                            @RequestParam(name = "imeiNo2",required = false) Long imeiNo2,
-                                           @RequestParam(name = "simIccId2",required = false)Long simIccId2,
+                                           @RequestParam(name = "simIccId2",required = false)String simIccId2,
                                            @RequestParam(name = "mobileNumber2",required = false) Long mobileNumber2,
                                            @RequestParam(name = "vtuVendorId",required = false) Integer vtuVendorId,
                                            @RequestParam(name = "distId",required = false) Integer distId,
@@ -147,8 +163,16 @@ public class DeviceController {
 
             Page<DeviceInfo> deviceListPage = deviceService.getDeviceList(device);
             List<DeviceInfo> deviceList = deviceListPage.getContent();
+            List<DeviceInfo> finalDeviceList=new ArrayList<>();
+            Integer start1=start;
+            for(DeviceInfo dev:deviceList){
+
+                start1=start1+1;
+                dev.setSlNo(start1);
+                finalDeviceList.add(dev);
+            }
             //result.put("deviceList", deviceList);
-            response.setData(deviceList);
+            response.setData(finalDeviceList);
             response.setMessage("Vehicle List");
             response.setStatus(1);
             response.setDraw(draw);
@@ -172,7 +196,7 @@ public class DeviceController {
             DeviceDto deviceDto = objectMapper.readValue(data, DeviceDto.class);
             DeviceEntity updateDevice = deviceService.updateDeviceById(id, deviceDto);
             deviceService.deactivateDeviceArea(updateDevice.getId());
-            List<DeviceMappingEntity> deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(),updateDevice.getId());
+            DeviceMappingEntity deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(),updateDevice.getId());
             result.put("updateDevice", updateDevice);
             result.put("deviceMapping", deviceMapping);
             response.setData(result);
@@ -209,6 +233,25 @@ public class DeviceController {
         return response;
     }
 
+    @PostMapping("/getDeviceUserLevel")
+    public RDVTSResponse getDeviceUserLevel() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+          //  List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
+           // result.put("device", device);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Device By Id");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
 
 }

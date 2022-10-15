@@ -28,7 +28,7 @@ public class DeviceEntity {
     private Long imeiNo1;
 
     @Column(name = "sim_icc_id_1")
-    private Long simIccId1;
+    private String simIccId1;
 
     @Column(name = "mobile_number_1")
     private Long mobileNumber1;
@@ -37,7 +37,7 @@ public class DeviceEntity {
     private Long imeiNo2;
 
     @Column(name = "sim_icc_id_2")
-    private Long simIccId2;
+    private String simIccId2;
 
     @Column(name = "mobile_number_2")
     private Long mobileNumber2;
@@ -47,6 +47,9 @@ public class DeviceEntity {
 
     @Column(name = "vtu_vendor_id")
     private Integer vtuVendorId;
+
+    @Column(name = "user_level_id")
+    private Integer userLevelId;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;

@@ -31,7 +31,7 @@ public interface UserService {
 
     UserPasswordMasterDto getPasswordById(Integer id);
 
-    UserPasswordMasterEntity updateUserPass(Integer userId, UserPasswordMasterDto uerPasswordMasterDto);
+    UserPasswordMasterEntity updateUserPass(Integer userId, UserPasswordMasterDto userPasswordMasterDto);
 
     UserEntity findUserByMobileAndEmail(String email);
 

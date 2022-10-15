@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.dto;
 
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
+import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,14 +16,15 @@ public class DeviceDto {
 
     private Integer id;
     private Long imeiNo1;
-    private Long simIccId1;
+    private String simIccId1;
     private Long mobileNumber1;
     private Long imeiNo2;
-    private Long simIccId2;
+    private String simIccId2;
     private Long mobileNumber2;
     private String modelName;
     private Integer vtuVendorId;
     private Integer deviceNo;
+    private Integer userLevelId;
 
     private Boolean isActive = true;
     private Integer createdBy;
@@ -35,6 +37,8 @@ public class DeviceDto {
     private Long vendorPhone;
     private Long customerCareNumber;
 
-    private List<DeviceMappingEntity> deviceMapping;
+    private DeviceMappingEntity deviceMapping;
+
+    private VehicleDeviceMappingEntity vehicleDeviceMapping;
 }
 
