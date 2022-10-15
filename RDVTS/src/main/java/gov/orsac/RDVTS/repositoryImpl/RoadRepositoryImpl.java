@@ -1,5 +1,8 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
+import gov.orsac.RDVTS.dto.GeoMasterDto;
+import gov.orsac.RDVTS.dto.RoadMasterDto;
+import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -95,5 +98,14 @@ public class RoadRepositoryImpl {
 
         List<RoadMasterDto> list = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
         return new PageImpl<>(list, pageable, resultCount);
+    }
+    public List<GeoMasterDto> getWorkByroadIds(List<Integer> roadIds){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +
+                "\tFROM rdvts_oltp.geo_master where is_active=true and road_id IN(:roadIds); ";
+        /*   "AND id>1 ORDER BY id";*/
+        sqlParam.addValue("roadIds", roadIds);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
     }
 }
