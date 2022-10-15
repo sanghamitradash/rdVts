@@ -48,7 +48,7 @@ public class ContractorServiceImpl implements ContractorService {
     }
 
     @Override
-    public ContractorDto getContractById(Integer contractId,Integer userId) {
+    public List<ContractorDto> getContractById(Integer contractId,Integer userId) {
         return contractorRepository.getContractById(contractId,userId);
     }
 

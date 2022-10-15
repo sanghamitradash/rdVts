@@ -53,7 +53,7 @@ public class ContractorController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            ContractorDto contractor = contractorService.getContractById(contractId,userId);
+            List<ContractorDto> contractor = contractorService.getContractById(contractId,userId);
             result.put("contractor", contractor);
             response.setData(result);
             response.setStatus(1);

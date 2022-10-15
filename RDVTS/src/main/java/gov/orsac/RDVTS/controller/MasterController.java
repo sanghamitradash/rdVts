@@ -868,12 +868,12 @@ public class MasterController {
         return response;
     }
 
-    @PostMapping("/getDivisionBlockByDistId")
-    public RDVTSResponse getDivisionBlockByDistId(@RequestParam(name = "distId", required = false) Integer distId) {
+    @PostMapping("/getDivisionByDistId")
+    public RDVTSResponse getDivisionByDistId(@RequestParam(name = "distId", required = false) Integer distId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<DivisionDto> div = masterService.getDivisionBlockByDistId(distId);
+            List<DivisionDto> div = masterService.getDivisionByDistId(distId);
             result.put("div", div);
             response.setData(result);
             response.setStatus(1);
@@ -954,4 +954,46 @@ public class MasterController {
         }
         return response;
     }
+
+    @PostMapping("/getListOfBlockByListOfDistId")
+    public RDVTSResponse getListOfBlockByListOfDistId(@RequestParam List<Integer> distId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<BlockBoundaryDto> block = masterService.getListOfBlockByListOfDistId(distId);
+            result.put("block", block);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("List of Block By List of Dist");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getListOfDivisionByListOfDistId")
+    public RDVTSResponse getListOfDivisionByListOfDistId(@RequestParam List<Integer> distId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<DivisionDto> div = masterService.getListOfDivisionByListOfDistId(distId);
+            result.put("div", div);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("List of Div By DistId List");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 }

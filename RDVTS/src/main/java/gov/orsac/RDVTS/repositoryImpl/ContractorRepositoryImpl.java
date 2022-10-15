@@ -4,6 +4,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.repository.ContractorRepository;
 import gov.orsac.RDVTS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -74,14 +75,25 @@ public class ContractorRepositoryImpl implements ContractorRepository {
 
     }
 */
-    public ContractorDto getContractById(Integer contractId,Integer userId) {
+    public List<ContractorDto> getContractById(Integer contractId,Integer userId) {
+        List<ContractorDto> contractor;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on,cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
-                     "WHERE cm.id=:contractId ";
+                     "WHERE cm.is_active=true ";
 
+        if(contractId>0){
+            qry+=" AND cm.id=:contractId";
+        }
         sqlParam.addValue("contractId", contractId);
-        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ContractorDto.class));
+        sqlParam.addValue("userId",userId);
+        try {
+            contractor = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ContractorDto.class));
+        }
+        catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return contractor;
     }
 
     public Page<ContractorDto> getContractorDetails(ContractorFilterDto contractor) {
