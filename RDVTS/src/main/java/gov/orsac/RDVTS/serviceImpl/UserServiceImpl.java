@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
         if(existingUserId != null){
             int saveHistory = userPaswordMasterRepoImpl.savePasswordInHistory(userId, userPasswordMasterDto);
         }
-        if(userPasswordMasterDto.getOldPassword() != userPasswordMasterDto.getPassword()){
+        if(userPasswordMasterDto.getOldPassword() != userPasswordMasterDto.getPassword() && userPasswordMasterDto.getPassword() == userPasswordMasterDto.getConfirmPassword()){
             Boolean savePass = userPaswordMasterRepoImpl.savePassword(existingUserId.getUserId(), userPasswordMasterDto);
         }
         //existingUserId.setPassword(encoder.encode(userPasswordMasterDto.getPassword()));
