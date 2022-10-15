@@ -48,6 +48,9 @@ public class DeviceEntity {
     @Column(name = "vtu_vendor_id")
     private Integer vtuVendorId;
 
+    @Column(name = "user_level_id")
+    private Integer userLevelId;
+
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 

@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.repository.DeviceMasterRepository;
+import gov.orsac.RDVTS.service.HelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
+
+    @Autowired
+    private HelperService helperService;
+
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
         String sqlStr = "SELECT COUNT(*) from (" + qryStr + ") as t";
@@ -204,10 +209,13 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
     @Override
     public List<DeviceDto> getUnassignedDeviceData(Integer userId) {
+        Integer userLevelId = helperService.getUserLevelByUserId(userId);
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String query = "select id,imei_no_1 as imeiNo1,sim_icc_id_1 as simIccId1,imei_no_2 as imeiNo2,sim_icc_id_2 as simIccId2,model_name as modelName ,mobile_number_1 as mobileNumber1,mobile_number_2 as mobileNumber2 from rdvts_oltp.device_m  " +
-                        "where id NOT IN " +
-                        "(select device_id from rdvts_oltp.vehicle_device_mapping) ";
+        String query =" ";
+        if(userLevelId == 2)
+            query = "select id,imei_no_1 as imeiNo1,sim_icc_id_1 as simIccId1,imei_no_2 as imeiNo2,sim_icc_id_2 as simIccId2,model_name as modelName ,mobile_number_1 as mobileNumber1,mobile_number_2 as mobileNumber2 from rdvts_oltp.device_m  " +
+                    "where id NOT IN " +
+                    "(select device_id from rdvts_oltp.vehicle_device_mapping) ";
         return namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
     }
 
