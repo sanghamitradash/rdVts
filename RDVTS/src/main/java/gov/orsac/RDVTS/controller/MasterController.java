@@ -730,7 +730,7 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorById")
-    public RDVTSResponse getVTUVendorById(@RequestParam Integer id) {
+    public RDVTSResponse getVTUVendorById(@RequestParam Integer id,Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -933,18 +933,18 @@ public class MasterController {
     }
 
     @PostMapping("/getAllGeoMasterByAllId")
-    public RDVTSResponse getAllGeoMasterByAllId(@RequestParam(name = "id", required = false) Integer id,
-                                                    @RequestParam(name = "geoWorkId", required = false) Integer geoWorkId,
-                                                    @RequestParam(name = "geoDistId", required = false) Integer geoDistId,
-                                                    @RequestParam(name = "geoBlockId", required = false) Integer geoBlockId,
-                                                    @RequestParam(name = "geoPiuId", required = false) Integer geoPiuId,
-                                                    @RequestParam(name = "geoContractorId", required = false) Integer geoContractorId,
-                                                    @RequestParam(name = "workId", required = false) Integer workId,
-                                                    @RequestParam(name = "piuId", required = false) Integer piuId,
-                                                    @RequestParam(name = "distId", required = false) Integer distId,
-                                                    @RequestParam(name = "blockId", required = false) Integer blockId,
-                                                    @RequestParam(name = "roadId", required = false) Integer roadId ) {
-        GeoMasterDto geoMasterDto = new GeoMasterDto();
+    public RDVTSResponse getAllGeoMasterByAllId(@RequestParam(defaultValue = "0", required = false) Integer id,
+                                                @RequestParam(defaultValue = "0", required = false) Integer geoWorkId,
+                                                @RequestParam(defaultValue = "0", required = false) Integer geoDistId,
+                                                @RequestParam(defaultValue = "0", required = false) Integer geoBlockId,
+                                                @RequestParam(defaultValue = "0", required = false) Integer geoPiuId,
+                                                @RequestParam(defaultValue = "0", required = false) Integer geoContractorId,
+                                                @RequestParam(defaultValue = "0", required = false) Integer workId,
+                                                @RequestParam(defaultValue = "0", required = false) Integer piuId,
+                                                @RequestParam(defaultValue = "0", required = false) Integer distId,
+                                                @RequestParam(defaultValue = "0", required = false) Integer blockId,
+                                                @RequestParam(defaultValue = "0", required = false) Integer roadId ) {
+        /*GeoMasterDto geoMasterDto = new GeoMasterDto();
         geoMasterDto.setId(id);
         geoMasterDto.setGeoWorkId(geoWorkId);
         geoMasterDto.setGeoDistId(geoDistId);
@@ -955,14 +955,14 @@ public class MasterController {
         geoMasterDto.setPiuId(piuId);
         geoMasterDto.setDistId(distId);
         geoMasterDto.setBlockId(blockId);
-        geoMasterDto.setRoadId(roadId);
+        geoMasterDto.setRoadId(roadId);*/
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try{
-            List<GeoMasterDto> geoMasterDtoList = geoMasterService.getAllGeoMasterByAllId(geoMasterDto);
+            List<GeoMasterDto> geoMasterDtoList = geoMasterService.getAllGeoMasterByAllId(id, geoWorkId, geoDistId, geoBlockId, geoPiuId, geoContractorId, workId, piuId, distId, blockId, roadId);
             result.put("geoMasterDtoList", geoMasterDtoList);
             response.setData(geoMasterDtoList);
-            response.setMessage("Geo Master List");
+            response.setMessage("Geo Master By Id");
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e){
