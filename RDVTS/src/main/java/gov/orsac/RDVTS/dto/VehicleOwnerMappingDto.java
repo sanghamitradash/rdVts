@@ -1,6 +1,5 @@
 package gov.orsac.RDVTS.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,18 +15,15 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VehicleWorkMappingDto {
+public class VehicleOwnerMappingDto {
     private Integer id;
     private Integer vehicleId;
-    private Integer workId;
-    private String workName;
-    private String startTime;
-    private String endTime;
-    private Date startDate;
-    private Date endDate;
+    private Integer contractorId;
+    private Integer userId;
+    private boolean Contractor;
     private boolean active;
     private Integer createdBy;
-    private Date createdOn;
+    private Date createdOn ;
     private Integer updatedBy;
     private Date updatedOn;
 }

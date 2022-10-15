@@ -39,7 +39,8 @@ public class UserController {
 
     @PostMapping("/createUser")
     public RDVTSResponse saveUser(@RequestParam(name = "userData") String data, @RequestParam(name = "password") String password,
-                                  @RequestParam(name = "userArea") String userAreaData) {
+                                  @RequestParam(name = "userArea") String userAreaData,
+                                @RequestParam(name = "userId",required = false)Integer userId) {
 
 //        List<UserAreaMappingEntity> userArea;
 
@@ -219,7 +220,7 @@ public class UserController {
     }
 
     @PostMapping("/getUserByMobile")
-    public RDVTSResponse getUserByMobile(@RequestParam(name = "mobile", required = false) Long mobile) {
+    public RDVTSResponse getUserByMobile(@RequestParam(name = "mobile", required = false) Long mobile,@RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -290,7 +291,8 @@ public class UserController {
 
     @PostMapping("/updateUser")
     public RDVTSResponse updateUser(@RequestParam(name = "userData") String data,
-                                    @RequestParam(name = "userArea", required = false) String userAreaData) {
+                                    @RequestParam(name = "userArea", required = false) String userAreaData,
+    @RequestParam(name = "userId",required = false)Integer userId) {
 //        RDVTSResponse rdvtsResponse = new RDVTSResponse();
 //        Map<String, Object> result = new HashMap<>();
 //        try {

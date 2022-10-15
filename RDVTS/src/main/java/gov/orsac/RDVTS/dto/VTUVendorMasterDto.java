@@ -37,5 +37,6 @@ public class VTUVendorMasterDto {
     private Integer updatedBy;
 
     private Date updatedOn;
+    private Integer slNo;
 
 }

@@ -1,15 +1,9 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.RoleEntity;
-import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
-import gov.orsac.RDVTS.entities.VehicleMaster;
-import gov.orsac.RDVTS.entities.VehicleWorkMappingEntity;
+import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
-import gov.orsac.RDVTS.repository.VehicleDeviceMappingRepository;
-import gov.orsac.RDVTS.repository.VehicleMasterSaveRepository;
-import gov.orsac.RDVTS.repository.VehicleRepository;
-import gov.orsac.RDVTS.repository.VehicleWorkMappingRepository;
+import gov.orsac.RDVTS.repository.*;
 import gov.orsac.RDVTS.service.VehicleService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +25,8 @@ public class VehicleServiceImpl implements VehicleService {
        private VehicleDeviceMappingRepository vehicleDeviceMappingRepository;
        @Autowired
        private VehicleWorkMappingRepository vehicleWorkMappingRepository;
+       @Autowired
+       private VehicleOwnerMappingRepository vehicleOwnerMappingRepository;
        @Override
        public VehicleMaster saveVehicle(VehicleMaster vehicle) {
         return vehicleMasterSaveRepository.save(vehicle);
@@ -39,6 +35,13 @@ public class VehicleServiceImpl implements VehicleService {
        public VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping) {
 
               return vehicleDeviceMappingRepository.save(vehicleDeviceMapping);
+       }
+
+       @Override
+       public VehicleOwnerMappingEntity assignVehicleOwner(VehicleOwnerMappingDto vehicleOwnerMapping) {
+              VehicleOwnerMappingEntity vehicle=new VehicleOwnerMappingEntity();
+              BeanUtils.copyProperties(vehicleOwnerMapping,vehicle);
+              return vehicleOwnerMappingRepository.save(vehicle);
        }
 
        @Override
@@ -68,9 +71,15 @@ public class VehicleServiceImpl implements VehicleService {
        return vehicleRepository.getVehicleByVId(vehicleId);
        }
        @Override
-       public VehicleDeviceMappingDto getVehicleDeviceMapping(Integer vehicleId) {
+       public VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId) {
               return vehicleRepository.getVehicleDeviceMapping(vehicleId);
        }
+
+       @Override
+       public List<VehicleDeviceMappingDto> getVehicleDeviceMappingList(List<Integer> vehicleId) {
+              return vehicleRepository.getVehicleDeviceMappingList(vehicleId);
+       }
+
        @Override
        public List<VehicleWorkMappingDto>  getVehicleWorkMapping(Integer vehicleId) {
               return vehicleRepository.getVehicleWorkMapping(vehicleId);
