@@ -37,6 +37,7 @@ public class VehicleServiceImpl implements VehicleService {
         }
        @Override
        public VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping) {
+
               return vehicleDeviceMappingRepository.save(vehicleDeviceMapping);
        }
 

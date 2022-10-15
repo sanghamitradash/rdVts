@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.dto;
 
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
+import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,8 @@ public class DeviceDto {
     private Long vendorPhone;
     private Long customerCareNumber;
 
-    private List<DeviceMappingEntity> deviceMapping;
+    private DeviceMappingEntity deviceMapping;
+
+    private VehicleDeviceMappingEntity vehicleDeviceMapping;
 }
 

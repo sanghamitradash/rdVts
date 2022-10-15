@@ -45,12 +45,12 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public List<DeviceMappingEntity> saveDeviceMapping(List<DeviceMappingEntity> deviceMapping, Integer id) {
-        for (DeviceMappingEntity deviceArea1 : deviceMapping) {
+    public DeviceMappingEntity saveDeviceMapping(DeviceMappingEntity deviceMapping, Integer id) {
+      /*  for (DeviceMappingEntity deviceArea1 : deviceMapping) {
             deviceArea1.setDeviceId(id);
             deviceArea1.setIsActive(true);
-        }
-        return deviceAreaMappingRepository.saveAll(deviceMapping);
+        }*/
+        return deviceAreaMappingRepository.save(deviceMapping);
     }
 
     @Override

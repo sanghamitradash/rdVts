@@ -15,7 +15,7 @@ public interface DeviceService {
     DeviceEntity addDevice(DeviceDto deviceDto);
 
 
-    List<DeviceMappingEntity> saveDeviceMapping(List<DeviceMappingEntity> deviceMapping, Integer id);
+    DeviceMappingEntity saveDeviceMapping(DeviceMappingEntity deviceMapping, Integer id);
 
     List<DeviceDto> getDeviceById(Integer deviceId, Integer userId);
 

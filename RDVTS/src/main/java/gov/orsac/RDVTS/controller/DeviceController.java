@@ -5,7 +5,9 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ContractorEntity;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
+import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.service.DeviceService;
+import gov.orsac.RDVTS.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,9 @@ public class DeviceController {
 
     @Autowired
     private DeviceService deviceService;
+
+    @Autowired
+    private VehicleService vehicleService;
 
     //Add Device
 
@@ -43,7 +48,8 @@ public class DeviceController {
 
                     if (deviceDto.getMobileNumber1().toString().length() == 10 && deviceDto.getMobileNumber2().toString().length() == 10) {
                         DeviceEntity deviceEntity = deviceService.addDevice(deviceDto);
-                        List<DeviceMappingEntity> deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(), deviceEntity.getId());
+                        DeviceMappingEntity deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(), deviceEntity.getId());
+                        VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(deviceDto.getVehicleDeviceMapping());
                         result.put("deviceEntity", deviceEntity);
                         result.put("deviceMapping", deviceMapping);
                         response.setData(result);
@@ -172,7 +178,7 @@ public class DeviceController {
             DeviceDto deviceDto = objectMapper.readValue(data, DeviceDto.class);
             DeviceEntity updateDevice = deviceService.updateDeviceById(id, deviceDto);
             deviceService.deactivateDeviceArea(updateDevice.getId());
-            List<DeviceMappingEntity> deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(),updateDevice.getId());
+            DeviceMappingEntity deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(),updateDevice.getId());
             result.put("updateDevice", updateDevice);
             result.put("deviceMapping", deviceMapping);
             response.setData(result);
