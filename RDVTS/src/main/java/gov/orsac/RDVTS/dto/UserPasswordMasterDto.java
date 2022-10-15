@@ -16,7 +16,9 @@ public class UserPasswordMasterDto {
 
     private String password;
 
-//    private String oldPassword;
+    private String oldPassword;
+
+    private String confirmPassword;
 
     private Boolean isActive;
 

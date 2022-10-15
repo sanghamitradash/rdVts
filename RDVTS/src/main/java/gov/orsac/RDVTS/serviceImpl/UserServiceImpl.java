@@ -69,6 +69,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
+
+
     @Autowired
     private UserPaswordMasterRepoImpl userPaswordMasterRepoImpl;
 
@@ -161,8 +163,18 @@ public class UserServiceImpl implements UserService {
         if(existingUserId != null){
             int saveHistory = userPaswordMasterRepoImpl.savePasswordInHistory(userId, userPasswordMasterDto);
         }
+
+        if(encoder.matches(userPasswordMasterDto.getOldPassword(), existingUserId.getPassword())){
+            if(userPasswordMasterDto.getPassword().equals(userPasswordMasterDto.getConfirmPassword())){
+                Boolean savePass = userPaswordMasterRepoImpl.savePassword(existingUserId.getUserId(), userPasswordMasterDto);
+            }
+
+        }
+
+
         //existingUserId.setPassword(encoder.encode(userPasswordMasterDto.getPassword()));
-        Boolean savePass = userPaswordMasterRepoImpl.savePassword(existingUserId.getUserId(), userPasswordMasterDto);
+        //commented
+//        Boolean savePass = userPaswordMasterRepoImpl.savePassword(existingUserId.getUserId(), userPasswordMasterDto);
         return existingUserId;
     }
 

@@ -24,6 +24,7 @@ public class DeviceDto {
     private String modelName;
     private Integer vtuVendorId;
     private Integer deviceNo;
+    private Integer userLevelId;
 
     private Boolean isActive = true;
     private Integer createdBy;

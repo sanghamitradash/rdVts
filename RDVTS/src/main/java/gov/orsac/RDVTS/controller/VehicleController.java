@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.repository.VehicleDeviceMappingRepository;
+import gov.orsac.RDVTS.repository.VehicleOwnerMappingRepository;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.VehicleService;
@@ -29,6 +30,8 @@ public class VehicleController {
     private VehicleRepository vehicleRepository;
     @Autowired
     private VehicleDeviceMappingRepository vehicleDeviceMappingRepository;
+    @Autowired
+    private VehicleOwnerMappingRepository vehicleOwnerMappingRepository;
     @PostMapping("/addVehicle")
     public RDVTSResponse saveVehicle(@RequestBody VehicleMaster vehicle) {
         RDVTSResponse response = new RDVTSResponse();
@@ -66,9 +69,18 @@ public class VehicleController {
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
             VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
             List<VehicleWorkMappingDto> work=vehicleService.getVehicleWorkMapping(vehicleId);
+            List<LocationDto> location=vehicleService.getLocation(vehicleId);
+            List<AlertDto> alertDtoList=vehicleService.getAlert(vehicleId);
+            List<VehicleDeviceInfo> deviceList=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
+            List<VehicleWorkMappingDto> workList=vehicleService.getVehicleWorkMappingList(vehicleId);
+
             result.put("vehicle", vehicle);
             result.put("device",device);
             result.put("work",work);
+            result.put("location",location);
+            result.put("alertList",alertDtoList);
+            result.put("deviceHistoryList",deviceList);
+            result.put("workHistoryList",workList);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Vehicle By Id");
@@ -167,21 +179,31 @@ public class VehicleController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-/*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
-                    && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
-                VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
-                result.put("saveVehicleMapping", saveVehicleMapping);
-                response.setData(result);
-                response.setStatus(1);
-                response.setMessage("Assign Vehicle Device Created Successfully");
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-           /* }
+            VehicleDeviceMappingEntity vehicleDevice=vehicleDeviceMappingRepository.findByVehicleId(vehicleDeviceMapping.getVehicleId());
+                if(vehicleDevice==null){
+                    VehicleDeviceMappingEntity mapped=vehicleDeviceMappingRepository.findByDeviceId(vehicleDeviceMapping.getDeviceId());
+                    if(mapped==null) {
+                        VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
+                        result.put("saveVehicleMapping", saveVehicleMapping);
+                        response.setData(result);
+                        response.setStatus(1);
+                        response.setMessage("Assign Vehicle Device Created Successfully");
+                        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                    }
+                    else {
+                        response = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.OK),
+                                "Device is Already Assigned to a Vehicle",
+                                result);
+                    }
+
+            }
             else {
                 response = new RDVTSResponse(0,
                         new ResponseEntity<>(HttpStatus.OK),
-                        "Vehicle Type,Vehicle No.,Vehicle Chassis No.,Vehicle Engine No.,Vehicle SpeedLiMit mandatory",
+                        "Vehicle is assigned to a Device ",
                         result);
-            }*/
+            }
         } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -195,21 +217,21 @@ public class VehicleController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-/*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
-                    && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
+            VehicleOwnerMappingEntity vehicleOwner=vehicleOwnerMappingRepository.findByVehicleId(vehicleOwnerMappingDto.getVehicleId());
+            if(vehicleOwner==null){
             VehicleOwnerMappingEntity saveVehicleOwnerMapping = vehicleService.assignVehicleOwner(vehicleOwnerMappingDto);
             result.put("saveVehicleOwner", saveVehicleOwnerMapping);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Assign Vehicle Owner Created Successfully");
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-           /* }
+            }
             else {
                 response = new RDVTSResponse(0,
                         new ResponseEntity<>(HttpStatus.OK),
-                        "Vehicle Type,Vehicle No.,Vehicle Chassis No.,Vehicle Engine No.,Vehicle SpeedLiMit mandatory",
+                        "Vehicle Is Already Assigned To An Owner",
                         result);
-            }*/
+            }
         } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -291,5 +313,25 @@ public class VehicleController {
         }
         return response;
     }
+    @PostMapping("/getUnAssignedVehicleData")
+    public RDVTSResponse getUnAssignedVehicleData(@RequestParam  Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<VehicleMasterDto> vehicle = vehicleService.getUnAssignedVehicleData(userId);
+            result.put("vehicle", vehicle);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Unassigned Vehicle Data");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 }
