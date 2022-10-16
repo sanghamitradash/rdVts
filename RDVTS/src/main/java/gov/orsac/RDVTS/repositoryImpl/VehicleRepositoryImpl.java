@@ -169,12 +169,20 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
 
     @Override
-    public List<VehicleMasterDto> getUnAssignedVehicleData(Integer userId) {
+    public List<VehicleMasterDto> getUnAssignedVehicleData(List<Integer> userIdList,Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry ="select id,vehicle_no,model,chassis_no,engine_no from rdvts_oltp.vehicle_m " +
-                "where id NOT IN " +
-                "(select vehicle_id from rdvts_oltp.vehicle_device_mapping)";
-
+        String qry ="select * from rdvts_oltp.vehicle_m as vm join " +
+                "rdvts_oltp.vehicle_owner_mapping as vom on vom.vehicle_id=vm.id " +
+                "where vm.id not in(select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping "+
+                " where is_active=true) and is_contractor=true ";
+        if(userIdList!=null && userIdList.size()>0){
+            qry+="or vom.user_id in(:userIdList)";
+            sqlParam.addValue("userIdList",userIdList);
+        }
+        else{
+            qry+="and vom.contractor_id =:contractorId";
+            sqlParam.addValue("contractorId",userId);
+        }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
     }
 

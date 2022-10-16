@@ -783,7 +783,7 @@ public class MasterController {
             }
 //            if (!vendorList.isEmpty() && vendorList.size() > 0) {
 //                result.put("vendorList", vendorList);
-                response.setData(finalVendorList);
+                response.setData(vendorList);
                 response.setMessage("Vendor List");
                 response.setStatus(1);
                 response.setDraw(draw);
