@@ -40,5 +40,14 @@ public class LocationServiceImpl implements LocationService {
         return locationRepository.getLocationRecordByRoadData(imei2,imei1,vehicleByWork);
     }
 
+    @Override
+    public List<VtuLocationDto> getLocationrecordList(Long imei1,Long imei2){
+
+        List<VtuLocationDto> vtuLocationDtoList=locationRepository.getLocationrecordList(imei2,imei1);
+        return vtuLocationDtoList;
+
+    }
+
+
 
 }

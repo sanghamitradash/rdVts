@@ -102,7 +102,7 @@ public class LocationController {
 
 
                 //Get and Send Final Data
-                if (imei1.size() > 0) {
+                if (imei1.size() > 0 || imei2.size() > 0) {
                     List<VtuLocationDto> vtuLocationDto = locationService.getLatestRecordByImeiNumber(imei1, imei2);
                     //result.put("user", vtuLocationDto);
                     response.setData(vtuLocationDto);
@@ -234,6 +234,97 @@ public class LocationController {
                 }
             }
             // Get Final IMEI Number
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
+
+    @PostMapping("/getLocationRecordList")
+    public RDVTSResponse getLocationRecordList(@RequestParam(name = "imei1", required = false) List<Long> imei1,
+                                                 @RequestParam(name = "imei2", required = false)  List<Long> imei2,
+                                                 @RequestParam(name = "deviceId", required = false)  List<Integer> deviceId,
+                                                @RequestParam(name = "vehicleId", required = false)  Integer vehicleId) {
+
+        RDVTSResponse response = new RDVTSResponse();
+        Map<Long, Object> result = new HashMap<>();
+        Map<Integer, Object> device = new HashMap<>();
+        //Get All Device Ids
+        List<Integer> vehicleIds = new ArrayList<>();
+        List<Integer> deviceIds = new ArrayList<>();
+        List<Integer> workIds = new ArrayList<>();
+        List<Integer> roadIds = new ArrayList<>();
+        List<Long> imeiArray1 = new ArrayList<>();
+        List<Long> imeiArray2 = new ArrayList<>();
+
+        try {
+//            if(imei1.size()>0  && imei2.size()==0){
+//                int i=0;
+//                for (Long item: imei1) {
+//
+//                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(item,imei2.get(i));
+//                    i++;
+//                }
+//
+//            }
+//            if(imei2.size()>0  && imei1.size()==0){
+//                for (Long item: imei2) {
+//                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(,item);
+//                }
+//
+//            }
+            if (deviceId.size()>0){
+                for (Integer deviceid: deviceId) {
+                    List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceid);
+                    for (DeviceDto imei  :getImeiList) {
+                        imeiArray1.add(imei.getImeiNo1());
+                        imeiArray2.add(imei.getImeiNo2());
+                    }
+
+                    device.put(deviceid,getImeiList);
+                }
+
+                int i=0;
+                for (Long item: imeiArray1) {
+                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(item,imeiArray2.get(i));
+                    i++;
+                    result.put(item,vtuLocationDto);
+                }
+
+
+
+            }
+//            else if (vehicleId!=null) {
+//
+//                List<VehicleDeviceMappingDto> device = vehicleService.getVehicleDeviceMappingList(vehicleIds)
+//
+//            }
+            else {
+                int i=0;
+                for (Long item: imei1) {
+                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(item,imei2.get(i));
+                    i++;
+                    result.put(item,vtuLocationDto);
+                }
+            }
+
+
+
+
+
+            response.setData(result);
+           // response.setData(device);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("All Location By Imei.");
 
 
         } catch (Exception ex) {

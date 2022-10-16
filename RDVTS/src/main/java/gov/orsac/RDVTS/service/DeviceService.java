@@ -32,4 +32,8 @@ public interface DeviceService {
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId);
 
     List<userLevelDto> getDeviceUserLevel();
+
+    //for Imei Get SOubhagya
+    List<DeviceDto> getImeiListByDeviceId(Integer deviceId);
+
 }
