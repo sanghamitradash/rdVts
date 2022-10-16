@@ -258,7 +258,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "deactivation_date is null and created_on <=now()";
         sqlParam.addValue("vehicleId", vehicleId);
        count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
-       if(count!=0){
+       if(count>0){
            device=true;
        }
        return device;
@@ -272,19 +272,19 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "deactivation_date is null and start_time <=now()";
         sqlParam.addValue("vehicleId", vehicleId);
         count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
-        if(count!=0){
+        if(count>0){
             work=true;
         }
         return work;
     }
-    public boolean getTrackingLiveOrNot(Integer deviceId) {
+    public boolean getTrackingLiveOrNot(Long imeiNo) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         Integer count=0;
         boolean tracking=false;
         String qry = "";
-        sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("imeiNo", imeiNo);
         count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
-        if(count!=0){
+        if(count>0){
             tracking=true;
         }
         return tracking;
