@@ -64,8 +64,8 @@ public class WorkController {
         try {
             Page<WorkDto> workDtoPage = workService.getWorkList(workDto);
             List<WorkDto> workDtoList = workDtoPage.getContent();
-            result.put("WorkDtoList", workDtoList);
-            response.setData(result);
+            //result.put("WorkDtoList", workDtoList);
+            response.setData(workDtoList);
             response.setMessage("List of Work.");
             response.setStatus(1);
             response.setDraw(draw);

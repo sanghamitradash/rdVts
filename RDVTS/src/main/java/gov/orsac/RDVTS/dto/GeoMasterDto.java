@@ -36,9 +36,9 @@ public class GeoMasterDto {
 
     private Integer createdBy;
 
-    private Date createdOn;
+    private String createdOn;
 
     private Integer updatedBy;
 
-    private Date updatedOn;
+    private String updatedOn;
 }

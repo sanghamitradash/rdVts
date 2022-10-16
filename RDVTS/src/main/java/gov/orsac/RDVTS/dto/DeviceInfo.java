@@ -12,10 +12,10 @@ public class DeviceInfo {
 
     private Integer id;
     private Long imeiNo1;
-    private Long simIccId1;
+    private String simIccId1;
     private Long mobileNumber1;
     private Long imeiNo2;
-    private Long simIccId2;
+    private String simIccId2;
     private Long mobileNumber2;
     private String modelName;
     private Integer vtuVendorId;
@@ -37,4 +37,6 @@ public class DeviceInfo {
     private String blockName;
     private String gdistName;
     private String gblockName;
+
+    private Integer slNo;
 }

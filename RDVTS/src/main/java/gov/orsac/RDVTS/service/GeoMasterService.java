@@ -11,6 +11,6 @@ public interface GeoMasterService {
 
     GeoMasterEntity updateGeoMaster (int id, GeoMasterDto geoMasterDto);
 
-    List<GeoMasterDto> getAllGeoMasterByAllId(GeoMasterDto geoMasterDto);
+    List<GeoMasterDto> getAllGeoMasterByAllId(int id, int geoWorkId, int geoDistId, int geoBlockId, int geoPiuId, int geoContractorId, int workId, int piuId, int distId, int blockId, int roadId);
 
 }
