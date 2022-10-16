@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +99,8 @@ public class RoadController {
                                            @RequestParam(name = "roadName",required = false)String roadName,
                                            @RequestParam(name = "roadLength",required = false) Double roadLength,
                                            @RequestParam(name = "roadLocation",required = false)Double roadLocation,
+                                           @RequestParam(name = "workIds", required = false) List<Integer> workIds,
+                                           @RequestParam(name = "contractIds", required = false) List<Integer> contractIds,
                                            @RequestParam(name = "start") Integer start,
                                            @RequestParam(name = "length") Integer length,
                                            @RequestParam(name = "draw") Integer draw) {
@@ -107,6 +110,8 @@ public class RoadController {
         roadFilterDto.setRoadName(roadName);
         roadFilterDto.setRoadLength(roadLength);
         roadFilterDto.setRoadLocation(roadLocation);
+        roadFilterDto.setWorkIds(workIds);
+        roadFilterDto.setContractIds(contractIds);
         roadFilterDto.setLimit(length);
         roadFilterDto.setOffSet(start);
         RDVTSListResponse response = new RDVTSListResponse();
@@ -114,6 +119,14 @@ public class RoadController {
         try {
             Page<RoadMasterDto> roadPageList = roadService.getRoadList(roadFilterDto);
             List<RoadMasterDto> roadList = roadPageList.getContent();
+            List<RoadMasterDto> finalRoadList=new ArrayList<>();
+            Integer start1=start;
+            for(RoadMasterDto rd:roadList){
+
+                start1=start1+1;
+                rd.setSlNo(start1);
+                finalRoadList.add(rd);
+            }
             //result.put("deviceList", deviceList);
             response.setData(roadList);
             response.setMessage("Road List");
