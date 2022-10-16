@@ -56,7 +56,7 @@ public class DeviceController {
                         VehicleDeviceMappingEntity vehicle = new VehicleDeviceMappingEntity();
                         BeanUtils.copyProperties(deviceDto.getVehicleDeviceMapping(), vehicle);
                         vehicle.setDeviceId(deviceEntity.getId());
-                        if (vehicle.getDeviceId() != null || vehicle.getInstallationDate() != null || !vehicle.getInstalledBy().isEmpty()  || vehicle.getVehicleId() != null) {
+                        if (vehicle.getDeviceId() != null || vehicle.getInstallationDate() != null || !vehicle.getInstalledBy().toString().isEmpty()  || vehicle.getVehicleId() != null) {
 
                             VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle);
                             result.put("deviceVehicleMapping",saveVehicleMapping);
