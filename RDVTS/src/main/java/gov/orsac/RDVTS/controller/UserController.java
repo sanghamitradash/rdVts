@@ -715,12 +715,11 @@ public class UserController {
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
+            UserPasswordMasterDto userPasswordMasterDto = mapper.readValue(data, UserPasswordMasterDto.class);
 
-            UserPasswordMasterDto uerPasswordMasterDto = mapper.readValue(data, UserPasswordMasterDto.class);
-            UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userId, uerPasswordMasterDto);
-
+            UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userId, userPasswordMasterDto);
             result.put("updatePassword", updatedPassword);
-            response.setData(result);
+            //response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Password Updated Successfully");

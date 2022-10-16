@@ -53,7 +53,7 @@ public class LocationController {
             if (deviceId !=null){
                 deviceIds.add(deviceId);
             } else if (vehicleId !=null) {
-                VehicleDeviceMappingDto device=vehicleService.getVehicleDeviceMapping(vehicleId);
+                VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
                 deviceIds.add(device.getDeviceId());
             } else if (workId !=null) {
                 workIds.add(workId);
@@ -167,7 +167,7 @@ public class LocationController {
             if (deviceId !=null){
                 deviceIds.add(deviceId);
             } else if (vehicleId !=null) {
-                VehicleDeviceMappingDto device=vehicleService.getVehicleDeviceMapping(vehicleId);
+                VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
                 deviceIds.add(device.getDeviceId());
             } else if (workId !=null) {
                 workIds.add(workId);

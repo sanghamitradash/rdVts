@@ -20,6 +20,7 @@ public class VehicleWorkMappingDto {
     private Integer id;
     private Integer vehicleId;
     private Integer workId;
+    private String workName;
     private String startTime;
     private String endTime;
     private Date startDate;

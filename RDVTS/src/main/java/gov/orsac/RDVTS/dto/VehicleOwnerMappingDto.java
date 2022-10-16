@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Column;
 import javax.persistence.Temporal;
@@ -16,27 +15,15 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VehicleDeviceMappingDto {
+public class VehicleOwnerMappingDto {
     private Integer id;
-
     private Integer vehicleId;
-
-    private Integer deviceId;
-
-    private Date installationDate;
-
-    private String installedBy;
-
+    private Integer contractorId;
+    private Integer userId;
+    private boolean Contractor;
     private boolean active;
-
     private Integer createdBy;
-
-    private Date createdOn;
-
+    private Date createdOn ;
     private Integer updatedBy;
-
     private Date updatedOn;
-
-    private String  vehicleNo;
-    private Date deactivationDate;
 }

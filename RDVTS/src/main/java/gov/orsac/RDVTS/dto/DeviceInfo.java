@@ -37,4 +37,6 @@ public class DeviceInfo {
     private String blockName;
     private String gdistName;
     private String gblockName;
+
+    private Integer slNo;
 }

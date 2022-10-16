@@ -14,26 +14,26 @@ import java.util.Date;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "vehicle_device_mapping")
-public class VehicleDeviceMappingEntity {
-
+@Table(name = "vehicle_owner_mapping")
+public class VehicleOwnerMappingEntity {
     @Id
-    @SequenceGenerator(name = "vehicle_device_mapping_sequence", sequenceName = "vehicle_device_mapping_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vehicle_device_mapping_sequence")
+    @SequenceGenerator(name = "vehicle_owner_mapping_sequence", sequenceName = "vehicle_owner_mapping_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vehicle_owner_mapping_sequence")
     @Column(name = "id")
     private Integer id;
 
     @Column(name = "vehicle_id")
     private Integer vehicleId;
 
-    @Column(name = "device_id")
-    private Integer deviceId;
+    @Column(name = "contractor_id")
+    private Integer contractorId;
 
-    @Column(name = "installation_date")
-    private Date installationDate;
 
-    @Column(name = "installed_by")
-    private String installedBy;
+    @Column(name = "user_id")
+    private Integer userId;
+
+    @Column(name = "is_contractor")
+    private boolean Contractor;
 
     @Column(name = "is_active")
     private boolean active;
@@ -55,7 +55,4 @@ public class VehicleDeviceMappingEntity {
     @Column(name = "updated_on")
     @UpdateTimestamp
     private Date updatedOn;
-
-    @Column(name = "deactivation_date")
-    private Date deactivationDate;
 }
