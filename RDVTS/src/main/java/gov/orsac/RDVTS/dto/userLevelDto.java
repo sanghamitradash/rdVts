@@ -11,6 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class userLevelDto {
 
+
         private Integer id;
         private String name;
         private boolean isactive;

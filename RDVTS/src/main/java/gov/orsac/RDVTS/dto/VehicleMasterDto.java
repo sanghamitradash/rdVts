@@ -26,9 +26,10 @@ public class VehicleMasterDto {
 
     private String vehicleTypeName;
 
+
     private String model;
 
-    private Long speedLimit;
+    private Double speedLimit;
 
     private String chassisNo;
 
