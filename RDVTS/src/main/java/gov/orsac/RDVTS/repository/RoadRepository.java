@@ -7,5 +7,4 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoadRepository extends JpaRepository<RoadEntity, Integer> {
-    Page<RoadMasterDto> getRoadList(RoadFilterDto roadFilterDto);
 }

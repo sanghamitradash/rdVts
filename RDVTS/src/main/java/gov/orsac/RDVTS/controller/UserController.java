@@ -719,10 +719,35 @@ public class UserController {
 
             UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userId, userPasswordMasterDto);
             result.put("updatePassword", updatedPassword);
-            //response.setData(result);
+            response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Password Updated Successfully");
+
+//            UserPasswordMasterEntity updatedPassword = null; /*= userService.updateUserPass(userId, userPasswordMasterDto);*/
+//
+//            if (userPasswordMasterDto.getOldPassword() == userPasswordMasterDto.getPassword()) {
+//                //check if the old and new password are same
+//                response.setStatus(0);
+//                response.setData(result);
+//                response.setMessage("New password shouldn't be same as old password !!!");
+//                response.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
+//            } else{
+//                if( updatedPassword == userService.updateUserPass(userId, userPasswordMasterDto)){
+//                    result.put("updatePassword", updatedPassword);
+//                    response.setData(result);
+//                    response.setStatus(1);
+//                    response.setMessage("Password updated successfully !!!");
+//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//                } else{
+//                    response.setStatus(0);
+//                    response.setData(result);
+//                    response.setMessage("Something went wrong while resetting password !!!");
+//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//                }
+//
+//            }
+
         } catch (Exception e) {
             e.printStackTrace();
             response = new RDVTSResponse(0,
