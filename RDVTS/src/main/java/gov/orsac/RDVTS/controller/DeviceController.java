@@ -50,20 +50,22 @@ public class DeviceController {
 
                     if (deviceDto.getMobileNumber1().toString().length() == 10 && deviceDto.getMobileNumber2().toString().length() == 10) {
                         DeviceEntity deviceEntity = deviceService.addDevice(deviceDto);
+                        result.put("deviceEntity",deviceEntity);
                         DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(), deviceEntity.getId(),deviceEntity.getUserLevelId());
+                        result.put("deviceMapping", deviceMapping);
                         VehicleDeviceMappingEntity vehicle = new VehicleDeviceMappingEntity();
                         BeanUtils.copyProperties(deviceDto.getVehicleDeviceMapping(), vehicle);
                         vehicle.setDeviceId(deviceEntity.getId());
-                        if (vehicle.getDeviceId() != null && vehicle.getInstallationDate() != null && vehicle.getInstalledBy().toString().isEmpty()  && vehicle.getVehicleId() != null) {
-                            //VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle);
-                            result.put("deviceEntity", deviceEntity);
-                            result.put("deviceMapping", deviceMapping);
-                            //result.put("deviceVehicleMapping",saveVehicleMapping);
-                            response.setData(result);
-                            response.setStatus(1);
-                            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                            response.setMessage(" Device Added Successfully");
+                        if (vehicle.getDeviceId() != null || vehicle.getInstallationDate() != null || !vehicle.getInstalledBy().isEmpty()  || vehicle.getVehicleId() != null) {
+
+                            VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle);
+                            result.put("deviceVehicleMapping",saveVehicleMapping);
                         }
+
+                        response.setData(result);
+                        response.setStatus(1);
+                        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                        response.setMessage(" Device Added Successfully");
                     }
                     else {
                         response = new RDVTSResponse(0,
