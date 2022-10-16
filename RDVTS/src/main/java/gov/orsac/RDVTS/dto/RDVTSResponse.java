@@ -12,4 +12,5 @@ public class RDVTSResponse {
         private ResponseEntity statusCode;
         private String message;
         public Object data ;
+
 }

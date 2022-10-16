@@ -13,7 +13,7 @@ public interface DeviceService {
     DeviceEntity addDevice(DeviceDto deviceDto);
 
 
-    DeviceMappingEntity saveDeviceMapping(DeviceMappingEntity deviceMapping, Integer id);
+    DeviceMappingEntity saveDeviceAreaMapping(DeviceMappingEntity deviceMapping, Integer deviceId,Integer userLevel);
 
     List<DeviceDto> getDeviceByIds(List<Integer> deviceId, Integer userId);
     List<DeviceDto> getDeviceById(Integer deviceId, Integer userId);
@@ -32,4 +32,8 @@ public interface DeviceService {
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId);
 
     List<userLevelDto> getDeviceUserLevel();
+
+    //for Imei Get SOubhagya
+    List<DeviceDto> getImeiListByDeviceId(Integer deviceId);
+
 }
