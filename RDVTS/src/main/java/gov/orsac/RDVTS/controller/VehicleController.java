@@ -6,6 +6,8 @@ import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.repository.VehicleDeviceMappingRepository;
 import gov.orsac.RDVTS.repository.VehicleOwnerMappingRepository;
 import gov.orsac.RDVTS.repository.VehicleRepository;
+import gov.orsac.RDVTS.repositoryImpl.DeviceRepositoryImpl;
+import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.VehicleService;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +31,10 @@ public class VehicleController {
     private VehicleDeviceMappingRepository vehicleDeviceMappingRepository;
     @Autowired
     private VehicleOwnerMappingRepository vehicleOwnerMappingRepository;
+    @Autowired
+    private VehicleRepositoryImpl  vehicleRepositoryImpl;
+    @Autowired
+    private DeviceRepositoryImpl deviceRepositoryImpl;
     @PostMapping("/addVehicle")
     public RDVTSResponse saveVehicle(@RequestBody VehicleMaster vehicle) {
         RDVTSResponse response = new RDVTSResponse();
@@ -136,6 +142,10 @@ public class VehicleController {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
             for(int i=0;i<vehicleList.size();i++){
+                boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
+                boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
+              //  DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
+               // boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
                 vehicleList.get(i).setDeviceAssigned(true);
                 vehicleList.get(i).setWorkAssigned(true);
                 vehicleList.get(i).setTrackingStatus(true);

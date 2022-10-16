@@ -342,5 +342,12 @@ public class MasterRepositoryImpl implements MasterRepository {
         }
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
     }
+    public List<Integer> getVehicleByContractorIdList(List<Integer> contractorIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct vehicle_id from rdvts_oltp.vehicle_owner_mapping where contractor_id  in(:contractorIds)" ;
+            sqlParam.addValue("contractorIds", contractorIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+
 }
 
