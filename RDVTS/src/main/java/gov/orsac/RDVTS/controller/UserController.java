@@ -141,7 +141,7 @@ public class UserController {
                         userPasswordMasterDto.setPassword(password);
                         UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
 
-
+                        if (userArea.size() > 0) {
                             //Save User Area Mapping
                             List<UserAreaMappingEntity> userAreaMapping = new ArrayList<>();
                             for (UserAreaMappingRequestDTO item : userArea) {
@@ -161,29 +161,30 @@ public class UserController {
                             }
 
 
-                        List<UserAreaMappingEntity> areaObj = userService.saveUserAreaMapping(savedUser.userLevelId,savedUser.getId(), userAreaMapping);
+                            List<UserAreaMappingEntity> areaObj = userService.saveUserAreaMapping(savedUser.userLevelId, savedUser.getId(), userAreaMapping);
 
-                        //Return Data
-                        UserDto returnDTO = new UserDto();
-                        returnDTO.setUserId(savedUser.getId());
-                        returnDTO.setDesignationId(savedUser.getDesignationId());
-                        returnDTO.setRoleId(savedUser.getRoleId());
-                        returnDTO.setUserLevelId(savedUser.getUserLevelId());
-                        returnDTO.setFirstName(savedUser.getFirstName());
-                        returnDTO.setMiddleName(savedUser.getMiddleName());
-                        returnDTO.setLastName(savedUser.getLastName());
-                        returnDTO.setMobile1(savedUser.getMobile1());
-                        returnDTO.setMobile2(savedUser.getMobile2());
-                        returnDTO.setEmail(savedUser.getEmail());
-                        returnDTO.setContractorId(savedUser.getContractorId());
-                        result.put("user", returnDTO);
-                        result.put("UserAreaMapping", areaObj);
+                            //Return Data
+                            UserDto returnDTO = new UserDto();
+                            returnDTO.setUserId(savedUser.getId());
+                            returnDTO.setDesignationId(savedUser.getDesignationId());
+                            returnDTO.setRoleId(savedUser.getRoleId());
+                            returnDTO.setUserLevelId(savedUser.getUserLevelId());
+                            returnDTO.setFirstName(savedUser.getFirstName());
+                            returnDTO.setMiddleName(savedUser.getMiddleName());
+                            returnDTO.setLastName(savedUser.getLastName());
+                            returnDTO.setMobile1(savedUser.getMobile1());
+                            returnDTO.setMobile2(savedUser.getMobile2());
+                            returnDTO.setEmail(savedUser.getEmail());
+                            returnDTO.setContractorId(savedUser.getContractorId());
+                            result.put("user", returnDTO);
+                            result.put("UserAreaMapping", areaObj);
+                        }
+                            rdvtsResponse.setData(result);
+                            rdvtsResponse.setStatus(1);
+                            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+                            rdvtsResponse.setMessage("User Created Successfully!!");
+                        }
 
-                        rdvtsResponse.setData(result);
-                        rdvtsResponse.setStatus(1);
-                        rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
-                        rdvtsResponse.setMessage("User Created Successfully!!");
-                    }
 
                 } else {
                     rdvtsResponse = new RDVTSResponse(0,
