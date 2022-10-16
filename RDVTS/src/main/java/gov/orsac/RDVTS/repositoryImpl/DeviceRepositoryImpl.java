@@ -217,10 +217,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
     @Override
     public List<DeviceDto> getUnassignedDeviceData(Integer userId) {
-        Integer userLevelId = helperService.getUserLevelByUserId(userId);
+        //Integer userLevelId = helperService.getUserLevelByUserId(userId);
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String query =" ";
-        if(userLevelId == 2)
+       // if(userLevelId == 2)
             query = "select id,imei_no_1 as imeiNo1,sim_icc_id_1 as simIccId1,imei_no_2 as imeiNo2,sim_icc_id_2 as simIccId2,model_name as modelName ,mobile_number_1 as mobileNumber1,mobile_number_2 as mobileNumber2 from rdvts_oltp.device_m  " +
                     "where id NOT IN " +
                     "(select device_id from rdvts_oltp.vehicle_device_mapping) ";
@@ -270,7 +270,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT div.dist_id,dist.district_name,dist.state_id,state.state_name  from rdvts_oltp.division_m as div  " +
                 "left join rdvts_oltp.district_boundary as dist on dist.dist_id= div.dist_id  " +
-                "left join rdvts_oltp.state_m as state on state.id= dist.state_id" +
+                "left join rdvts_oltp.state_m as state on state.id= dist.state_id  " +
                 "WHERE  div.id =:divisionId ";
         sqlParam.addValue("divisionId",divisionId);
         return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));

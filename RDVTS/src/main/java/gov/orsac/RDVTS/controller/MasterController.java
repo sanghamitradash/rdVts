@@ -226,20 +226,20 @@ public class MasterController {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-                if (designationEntity.getName() != null && designationEntity.getDescription() != null && designationEntity.getUserLevelId() != null
-                    && designationEntity.getName().isEmpty() && designationEntity.getDescription().isEmpty() && designationEntity.getUserLevelId().toString().isEmpty()) {
+//                if (designationEntity.getName() != null  && designationEntity.getUserLevelId() != null
+//                    && designationEntity.getName().isEmpty() && designationEntity.getUserLevelId().toString().isEmpty()) {
 
                     DesignationEntity designationEntity1 = designationService.saveDesignation(designationEntity);
                     result.put("designationEntity1", designationEntity1);
                     rdvtsResponse.setData(designationEntity1);
                     rdvtsResponse.setStatus(1);
                     rdvtsResponse.setMessage("Designation Entered Successfully");
-                } else {
-                    rdvtsResponse = new RDVTSResponse(0,
-                            new ResponseEntity<>(HttpStatus.OK),
-                            "Designation Name, Description, User Level are Mandatory !!",
-                            result);
-                    }
+//                } else {
+//                    rdvtsResponse = new RDVTSResponse(0,
+//                            new ResponseEntity<>(HttpStatus.OK),
+//                            "Designation Name, Description, User Level are Mandatory !!",
+//                            result);
+//                    }
         } catch (Exception e) {
             rdvtsResponse = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -775,11 +775,15 @@ public class MasterController {
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
             List<VTUVendorMasterDto> finalVendorList=new ArrayList<>();
             Integer start1=start;
-            for(VTUVendorMasterDto vtu:vendorList){
+           /* for(VTUVendorMasterDto vtu:vendorList){
 
                 start1=start1+1;
                 vtu.setSlNo(start1);
                 finalVendorList.add(vtu);
+            }*/
+            for(int i=0;i<vendorList.size();i++){
+                start1=start1+1;
+                vendorList.get(i).setSlNo(start1);
             }
 //            if (!vendorList.isEmpty() && vendorList.size() > 0) {
 //                result.put("vendorList", vendorList);

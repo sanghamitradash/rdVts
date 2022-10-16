@@ -117,7 +117,7 @@ public class DeviceServiceImpl implements DeviceService {
         if(userLevelId == 1)
          {
                device.setStateId(deviceMapping.getStateId());
-               device.setDeviceId(deviceId);
+               device.setDeviceId(deviceMapping.getDeviceId());
           }
         if(userLevelId ==2){
 

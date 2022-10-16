@@ -37,12 +37,14 @@ public class WorkRepositoryImpl {
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         }
         int resultCount = 0;
-        String qry = "select id, g_work_id as workId,g_work_name as workName,is_active,created_by,updated_by,created_on,updated_on from rdvts_oltp.work_m where is_active = true";
-        if (workDto.getWorkId() > 0) {
-            qry += " AND g_work_id = :workId";
-        }
+        String qry = "select wm.id, wm.g_work_id as workId,wm.g_work_name as workName,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name\n" +
+                "from rdvts_oltp.work_m as wm\n" +
+                "join rdvts_oltp.geo_master as gm on gm.work_id=wm.id \n" +
+                "join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id\n" +
+                "join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id\n" +
+                "where wm.is_active = true";
         if (workDto.getId() > 0) {
-            qry += " AND id = :id";
+            qry += " AND wm.id = :id";
         }
         resultCount = count(qry, sqlParam);
         if (workDto.getLimit() > 0) {
@@ -58,11 +60,20 @@ public class WorkRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "";
         if (id == -1) {
-            qry += "SELECT id, g_work_id as workId, g_work_name as workName, created_by,updated_by,created_on,updated_on,is_active as active FROM rdvts_oltp.work_m ";
+            qry += "select wm.id, wm.g_work_id as workId,wm.g_work_name as workName,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name\n" +
+                    "from rdvts_oltp.work_m as wm\n" +
+                    "join rdvts_oltp.geo_master as gm on gm.work_id=wm.id \n" +
+                    "join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id\n" +
+                    "join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id\n" +
+                    "where wm.is_active = true  ";
             /* " WHERE true AND id>1 Order BY id";*/
         } else {
-            qry += "SELECT id, g_work_id as workId, g_work_name as workName, created_by,updated_by,created_on,updated_on,is_active as active FROM rdvts_oltp.work_m " +
-                    " WHERE true AND id =:id ";
+            qry += "select wm.id, wm.g_work_id as workId,wm.g_work_name as workName,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name\n" +
+                    "from rdvts_oltp.work_m as wm\n" +
+                    "join rdvts_oltp.geo_master as gm on gm.work_id=wm.id \n" +
+                    "join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id\n" +
+                    "join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id\n" +
+                    "where wm.is_active = true and wm.id = :id ";
             /*   "AND id>1 ORDER BY id";*/
             sqlParam.addValue("id", id);
         }
