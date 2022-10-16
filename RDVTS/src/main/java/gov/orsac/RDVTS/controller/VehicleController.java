@@ -129,6 +129,7 @@ public class VehicleController {
         vehicle.setLimit(length);
         vehicle.setOffSet(start);
         vehicle.setUserId(userId);
+        vehicle.setDraw(draw);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {

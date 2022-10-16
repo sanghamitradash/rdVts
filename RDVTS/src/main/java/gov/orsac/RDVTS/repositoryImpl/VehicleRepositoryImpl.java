@@ -116,7 +116,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
         Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-            pageable = PageRequest.of(vehicle.getOffSet(),vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
+            pageable = PageRequest.of(vehicle.getDraw()-1,vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
+
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         String qry ="SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
