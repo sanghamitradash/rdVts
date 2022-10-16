@@ -145,34 +145,51 @@ public class LocationRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         if (imei1==null){
             String qry = "SELECT id, firmware_version, packet_type, alert_id, packet_status, imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on\n" +
-                    "\tFROM rdvts_oltp.vtu_location where  imei =:imei2 and is_active=true order by date_time desc  ";
+                    "\tFROM rdvts_oltp.vtu_location where  is_active=true ";
+
+            if (startDate !=null && endDate !=null){
+                qry+="and date_time BETWEEN :startDate AND :endDate ";
+                sqlParam.addValue("startDate", startDate);
+                sqlParam.addValue("endDate", endDate);
+            }
+            qry+=" and imei =:imei2  order by date_time desc ";
             sqlParam.addValue("imei2", imei2);
             // sqlParam.addValue("imei1", device.get(0).getImeiNo1());
-            sqlParam.addValue("imei2", imei2);
-            if (startDate !=null && endDate !=null){
 
-            }
 
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
-        } else if (imei2==null) {
+        } else  {
             String qry = "SELECT id, firmware_version, packet_type, alert_id, packet_status, imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on\n" +
-                    "\tFROM rdvts_oltp.vtu_location where imei =:imei1 and is_active=true  order by date_time desc";
+                    "\tFROM rdvts_oltp.vtu_location where is_active=true ";
 
-            sqlParam.addValue("imei1",imei1);
+            if (startDate !=null && endDate !=null){
+                qry+="and date_time BETWEEN :startDate AND :endDate ";
+                sqlParam.addValue("startDate", startDate);
+                sqlParam.addValue("endDate", endDate);
+            }
+            qry+=" and imei =:imei1  order by date_time desc";
+            sqlParam.addValue("imei1", imei1);
          
 
             //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
         }
-        else {
-            String qry = "SELECT id, firmware_version, packet_type, alert_id, packet_status, imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on\n" +
-                    "\tFROM rdvts_oltp.vtu_location where imei =:imei1 and is_active=true  or imei =:imei2 and is_active=true  order by date_time desc";
-
-            sqlParam.addValue("imei1", imei1);
-            sqlParam.addValue("imei2",imei2);
-
-            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
-        }
+//        else {
+//            String qry = "SELECT id, firmware_version, packet_type, alert_id, packet_status, imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on\n" +
+//                    " FROM rdvts_oltp.vtu_location where imei =:imei1 and is_active=true  or imei =:imei2 and is_active=true  order by date_time desc";
+//
+//            if (startDate !=null && endDate !=null){
+//                qry+="and date_time BETWEEN :startDate AND :endDate ";
+//                sqlParam.addValue("startDate", startDate);
+//                sqlParam.addValue("endDate", endDate);
+//            }
+//                qry+=" and imei =:imei2  order by date_time desc ";
+//            sqlParam.addValue("imei1", imei1);
+//            sqlParam.addValue("imei1", imei1);
+//            sqlParam.addValue("imei2",imei2);
+//
+//            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+//        }
     }
 
 
