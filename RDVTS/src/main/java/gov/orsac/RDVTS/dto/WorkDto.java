@@ -33,7 +33,7 @@ public class WorkDto {
     private Date updatedOn;
 
     private Integer piuId;
-    private String piu;
+    private String piuName;
     private Integer packageId;
     private String packageName;
 
