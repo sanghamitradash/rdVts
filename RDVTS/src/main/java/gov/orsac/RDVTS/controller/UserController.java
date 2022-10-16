@@ -46,6 +46,7 @@ public class UserController {
 
 //        List<UserAreaMappingEntity> userArea;
 
+
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         if (data != null && !data.isEmpty()) {
             Map<String, Object> result = new HashMap<>();
