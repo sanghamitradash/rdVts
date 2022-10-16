@@ -53,8 +53,8 @@ public class DesignationServiceImpl implements DesignationService {
     }
 
     @Override
-    public DesignationEntity getDesignationById(int id) {
-        return designationRepository.findById(id);
+    public List<DesignationDto> getDesignationById(int id) {
+        return designationRepositoryImpl.getDesignationById(id);
     }
 
     @Override
