@@ -41,7 +41,9 @@ public class DesignationRepositoryImpl {
             pageable = PageRequest.of(designationDto.getOffSet(), designationDto.getLimit(), Sort.Direction.fromString("desc"),"id");
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         int resultCount = 0;
-        String qry = "select * from rdvts_oltp.designation_m where is_active = true";
+        String qry = "select ac.*,b.name as parent_name,ul.name as user_level_name from rdvts_oltp.designation_m ac " +
+                "join rdvts_oltp.designation_m b on ac.parent_id=b.id " +
+                "left join rdvts_oltp.user_level_m as ul on ul.id=ac.user_level_id and ac.is_active='t' order by ac.id";
 
         resultCount = count(qry, sqlParam);
         if (designationDto.getLimit() > 0) {
@@ -64,6 +66,28 @@ public class DesignationRepositoryImpl {
                     " WHERE true AND user_level_id =:userLevelId  ";
             /*   "AND id>1 ORDER BY id";*/
             sqlParam.addValue("userLevelId", userLevelId);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DesignationDto.class));
+    }
+
+    public List<DesignationDto> getDesignationById(int id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "";
+        if (id == -1) {
+            qry += "select ac.*,b.name as parent_name,ul.name as user_level_name from \n" +
+                    "rdvts_oltp.designation_m ac \n" +
+                    "left join rdvts_oltp.designation_m b on ac.parent_id=b.id \n" +
+                    "left join rdvts_oltp.user_level_m as ul on ul.id=ac.user_level_id \n" +
+                    "where ac.is_active='t' order by id ";
+            /* " WHERE true AND id>1 Order BY id";*/
+        } else {
+            qry += "select ac.*,b.name as parent_name,ul.name as user_level_name from \n" +
+                    "rdvts_oltp.designation_m ac \n" +
+                    "left join rdvts_oltp.designation_m b on ac.parent_id=b.id \n" +
+                    "left join rdvts_oltp.user_level_m as ul on ul.id=ac.user_level_id \n" +
+                    "where ac.is_active='t' and ac.id=:id order by id ";
+            /*   "AND id>1 ORDER BY id";*/
+            sqlParam.addValue("id", id);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DesignationDto.class));
     }
