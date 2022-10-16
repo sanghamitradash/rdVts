@@ -1,13 +1,12 @@
 package gov.orsac.RDVTS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.orsac.RDVTS.dto.DesignationDto;
-import gov.orsac.RDVTS.dto.RDVTSListResponse;
-import gov.orsac.RDVTS.dto.RDVTSResponse;
-import gov.orsac.RDVTS.dto.WorkDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.DesignationEntity;
 import gov.orsac.RDVTS.entities.RoleEntity;
 import gov.orsac.RDVTS.entities.WorkEntity;
+import gov.orsac.RDVTS.repository.VehicleRepository;
+import gov.orsac.RDVTS.service.VehicleService;
 import gov.orsac.RDVTS.service.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +24,10 @@ import java.util.Map;
 public class WorkController {
     @Autowired
     private WorkService workService;
+    @Autowired
+    private VehicleService vehicleService;
+    @Autowired
+    private VehicleRepository vehicleRepository;
 
     //Work Master
     @PostMapping("/addWork")
@@ -51,7 +54,7 @@ public class WorkController {
     @PostMapping("/getWorkList")
     public RDVTSListResponse getWorkList(@RequestParam (name = "id")Integer id,
                                          @RequestParam (name = "userId", required = false)Integer userId,
-                                         @RequestParam (name = "workId")Integer workId,
+                                         @RequestParam (name = "workId", required = false)Integer workId,
                                          @RequestParam(name = "start") Integer start,
                                          @RequestParam(name = "length") Integer length,
                                          @RequestParam(name = "draw") Integer draw) {
@@ -89,18 +92,20 @@ public class WorkController {
         Map<String, Object> result = new HashMap<>();
         try {
             List<WorkDto> workDto = workService.getWorkById(id);
-            if (!workDto.isEmpty() && workDto.size() > 0) {
+            List<VehicleMasterDto> vehicle = vehicleService.getVehicleHistoryList(id);
+            List<LocationDto> location=vehicleService.getLocationArray(id);
+            List<AlertDto> alertDtoList=vehicleService.getAlertArray(id);
+            List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
+
                 result.put("workDto", workDto);
+                result.put("Vehicle Array", vehicle);
+                result.put("Location Array", location);
+                result.put("Road Array", roadMasterDtoList);
+                result.put("Alert Array", alertDtoList);
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            } else {
-                result.put("workList", workDto);
-                response.setData(result);
-                response.setStatus(1);
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-                response.setMessage("Record not found.");
-            }
+
         } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
