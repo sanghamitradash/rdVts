@@ -25,8 +25,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     private NamedParameterJdbcTemplate namedJdbc;
     @Autowired
     private UserRepositoryImpl userRepositoryImpl;
+
     @Autowired
     private HelperServiceImpl helperServiceImpl;
+
+    @Autowired
+    private GeoMasterRepositoryImpl geoMasterRepositoryImpl;
 
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
@@ -127,16 +131,18 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
         Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-            pageable = PageRequest.of(vehicle.getOffSet(),vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
+            pageable = PageRequest.of(vehicle.getDraw()-1,vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
+
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         String qry ="SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
                 "vm.chassis_no,vm.engine_no,vm.is_active as active," +
-                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on " +
+                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,userM.first_name as firstName,userM.middle_name as middleName,userM.last_name as lastName " +
                 "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
-                "left join rdvts_oltp.vehicle_work_mapping as work on vm.id=work.vehicle_id " +
-                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id where vm.is_active=true ";
+                " left join rdvts_oltp.vehicle_work_mapping as work on vm.id=work.vehicle_id  " +
+                " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id " +
+                " left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id where vm.is_active=true ";
         if(vehicle.getVehicleTypeId()>0){
             qry+=" and vm.vehicle_type_id=:vehicleTypeId ";
             sqlParam.addValue("vehicleTypeId",vehicle.getVehicleTypeId());
@@ -151,16 +157,25 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }
 
         //Validation on basis of userLevel and lower level user
-      /*  UserInfoDto user=userRepositoryImpl.getUserByUserId(vehicle.getUserId());
-        if(user.userLevelId==5){
+        UserInfoDto user=userRepositoryImpl.getUserByUserId(vehicle.getUserId());
+        if(user.getUserLevelId()==5){
             qry+="and owner.contractor_id=:contractorId ";
             sqlParam.addValue("contractorId",vehicle.getUserId());
         }
-        else{
-           List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());
-           qry+=" and owner.user_id IN (:userIdList) ";
-           sqlParam.addValue("userIdList",userIdList);
+       /* else if(user.getUserLevelId()==1){
+       *//*    List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());*//*
+           qry+=" ";
         }*/
+        else if(user.getUserLevelId()==2){
+            List<Integer> distId=userRepositoryImpl.getDistIdByUserId(vehicle.getUserId());
+             List<Integer> workId =geoMasterRepositoryImpl.getWorkIdByDistIdList(distId);
+             List<Integer> vehicleId  =getVehicleByWorkIdList(workId);
+        }
+        else if(user.getUserLevelId()==3){
+            List<Integer> blockId=userRepositoryImpl.getBlockIdByUserId(vehicle.getUserId());
+            List<Integer> workId =geoMasterRepositoryImpl.getWorkIdByBlockList(blockId);
+            List<Integer> vehicleId  =getVehicleByWorkIdList(workId);
+        }
 
 
 
@@ -218,6 +233,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             return null;
         }
         return vehicle;
+    }
+
+    public List<Integer> getVehicleByWorkIdList(List<Integer> workId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        List<VehicleMasterDto> vehicle;
+        String qry = "select distinct vehicle_id from rdvts_oltp.vehicle_work_mapping where work_id in(:workId)";
+        sqlParam.addValue("workId", workId);
+        return  namedJdbc.queryForList(qry, sqlParam,Integer.class);
     }
 
 }
