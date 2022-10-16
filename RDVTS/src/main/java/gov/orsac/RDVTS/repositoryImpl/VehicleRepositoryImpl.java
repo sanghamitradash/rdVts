@@ -28,9 +28,13 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     @Autowired
     private HelperServiceImpl helperServiceImpl;
+    @Autowired
+    private MasterRepositoryImpl masterRepositoryImpl;
 
     @Autowired
     private GeoMasterRepositoryImpl geoMasterRepositoryImpl;
+    @Autowired
+    private ContractorRepositoryImpl contractorRepositoryImpl;
 
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
@@ -168,13 +172,13 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }*/
         else if(user.getUserLevelId()==2){
             List<Integer> distId=userRepositoryImpl.getDistIdByUserId(vehicle.getUserId());
-             List<Integer> workId =geoMasterRepositoryImpl.getWorkIdByDistIdList(distId);
-             List<Integer> vehicleId  =getVehicleByWorkIdList(workId);
+             List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(distId);
+             List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
         }
         else if(user.getUserLevelId()==3){
             List<Integer> blockId=userRepositoryImpl.getBlockIdByUserId(vehicle.getUserId());
-            List<Integer> workId =geoMasterRepositoryImpl.getWorkIdByBlockList(blockId);
-            List<Integer> vehicleId  =getVehicleByWorkIdList(workId);
+            List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByBlockList(blockId);
+            List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
         }
 
 

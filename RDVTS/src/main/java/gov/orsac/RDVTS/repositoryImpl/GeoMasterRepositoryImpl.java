@@ -65,15 +65,15 @@ public class GeoMasterRepositoryImpl {
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
     }
-    public List<Integer> getWorkIdByDistIdList(List<Integer> distId) {
+    public List<Integer> getContractorIdByDistIdList(List<Integer> distId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct work_id from rdvts_oltp.geo_master where dist_id in(:distId)";
+        String qry = "select distinct contractor_id from rdvts_oltp.geo_master where dist_id in(:distId)";
         sqlParam.addValue("distId",distId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
-    public List<Integer> getWorkIdByBlockList(List<Integer> blockId) {
+    public List<Integer> getContractorIdByBlockList(List<Integer> blockId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct work_id from rdvts_oltp.geo_master where block_id in(:distId)";
+        String qry = "select distinct contractor_id from rdvts_oltp.geo_master where block_id in(:blockId)";
         sqlParam.addValue("blockId",blockId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
