@@ -726,7 +726,25 @@ public class UserController {
             UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userId, userPasswordMasterDto);
             result.put("updatePassword", updatedPassword);
             //response.setData(result);
-            response.setStatus(1);
+//            if(encoder.matches(userPasswordMasterDto.getPassword(), userPasswordMasterDto.getOldPassword())){
+//                response.setStatus(0);
+//                response.setData(result);
+//                response.setMessage("New password shouldn't be same as old password !!!");
+//                response.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
+//            }else {
+//                if (userService.updateUserPass(userId, userPasswordMasterDto)){
+//                    response.setData(result);
+//                    response.setStatus(1);
+//                    response.setMessage("Password reset successfully !!!");
+//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//                }else{
+//                    response.setStatus(0);
+//                    response.setData(result);
+//                    response.setMessage("Something went wrong while resetting password !!!");
+//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//                }
+//            }
+//            response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Password Updated Successfully");
         } catch (Exception e) {
