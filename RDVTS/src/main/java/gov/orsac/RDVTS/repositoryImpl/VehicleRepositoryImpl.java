@@ -25,8 +25,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     private NamedParameterJdbcTemplate namedJdbc;
     @Autowired
     private UserRepositoryImpl userRepositoryImpl;
+
     @Autowired
     private HelperServiceImpl helperServiceImpl;
+
+    @Autowired
+    private GeoMasterRepositoryImpl geoMasterRepositoryImpl;
 
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
@@ -153,16 +157,25 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }
 
         //Validation on basis of userLevel and lower level user
-      /*  UserInfoDto user=userRepositoryImpl.getUserByUserId(vehicle.getUserId());
-        if(user.userLevelId==5){
+        UserInfoDto user=userRepositoryImpl.getUserByUserId(vehicle.getUserId());
+        if(user.getUserLevelId()==5){
             qry+="and owner.contractor_id=:contractorId ";
             sqlParam.addValue("contractorId",vehicle.getUserId());
         }
-        else{
-           List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());
-           qry+=" and owner.user_id IN (:userIdList) ";
-           sqlParam.addValue("userIdList",userIdList);
+       /* else if(user.getUserLevelId()==1){
+       *//*    List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());*//*
+           qry+=" ";
         }*/
+        else if(user.getUserLevelId()==2){
+            List<Integer> distId=userRepositoryImpl.getDistIdByUserId(vehicle.getUserId());
+             List<Integer> workId =geoMasterRepositoryImpl.getWorkIdByDistIdList(distId);
+             List<Integer> vehicleId  =getVehicleByWorkIdList(workId);
+        }
+        else if(user.getUserLevelId()==3){
+            List<Integer> blockId=userRepositoryImpl.getBlockIdByUserId(vehicle.getUserId());
+            List<Integer> workId =geoMasterRepositoryImpl.getWorkIdByBlockList(blockId);
+            List<Integer> vehicleId  =getVehicleByWorkIdList(workId);
+        }
 
 
 
@@ -220,6 +233,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             return null;
         }
         return vehicle;
+    }
+
+    public List<Integer> getVehicleByWorkIdList(List<Integer> workId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        List<VehicleMasterDto> vehicle;
+        String qry = "";
+        sqlParam.addValue("workId", workId);
+        return  namedJdbc.queryForList(qry, sqlParam,Integer.class);
     }
 
 }

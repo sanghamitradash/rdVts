@@ -64,7 +64,18 @@ public class GeoMasterRepositoryImpl {
         }
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
-
-
     }
+    public List<Integer> getWorkIdByDistIdList(List<Integer> distId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "";
+        sqlParam.addValue("distId",distId);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+    public List<Integer> getWorkIdByBlockList(List<Integer> blockId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "";
+        sqlParam.addValue("blockId",blockId);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+
 }
