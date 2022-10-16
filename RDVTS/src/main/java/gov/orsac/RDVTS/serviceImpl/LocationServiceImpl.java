@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.DeviceDto;
+import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.VtuLocationDto;
 import gov.orsac.RDVTS.repositoryImpl.LocationRepositoryImpl;
 import gov.orsac.RDVTS.service.LocationService;
@@ -28,6 +29,11 @@ public class LocationServiceImpl implements LocationService {
 
         List<VtuLocationDto> vtuLocationDtoList= locationRepository.getLocationRecordByDateTime(imei2,imei1,startTime,endTime);
         return vtuLocationDtoList;
+    }
+
+    @Override
+    public List<VtuLocationDto> getLocationRecordByRoadData(List<Long> imei1,List<Long> imei2,List<VehicleWorkMappingDto> vehicleByWork){
+        return locationRepository.getLocationRecordByRoadData(imei2,imei1,vehicleByWork);
     }
 
 

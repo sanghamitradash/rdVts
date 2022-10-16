@@ -1,9 +1,6 @@
 package gov.orsac.RDVTS.repository;
 
-import gov.orsac.RDVTS.dto.DeviceDto;
-import gov.orsac.RDVTS.dto.DeviceInfo;
-import gov.orsac.RDVTS.dto.DeviceListDto;
-import gov.orsac.RDVTS.dto.VehicleDeviceMappingDto;
+import gov.orsac.RDVTS.dto.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -14,4 +11,6 @@ public interface DeviceMasterRepository {
     List<DeviceDto> getUnassignedDeviceData(Integer userId);
 
   List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId);
+
+    List<userLevelDto> getDeviceUserLevel();
 }

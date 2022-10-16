@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.controller;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.service.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -91,34 +92,46 @@ public class LocationController {
                 }
             }
 
-
-            // Get Final IMEI Number
-            List<DeviceDto> device = deviceService.getDeviceByIds(deviceIds,userId);
-
-            for (DeviceDto item : device)
-            {
-                if(item.getImeiNo1()!=null || !item.getImeiNo1().toString().isEmpty()){
-                    imei1.add(item.getImeiNo1());
-                    imei2.add(item.getImeiNo1());
-                }
+            if (deviceIds==null){
+                response = new RDVTSResponse(0,
+                        new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                        "Device Id or Vehicle Id is empty",
+                        result);
             }
+            else {
+                List<DeviceDto> device = deviceService.getDeviceByIds(deviceIds,userId);
+
+                for (DeviceDto item : device)
+                {
+                    if(item.getImeiNo1()!=null || !item.getImeiNo1().toString().isEmpty()){
+                        imei1.add(item.getImeiNo1());
+                        imei2.add(item.getImeiNo2());
+                    }
+                }
 
 
-            //Get and Send Final Data
-            if(imei1.size()>0){
-                List<VtuLocationDto> vtuLocationDto = locationService.getLatestRecordByImeiNumber(imei1,imei2);
-
-                //result.put("user", vtuLocationDto);
-                response.setData(vtuLocationDto);
-                response.setStatus(1);
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                response.setMessage("Device Latest Location");
-            } else {
+                //Get and Send Final Data
+                if(imei1.size()>0){
+                    List<VtuLocationDto> vtuLocationDto = locationService.getLatestRecordByImeiNumber(imei1,imei2);
+//                    for (VtuLocationDto item:vtuLocationDto) {
+//                       item.setUpdatedLatitude(Long.parseLong(item.getLatitude()) );
+//                        item.setUpdatedLongitude(Long.parseLong(item.getLongitude()) );
+//
+//                    }
+                    //result.put("user", vtuLocationDto);
+                    response.setData(vtuLocationDto);
+                    response.setStatus(1);
+                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                    response.setMessage("Device Latest Location");
+                } else {
                     response = new RDVTSResponse(0,
                             new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                             "Device Id or Vehicle Id is empty",
                             result);
+                }
             }
+            // Get Final IMEI Number
+
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -137,7 +150,8 @@ public class LocationController {
                                                  @RequestParam(name = "userId",required = false)Integer userId,
                                                  @RequestParam(name = "startTime", required = false) String startTime,
                                                  @RequestParam(name = "endTime", required = false) String endTime,
-                                                     @RequestParam(name = "WorkId", required = false) Integer workId)
+                                                     @RequestParam(name = "WorkId", required = false) Integer workId,
+                                                     @RequestParam(name = "roadId",required = false)Integer roadId)
 
     {
         RDVTSResponse response = new RDVTSResponse();
@@ -146,6 +160,7 @@ public class LocationController {
         List<Integer> vehicleIds = new ArrayList<>();
         List<Integer> deviceIds = new ArrayList<>();
         List<Integer> workIds = new ArrayList<>();
+        List<Integer> roadIds  =new ArrayList<>();
         List<Long> imei1 = new ArrayList<>();
         List<Long> imei2 = new ArrayList<>();
         try {
@@ -169,53 +184,81 @@ public class LocationController {
                     deviceIds.add(item.getDeviceId());
                 }
             }
+            else if (roadId !=null) {
+                roadIds.add(roadId);
+                List<GeoMasterDto> workByRoad= roadService.getWorkByroadIds(roadIds);
 
+                for (GeoMasterDto item : workByRoad) {
+                    workIds.add(item.getWorkId());
 
-            // Get Final IMEI Number
-            List<DeviceDto> device = deviceService.getDeviceByIds(deviceIds,userId);
+                }
 
-            for (DeviceDto item : device)
-            {
-                if(item.getImeiNo1()!=null || !item.getImeiNo1().toString().isEmpty()){
-                    imei1.add(item.getImeiNo1());
-                    imei2.add(item.getImeiNo2());
+                List<VehicleWorkMappingDto> vehicleByWork= workService.getVehicleBywork(workIds);
+                for (VehicleWorkMappingDto item : vehicleByWork)
+                {
+                    vehicleIds.add(item.getVehicleId());
+                }
+                List<VehicleDeviceMappingDto> device=vehicleService.getVehicleDeviceMappingList(vehicleIds);
+                for (VehicleDeviceMappingDto item : device)
+                {
+                    deviceIds.add(item.getDeviceId());
                 }
             }
 
-
-            //Get and Send Final Data
-            if(imei1.size()>0){
-
-
-                //List<VtuLocationDto> vtuLocationDto = locationService.getLatestRecordByImeiNumber(imei1,imei2);
-
-                if (startTime==null && endTime==null){
-                    response = new RDVTSResponse(0,
-                            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                            "Start date and End Date is not Found",
-                            result);
-                }
-                else {
-                    Date startDate=new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(startTime);
-                    Date endDate=new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(endTime);
-
-                    List<VtuLocationDto> vtuLocationDtoList=locationService.getLocationRecordByDateTime(imei1,imei2,startDate,endDate);
-
-                    //result.put("user", vtuLocationDto);
-                    response.setData(vtuLocationDtoList);
-                    response.setStatus(1);
-                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                    response.setMessage("Device Latest Location");
-                }
-
-                //result.put("user", vtuLocationDto);
-
-            } else {
+            if (deviceIds==null){
                 response = new RDVTSResponse(0,
                         new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                         "Device Id or Vehicle Id is empty",
                         result);
             }
+            else {
+                List<DeviceDto> device = deviceService.getDeviceByIds(deviceIds,userId);
+
+                for (DeviceDto item : device)
+                {
+                    if(item.getImeiNo1()!=null || !item.getImeiNo1().toString().isEmpty()){
+                        imei1.add(item.getImeiNo1());
+                        imei2.add(item.getImeiNo2());
+                    }
+                }
+
+
+                //Get and Send Final Data
+                if(imei1.size()>0){
+
+
+                    //List<VtuLocationDto> vtuLocationDto = locationService.getLatestRecordByImeiNumber(imei1,imei2);
+
+                    if (startTime==null && endTime==null){
+                        response = new RDVTSResponse(0,
+                                new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                                "Start date and End Date is not Found",
+                                result);
+                    }
+                    else {
+                        Date startDate=new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(startTime);
+                        Date endDate=new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(endTime);
+
+                        List<VtuLocationDto> vtuLocationDtoList=locationService.getLocationRecordByDateTime(imei1,imei2,startDate,endDate);
+
+                        //result.put("user", vtuLocationDto);
+                        response.setData(vtuLocationDtoList);
+                        response.setStatus(1);
+                        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                        response.setMessage("Device Latest Location");
+                    }
+
+                    //result.put("user", vtuLocationDto);
+
+                } else {
+                    response = new RDVTSResponse(0,
+                            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                            "Device Id or Vehicle Id is empty",
+                            result);
+                }
+            }
+            // Get Final IMEI Number
+
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -226,6 +269,8 @@ public class LocationController {
         }
         return response;
     }
+
+
 
 
 
