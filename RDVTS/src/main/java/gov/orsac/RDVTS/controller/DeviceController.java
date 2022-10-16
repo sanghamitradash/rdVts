@@ -214,7 +214,7 @@ public class DeviceController {
     }
 
     @PostMapping("/getUnassignedDeviceData")
-    public RDVTSResponse getUnassignedDeviceData(@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse getUnassignedDeviceData (@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
