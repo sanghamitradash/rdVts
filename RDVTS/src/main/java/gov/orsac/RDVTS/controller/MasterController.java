@@ -775,11 +775,15 @@ public class MasterController {
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
             List<VTUVendorMasterDto> finalVendorList=new ArrayList<>();
             Integer start1=start;
-            for(VTUVendorMasterDto vtu:vendorList){
+           /* for(VTUVendorMasterDto vtu:vendorList){
 
                 start1=start1+1;
                 vtu.setSlNo(start1);
                 finalVendorList.add(vtu);
+            }*/
+            for(int i=0;i<vendorList.size();i++){
+                start1=start1+1;
+                vendorList.get(i).setSlNo(start1);
             }
 //            if (!vendorList.isEmpty() && vendorList.size() > 0) {
 //                result.put("vendorList", vendorList);

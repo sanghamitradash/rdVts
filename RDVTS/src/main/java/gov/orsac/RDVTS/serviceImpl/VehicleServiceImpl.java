@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -25,6 +26,8 @@ public class VehicleServiceImpl implements VehicleService {
        private VehicleMasterSaveRepository vehicleMasterSaveRepository;
        @Autowired
        private VehicleRepository vehicleRepository;
+       @Autowired
+       private VehicleDeviceRepository vehicleDeviceRepository;
 
        @Autowired
        private VehicleDeviceMappingRepository vehicleDeviceMappingRepository;
@@ -43,6 +46,12 @@ public class VehicleServiceImpl implements VehicleService {
        public VehicleMaster saveVehicle(VehicleMaster vehicle) {
         return vehicleMasterSaveRepository.save(vehicle);
         }
+
+       @Override
+       public Integer deactivateVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping) throws ParseException {
+            return  vehicleDeviceRepository.deactivateVehicleDevice(vehicleDeviceMapping);
+       }
+
        @Override
        public VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping) {
 
@@ -57,12 +66,22 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
+       public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
+              List<Integer> workIds = new ArrayList<>();
+              for (VehicleWorkMappingDto eachWorkIds: vehicleWorkMapping) {
+                     workIds.add(eachWorkIds.getWorkId());
+              }
+              List<Integer> vehicleIds = new ArrayList<>();
+              for (VehicleWorkMappingDto eachVehicleIds: vehicleWorkMapping) {
+                     vehicleIds.add(eachVehicleIds.getVehicleId());
+              }
+              return vehicleRepository.deactivateVehicleWork(workIds, vehicleIds);
+       }
+
+       @Override
        public List<VehicleWorkMappingEntity> assignVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
               SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
 //              formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-
-
-
 
               List<VehicleWorkMappingEntity> vehicleWork=new ArrayList<>();
               for(VehicleWorkMappingDto vehicle:vehicleWorkMapping){
@@ -173,6 +192,7 @@ public class VehicleServiceImpl implements VehicleService {
                      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
                      Date dateTime = formatter.parse("2022-10-10 12:10:00");
                      AlertDto alert=new AlertDto();
+                     alert.setId(1);
                      alert.setVmmId(1);
                      alert.setAlertTypeId(1);
                      alert.setLatitude(20.78378783);
@@ -249,6 +269,7 @@ public class VehicleServiceImpl implements VehicleService {
                      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
                      Date dateTime = formatter.parse("2022-10-10 12:10:00");
                      VehicleDeviceInfo vehicle=new VehicleDeviceInfo();
+                     vehicle.setId(1);
                      vehicle.setVehicleId(1);
                      vehicle.setDeviceId(1);
                      vehicle.setInstallationDate(dateTime);
@@ -274,6 +295,7 @@ public class VehicleServiceImpl implements VehicleService {
                      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
                      Date dateTime = formatter.parse("2022-10-10 12:10:00");
                      VehicleWorkMappingDto work=new VehicleWorkMappingDto();
+                     work.setId(1);
                      work.setWorkId(1);
                      work.setVehicleId(1);
                      work.setWorkName("Test");

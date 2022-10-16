@@ -4,6 +4,7 @@ import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.dto.*;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -210,10 +211,22 @@ public class UserRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT div.dist_id,dist.district_name,dist.state_id,state.state_name  from rdvts_oltp.division_m as div  " +
                 "left join rdvts_oltp.district_boundary as dist on dist.dist_id= div.dist_id  " +
-                "left join rdvts_oltp.state_m as state on state.id= dist.state_id" +
+                "left join rdvts_oltp.state_m as state on state.id= dist.state_id   " +
                 "WHERE  div.id =:divisionId ";
         sqlParam.addValue("divisionId",divisionId);
         return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(UserAreaMappingRequestDTO.class));
+    }
+    public List<Integer> getDistIdByUserId(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct dist_id from rdvts_oltp.user_area_mapping where user_id=:userId ";
+        sqlParam.addValue("userId",userId);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+    public List<Integer> getBlockIdByUserId(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct block_id from rdvts_oltp.user_area_mapping where user_id=:userId";
+        sqlParam.addValue("userId",userId);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 }
 
