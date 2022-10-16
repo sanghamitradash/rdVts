@@ -10,6 +10,8 @@ public interface VehicleRepository {
     VehicleMasterDto getVehicleByVId(Integer vehicleId);
     VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId);
 
+//    List<VehicleMasterDto> getVehicleHistoryList(int id);
+
 
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingList(List<Integer> vehicleId);
 
