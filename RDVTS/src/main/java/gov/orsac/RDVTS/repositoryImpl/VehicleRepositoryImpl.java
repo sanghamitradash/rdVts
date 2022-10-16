@@ -57,6 +57,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }
         return vehicle;
     }
+
     @Override
     public VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId) {
         VehicleDeviceInfo vehicleDevice = new VehicleDeviceInfo();

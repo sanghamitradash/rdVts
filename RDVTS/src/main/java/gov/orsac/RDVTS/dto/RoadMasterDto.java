@@ -44,4 +44,7 @@ public class RoadMasterDto {
     private Integer updatedBy;
 
     private Date updatedOn;
+
+    private Integer slNo;
+
 }

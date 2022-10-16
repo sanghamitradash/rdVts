@@ -17,6 +17,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static javafx.scene.input.KeyCode.L;
+
 @Service
 public class VehicleServiceImpl implements VehicleService {
        @Autowired
@@ -81,6 +83,27 @@ public class VehicleServiceImpl implements VehicleService {
        return vehicleRepository.getVehicleByVId(vehicleId);
        }
        @Override
+       public List<VehicleMasterDto> getVehicleHistoryList(int id) {
+                     List<VehicleMasterDto> vehicleMasterDtoList=new ArrayList<>();
+
+                     for(int i=0;i<2;i++){
+//                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+//                            Date dateTime = formatter.parse("2022-10-10 12:10:00");
+                            VehicleMasterDto vehicle =new VehicleMasterDto();
+                            vehicle.setVehicleNo("OD33o0209");
+                            vehicle.setVehicleTypeId(12);
+                            vehicle.setVehicleTypeName("JCB");
+                            vehicle.setModel("Glamour");
+                            vehicle.setSpeedLimit(20.2);
+                            vehicle.setChassisNo("abdh3543HHJJ");
+                            vehicle.setEngineNo("ABCD123JHK");
+
+
+                            vehicleMasterDtoList.add(vehicle);
+                     }
+                     return vehicleMasterDtoList;
+              }
+       @Override
        public VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId) {
               return vehicleRepository.getVehicleDeviceMapping(vehicleId);
        }
@@ -102,6 +125,27 @@ public class VehicleServiceImpl implements VehicleService {
 
        @Override
        public List<LocationDto> getLocation(Integer vehicleId) throws ParseException {
+              List<LocationDto> locationList=new ArrayList<>();
+
+              for(int i=0;i<2;i++){
+                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
+                     LocationDto location=new LocationDto();
+                     location.setDateTime(dateTime);
+                     location.setLatitude(21.7787878);
+                     location.setLongitude(80.676767);
+                     location.setSpeed(20);
+                     location.setDistanceTravelledToday(200.5);
+                     location.setDistanceTravelledTotal(5000.2);
+                     location.setAvgDistanceTravelled(300.0);
+                     location.setAvgSpeed(30.2);
+                     locationList.add(location);
+              }
+              return locationList;
+       }
+
+       @Override
+       public List<LocationDto> getLocationArray(int id) throws ParseException {
               List<LocationDto> locationList=new ArrayList<>();
 
               for(int i=0;i<2;i++){
@@ -145,6 +189,56 @@ public class VehicleServiceImpl implements VehicleService {
                      alertList.add(alert);
               }
               return alertList;
+       }
+
+       @Override
+       public List<AlertDto> getAlertArray(int id) throws ParseException {
+              List<AlertDto> alertList=new ArrayList<>();
+
+              for(int i=0;i<2;i++){
+                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
+                     AlertDto alert=new AlertDto();
+                     alert.setVmmId(1);
+                     alert.setAlertTypeId(1);
+                     alert.setLatitude(20.78378783);
+                     alert.setLongitude(81.78278278728);
+                     alert.setAltitude(21.877878);
+                     alert.setAccuracy(21.76737);
+                     alert.setSpeed(20.2);
+                     alert.setGpsDtm(dateTime);
+                     alert.setActive(true);
+                     alert.setResolve(true);
+                     alert.setResolvedBy(1);
+
+
+                     alertList.add(alert);
+              }
+              return alertList;
+       }
+
+       @Override
+       public List<RoadMasterDto> getRoadArray(int id) throws ParseException {
+              List<RoadMasterDto> roadList=new ArrayList<>();
+
+              for(int i=0;i<2;i++){
+//                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+//                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
+                     RoadMasterDto road = new RoadMasterDto();
+                     road.setId(1);
+                     road.setPackageId(12);
+                     road.setPackageName("package2");
+                     road.setRoadName("road2");
+                     road.setRoadLength(3.788);
+                     road.setRoadLocation(2.555);
+                     road.setRoadAllignment("right");
+                     road.setRoadWidth(5.111);
+                     road.setGroadId(1);
+                     road.setGeoMasterId(2);
+
+                     roadList.add(road);
+              }
+              return roadList;
        }
 
        @Override

@@ -245,6 +245,37 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return namedJdbc.query(qry,sqlParam, new BeanPropertyRowMapper<>(userLevelDto.class));
     }
 
+    @Override
+    public DeviceAreaMappingDto getStateByDistId(Integer distId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT dist.state_id,state.state_name from rdvts_oltp.district_boundary as dist  " +
+                "left join rdvts_oltp.state_m  as state on state.id = dist.state_id WHERE dist.dist_id =:distId ";
+        sqlParam.addValue("distId",distId);
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));
+    }
+
+    @Override
+    public DeviceAreaMappingDto getStateDistByBlockId(Integer blockId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT block.dist_id, block.district_name,dist.state_id,state.state_name from rdvts_oltp.block_boundary as block " +
+                "left join rdvts_oltp.district_boundary as dist on dist.dist_id = block.dist_id  " +
+                "left join rdvts_oltp.state_m as state on state.id = dist.state_id  " +
+                "WHERE block.gid =:blockId";
+        sqlParam.addValue("blockId", blockId);
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));
+    }
+
+    @Override
+    public DeviceAreaMappingDto getStateDistByDivisionId(Integer divisionId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT div.dist_id,dist.district_name,dist.state_id,state.state_name  from rdvts_oltp.division_m as div  " +
+                "left join rdvts_oltp.district_boundary as dist on dist.dist_id= div.dist_id  " +
+                "left join rdvts_oltp.state_m as state on state.id= dist.state_id" +
+                "WHERE  div.id =:divisionId ";
+        sqlParam.addValue("divisionId",divisionId);
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));
+    }
+
     public List<DeviceDto> getImeiListByDeviceId(Integer deviceId){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 

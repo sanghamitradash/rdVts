@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -329,6 +330,48 @@ public class UserServiceImpl implements UserService {
         return userRepositoryImpl.getUserBymobile(mobile);
 
     }
+
+    public List<UserAreaMappingEntity> saveUserAreaMapping(Integer userLevelId, Integer userId, List<UserAreaMappingEntity> userAreaMapping){
+        List<UserAreaMappingEntity> user = new ArrayList();
+        if(userLevelId == 1){
+            for(UserAreaMappingEntity userAreaMapping1 : userAreaMapping) {
+                //userAreaMapping1.setStateId(userLevelId);
+                userAreaMapping1.setUserId(userId);
+                user.add(userAreaMapping1);
+
+            }
+        }
+        if(userLevelId ==2){
+            for(UserAreaMappingEntity userAreaMapping1 :userAreaMapping){
+                UserAreaMappingRequestDTO  userRequest = userRepositoryImpl.getStateByDistId(userAreaMapping1.getDistId());
+                userAreaMapping1.setStateId(userRequest.getStateId());
+                userAreaMapping1.setUserId(userId);
+                user.add(userAreaMapping1);
+            }
+        }
+        if(userLevelId == 3){
+            for(UserAreaMappingEntity userAreaMapping1 :userAreaMapping){
+                UserAreaMappingRequestDTO  userRequest = userRepositoryImpl.getStateDistByBlockId(userAreaMapping1.getBlockId());
+                userAreaMapping1.setStateId(userRequest.getStateId());
+                userAreaMapping1.setDistId(userRequest.getDistId());
+                userAreaMapping1.setUserId(userId);
+                user.add(userAreaMapping1);
+            }
+        }
+        if(userLevelId == 4){
+            for(UserAreaMappingEntity userAreaMapping1 :userAreaMapping){
+                UserAreaMappingRequestDTO  userRequest = userRepositoryImpl.getStateDistByDivisionId(userAreaMapping1.getDivisionId());
+                userAreaMapping1.setStateId(userRequest.getStateId());
+                userAreaMapping1.setDistId(userRequest.getDistId());
+                userAreaMapping1.setUserId(userId);
+                user.add(userAreaMapping1);
+            }
+        }
+
+        return userAreaMappingRepository.saveAll(userAreaMapping);
+    }
+
+
 
 
 }
