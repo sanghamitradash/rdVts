@@ -214,7 +214,7 @@ public class DeviceController {
     }
 
     @PostMapping("/getUnassignedDeviceData")
-    public RDVTSResponse getUnassignedDeviceData(@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse getUnassignedDeviceData (@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -238,12 +238,12 @@ public class DeviceController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-          //  List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
-           // result.put("device", device);
+           List<userLevelDto> userLevel = deviceService.getDeviceUserLevel();
+            result.put("userLevel", userLevel);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("Device By Id");
+            response.setMessage("Device User Level");
         } catch (Exception ex) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),

@@ -104,6 +104,11 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceMasterRepository.getVehicleDeviceMappingByDeviceId(deviceId,userId);
     }
 
+    @Override
+    public List<userLevelDto> getDeviceUserLevel() {
+        return deviceMasterRepository.getDeviceUserLevel();
+    }
+
 
 }
 

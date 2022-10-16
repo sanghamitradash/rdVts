@@ -35,7 +35,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return 0;
     }
 
-    public List<DeviceDto> getDeviceByIds(List<Integer> deviceId,Integer userId) {
+    public List<DeviceDto> getDeviceByIds(List<Integer> deviceId, Integer userId) {
         List<DeviceDto> device;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
@@ -46,37 +46,37 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                 "dm.created_by,dm.created_on,dm.updated_by,dm.updated_on  " +
                 "from rdvts_oltp.device_m as dm   " +
                 "left join rdvts_oltp.vtu_vendor_m as vtu on vtu.id = dm.vtu_vendor_id  " +
-                "WHERE dm.is_active = true ";
+                "WHERE dm.is_active = true  ";
 
-        if(deviceId.size()>0){
-            qry+=" AND dm.id IN (:deviceId)";
+        if (deviceId.size() > 0) {
+            qry += " AND dm.id IN (:deviceId)";
         }
         sqlParam.addValue("deviceId", deviceId);
 //        sqlParam.addValue("userId",userId);
         try {
             device = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
-        }
-        catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
         return device;
     }
 
-    public List<DeviceDto> getDeviceById(Integer deviceId,Integer userId) {
+    public List<DeviceDto> getDeviceById(Integer deviceId, Integer userId) {
         List<DeviceDto> device;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2, " +
-                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no as deviceNo,  " +
-                "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,  " +
-                "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber, " +
-                "dm.created_by,dm.created_on,dm.updated_by,dm.updated_on  " +
-                "from rdvts_oltp.device_m as dm   " +
+        String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2,  " +
+                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no as deviceNo,dm.user_level_id,um.name as userLevelName,     " +
+                "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,    " +
+                "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber,  " +
+                "dm.created_by,dm.created_on,dm.updated_by,dm.updated_on   " +
+                "from rdvts_oltp.device_m as dm  " +
                 "left join rdvts_oltp.vtu_vendor_m as vtu on vtu.id = dm.vtu_vendor_id  " +
+                "left join rdvts_oltp.user_level_m as um on um.id = dm.user_level_id  " +
                 "WHERE dm.is_active = true ";
 
-        if(deviceId>0){
-            qry+=" AND dm.id=:deviceId";
+        if (deviceId > 0) {
+            qry += " AND dm.id=:deviceId";
         }
         sqlParam.addValue("deviceId", deviceId);
         sqlParam.addValue("userId",userId);
@@ -127,10 +127,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     public Page<DeviceInfo> getDeviceList(DeviceListDto deviceDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(deviceDto.getOffSet(),deviceDto.getLimit(), Sort.Direction.fromString("desc"), "id");
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
-        int resultCount=0;
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
+        pageable = PageRequest.of(deviceDto.getOffSet(), deviceDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        int resultCount = 0;
 
 
         String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2,  " +
@@ -145,67 +145,75 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                 "left join rdvts_oltp.block_boundary as block on block.block_id = dam.block_id  " +
                 "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id  " +
                 "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id =  dam.g_dist_id  " +
-                "WHERE dm.is_active = true  " ;
+                "WHERE dm.is_active = true  ";
 
 
-        if(deviceDto.getImeiNo1() != null && deviceDto.getImeiNo1() > 0){
+        if (deviceDto.getImeiNo1() != null && deviceDto.getImeiNo1() > 0) {
             qry += " AND dm.imei_no_1=:imeiNo1 ";
             sqlParam.addValue("imeiNo1", deviceDto.getImeiNo1());
         }
 
-        if(deviceDto.getImeiNo2() != null && deviceDto.getImeiNo2() > 0){
+        if (deviceDto.getImeiNo2() != null && deviceDto.getImeiNo2() > 0) {
             qry += " AND dm.imei_no_2=:imeiNo2 ";
             sqlParam.addValue("imeiNo2", deviceDto.getImeiNo2());
         }
 
-        if(deviceDto.getSimIccId1() != null){
-            qry += " AND dm.sim_icc_id_1 LIKE(:simIccId1) ";
-            sqlParam.addValue("simIccId1", deviceDto.getSimIccId1());
+        if (deviceDto.getSimIccId1() != null && deviceDto.getSimIccId1().length() > 0) {
+            qry += " AND dm.sim_icc_id_1=:simIccId1 ";
+            if (deviceDto.getSimIccId1() != null) {
+                qry += " AND dm.sim_icc_id_1 LIKE(:simIccId1) ";
+                sqlParam.addValue("simIccId1", deviceDto.getSimIccId1());
+            }
+
+            if (deviceDto.getSimIccId2() != null && deviceDto.getSimIccId2().length() > 0) {
+                qry += " AND dm.sim_icc_id_2=:simIccId2 ";
+                if (deviceDto.getSimIccId2() != null) {
+                    qry += " AND dm.sim_icc_id_2 LIKE(:simIccId2) ";
+                    sqlParam.addValue("simIccId2", deviceDto.getSimIccId2());
+
+                }
+
+                if (deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0) {
+                    qry += " AND dm.mobile_number_1=:mobileNumber1 ";
+                    sqlParam.addValue("mobileNumber1", deviceDto.getMobileNumber1());
+                }
+
+                if (deviceDto.getMobileNumber2() != null && deviceDto.getMobileNumber2() > 0) {
+                    qry += " AND dm.mobile_number_2=:mobileNumber2 ";
+                    sqlParam.addValue("mobileNumber2", deviceDto.getMobileNumber2());
+                }
+
+                if (deviceDto.getVtuVendorId() != null && deviceDto.getVtuVendorId() > 0) {
+                    qry += " AND dm.vtu_vendor_id=:vtuVendorId ";
+                    sqlParam.addValue("vtuVendorId", deviceDto.getVtuVendorId());
+                }
+
+                if (deviceDto.getBlockId() != null && deviceDto.getBlockId() > 0) {
+                    qry += " AND dam.block_id=:blockId ";
+                    sqlParam.addValue("blockId", deviceDto.getBlockId());
+                }
+
+                if (deviceDto.getDistId() != null && deviceDto.getDistId() > 0) {
+                    qry += " AND dam.dist_id=:distId ";
+                    sqlParam.addValue("distId", deviceDto.getDistId());
+                }
+
+                if (deviceDto.getGBlockId() != null && deviceDto.getGBlockId() > 0) {
+                    qry += " AND dam.g_block_id=:gBlockId ";
+                    sqlParam.addValue("gBlockId", deviceDto.getGBlockId());
+                }
+                resultCount = count(qry, sqlParam);
+                if (deviceDto.getLimit() > 0) {
+                    qry += " LIMIT " + deviceDto.getLimit() + " OFFSET " + deviceDto.getOffSet();
+                }
+            }
         }
 
-        if(deviceDto.getSimIccId2() != null) {
-            qry += " AND dm.sim_icc_id_2 LIKE(:simIccId2) ";
-            sqlParam.addValue("simIccId2", deviceDto.getSimIccId2());
+                List<DeviceInfo> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceInfo.class));
+                return new PageImpl<>(list, pageable, resultCount);
+            }
 
-        }
 
-            if(deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0){
-            qry += " AND dm.mobile_number_1=:mobileNumber1 ";
-            sqlParam.addValue("mobileNumber1", deviceDto.getMobileNumber1());
-        }
-
-        if(deviceDto.getMobileNumber2() != null && deviceDto.getMobileNumber2() > 0){
-            qry += " AND dm.mobile_number_2=:mobileNumber2 ";
-            sqlParam.addValue("mobileNumber2", deviceDto.getMobileNumber2());
-        }
-
-        if(deviceDto.getVtuVendorId() != null && deviceDto.getVtuVendorId() > 0){
-            qry += " AND dm.vtu_vendor_id=:vtuVendorId ";
-            sqlParam.addValue("vtuVendorId", deviceDto.getVtuVendorId());
-        }
-
-        if(deviceDto.getBlockId() != null && deviceDto.getBlockId() > 0){
-            qry += " AND dam.block_id=:blockId ";
-            sqlParam.addValue("blockId", deviceDto.getBlockId());
-        }
-
-        if(deviceDto.getDistId() != null && deviceDto.getDistId() > 0){
-            qry += " AND dam.dist_id=:distId ";
-            sqlParam.addValue("distId", deviceDto.getDistId());
-        }
-
-        if(deviceDto.getGBlockId() != null && deviceDto.getGBlockId() > 0){
-            qry += " AND dam.g_block_id=:gBlockId ";
-            sqlParam.addValue("gBlockId", deviceDto.getGBlockId());
-        }
-        resultCount = count(qry, sqlParam);
-        if (deviceDto.getLimit() > 0){
-            qry += " LIMIT " +deviceDto.getLimit() + " OFFSET " + deviceDto.getOffSet();
-        }
-
-        List<DeviceInfo> list=namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceInfo.class));
-        return new PageImpl<>(list, pageable, resultCount);
-    }
 
     @Override
     public List<DeviceDto> getUnassignedDeviceData(Integer userId) {
@@ -228,6 +236,13 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         sqlParam.addValue("deviceId", deviceId);
         sqlParam.addValue("userId",userId);
         return namedJdbc.query(query,sqlParam,new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
+    }
+
+    @Override
+    public List<userLevelDto> getDeviceUserLevel() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " SELECT um.id, um.name, um.is_active as isactive,um.created_by,um.created_on,um.updated_by,um.updated_on FROM rdvts_oltp.user_level_m as um where id != 5 ";
+        return namedJdbc.query(qry,sqlParam, new BeanPropertyRowMapper<>(userLevelDto.class));
     }
 }
 
