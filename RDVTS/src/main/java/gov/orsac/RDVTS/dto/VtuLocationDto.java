@@ -3,12 +3,7 @@ package gov.orsac.RDVTS.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Data
@@ -96,4 +91,7 @@ public class VtuLocationDto {
     private Date createdOn;
     private Integer updatedBy;
     private Date updatedOn;
+
+//    private Long UpdatedLatitude;
+//    private Long UpdatedLongitude;
 }

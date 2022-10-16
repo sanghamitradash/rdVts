@@ -110,10 +110,10 @@ public class DeviceController {
 
     @PostMapping("/getDeviceList")
     public RDVTSListResponse getDeviceList(@RequestParam(name = "imeiNo1",required = false) Long imeiNo1,
-                                           @RequestParam(name = "simIccId1",required = false) Long simIccId1,
+                                           @RequestParam(name = "simIccId1",required = false) String simIccId1,
                                            @RequestParam(name = "mobileNumber1",required = false)Long mobileNumber1,
                                            @RequestParam(name = "imeiNo2",required = false) Long imeiNo2,
-                                           @RequestParam(name = "simIccId2",required = false)Long simIccId2,
+                                           @RequestParam(name = "simIccId2",required = false)String simIccId2,
                                            @RequestParam(name = "mobileNumber2",required = false) Long mobileNumber2,
                                            @RequestParam(name = "vtuVendorId",required = false) Integer vtuVendorId,
                                            @RequestParam(name = "distId",required = false) Integer distId,

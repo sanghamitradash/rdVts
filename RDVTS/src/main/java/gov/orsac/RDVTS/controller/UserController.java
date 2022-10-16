@@ -40,7 +40,7 @@ public class UserController {
     @PostMapping("/createUser")
     public RDVTSResponse saveUser(@RequestParam(name = "userData") String data, @RequestParam(name = "password") String password,
                                   @RequestParam(name = "userArea") String userAreaData,
-                                @RequestParam(name = "userId",required = false)Integer userId) {
+                                  @RequestParam(name = "userId",required = false)Integer userId) {
 
 //        List<UserAreaMappingEntity> userArea;
 
@@ -91,8 +91,6 @@ public class UserController {
                                 "Please enter user state!!",
                                 result);
                     } else if (userDto.getUserLevelId() == 2
-                            && userArea.get(0).getGStateId() == null
-                            && userArea.get(0).getGStateId().toString().isEmpty()
                             && userArea.get(0).getGDistId() == null
                             && userArea.get(0).getGDistId().toString().isEmpty()) {
                         //District
@@ -102,10 +100,6 @@ public class UserController {
                                 "Please enter user district!!",
                                 result);
                     } else if (userDto.getUserLevelId() == 3
-                            && userArea.get(0).getGStateId() == null
-                            && userArea.get(0).getGStateId().toString().isEmpty()
-                            && userArea.get(0).getGDistId() == null
-                            && userArea.get(0).getGDistId().toString().isEmpty()
                             && userArea.get(0).getGBlockId() == null
                             && userArea.get(0).getGBlockId().toString().isEmpty()) {
 
@@ -633,7 +627,7 @@ public class UserController {
             } catch (Exception e) {
                 e.printStackTrace();
                 rdvtsResponse.setStatus(0);
-                rdvtsResponse.setMessage("Something went wrong!! We are working on it!!");
+                rdvtsResponse.setMessage("Something went wrong!! May be Invalid Username And Password!!");
                 rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             }
         }
@@ -741,16 +735,52 @@ public class UserController {
     }
 
 
+//    @PostMapping("/sendOtpToUser")
+//    public RDVTSResponse sendOtpToUser(@RequestParam String email) {
+//        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+//        Map<String, Object> result = new HashMap<>();
+//        UserEntity user = userService.findUserByMobileAndEmail(email);
+//        if (!user.toString().isEmpty()) {
+//
+//
+//            UserDto userDto = new UserDto();
+//            BeanUtils.copyProperties(user, userDto);
+//           /* userDto.setId(user.getId());
+//            userDto.setFirstName(user.getFirstName());*/
+//            Integer otp = userService.sendOtpToUser(userDto);
+//            if (otp > 0) {
+//                result.put("otp", otp);
+//                rdvtsResponse.setData(result);
+//                rdvtsResponse.setStatus(1);
+//                rdvtsResponse.setMessage("OTP sent successfully !!!");
+//                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//            } else {
+//                rdvtsResponse.setStatus(0);
+//                rdvtsResponse.setData(result);
+//                rdvtsResponse.setMessage("Something went wrong while sending otp !!!");
+//                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//            }
+//            return rdvtsResponse;
+//        } else {
+//            rdvtsResponse.setStatus(0);
+//            rdvtsResponse.setData(result);
+//            rdvtsResponse.setMessage("User Not Found !!!");
+//            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//        }
+//        return rdvtsResponse;
+//    }
+
     @PostMapping("/sendOtpToUser")
-    public RDVTSResponse sendOtpToUser(@RequestParam String email) {
+    public RDVTSResponse sendOtpToUser(@RequestParam Long mobile) {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
-        UserEntity user = userService.findUserByMobileAndEmail(email);
-        if (!user.toString().isEmpty()) {
+        UserDto userDtos = userService.getUserBymobile(mobile);
+        //UserEntity user = userService.findUserByMobileAndEmail(email);
+        if (!userDtos.toString().isEmpty()) {
 
 
             UserDto userDto = new UserDto();
-            BeanUtils.copyProperties(user, userDto);
+            BeanUtils.copyProperties(userDtos, userDto);
            /* userDto.setId(user.getId());
             userDto.setFirstName(user.getFirstName());*/
             Integer otp = userService.sendOtpToUser(userDto);

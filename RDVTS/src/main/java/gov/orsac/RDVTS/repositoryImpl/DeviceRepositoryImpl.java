@@ -41,7 +41,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                 "dm.created_by,dm.created_on,dm.updated_by,dm.updated_on  " +
                 "from rdvts_oltp.device_m as dm   " +
                 "left join rdvts_oltp.vtu_vendor_m as vtu on vtu.id = dm.vtu_vendor_id  " +
-                "WHERE dm.is_active = true ";
+                "WHERE dm.is_active = true  ";
 
         if(deviceId.size()>0){
             qry+=" AND dm.id IN (:deviceId)";
@@ -153,12 +153,12 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             sqlParam.addValue("imeiNo2", deviceDto.getImeiNo2());
         }
 
-        if(deviceDto.getSimIccId1() != null && deviceDto.getSimIccId1() > 0){
+        if(deviceDto.getSimIccId1() != null && deviceDto.getSimIccId1().length() > 0){
             qry += " AND dm.sim_icc_id_1=:simIccId1 ";
             sqlParam.addValue("simIccId1", deviceDto.getSimIccId1());
         }
 
-        if(deviceDto.getSimIccId2() != null && deviceDto.getSimIccId2() > 0){
+        if(deviceDto.getSimIccId2() != null && deviceDto.getSimIccId2().length() > 0){
             qry += " AND dm.sim_icc_id_2=:simIccId2 ";
             sqlParam.addValue("simIccId2", deviceDto.getSimIccId2());
         }
