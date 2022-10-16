@@ -246,11 +246,10 @@ public class VehicleController {
 /*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
                     && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
 //            List<Integer> workIds = new ArrayList<>();
-//            for (List<Integer> workIds: vehicleWorkMapping) {
+//            for (VehicleWorkMappingEntity workIds: vehicleWorkMapping) {
+//                workIds.setWorkId(workIds.getWorkId());
 //
 //            }
-//
-//            workIds.add(vehicleWorkMapping.get());
 
             List<Integer> vehicleIds = new ArrayList<>();
             List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(vehicleWorkMapping);
