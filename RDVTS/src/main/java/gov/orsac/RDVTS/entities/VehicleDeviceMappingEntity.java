@@ -33,7 +33,8 @@ public class VehicleDeviceMappingEntity {
     private Date installationDate;
 
     @Column(name = "installed_by")
-    private Integer installedBy;
+    private String installedBy;
+
     @Column(name = "is_active")
     private boolean active;
 
@@ -54,4 +55,7 @@ public class VehicleDeviceMappingEntity {
     @Column(name = "updated_on")
     @UpdateTimestamp
     private Date updatedOn;
+
+    @Column(name = "deactivation_date")
+    private Date deactivationDate;
 }

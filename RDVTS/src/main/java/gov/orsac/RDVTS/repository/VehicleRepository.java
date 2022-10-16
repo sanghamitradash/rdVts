@@ -17,7 +17,7 @@ public interface VehicleRepository {
     List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer vehicleId);
     Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle);
     List<VehicleTypeDto> getVehicleTypeList();
-    List<VehicleMasterDto> getUnAssignedVehicleData(Integer userId);
+    List<VehicleMasterDto> getUnAssignedVehicleData(List<Integer> userIdList,Integer userId);
 
     List<VehicleMasterDto> getVehicleById(Integer id, Integer userId);
 }
