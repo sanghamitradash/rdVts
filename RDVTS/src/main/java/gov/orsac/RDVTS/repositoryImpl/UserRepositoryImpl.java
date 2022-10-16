@@ -211,7 +211,7 @@ public class UserRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT div.dist_id,dist.district_name,dist.state_id,state.state_name  from rdvts_oltp.division_m as div  " +
                 "left join rdvts_oltp.district_boundary as dist on dist.dist_id= div.dist_id  " +
-                "left join rdvts_oltp.state_m as state on state.id= dist.state_id" +
+                "left join rdvts_oltp.state_m as state on state.id= dist.state_id   " +
                 "WHERE  div.id =:divisionId ";
         sqlParam.addValue("divisionId",divisionId);
         return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(UserAreaMappingRequestDTO.class));
