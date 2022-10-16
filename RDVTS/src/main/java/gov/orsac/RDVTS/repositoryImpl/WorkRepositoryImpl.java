@@ -1,9 +1,6 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
-import gov.orsac.RDVTS.dto.DesignationDto;
-import gov.orsac.RDVTS.dto.RoleDto;
-import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
-import gov.orsac.RDVTS.dto.WorkDto;
+import gov.orsac.RDVTS.dto.*;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -95,5 +92,16 @@ public class WorkRepositoryImpl {
         sqlParam.addValue("workIds", workIds);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
 
+    }
+
+
+    public List<VehicleWorkMappingDto> getVehicleListByRoadId(Integer workId){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT id, vehicle_id, work_id, start_time, end_time, start_date, end_date, is_active, created_by, created_on, updated_by, updated_on " +
+                " FROM rdvts_oltp.vehicle_work_mapping where work_id =:workId ";
+        /*   "AND id>1 ORDER BY id";*/
+        sqlParam.addValue("workId", workId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
     }
 }

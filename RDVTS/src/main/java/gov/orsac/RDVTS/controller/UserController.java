@@ -46,6 +46,7 @@ public class UserController {
 
 //        List<UserAreaMappingEntity> userArea;
 
+
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         if (data != null && !data.isEmpty()) {
             Map<String, Object> result = new HashMap<>();
@@ -82,8 +83,8 @@ public class UserController {
                                 "Please enter user area!!",
                                 result);
                     } else if (userDto.getUserLevelId() == 1
-                            && userArea.get(0).getGStateId() == null
-                            && userArea.get(0).getGStateId().toString().isEmpty()) {
+                            && userArea.get(0).getStateId() == null
+                            && userArea.get(0).getStateId().toString().isEmpty()) {
                         //For State
 
                         rdvtsResponse = new RDVTSResponse(0,
@@ -91,8 +92,8 @@ public class UserController {
                                 "Please enter user state!!",
                                 result);
                     } else if (userDto.getUserLevelId() == 2
-                            && userArea.get(0).getGDistId() == null
-                            && userArea.get(0).getGDistId().toString().isEmpty()) {
+                            && userArea.get(0).getDistId() == null
+                            && userArea.get(0).getDistId().toString().isEmpty()) {
                         //District
 
                         rdvtsResponse = new RDVTSResponse(0,
@@ -100,8 +101,8 @@ public class UserController {
                                 "Please enter user district!!",
                                 result);
                     } else if (userDto.getUserLevelId() == 3
-                            && userArea.get(0).getGBlockId() == null
-                            && userArea.get(0).getGBlockId().toString().isEmpty()) {
+                            && userArea.get(0).getBlockId() == null
+                            && userArea.get(0).getBlockId().toString().isEmpty()) {
 
                         //Block
                         rdvtsResponse = new RDVTSResponse(0,
@@ -126,7 +127,7 @@ public class UserController {
                         UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
 
                         //Save User Area Mapping
-                        List<UserAreaMappingEntity> userAreaMappingEntities = new ArrayList<>();
+                        List<UserAreaMappingEntity> userAreaMapping = new ArrayList<>();
                         for (UserAreaMappingRequestDTO item : userArea) {
                             UserAreaMappingEntity umEt = new UserAreaMappingEntity();
                             umEt.setStateId(item.getStateId());
@@ -139,10 +140,10 @@ public class UserController {
                             umEt.setCreatedBy(savedUser.getId());
                             umEt.setUpdatedBy(savedUser.getId());
                             umEt.setIsActive(true);
-                            userAreaMappingEntities.add(umEt);
+                            userAreaMapping.add(umEt);
                         }
 
-                        List<UserAreaMappingEntity> areaObj = userService.createUserAreaMapping(userAreaMappingEntities);
+                        List<UserAreaMappingEntity> areaObj = userService.saveUserAreaMapping(savedUser.userLevelId,userId, userAreaMapping);
 
                         //Return Data
                         UserDto returnDTO = new UserDto();
@@ -719,10 +720,35 @@ public class UserController {
 
             UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userId, userPasswordMasterDto);
             result.put("updatePassword", updatedPassword);
-            //response.setData(result);
+            response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Password Updated Successfully");
+
+//            UserPasswordMasterEntity updatedPassword = null; /*= userService.updateUserPass(userId, userPasswordMasterDto);*/
+//
+//            if (userPasswordMasterDto.getOldPassword() == userPasswordMasterDto.getPassword()) {
+//                //check if the old and new password are same
+//                response.setStatus(0);
+//                response.setData(result);
+//                response.setMessage("New password shouldn't be same as old password !!!");
+//                response.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
+//            } else{
+//                if( updatedPassword == userService.updateUserPass(userId, userPasswordMasterDto)){
+//                    result.put("updatePassword", updatedPassword);
+//                    response.setData(result);
+//                    response.setStatus(1);
+//                    response.setMessage("Password updated successfully !!!");
+//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//                } else{
+//                    response.setStatus(0);
+//                    response.setData(result);
+//                    response.setMessage("Something went wrong while resetting password !!!");
+//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//                }
+//
+//            }
+
         } catch (Exception e) {
             e.printStackTrace();
             response = new RDVTSResponse(0,

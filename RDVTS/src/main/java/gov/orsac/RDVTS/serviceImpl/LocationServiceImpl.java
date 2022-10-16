@@ -8,6 +8,7 @@ import gov.orsac.RDVTS.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,9 +19,12 @@ public class LocationServiceImpl implements LocationService {
     LocationRepositoryImpl locationRepository;
     @Override
     public List<VtuLocationDto> getLatestRecordByImeiNumber(List<Long> imei2,List<Long> imei1){
-
-       List<VtuLocationDto> vtuLocationDto= locationRepository.getLatestRecordByImeiNumber(imei2,imei1);
-
+        List<VtuLocationDto> vtuLocationDto = new ArrayList<>();
+        int i=0;
+        for(Long item :  imei1){
+            vtuLocationDto.add(locationRepository.getLatestRecordByImeiNumber(item,imei2.get(i)));
+            i++;
+        }
         return vtuLocationDto;
     }
 
@@ -35,6 +39,15 @@ public class LocationServiceImpl implements LocationService {
     public List<VtuLocationDto> getLocationRecordByRoadData(List<Long> imei1,List<Long> imei2,List<VehicleWorkMappingDto> vehicleByWork){
         return locationRepository.getLocationRecordByRoadData(imei2,imei1,vehicleByWork);
     }
+
+    @Override
+    public List<VtuLocationDto> getLocationrecordList(Long imei1,Long imei2){
+
+        List<VtuLocationDto> vtuLocationDtoList=locationRepository.getLocationrecordList(imei2,imei1);
+        return vtuLocationDtoList;
+
+    }
+
 
 
 }
