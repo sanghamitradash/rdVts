@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.serviceImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
+import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.DeviceAreaMappingRepository;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,14 +44,14 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceEntity1;
     }
 
-    @Override
+  /*  @Override
     public DeviceMappingEntity saveDeviceMapping(DeviceMappingEntity deviceMapping, Integer id) {
-      /*  for (DeviceMappingEntity deviceArea1 : deviceMapping) {
+      *//*  for (DeviceMappingEntity deviceArea1 : deviceMapping) {
             deviceArea1.setDeviceId(id);
             deviceArea1.setIsActive(true);
-        }*/
+        }*//*
         return deviceAreaMappingRepository.save(deviceMapping);
-    }
+    }*/
 
     @Override
     public List<DeviceDto> getDeviceByIds(List<Integer> deviceId,Integer userId) {
@@ -107,6 +109,38 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public List<userLevelDto> getDeviceUserLevel() {
         return deviceMasterRepository.getDeviceUserLevel();
+    }
+
+    public DeviceMappingEntity saveDeviceAreaMapping(DeviceMappingEntity deviceMapping, Integer deviceId,Integer userLevelId){
+        DeviceMappingEntity device = new DeviceMappingEntity();
+        BeanUtils.copyProperties(deviceMapping, device);
+        if(userLevelId == 1){
+               device.setStateId(deviceMapping.getStateId());
+               device.setDeviceId(deviceId);
+          }
+        if(userLevelId ==2){
+
+                 DeviceAreaMappingDto deviceAreaMapping = deviceMasterRepository.getStateByDistId(deviceMapping.getDistId());
+                 device.setStateId(deviceAreaMapping.getStateId());
+                 device.setDeviceId(deviceId);
+            }
+
+        if(userLevelId == 3){
+
+            DeviceAreaMappingDto deviceAreaMapping = deviceMasterRepository.getStateDistByBlockId(deviceMapping.getBlockId());
+            device.setStateId(deviceAreaMapping.getStateId());
+            device.setDistId(deviceAreaMapping.getDistId());
+            device.setStateId(userLevelId);
+        }
+        if(userLevelId == 4){
+
+            DeviceAreaMappingDto deviceAreaMapping = deviceMasterRepository.getStateDistByDivisionId(deviceMapping.getDivisionId());
+            device.setStateId(deviceAreaMapping.getStateId());
+            device.setDistId(deviceAreaMapping.getDistId());
+            device.setStateId(userLevelId);
+        }
+
+        return deviceAreaMappingRepository.save(device);
     }
 
 

@@ -82,8 +82,8 @@ public class UserController {
                                 "Please enter user area!!",
                                 result);
                     } else if (userDto.getUserLevelId() == 1
-                            && userArea.get(0).getGStateId() == null
-                            && userArea.get(0).getGStateId().toString().isEmpty()) {
+                            && userArea.get(0).getStateId() == null
+                            && userArea.get(0).getStateId().toString().isEmpty()) {
                         //For State
 
                         rdvtsResponse = new RDVTSResponse(0,
@@ -91,8 +91,8 @@ public class UserController {
                                 "Please enter user state!!",
                                 result);
                     } else if (userDto.getUserLevelId() == 2
-                            && userArea.get(0).getGDistId() == null
-                            && userArea.get(0).getGDistId().toString().isEmpty()) {
+                            && userArea.get(0).getDistId() == null
+                            && userArea.get(0).getDistId().toString().isEmpty()) {
                         //District
 
                         rdvtsResponse = new RDVTSResponse(0,
@@ -100,8 +100,8 @@ public class UserController {
                                 "Please enter user district!!",
                                 result);
                     } else if (userDto.getUserLevelId() == 3
-                            && userArea.get(0).getGBlockId() == null
-                            && userArea.get(0).getGBlockId().toString().isEmpty()) {
+                            && userArea.get(0).getBlockId() == null
+                            && userArea.get(0).getBlockId().toString().isEmpty()) {
 
                         //Block
                         rdvtsResponse = new RDVTSResponse(0,
@@ -126,7 +126,7 @@ public class UserController {
                         UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
 
                         //Save User Area Mapping
-                        List<UserAreaMappingEntity> userAreaMappingEntities = new ArrayList<>();
+                        List<UserAreaMappingEntity> userAreaMapping = new ArrayList<>();
                         for (UserAreaMappingRequestDTO item : userArea) {
                             UserAreaMappingEntity umEt = new UserAreaMappingEntity();
                             umEt.setStateId(item.getStateId());
@@ -139,10 +139,10 @@ public class UserController {
                             umEt.setCreatedBy(savedUser.getId());
                             umEt.setUpdatedBy(savedUser.getId());
                             umEt.setIsActive(true);
-                            userAreaMappingEntities.add(umEt);
+                            userAreaMapping.add(umEt);
                         }
 
-                        List<UserAreaMappingEntity> areaObj = userService.createUserAreaMapping(userAreaMappingEntities);
+                        List<UserAreaMappingEntity> areaObj = userService.saveUserAreaMapping(savedUser.userLevelId,userId, userAreaMapping);
 
                         //Return Data
                         UserDto returnDTO = new UserDto();
