@@ -67,13 +67,13 @@ public class GeoMasterRepositoryImpl {
     }
     public List<Integer> getWorkIdByDistIdList(List<Integer> distId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "";
+        String qry = "select distinct work_id from rdvts_oltp.geo_master where dist_id in(:distId)";
         sqlParam.addValue("distId",distId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
     public List<Integer> getWorkIdByBlockList(List<Integer> blockId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "";
+        String qry = "select distinct work_id from rdvts_oltp.geo_master where block_id in(:distId)";
         sqlParam.addValue("blockId",blockId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }

@@ -218,13 +218,13 @@ public class UserRepositoryImpl {
     }
     public List<Integer> getDistIdByUserId(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "";
+        String qry = "select distinct dist_id from rdvts_oltp.user_area_mapping where user_id=:userId ";
         sqlParam.addValue("userId",userId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
     public List<Integer> getBlockIdByUserId(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "";
+        String qry = "select distinct block_id from rdvts_oltp.user_area_mapping where user_id=:userId";
         sqlParam.addValue("userId",userId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
