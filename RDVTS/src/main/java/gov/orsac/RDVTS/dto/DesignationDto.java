@@ -18,6 +18,8 @@ public class DesignationDto {
 
     private Integer parentId;
 
+    private String parentName;
+
     private Boolean isActive=true;
 
     private Integer createdBy;
@@ -29,6 +31,8 @@ public class DesignationDto {
     private Date updatedOn;
 
     private Integer userLevelId;
+
+    private String userLevelName;
 
     private Integer offSet;
     private Integer limit;

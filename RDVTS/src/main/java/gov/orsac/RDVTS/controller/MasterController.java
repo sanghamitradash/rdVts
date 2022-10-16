@@ -263,8 +263,8 @@ public class MasterController {
         try {
             Page<DesignationDto> designationDtoPage = designationService.getDesignationList(designationDto);
             List<DesignationDto> designationDtoList = designationDtoPage.getContent();
-            result.put("DesignationDtoList", designationDtoList);
-            response.setData(result);
+//            result.put("DesignationDtoList", designationDtoList);
+            response.setData(designationDtoList);
             response.setMessage("List of Designation.");
             response.setStatus(1);
             response.setDraw(draw);
@@ -315,14 +315,14 @@ public class MasterController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            DesignationEntity designationEntity = designationService.getDesignationById(id);
-            if (designationEntity != null) {
-                result.put("designationEntity", designationEntity);
+            List<DesignationDto> designationDtoList = designationService.getDesignationById(id);
+            if (designationDtoList != null) {
+                result.put("designationList", designationDtoList);
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             } else {
-                result.put("designationList", designationEntity);
+                result.put("designationList", designationDtoList);
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));

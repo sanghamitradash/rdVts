@@ -32,6 +32,10 @@ public class GeoMasterDto {
 
     private Integer roadId;
 
+    private Integer contractorId;
+
+    private Integer stateId;
+
     private Boolean isActive=true;
 
     private Integer createdBy;
