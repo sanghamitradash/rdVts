@@ -114,7 +114,8 @@ public class DeviceServiceImpl implements DeviceService {
     public DeviceMappingEntity saveDeviceAreaMapping(DeviceMappingEntity deviceMapping, Integer deviceId,Integer userLevelId){
         DeviceMappingEntity device = new DeviceMappingEntity();
         BeanUtils.copyProperties(deviceMapping, device);
-        if(userLevelId == 1){
+        if(userLevelId == 1)
+         {
                device.setStateId(deviceMapping.getStateId());
                device.setDeviceId(deviceId);
           }
