@@ -66,13 +66,14 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         List<DeviceDto> device;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2, " +
-                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no as deviceNo,  " +
-                "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,  " +
-                "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber, " +
-                "dm.created_by,dm.created_on,dm.updated_by,dm.updated_on  " +
-                "from rdvts_oltp.device_m as dm   " +
+        String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2,  " +
+                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no as deviceNo,dm.user_level_id,um.name as userLevelName,     " +
+                "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,    " +
+                "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber,  " +
+                "dm.created_by,dm.created_on,dm.updated_by,dm.updated_on   " +
+                "from rdvts_oltp.device_m as dm  " +
                 "left join rdvts_oltp.vtu_vendor_m as vtu on vtu.id = dm.vtu_vendor_id  " +
+                "left join rdvts_oltp.user_level_m as um on um.id = dm.user_level_id  " +
                 "WHERE dm.is_active = true ";
 
         if(deviceId>0){
@@ -228,6 +229,13 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         sqlParam.addValue("deviceId", deviceId);
         sqlParam.addValue("userId",userId);
         return namedJdbc.query(query,sqlParam,new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
+    }
+
+    @Override
+    public List<userLevelDto> getDeviceUserLevel() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " SELECT um.id, um.name, um.is_active as isactive,um.created_by,um.created_on,um.updated_by,um.updated_on FROM rdvts_oltp.user_level_m as um where id != 5 ";
+        return namedJdbc.query(qry,sqlParam, new BeanPropertyRowMapper<>(userLevelDto.class));
     }
 }
 
