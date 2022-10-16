@@ -140,7 +140,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         String qry ="SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
-                "vm.chassis_no,vm.engine_no,vm.is_active as active," +
+                "vm.chassis_no,vm.engine_no,vm.is_active as active,device.device_id as deviceId " +
                 "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,userM.first_name as firstName,userM.middle_name as middleName,userM.last_name as lastName " +
                 "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
@@ -174,13 +174,16 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             List<Integer> distId=userRepositoryImpl.getDistIdByUserId(vehicle.getUserId());
              List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(distId);
              List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
+             qry+=" and vm.id in(:vehicleIds)";
+             sqlParam.addValue("vehicleIds",vehicle);
         }
         else if(user.getUserLevelId()==3){
             List<Integer> blockId=userRepositoryImpl.getBlockIdByUserId(vehicle.getUserId());
             List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByBlockList(blockId);
             List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
+            qry+=" and vm.id in(:vehicleIds)";
+            sqlParam.addValue("vehicleIds",vehicle);
         }
-
 
 
         resultCount = count(qry, sqlParam);
@@ -245,6 +248,46 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry = "select distinct vehicle_id from rdvts_oltp.vehicle_work_mapping where work_id in(:workId)";
         sqlParam.addValue("workId", workId);
         return  namedJdbc.queryForList(qry, sqlParam,Integer.class);
+    }
+    public boolean getDeviceAssignedOrNot(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+         Integer count=0;
+         boolean device=false;
+        String qry = "select count(id)  from  rdvts_oltp.vehicle_device_mapping " +
+                "where vehicle_id=:vehicleId and is_active=true and " +
+                "deactivation_date is null and created_on <=now()";
+        sqlParam.addValue("vehicleId", vehicleId);
+       count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
+       if(count!=0){
+           device=true;
+       }
+       return device;
+    }
+    public boolean getWorkAssignedOrNot(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        Integer count=0;
+        boolean work=false;
+        String qry = "select count(id)  from  rdvts_oltp.vehicle_work_mapping " +
+                "where vehicle_id=5 and is_active=true and " +
+                "deactivation_date is null and start_time <=now()";
+        sqlParam.addValue("vehicleId", vehicleId);
+        count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
+        if(count!=0){
+            work=true;
+        }
+        return work;
+    }
+    public boolean getTrackingLiveOrNot(Integer deviceId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        Integer count=0;
+        boolean tracking=false;
+        String qry = "";
+        sqlParam.addValue("deviceId", deviceId);
+        count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
+        if(count!=0){
+            tracking=true;
+        }
+        return tracking;
     }
 
 }

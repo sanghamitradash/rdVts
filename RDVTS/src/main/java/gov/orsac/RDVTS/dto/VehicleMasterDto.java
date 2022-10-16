@@ -19,6 +19,7 @@ public class VehicleMasterDto {
 
 
     private Integer id;
+    private Integer deviceId;
 
     private String vehicleNo;
 
