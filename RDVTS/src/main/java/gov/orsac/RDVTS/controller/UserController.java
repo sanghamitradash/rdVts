@@ -285,8 +285,8 @@ public class UserController {
         try {
             Page<UserInfoDto> userInfoDtos = userService.getUserList(userListDto);
             List<UserInfoDto> userList = userInfoDtos.getContent();
-            result.put("userList", userList);
-            response.setData(result);
+           // result.put("userList", userList);
+            response.setData(userList);
             response.setMessage("User List");
             response.setStatus(1);
             response.setDraw(draw);

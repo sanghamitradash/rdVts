@@ -86,7 +86,8 @@ public class UserServiceImpl implements UserService {
         if (checkMobileNumberExists(userSaveRequests.getMobile1())){
             throw new RecordExistException("User", "Mobile", userSaveRequests.getMobile1());
         }
-        if (checkMobileNumberExists2(userSaveRequests.getMobile2())){
+
+        if (!userSaveRequests.getMobile2().toString().isEmpty() && checkMobileNumberExists2(userSaveRequests.getMobile2())){
             throw new RecordExistException("User", "Mobile", userSaveRequests.getMobile2());
         }
         UserEntity user = new UserEntity();

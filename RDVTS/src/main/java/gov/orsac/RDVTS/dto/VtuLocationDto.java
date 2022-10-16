@@ -92,6 +92,8 @@ public class VtuLocationDto {
     private Integer updatedBy;
     private Date updatedOn;
 
+    private Integer deviceId;
+
 //    private Long UpdatedLatitude;
 //    private Long UpdatedLongitude;
 }
