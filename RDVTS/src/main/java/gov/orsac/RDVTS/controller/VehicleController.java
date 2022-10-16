@@ -70,17 +70,17 @@ public class VehicleController {
             VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
             List<VehicleWorkMappingDto> work=vehicleService.getVehicleWorkMapping(vehicleId);
             List<LocationDto> location=vehicleService.getLocation(vehicleId);
-            List<AlertDto> alertDtoList=vehicleService.getAlert(vehicleId);
-            List<VehicleDeviceInfo> deviceList=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
-            List<VehicleWorkMappingDto> workList=vehicleService.getVehicleWorkMappingList(vehicleId);
+            List<AlertDto> alertList=vehicleService.getAlert(vehicleId);
+            List<VehicleDeviceInfo> deviceHistory=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
+            List<VehicleWorkMappingDto> workHistory=vehicleService.getVehicleWorkMappingList(vehicleId);
 
             result.put("vehicle", vehicle);
             result.put("device",device);
             result.put("work",work);
             result.put("location",location);
-            result.put("alertList",alertDtoList);
-            result.put("deviceHistoryList",deviceList);
-            result.put("workHistoryList",workList);
+            result.put("alertList",alertList);
+            result.put("deviceHistoryList",deviceHistory);
+            result.put("workHistoryList",workHistory);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Vehicle By Id");
@@ -137,6 +137,11 @@ public class VehicleController {
         try {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
+            for(int i=0;i<vehicleList.size();i++){
+                vehicleList.get(i).setDeviceAssigned(true);
+                vehicleList.get(i).setWorkAssigned(true);
+                vehicleList.get(i).setTrackingStatus(true);
+            }
            /* result.put("vehicleList", vehicleList);
             result.put("recordsFiltered", vehicleListPage.getTotalElements());
             result.put("recordsTotal", vehicleListPage.getTotalElements());
@@ -179,17 +184,18 @@ public class VehicleController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            VehicleDeviceMappingEntity vehicleDevice=vehicleDeviceMappingRepository.findByVehicleId(vehicleDeviceMapping.getVehicleId());
+          /*  VehicleDeviceMappingEntity vehicleDevice=vehicleDeviceMappingRepository.findByVehicleId(vehicleDeviceMapping.getVehicleId());
                 if(vehicleDevice==null){
                     VehicleDeviceMappingEntity mapped=vehicleDeviceMappingRepository.findByDeviceId(vehicleDeviceMapping.getDeviceId());
-                    if(mapped==null) {
+                    if(mapped==null) {*/
+                         Integer count=vehicleService.deactivateVehicleDevice(vehicleDeviceMapping);
                         VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
                         result.put("saveVehicleMapping", saveVehicleMapping);
                         response.setData(result);
                         response.setStatus(1);
                         response.setMessage("Assign Vehicle Device Created Successfully");
                         response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                    }
+            /*        }
                     else {
                         response = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
@@ -203,7 +209,7 @@ public class VehicleController {
                         new ResponseEntity<>(HttpStatus.OK),
                         "Vehicle is assigned to a Device ",
                         result);
-            }
+            }*/
         } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),

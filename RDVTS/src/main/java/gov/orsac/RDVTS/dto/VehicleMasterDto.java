@@ -45,8 +45,12 @@ public class VehicleMasterDto {
     private Date updatedOn;
 
     private Integer start;
-
-
-
+    private String ownerName;
+    private String firstName;
+    private String lastName;
+    private String middleName;
+    private boolean deviceAssigned;
+    private boolean workAssigned;
+    private boolean trackingStatus;
 
 }
