@@ -21,6 +21,7 @@ public interface VehicleService {
 
 
 
+
     List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer vehicleId);
     List<LocationDto> getLocation(Integer vehicleId) throws ParseException;
     List<AlertDto>getAlert(Integer vehicleId) throws ParseException;
@@ -34,4 +35,7 @@ public interface VehicleService {
     Page<VehicleMasterDto> getVehicleList1(VehicleMasterDto vehicle);
 
     List<VehicleMasterDto> getVehicleById(Integer id, Integer userId);
+
+    List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId);
+
 }

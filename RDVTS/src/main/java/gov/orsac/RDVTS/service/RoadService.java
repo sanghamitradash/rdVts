@@ -18,6 +18,8 @@ public interface RoadService {
     Page<RoadMasterDto> getRoadList(RoadFilterDto roadFilterDto);
 
     List<GeoMasterDto> getWorkByroadIds(List<Integer> roadIds);
+    List<GeoMasterDto> getVehicleListByRoadId(Integer roadId);
+
 
 //    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
 }

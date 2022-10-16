@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.serviceImpl;
 
+import gov.orsac.RDVTS.dto.GeoMasterDto;
 import gov.orsac.RDVTS.dto.RDVTSResponse;
 import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.WorkDto;
@@ -60,6 +61,12 @@ public class WorkServiceImpl implements WorkService {
     @Override
     public List<VehicleWorkMappingDto> getVehicleBywork(List<Integer> workIds){
          return workRepositoryImpl.getVehicleBywork(workIds);
+    }
+
+
+    @Override
+    public List<VehicleWorkMappingDto> getVehicleListByRoadId(Integer roadId){
+        return workRepositoryImpl.getVehicleListByRoadId(roadId);
     }
 
 

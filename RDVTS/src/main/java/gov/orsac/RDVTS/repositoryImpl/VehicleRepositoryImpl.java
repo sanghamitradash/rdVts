@@ -94,6 +94,17 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return vehicleDevice;
     }
 
+    public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId) {
+        List<VehicleDeviceMappingDto> vehicleDevice = new ArrayList<>();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry ="SELECT id, vehicle_id, device_id, installation_date, installed_by, is_active, created_by, created_on, updated_by, updated_on " +
+                "FROM rdvts_oltp.vehicle_device_mapping where vehicle_id =:vehicleId ";
+
+        sqlParam.addValue("vehicleId", vehicleId);
+
+        return  namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
+    }
+
     @Override
     public List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer vehicleId) {
         List<VehicleWorkMappingDto> vehicleWork = new ArrayList<>();

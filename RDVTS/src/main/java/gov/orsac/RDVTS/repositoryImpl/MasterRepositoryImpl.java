@@ -144,7 +144,7 @@ public class MasterRepositoryImpl implements MasterRepository {
             qry+= " AND roleMenu.role_id=:roleId";
             sqlParam.addValue("roleId", roleId);
         }
-        qry+= "  order by menu.order ASC";
+        qry+= "  order by menu.menu_order ASC";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ParentMenuInfo.class));
     }
 
@@ -153,7 +153,7 @@ public class MasterRepositoryImpl implements MasterRepository {
         String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module,roleMenu.is_default as isDefault" +
                 " FROM rdvts_oltp.menu_m as menu " +
                 " left join rdvts_oltp.role_menu as roleMenu on menu.id=roleMenu.menu_id " +
-                " WHERE parent_id =:parentId  AND menu.is_active = true  And role_id=:roleId ORDER BY menu.order ASC";
+                " WHERE parent_id =:parentId  AND menu.is_active = true  And role_id=:roleId ORDER BY menu.menu_order ASC";
         sqlParam.addValue("parentId", parentId);
         sqlParam.addValue("roleId", roleId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(HierarchyMenuInfo.class));
