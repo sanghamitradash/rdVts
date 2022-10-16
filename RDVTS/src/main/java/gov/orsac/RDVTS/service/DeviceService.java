@@ -30,4 +30,6 @@ public interface DeviceService {
     List<DeviceDto> getUnassignedDeviceData(Integer userId);
 
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId);
+
+    List<userLevelDto> getDeviceUserLevel();
 }
