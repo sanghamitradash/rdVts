@@ -45,4 +45,6 @@ public interface UserService {
     UserAreaMappingEntity updateUserAreaMappingByUserId(Integer userId, UserAreaMappingDto userAreaMapping);
 
     List<UserAreaMappingDto> getUserAreaMappingByUserId(Integer userId);
+
+    List<UserAreaMappingEntity> saveUserAreaMapping(Integer userLevelId, Integer userId, List<UserAreaMappingEntity> userAreaMapping);
 }
