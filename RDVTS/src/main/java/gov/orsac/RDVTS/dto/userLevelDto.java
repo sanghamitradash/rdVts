@@ -10,7 +10,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class userLevelDto {
-    private Integer id;
+
 
         private Integer id;
         private String name;

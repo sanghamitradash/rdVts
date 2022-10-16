@@ -68,6 +68,9 @@ public class WorkController {
         try {
             Page<WorkDto> workDtoPage = workService.getWorkList(workDto);
             List<WorkDto> workDtoList = workDtoPage.getContent();
+//            for(int i = 0; i < workDtoList.size(); i++){
+//                workDtoList.get(i).set
+//            }
             //result.put("WorkDtoList", workDtoList);
             response.setData(workDtoList);
             response.setMessage("List of Work.");
@@ -105,6 +108,28 @@ public class WorkController {
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+
+    }
+
+    @PostMapping("/getWorkDDById")
+    public RDVTSResponse getWorkDDById(@RequestParam int id) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<WorkDto> workDto = workService.getWorkById(id);
+
+            result.put("workDto", workDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
         } catch (Exception e) {
             response = new RDVTSResponse(0,
