@@ -116,7 +116,6 @@ public class DeviceServiceImpl implements DeviceService {
         BeanUtils.copyProperties(deviceMapping, device);
         if(userLevelId == 1)
          {
-
                device.setStateId(deviceMapping.getStateId());
                device.setDeviceId(deviceId);
           }
