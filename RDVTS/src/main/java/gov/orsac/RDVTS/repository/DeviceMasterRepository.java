@@ -13,4 +13,10 @@ public interface DeviceMasterRepository {
   List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId);
 
     List<userLevelDto> getDeviceUserLevel();
+
+    DeviceAreaMappingDto getStateByDistId(Integer distId);
+
+    DeviceAreaMappingDto getStateDistByBlockId(Integer blockId);
+
+    DeviceAreaMappingDto getStateDistByDivisionId(Integer divisionId);
 }

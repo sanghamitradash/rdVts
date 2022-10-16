@@ -50,15 +50,15 @@ public class DeviceController {
 
                     if (deviceDto.getMobileNumber1().toString().length() == 10 && deviceDto.getMobileNumber2().toString().length() == 10) {
                         DeviceEntity deviceEntity = deviceService.addDevice(deviceDto);
-                        DeviceMappingEntity deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(), deviceEntity.getId());
+                        DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(), deviceEntity.getId(),deviceEntity.getUserLevelId());
                         VehicleDeviceMappingEntity vehicle = new VehicleDeviceMappingEntity();
                         BeanUtils.copyProperties(deviceDto.getVehicleDeviceMapping(), vehicle);
                         vehicle.setDeviceId(deviceEntity.getId());
-                        if (vehicle.getDeviceId() != null && vehicle.getInstallationDate() != null && vehicle.getInstalledBy() != null && vehicle.getVehicleId() != null) {
-                            VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle);
+                        if (vehicle.getDeviceId() != null && vehicle.getInstallationDate() != null && vehicle.getInstalledBy().toString().isEmpty()  && vehicle.getVehicleId() != null) {
+                            //VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle);
                             result.put("deviceEntity", deviceEntity);
                             result.put("deviceMapping", deviceMapping);
-                            result.put("deviceVehicleMapping",saveVehicleMapping);
+                            //result.put("deviceVehicleMapping",saveVehicleMapping);
                             response.setData(result);
                             response.setStatus(1);
                             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -196,7 +196,7 @@ public class DeviceController {
             DeviceDto deviceDto = objectMapper.readValue(data, DeviceDto.class);
             DeviceEntity updateDevice = deviceService.updateDeviceById(id, deviceDto);
             deviceService.deactivateDeviceArea(updateDevice.getId());
-            DeviceMappingEntity deviceMapping = deviceService.saveDeviceMapping(deviceDto.getDeviceMapping(),updateDevice.getId());
+            DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(),updateDevice.getId(),updateDevice.getUserLevelId());
             result.put("updateDevice", updateDevice);
             result.put("deviceMapping", deviceMapping);
             response.setData(result);

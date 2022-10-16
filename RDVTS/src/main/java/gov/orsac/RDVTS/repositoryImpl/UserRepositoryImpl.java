@@ -1,6 +1,5 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
-import gov.orsac.RDVTS.dto.ContractorDto;
 import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
 import gov.orsac.RDVTS.entities.UserEntity;
@@ -16,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -186,5 +186,34 @@ public class UserRepositoryImpl {
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UserAreaMappingDto.class));
     }
+
+
+    public UserAreaMappingRequestDTO getStateByDistId(Integer distId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT dist.state_id,state.state_name from rdvts_oltp.district_boundary as dist  " +
+                      "left join rdvts_oltp.state_m  as state on state.id = dist.state_id WHERE dist.dist_id =:distId ";
+        sqlParam.addValue("distId",distId);
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(UserAreaMappingRequestDTO.class));
     }
+
+    public UserAreaMappingRequestDTO getStateDistByBlockId(Integer blockId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT block.dist_id, block.district_name,dist.state_id,state.state_name from rdvts_oltp.block_boundary as block " +
+                "left join rdvts_oltp.district_boundary as dist on dist.dist_id = block.dist_id  " +
+                "left join rdvts_oltp.state_m as state on state.id = dist.state_id  " +
+                "WHERE block.gid =:blockId";
+        sqlParam.addValue("blockId", blockId);
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(UserAreaMappingRequestDTO.class));
+    }
+
+    public UserAreaMappingRequestDTO getStateDistByDivisionId(Integer divisionId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT div.dist_id,dist.district_name,dist.state_id,state.state_name  from rdvts_oltp.division_m as div  " +
+                "left join rdvts_oltp.district_boundary as dist on dist.dist_id= div.dist_id  " +
+                "left join rdvts_oltp.state_m as state on state.id= dist.state_id" +
+                "WHERE  div.id =:divisionId ";
+        sqlParam.addValue("divisionId",divisionId);
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(UserAreaMappingRequestDTO.class));
+    }
+}
 
