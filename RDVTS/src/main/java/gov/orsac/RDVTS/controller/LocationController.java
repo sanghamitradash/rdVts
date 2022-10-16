@@ -332,7 +332,7 @@ public class LocationController {
                 }
 
 
-            } else if (workId.size() > 0) {
+            } else if (workId!=null) {
 
                 for (Integer workitem : workId) {
                     List<VehicleWorkMappingDto> vehicleIdList = workService.getVehicleListByRoadId(workitem);
@@ -372,9 +372,9 @@ public class LocationController {
             } else {
 //                int i = 0;
 //                for (Long item : imei1) {
-//                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(item, imei2.get(i));
+//                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(item, imei2.get(i),startDate,endDate);
 //                    i++;
-//                    result.put(item, vtuLocationDto);
+//                    response.setData(vtuLocationDto);
 //                }
 
                 response.setStatus(1);

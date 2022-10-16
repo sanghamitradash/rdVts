@@ -1,7 +1,6 @@
 package gov.orsac.RDVTS.service;
 
 import gov.orsac.RDVTS.dto.DesignationDto;
-import gov.orsac.RDVTS.dto.RDVTSResponse;
 import gov.orsac.RDVTS.entities.DesignationEntity;
 import org.springframework.data.domain.Page;
 
@@ -17,7 +16,7 @@ public interface DesignationService {
 
     List<DesignationDto> getAllDesignationByUserLevelId(int userLevelId);
 
-    DesignationEntity getDesignationById(int id);
+    List<DesignationDto> getDesignationById(int id);
 
     DesignationEntity updateDesignation(int id, DesignationDto designationDto);
 

@@ -21,5 +21,7 @@ public interface RoadService {
     List<GeoMasterDto> getVehicleListByRoadId(Integer roadId);
 
 
+    List<RoadMasterDto> getGeomByRoadId(Integer roadId, Integer userId);
+
 //    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
 }

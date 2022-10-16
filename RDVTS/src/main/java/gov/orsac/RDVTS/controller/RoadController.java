@@ -141,5 +141,25 @@ public class RoadController {
         return response;
     }
 
+    @PostMapping("/getGeomByRoadId")
+    public RDVTSResponse getGeomByRoadId(@RequestParam(name = "roadId", required = false) Integer roadId, Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<RoadMasterDto> road = roadService.getGeomByRoadId(roadId, userId);
+            result.put("road", road);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Geom By roadId");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 }

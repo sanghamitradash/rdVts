@@ -51,6 +51,12 @@ public class GeoMasterEntity {
     @Column(name = "road_id")
     private Integer roadId;
 
+    @Column(name = "state_id")
+    private Integer stateId;
+
+    @Column(name = "contractor_id")
+    private Integer contractorId;
+
     @Column(name="is_active",nullable = false)
     private Boolean isActive=true;
 
