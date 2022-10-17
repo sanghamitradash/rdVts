@@ -37,4 +37,6 @@ public interface DeviceService {
     List<DeviceDto> getImeiListByDeviceId(Integer deviceId);
 
     List<VTUVendorMasterDto> getVtuVendorDropDown();
+
+    Boolean deactivateDeviceVehicle(Integer id);
 }
