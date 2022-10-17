@@ -31,4 +31,6 @@ public class DeviceAreaMappingDto {
     private String blockName;
     private String gdistName;
     private String gblockName;
+    private String stateName;
+    private String divName;
 }
