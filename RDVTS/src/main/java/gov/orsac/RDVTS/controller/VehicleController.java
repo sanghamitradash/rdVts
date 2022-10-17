@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
@@ -36,21 +37,49 @@ public class VehicleController {
     @Autowired
     private DeviceRepositoryImpl deviceRepositoryImpl;
     @PostMapping("/addVehicle")
-    public RDVTSResponse saveVehicle(@RequestParam(name = "vehicle") VehicleMaster vehicle,@RequestParam (name = "vehicleDeviceMapping") VehicleDeviceMappingEntity vehicleDeviceMapping,@RequestParam (name = "vehicleWorkMapping") List<VehicleWorkMappingDto> vehicleWorkMapping ) {
+    public RDVTSResponse saveVehicle(@RequestParam(name = "vehicle") String vehicleData,
+                                     @RequestParam (name = "vehicleDeviceMapping",required = false) String vehicleDeviceMappingData,
+                                     @RequestParam (name = "vehicleWorkMapping",required = false) String vehicleWorkMappingData,
+                                     @RequestParam (name = "vehicleOwnerMapping",required = false) String vehicleOwnerMappingData) throws JsonProcessingException {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        VehicleDeviceMappingEntity vehicleDeviceMapping=null;
+        VehicleOwnerMappingDto vehicleOwnerMapping=null;
+        List<VehicleWorkMappingDto> vehicleWorkMapping=new ArrayList<>();
+        VehicleMaster vehicle=mapper.readValue(vehicleData,VehicleMaster.class);
+        if (vehicleDeviceMappingData != null) {
+           vehicleDeviceMapping = mapper.readValue(vehicleDeviceMappingData, VehicleDeviceMappingEntity.class);
+        }
+        if(vehicleWorkMappingData!=null) {
+             vehicleWorkMapping = mapper.readValue(vehicleWorkMappingData, mapper.getTypeFactory().constructCollectionType(List.class, VehicleWorkMappingDto.class));
+        }
+        if(vehicleOwnerMappingData!=null) {
+            vehicleOwnerMapping = mapper.readValue(vehicleOwnerMappingData, VehicleOwnerMappingDto.class);
+        }
         try {
             if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
                     && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {
                 VehicleMaster saveVehicle = vehicleService.saveVehicle(vehicle);
                 result.put("saveVehicle", saveVehicle);
-             if(vehicleDeviceMapping != null)    {
+             if(vehicleDeviceMappingData != null)    {
+                 vehicleDeviceMapping.setVehicleId(saveVehicle.getId());
                  VehicleDeviceMappingEntity assignVehicleDevice = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
                  result.put("assignVehicleDevice",assignVehicleDevice);
                 }
-             if(vehicleWorkMapping != null){
-                 List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(vehicleWorkMapping);
-                 result.put("saveVehicleWorkMapping",saveVehicleWorkMapping);
+                if(vehicleOwnerMappingData != null)    {
+                    vehicleOwnerMapping.setVehicleId(saveVehicle.getId());
+                    VehicleOwnerMappingEntity assignVehicleOwner = vehicleService.assignVehicleOwner(vehicleOwnerMapping);
+                    result.put("assignVehicleOwner",assignVehicleOwner);
+                }
+             if(vehicleWorkMapping != null && vehicleWorkMapping.size()>0){
+                 List<VehicleWorkMappingDto> work=new ArrayList<>();
+                 for(VehicleWorkMappingDto work1:vehicleWorkMapping){
+                     work1.setVehicleId(saveVehicle.getId());
+                    work.add(work1);
+                 }
+                 List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(work);
+                 result.put("assignVehicleWorkMapping",saveVehicleWorkMapping);
                 }
                 response.setData(result);
                 response.setStatus(1);
@@ -64,6 +93,7 @@ public class VehicleController {
                         result);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
@@ -80,7 +110,7 @@ public class VehicleController {
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
             VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
             List<VehicleWorkMappingDto> work=vehicleService.getVehicleWorkMapping(vehicleId);
-            List<LocationDto> location=vehicleService.getLocation(vehicleId);
+            LocationDto location=vehicleService.getLocation(vehicleId);
             List<AlertDto> alertList=vehicleService.getAlert(vehicleId);
             List<VehicleDeviceInfo> deviceHistory=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
             List<VehicleWorkMappingDto> workHistory=vehicleService.getVehicleWorkMappingList(vehicleId);
@@ -150,10 +180,10 @@ public class VehicleController {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
             for(int i=0;i<vehicleList.size();i++){
-                boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
+             /*   boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
                 boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
-              //  DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
-               // boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
+                DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
+               boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());*/
                 vehicleList.get(i).setDeviceAssigned(true);
                 vehicleList.get(i).setWorkAssigned(true);
                 vehicleList.get(i).setTrackingStatus(true);
@@ -170,6 +200,7 @@ public class VehicleController {
             response.setRecordsTotal(vehicleListPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),e.getMessage(),result);
         }
 
@@ -271,7 +302,7 @@ public class VehicleController {
 /*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
                     && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
 
-            Integer count = vehicleService.deactivateVehicleWork(vehicleWorkMapping);
+           /* Integer count = vehicleService.deactivateVehicleWork(vehicleWorkMapping);*/
             List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(vehicleWorkMapping);
             //List<VehicleWorkMappingEntity> deactivateVehicleWork = vehicleService.deactivateVehicleWork(vehicleWorkMapping);
             result.put("saveVehicleMapping", saveVehicleWorkMapping);

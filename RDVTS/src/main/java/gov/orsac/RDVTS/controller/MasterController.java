@@ -250,12 +250,16 @@ public class MasterController {
     }
 
     @PostMapping("/getDesignationList")
-    public RDVTSListResponse getDesignationList(@RequestParam (name = "id") Integer id,
+    public RDVTSListResponse getDesignationList(@RequestParam (name = "id",defaultValue = "0", required = false) Integer id,
+                                                @RequestParam (name = "userLevelId",defaultValue = "0", required = false) Integer userLevelId,
+                                                @RequestParam (name = "parentId",defaultValue = "0", required = false) Integer parentId,
                                                 @RequestParam(name = "start") Integer start,
                                                 @RequestParam(name = "length") Integer length,
                                                 @RequestParam(name = "draw") Integer draw ) {
         DesignationDto designationDto = new DesignationDto();
         designationDto.setId(id);
+        designationDto.setUserLevelId(userLevelId);
+        designationDto.setParentId(parentId);
         designationDto.setOffSet(start);
         designationDto.setLimit(length);
         RDVTSListResponse response = new RDVTSListResponse();
@@ -768,6 +772,7 @@ public class MasterController {
         vtuVendorFilterDto.setVtuVendorName(vtuVendorName);
         vtuVendorFilterDto.setOffSet(start);
         vtuVendorFilterDto.setLimit(length);
+        vtuVendorFilterDto.setDraw(draw);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try{

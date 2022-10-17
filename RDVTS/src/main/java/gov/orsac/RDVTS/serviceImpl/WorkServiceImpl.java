@@ -6,6 +6,7 @@ import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.WorkDto;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
+import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.repository.WorkRepository;
 import gov.orsac.RDVTS.repositoryImpl.WorkRepositoryImpl;
 import gov.orsac.RDVTS.service.WorkService;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +25,8 @@ public class WorkServiceImpl implements WorkService {
     private WorkRepository workRepository;
     @Autowired
     private WorkRepositoryImpl workRepositoryImpl;
+    @Autowired
+    private VehicleRepository vehicleRepository;
 
     RDVTSResponse rdvtsResponse = new RDVTSResponse();
     NamedParameterJdbcTemplate namedJdbc;
@@ -69,5 +74,14 @@ public class WorkServiceImpl implements WorkService {
         return workRepositoryImpl.getVehicleListByRoadId(roadId);
     }
 
+    public Integer deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
+        List<Integer> workIds = new ArrayList<>();
+        List<Integer> vehicleIds = new ArrayList<>();
+        for (VehicleWorkMappingDto vehicle: vehicleWorkMapping) {
+            vehicleIds.add(vehicle.getVehicleId());
+            workIds.add(vehicle.getWorkId());
+        }
+        return vehicleRepository.deactivateVehicleWork(workIds, vehicleIds);
+    }
 
 }

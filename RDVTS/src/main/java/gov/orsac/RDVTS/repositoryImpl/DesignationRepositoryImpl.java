@@ -41,14 +41,37 @@ public class DesignationRepositoryImpl {
             pageable = PageRequest.of(designationDto.getOffSet(), designationDto.getLimit(), Sort.Direction.fromString("desc"),"id");
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         int resultCount = 0;
-        String qry = "select ac.*,b.name as parent_name,ul.name as user_level_name from rdvts_oltp.designation_m ac " +
-                "join rdvts_oltp.designation_m b on ac.parent_id=b.id " +
-                "left join rdvts_oltp.user_level_m as ul on ul.id=ac.user_level_id and ac.is_active='t' order by ac.id";
+        String qry = "select ac.*,b.name as parent_name,ul.name as user_level_name " +
+                "from rdvts_oltp.designation_m ac " +
+                "left join rdvts_oltp.designation_m b on ac.parent_id=b.id " +
+                "left join rdvts_oltp.user_level_m as ul on ul.id=ac.user_level_id " +
+                "where ac.is_active='t' ";
+        if (designationDto.getId() > 0 ){
+            qry+= "and ac.id = :id";
+            sqlParam.addValue("id", designationDto.getId());
+        }
+        else if (designationDto.getUserLevelId() > 0 ){
+            qry+= "and ac.user_level_id = :userLevelId";
+            sqlParam.addValue("userLevelId", designationDto.getUserLevelId());
+            if (designationDto.getParentId() > 0){
+                qry+= " and ac.parent_id = :parentId";
+                sqlParam.addValue("parentId", designationDto.getParentId());
+            }
+        }
+        else if (designationDto.getParentId() > 0){
+            qry+= "and ac.parent_id = :parentId";
+            sqlParam.addValue("parentId", designationDto.getParentId());
+            if (designationDto.getUserLevelId() > 0 ){
+                qry+= " and ac.user_level_id = :userLevelId";
+                sqlParam.addValue("userLevelId", designationDto.getUserLevelId());
+            }
+        }
 
         resultCount = count(qry, sqlParam);
         if (designationDto.getLimit() > 0) {
             qry += " LIMIT " + designationDto.getLimit() + " OFFSET " + designationDto.getOffSet();
         }
+        System.out.println(qry);
 
         List<DesignationDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DesignationDto.class));
         return new PageImpl<>(list, pageable, resultCount);

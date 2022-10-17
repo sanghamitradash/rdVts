@@ -6,6 +6,7 @@ import gov.orsac.RDVTS.entities.DesignationEntity;
 import gov.orsac.RDVTS.entities.RoleEntity;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
+import gov.orsac.RDVTS.service.ContractorService;
 import gov.orsac.RDVTS.service.VehicleService;
 import gov.orsac.RDVTS.service.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class WorkController {
     private VehicleService vehicleService;
     @Autowired
     private VehicleRepository vehicleRepository;
+    @Autowired
+    private ContractorService contractorService;
 
     //Work Master
     @PostMapping("/addWork")
@@ -61,6 +64,7 @@ public class WorkController {
         WorkDto workDto = new WorkDto();
         workDto.setId(id);
         workDto.setWorkId(workId);
+        workDto.setUserId(userId);
         workDto.setOffSet(start);
         workDto.setLimit(length);
         RDVTSListResponse response = new RDVTSListResponse();
@@ -92,7 +96,8 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkById")
-    public RDVTSResponse getWorkById(@RequestParam int id) {
+    public RDVTSResponse getWorkById(@RequestParam int id,
+                                     @RequestParam int contractor ) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -101,12 +106,13 @@ public class WorkController {
             List<LocationDto> location=vehicleService.getLocationArray(id);
             List<AlertDto> alertDtoList=vehicleService.getAlertArray(id);
             List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
+//            List<ContractorDto> contractorDtoList = contractorService.getContractById();
 
                 result.put("workDto", workDto);
-                result.put("Vehicle Array", vehicle);
-                result.put("Location Array", location);
-                result.put("Road Array", roadMasterDtoList);
-                result.put("Alert Array", alertDtoList);
+                result.put("vehicleArray", vehicle);
+                result.put("locationArray", location);
+                result.put("roadArray", roadMasterDtoList);
+                result.put("alertArray", alertDtoList);
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
