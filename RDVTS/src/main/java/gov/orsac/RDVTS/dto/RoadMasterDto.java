@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Geometry;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +16,11 @@ public class RoadMasterDto {
 
     private Integer userId;
 
-    private String workId;
+//    private List<Integer> workIds;
+
+    private Integer workIds;
+
+    private Integer contractIds;
 
     private Integer packageId;
 
