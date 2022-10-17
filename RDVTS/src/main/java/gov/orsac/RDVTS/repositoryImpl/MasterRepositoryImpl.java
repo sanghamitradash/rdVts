@@ -229,9 +229,9 @@ public class MasterRepositoryImpl implements MasterRepository {
         PageRequest pageable = null;
 
         Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(vtuVendorFilterDto.getOffSet(),vtuVendorFilterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(vtuVendorFilterDto.getDraw()-1,vtuVendorFilterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
 
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         String queryString = " ";
         queryString = "SELECT DISTINCT vtuM.id as vendorId, vtuM.vtu_vendor_name as vtuVendorName , vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, vtuM.is_active, vtuM.created_by,  " +
@@ -256,7 +256,7 @@ public class MasterRepositoryImpl implements MasterRepository {
 
         resultCount = count(queryString, sqlParam);
         if (vtuVendorFilterDto.getLimit() > 0){
-            queryString += " LIMIT " +vtuVendorFilterDto.getLimit() + " OFFSET " + vtuVendorFilterDto.getOffSet();
+            queryString += " Order by vtuM.id desc LIMIT " +vtuVendorFilterDto.getLimit() + " OFFSET " + vtuVendorFilterDto.getOffSet();
         }
 
         List<VTUVendorMasterDto> list = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));

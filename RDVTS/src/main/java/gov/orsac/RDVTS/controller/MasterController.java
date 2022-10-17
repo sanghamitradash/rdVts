@@ -772,6 +772,7 @@ public class MasterController {
         vtuVendorFilterDto.setVtuVendorName(vtuVendorName);
         vtuVendorFilterDto.setOffSet(start);
         vtuVendorFilterDto.setLimit(length);
+        vtuVendorFilterDto.setDraw(draw);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try{
