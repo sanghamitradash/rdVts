@@ -220,8 +220,10 @@ public class DeviceController {
             deviceService.deactivateDeviceArea(updateDevice.getId());
             DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(),updateDevice.getId(),updateDevice.getUserLevelId());
             deviceService.deactivateDeviceVehicle(updateDevice.getId());
+            VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(deviceDto.getVehicleDeviceMapping(),updateDevice.getId());
             result.put("updateDevice", updateDevice);
             result.put("deviceMapping", deviceMapping);
+            result.put("saveVehicleMapping",saveVehicleMapping);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
