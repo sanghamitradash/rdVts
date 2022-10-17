@@ -23,7 +23,7 @@ public interface VehicleService {
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingList(List<Integer> vehicleId);
 
     List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer vehicleId);
-    List<LocationDto> getLocation(Integer vehicleId) throws ParseException;
+    LocationDto getLocation(Integer vehicleId) throws ParseException;
     List<LocationDto> getLocationArray(int id) throws ParseException;
     List<AlertDto>getAlert(Integer vehicleId) throws ParseException;
     List<AlertDto>getAlertArray(int id) throws ParseException;

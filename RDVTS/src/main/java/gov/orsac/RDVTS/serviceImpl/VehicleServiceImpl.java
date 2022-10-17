@@ -167,11 +167,17 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public List<LocationDto> getLocation(Integer vehicleId) throws ParseException {
+       public LocationDto getLocation(Integer vehicleId) throws ParseException {
            VehicleDeviceInfo device =vehicleRepositoryimpl.getVehicleDeviceMapping(vehicleId);
-            LocationDto location=vehicleRepositoryimpl.getLatestLocationByDeviceId(device.getImeiNo1());
+           LocationDto location=null;
+           if(device!=null) {
+                location = vehicleRepositoryimpl.getLatestLocationByDeviceId(device.getImeiNo1());
+           }
+           else{
+               return null;
+           }
 
-              return null;
+              return location;
        }
 
        @Override

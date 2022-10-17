@@ -327,10 +327,18 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
     public LocationDto getLatestLocationByDeviceId(Long imeiNo) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        LocationDto locationDto=null;
 
-        String qry =" ";
+        String qry ="select  * from rdvts_oltp.vtu_location  where imei=:imeiNo order by date_time desc limit 1 ";
+        sqlParam.addValue("imeiNo", imeiNo);
+        try {
+            locationDto = namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(LocationDto.class));
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
 
-        return  namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(LocationDto.class));
+
+        return locationDto ;
     }
 
 }

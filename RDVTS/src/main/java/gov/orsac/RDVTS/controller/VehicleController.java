@@ -100,7 +100,7 @@ public class VehicleController {
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
             VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
             List<VehicleWorkMappingDto> work=vehicleService.getVehicleWorkMapping(vehicleId);
-            List<LocationDto> location=vehicleService.getLocation(vehicleId);
+            LocationDto location=vehicleService.getLocation(vehicleId);
             List<AlertDto> alertList=vehicleService.getAlert(vehicleId);
             List<VehicleDeviceInfo> deviceHistory=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
             List<VehicleWorkMappingDto> workHistory=vehicleService.getVehicleWorkMappingList(vehicleId);
