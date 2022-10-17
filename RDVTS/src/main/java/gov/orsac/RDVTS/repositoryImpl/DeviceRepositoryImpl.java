@@ -93,13 +93,16 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId,Integer userId) {
         List<DeviceAreaMappingDto> device ;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT dam.id, dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, block.district_name as distName, " +
-                "dam.division_id, dam.g_dist_id,geoDist.g_district_name as gdistName, dam.g_block_id,geoBlock.g_block_name as gblockName, " +
-                "dam.created_by,dam.created_on,dam.updated_by,dam.updated_on  " +
+        String qry = "SELECT dam.id, dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, dist.district_name as distName,dam.state_id,state.state_name as stateName,  " +
+                "dam.division_id,div.division_name as divName, dam.g_dist_id,geoDist.g_district_name as gdistName, dam.g_block_id,geoBlock.g_block_name as gblockName,   " +
+                "dam.created_by,dam.created_on,dam.updated_by,dam.updated_on   " +
                 "from rdvts_oltp.device_area_mapping as dam  " +
-                "left join rdvts_oltp.block_boundary as block on block.block_id = dam.block_id " +
-                "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id  " +
-                "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id =  dam.g_dist_id " +
+                "left join rdvts_oltp.district_boundary as dist on dist.dist_id=dam.dist_id   " +
+                "left join rdvts_oltp.block_boundary as block on block.block_id = dam.block_id  " +
+                "left join rdvts_oltp.division_m as div on div.id =dam.division_id  " +
+                "left join rdvts_oltp.state_m as state on state.id = dam.state_id  " +
+                "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id   " +
+                "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id =  dam.g_dist_id  " +
                 "WHERE dam.is_active = true ";
 
         if(deviceId>0){
