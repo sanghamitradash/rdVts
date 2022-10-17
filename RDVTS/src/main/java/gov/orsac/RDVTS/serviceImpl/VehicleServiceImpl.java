@@ -61,17 +61,13 @@ public class VehicleServiceImpl implements VehicleService {
        public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) {
               List<Integer> workIds = new ArrayList<>();
               for (VehicleWorkMappingDto eachWorkIds: vehicleWorkMapping) {
-                     eachWorkIds.setWorkId(eachWorkIds.getWorkId());
-                     eachWorkIds.setActive(false);
-                     vehicleWorkMapping.add(eachWorkIds);
+                     workIds.add(eachWorkIds.getWorkId());
               }
               List<Integer> vehicleIds = new ArrayList<>();
               for (VehicleWorkMappingDto eachVehicleIds: vehicleWorkMapping) {
-                     eachVehicleIds.setVehicleId(eachVehicleIds.getVehicleId());
-                     eachVehicleIds.setActive(false);
-                     vehicleWorkMapping.add(eachVehicleIds);
+                     vehicleIds.add(eachVehicleIds.getVehicleId());
               }
-              return vehicleRepository.deactivateVehicleWork(vehicleWorkMapping);
+              return vehicleRepository.deactivateVehicleWork(workIds, vehicleIds);
        }
 
        @Override

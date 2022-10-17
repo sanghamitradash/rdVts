@@ -25,5 +25,5 @@ public interface VehicleRepository {
     List<VehicleMasterDto> getVehicleById(Integer id, Integer userId);
 
 
-    List<VehicleWorkMappingEntity> deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping);
+    List<VehicleWorkMappingEntity> deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds);
 }

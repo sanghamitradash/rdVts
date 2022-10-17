@@ -222,7 +222,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
 
     @Override
-    public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) {
+    public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         int resultCount=0;
         String qry = "SELECT vwm.id, vwm.vehicle_id, vwm.work_id, vwm.start_time, vwm.end_time, vwm.start_date, vwm.end_date, vwm.is_active, " +
@@ -230,11 +230,15 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "FROM rdvts_oltp.vehicle_work_mapping AS vwm " +
                 "WHERE vwm.is_active=false";
 
-//        if (vehicleWorkMapping.get(0).getWorkId() != null && !vehicleWorkMapping.getWorkIds().isEmpty()) {
-//            qry += " AND vwm.work_id IN (:workIds)";
-//            sqlParam.addValue("workIds", vehicleWorkMapping.getWorkIds());
-//        }
+        if (workIds != null && !workIds.isEmpty()) {
+            qry += " AND vwm.work_id IN (:workIds)";
+            sqlParam.addValue("workIds", workIds);
+        }
 
+        if (vehicleIds != null && !vehicleIds.isEmpty()) {
+            qry += " AND vwm.vehicle_id IN (:vehicleIds)";
+            sqlParam.addValue("vehicleIds", vehicleIds);
+        }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingEntity.class));
     }
 
