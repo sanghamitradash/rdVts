@@ -155,6 +155,13 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceRepositoryImpl.getVtuVendorDropDown();
     }
 
+    @Override
+    public Boolean deactivateDeviceVehicle(Integer id) {
+         return deviceRepositoryImpl.deactivateDeviceVehicle(id);
+    }
+
+
+
 
 }
 

@@ -298,6 +298,15 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         String qry ="SELECT vm.id,vm.vtu_vendor_name,vm.vtu_vendor_address,vm.vtu_vendor_phone,vm.customer_care_number from rdvts_oltp.vtu_vendor_m as vm ";
         return namedJdbc.query(qry,sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
     }
-}
+
+    public Boolean deactivateDeviceVehicle(Integer id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "UPDATE rdvts_oltp.vehicle_device_mapping SET is_active = false WHERE device_id=:id";
+        sqlParam.addValue("id", id);
+        Integer update = namedJdbc.update(qry, sqlParam);
+        return update > 0;
+    }
+    }
+
 
 
