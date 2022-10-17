@@ -4,49 +4,30 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Geometry;
+
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoadMasterDto {
-
-    private Integer id;
-
+public class RoadWorkMappingDto {
+    private Integer roadId;
     private Integer userId;
-
-    private String workId;
-
     private Integer packageId;
-
     private String packageName;
-
     private String roadName;
-
     private Double roadLength;
-
     private Double roadLocation;
-
     private String roadAllignment;
-
-    private Geometry geom;
-
     private Double roadWidth;
-
-    private Integer groadId;
-
+    private Integer gRoadId;
     private Integer geoMasterId;
-
+    private Integer workId;
+    private Integer gWorkId;
+    private String gWorkName;
     private Boolean isActive;
-
     private Integer createdBy;
-
     private Date createdOn;
-
     private Integer updatedBy;
-
     private Date updatedOn;
-
-    private Integer slNo;
-
 }

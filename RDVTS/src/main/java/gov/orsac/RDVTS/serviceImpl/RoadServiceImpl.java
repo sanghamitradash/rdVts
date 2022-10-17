@@ -1,9 +1,6 @@
 package gov.orsac.RDVTS.serviceImpl;
 
-import gov.orsac.RDVTS.dto.GeoMasterDto;
-import gov.orsac.RDVTS.dto.RoadFilterDto;
-import gov.orsac.RDVTS.dto.RoadMasterDto;
-import gov.orsac.RDVTS.dto.VTUVendorMasterDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.RoadEntity;
 import gov.orsac.RDVTS.entities.VTUVendorMasterEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
@@ -44,6 +41,11 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
+    public List<RoadMasterDto> getRoadByWorkId(Integer workId) {
+        return roadRepositoryImpl.getRoadWorkById(workId);
+    }
+
+    @Override
     public RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto){
         RoadEntity existingId = roadRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("id", "id", id));
         existingId.setPackageId(roadMasterDto.getPackageId());
@@ -71,6 +73,11 @@ public class RoadServiceImpl implements RoadService {
     @Override
     public List<RoadMasterDto> getGeomByRoadId(Integer roadId, Integer userId) {
         return roadRepositoryImpl.getGeomByRoadId(roadId, userId);
+    }
+
+    @Override
+    public List<RoadWorkMappingDto> getWorkDetailsByRoadId(Integer roadId) {
+        return roadRepositoryImpl.getWorkDetailsByRoadId(roadId);
     }
 
     @Override

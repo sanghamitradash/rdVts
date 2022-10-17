@@ -66,6 +66,26 @@ public class RoadController {
         }
         return response;
     }
+//Swarup
+    @PostMapping("/getRoadByWorkId")
+    public RDVTSResponse getRoadByWorkId(@RequestParam(name = "workId") Integer workId, Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<RoadMasterDto> road = roadService.getRoadByWorkId(workId);
+//            result.put("road", road);
+            response.setData(road);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Road By Work Id");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
     @PostMapping("/updateRoad")
     public RDVTSResponse updateRoad(@RequestParam Integer id,
@@ -114,6 +134,7 @@ public class RoadController {
         roadFilterDto.setContractIds(contractIds);
         roadFilterDto.setLimit(length);
         roadFilterDto.setOffSet(start);
+        roadFilterDto.setDraw(draw);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -152,6 +173,26 @@ public class RoadController {
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Geom By roadId");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getWorkDetailsByRoadId")
+    public RDVTSResponse getWorkDetailsByRoadId(@RequestParam(name = "roadId", required = false) Integer roadId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<RoadWorkMappingDto> road = roadService.getWorkDetailsByRoadId(roadId);
+            result.put("road", road);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("WorkDetails By roadId");
         } catch (Exception ex) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
