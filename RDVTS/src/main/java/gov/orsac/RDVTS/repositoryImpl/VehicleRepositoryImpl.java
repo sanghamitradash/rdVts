@@ -145,8 +145,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         String qry ="SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
-                "vm.chassis_no,vm.engine_no,vm.is_active as active,device.device_id as deviceId " +
-                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,userM.first_name as firstName,userM.middle_name as middleName,userM.last_name as lastName " +
+                "vm.chassis_no,vm.engine_no,vm.is_active as active,vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,"+
+                "userM.first_name as firstName,userM.middle_name as middleName,userM.last_name as lastName " +
                 "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
                 " left join rdvts_oltp.vehicle_work_mapping as work on vm.id=work.vehicle_id  " +
@@ -165,33 +165,41 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             sqlParam.addValue("workId",vehicle.getWorkId());
         }
 
-        //Validation on basis of userLevel and lower level user
+     /*   //Validation on basis of userLevel and lower level user
         UserInfoDto user=userRepositoryImpl.getUserByUserId(vehicle.getUserId());
         if(user.getUserLevelId()==5){
             qry+="and owner.contractor_id=:contractorId ";
             sqlParam.addValue("contractorId",vehicle.getUserId());
         }
-       /* else if(user.getUserLevelId()==1){
-       *//*    List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());*//*
+       *//* else if(user.getUserLevelId()==1){
+       *//**//*    List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());*//**//*
            qry+=" ";
-        }*/
+        }*//*
         else if(user.getUserLevelId()==2){
             List<Integer> distId=userRepositoryImpl.getDistIdByUserId(vehicle.getUserId());
              List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(distId);
              List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
              qry+=" and vm.id in(:vehicleIds)";
-             sqlParam.addValue("vehicleIds",vehicle);
+             sqlParam.addValue("vehicleIds",vehicleId);
         }
         else if(user.getUserLevelId()==3){
             List<Integer> blockId=userRepositoryImpl.getBlockIdByUserId(vehicle.getUserId());
             List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByBlockList(blockId);
             List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
             qry+=" and vm.id in(:vehicleIds)";
-            sqlParam.addValue("vehicleIds",vehicle);
+            sqlParam.addValue("vehicleIds",vehicleId);
         }
+        else if(user.getUserLevelId()==4){
+            List<Integer> divisionId=userRepositoryImpl.getDivisionByUserId(vehicle.getUserId());
+            List<Integer> districtId=userRepositoryImpl.getDistrictByDivisionId(divisionId);
+            List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(districtId);
+            List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
+            qry+=" and vm.id in(:vehicleIds)";
+            sqlParam.addValue("vehicleIds",vehicleId);
+        }*/
 
 
-        resultCount = count(qry, sqlParam);
+        resultCount =count(qry, sqlParam);
         if (vehicle.getLimit() > 0){
             qry += " LIMIT " +vehicle.getLimit() + " OFFSET " + vehicle.getOffSet();
         }
@@ -286,7 +294,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         Integer count=0;
         boolean tracking=false;
-        String qry = "";
+        String qry = "select count(id) from rdvts_oltp.vtu_location where is_active=true and imei=:imeiNo and date(date_time)=date(now())";
         sqlParam.addValue("imeiNo", imeiNo);
         count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
         if(count>0){
