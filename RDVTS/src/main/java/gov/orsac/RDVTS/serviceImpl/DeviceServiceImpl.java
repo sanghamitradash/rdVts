@@ -117,7 +117,7 @@ public class DeviceServiceImpl implements DeviceService {
         if(userLevelId == 1)
          {
                device.setStateId(deviceMapping.getStateId());
-               device.setDeviceId(deviceMapping.getDeviceId());
+               device.setDeviceId(deviceId);
           }
         if(userLevelId ==2){
 
@@ -131,14 +131,14 @@ public class DeviceServiceImpl implements DeviceService {
             DeviceAreaMappingDto deviceAreaMapping = deviceMasterRepository.getStateDistByBlockId(deviceMapping.getBlockId());
             device.setStateId(deviceAreaMapping.getStateId());
             device.setDistId(deviceAreaMapping.getDistId());
-            device.setStateId(userLevelId);
+            device.setDeviceId(deviceId);
         }
         if(userLevelId == 4){
 
             DeviceAreaMappingDto deviceAreaMapping = deviceMasterRepository.getStateDistByDivisionId(deviceMapping.getDivisionId());
             device.setStateId(deviceAreaMapping.getStateId());
             device.setDistId(deviceAreaMapping.getDistId());
-            device.setStateId(userLevelId);
+            device.setDeviceId(deviceId);
         }
 
         return deviceAreaMappingRepository.save(device);

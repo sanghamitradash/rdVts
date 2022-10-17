@@ -80,14 +80,12 @@ public class RoadRepositoryImpl {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
-
         Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(roadFilterDto.getOffSet(),roadFilterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(roadFilterDto.getDraw()-1,roadFilterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
 
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
-        String queryString = " ";
-        queryString = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width, road.g_road_id as groadId, " +
+        String queryString = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width, road.g_road_id as groadId, " +
                 "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, geom.g_work_id as workIds, geom.g_contractor_id as contractIds " +
                 "FROM rdvts_oltp.geo_construction_m AS road " +
                 "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.id=road.geo_master_id " +
@@ -173,5 +171,12 @@ public class RoadRepositoryImpl {
         /*   "AND id>1 ORDER BY id";*/
         sqlParam.addValue("roadId", roadId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
+    }
+
+    public List<RoadMasterDto> getWorkDetailsByRoadId(Integer roadId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "";
+        sqlParam.addValue("roadId", roadId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
     }
 }

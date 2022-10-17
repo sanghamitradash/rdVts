@@ -33,9 +33,13 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     @Autowired
     private HelperServiceImpl helperServiceImpl;
+    @Autowired
+    private MasterRepositoryImpl masterRepositoryImpl;
 
     @Autowired
     private GeoMasterRepositoryImpl geoMasterRepositoryImpl;
+    @Autowired
+    private ContractorRepositoryImpl contractorRepositoryImpl;
 
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
@@ -141,7 +145,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         String qry ="SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
-                "vm.chassis_no,vm.engine_no,vm.is_active as active," +
+                "vm.chassis_no,vm.engine_no,vm.is_active as active,device.device_id as deviceId " +
                 "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,userM.first_name as firstName,userM.middle_name as middleName,userM.last_name as lastName " +
                 "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
@@ -173,15 +177,18 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }*/
         else if(user.getUserLevelId()==2){
             List<Integer> distId=userRepositoryImpl.getDistIdByUserId(vehicle.getUserId());
-             List<Integer> workId =geoMasterRepositoryImpl.getWorkIdByDistIdList(distId);
-             List<Integer> vehicleId  =getVehicleByWorkIdList(workId);
+             List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(distId);
+             List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
+             qry+=" and vm.id in(:vehicleIds)";
+             sqlParam.addValue("vehicleIds",vehicle);
         }
         else if(user.getUserLevelId()==3){
             List<Integer> blockId=userRepositoryImpl.getBlockIdByUserId(vehicle.getUserId());
-            List<Integer> workId =geoMasterRepositoryImpl.getWorkIdByBlockList(blockId);
-            List<Integer> vehicleId  =getVehicleByWorkIdList(workId);
+            List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByBlockList(blockId);
+            List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
+            qry+=" and vm.id in(:vehicleIds)";
+            sqlParam.addValue("vehicleIds",vehicle);
         }
-
 
 
         resultCount = count(qry, sqlParam);
@@ -242,37 +249,66 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<Integer> getVehicleByWorkIdList(List<Integer> workId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        List<VehicleMasterDto> vehicle;
+
         String qry = "select distinct vehicle_id from rdvts_oltp.vehicle_work_mapping where work_id in(:workId)";
         sqlParam.addValue("workId", workId);
         return  namedJdbc.queryForList(qry, sqlParam,Integer.class);
     }
+    public boolean getDeviceAssignedOrNot(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+         Integer count=0;
+         boolean device=false;
+        String qry = "select count(id)  from  rdvts_oltp.vehicle_device_mapping " +
+                "where vehicle_id=:vehicleId and is_active=true and " +
+                "deactivation_date is null and created_on <=now()";
+        sqlParam.addValue("vehicleId", vehicleId);
+       count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
+       if(count>0){
+           device=true;
+       }
+       return device;
+    }
+    public boolean getWorkAssignedOrNot(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        Integer count=0;
+        boolean work=false;
+        String qry = "select count(id)  from  rdvts_oltp.vehicle_work_mapping " +
+                "where vehicle_id=5 and is_active=true and " +
+                "deactivation_date is null and start_time <=now()";
+        sqlParam.addValue("vehicleId", vehicleId);
+        count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
+        if(count>0){
+            work=true;
+        }
+        return work;
+    }
+    public boolean getTrackingLiveOrNot(Long imeiNo) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        Integer count=0;
+        boolean tracking=false;
+        String qry = "";
+        sqlParam.addValue("imeiNo", imeiNo);
+        count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
+        if(count>0){
+            tracking=true;
+        }
+        return tracking;
+    }
 
     @Override
-    public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds) throws ParseException {
+    public Integer deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds) throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
         String currentDateTime = dateFormat.format(new Date());
         Date date = dateFormat.parse(currentDateTime);
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         int resultCount=0;
-        String qry = "SELECT vwm.id, vwm.vehicle_id, vwm.work_id, vwm.start_time, vwm.end_time, vwm.start_date, vwm.end_date, vwm.is_active, " +
-                "vwm.created_by, vwm.created_on, vwm.updated_by, vwm.updated_on, vwm.deactivation_date " +
-                "FROM rdvts_oltp.vehicle_work_mapping AS vwm " +
-                "WHERE vwm.is_active=false ";
 
-//        sqlParam.addValue("deactivationDate",date);
+        String qry ="UPDATE rdvts_oltp.vehicle_work_mapping " +
+                "SET is_active=false,deactivation_date=now()  WHERE work_id IN (:workIds) or vehicle_id IN (:vehicleIds) ";
+        sqlParam.addValue("workIds", workIds);
+        sqlParam.addValue("vehicleIds", vehicleIds);
 
-        if (workIds != null && !workIds.isEmpty()) {
-            qry += " AND vwm.work_id IN (:workIds)";
-            sqlParam.addValue("workIds", workIds);
-        }
-
-        if (vehicleIds != null && !vehicleIds.isEmpty()) {
-            qry += " AND vwm.vehicle_id IN (:vehicleIds)";
-            sqlParam.addValue("vehicleIds", vehicleIds);
-        }
-
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingEntity.class));
+        return namedJdbc.update(qry, sqlParam);
     }
 
 }

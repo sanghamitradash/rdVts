@@ -53,8 +53,9 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping) {
+       public VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping) throws ParseException {
 
+              Integer count=vehicleDeviceRepository.deactivateVehicleDevice(vehicleDeviceMapping);
               return vehicleDeviceMappingRepository.save(vehicleDeviceMapping);
        }
 
@@ -66,7 +67,7 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
+       public Integer deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
               List<Integer> workIds = new ArrayList<>();
               for (VehicleWorkMappingDto eachWorkIds: vehicleWorkMapping) {
                      workIds.add(eachWorkIds.getWorkId());
@@ -82,6 +83,9 @@ public class VehicleServiceImpl implements VehicleService {
        public List<VehicleWorkMappingEntity> assignVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
               SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
 //              formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+
+
+
 
               List<VehicleWorkMappingEntity> vehicleWork=new ArrayList<>();
               for(VehicleWorkMappingDto vehicle:vehicleWorkMapping){
