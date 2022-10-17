@@ -39,7 +39,7 @@ public class VehicleDeviceMappingDto {
 
     private String  vehicleNo;
 
-    private String deactivationDate;
+    private Date deactivationDate;
 
     private String instalDate;
 }
