@@ -137,8 +137,8 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId) {
-              return vehicleRepositoryimpl.getdeviceListByVehicleId(vehicleId);
+       public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate,Date vehicleWorkEndDate) {
+              return vehicleRepositoryimpl.getdeviceListByVehicleId(vehicleId,vehicleWorkStartDate,vehicleWorkEndDate);
        }
 
        @Override

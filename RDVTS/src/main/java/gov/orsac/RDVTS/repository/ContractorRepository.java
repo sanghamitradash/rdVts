@@ -13,4 +13,6 @@ public interface ContractorRepository {
     List<ContractorDto> getContractById(Integer contractId,Integer userId);
 
     Page<ContractorDto> getContractorDetails(ContractorFilterDto contractor);
+
+    List<ContractorDto> getContractorDropDown();
 }

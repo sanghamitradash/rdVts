@@ -150,6 +150,17 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceRepositoryImpl.getImeiListByDeviceId(deviceId);
     }
 
+    @Override
+    public List<VTUVendorMasterDto> getVtuVendorDropDown() {
+        return deviceRepositoryImpl.getVtuVendorDropDown();
+    }
+
+    @Override
+    public Boolean deactivateDeviceVehicle(Integer id) {
+         return deviceRepositoryImpl.deactivateDeviceVehicle(id);
+    }
+
+
 
 
 }

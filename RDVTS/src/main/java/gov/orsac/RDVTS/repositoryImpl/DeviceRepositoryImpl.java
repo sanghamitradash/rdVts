@@ -236,9 +236,9 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     @Override
     public List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String query = "SELECT dv.id, dv.device_id,dv.vehicle_id,vm.vehicle_no,dv.installation_date,dv.installed_by,dv.is_active as active,dv.created_by,dv.created_on, " +
-                "dv.updated_by,dv.updated_on from rdvts_oltp.vehicle_device_mapping as dv  " +
-                "left join rdvts_oltp.vehicle_m as vm on vm.id = dv.vehicle_id WHERE dv.device_id=:deviceId AND dv.is_active=true  " ;
+        String query = "SELECT dv.id, dv.device_id,dv.vehicle_id,vm.vehicle_no, installation_date as installationDate ,dv.installed_by,dv.is_active as active,dv.created_by,dv.created_on,  " +
+                "dv.updated_by,dv.updated_on from rdvts_oltp.vehicle_device_mapping as dv   " +
+                "left join rdvts_oltp.vehicle_m as vm on vm.id = dv.vehicle_id WHERE dv.device_id=59 AND dv.is_active=true   " ;
         sqlParam.addValue("deviceId", deviceId);
         sqlParam.addValue("userId",userId);
         return namedJdbc.query(query,sqlParam,new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
@@ -292,6 +292,21 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
     }
-}
+
+    public List<VTUVendorMasterDto> getVtuVendorDropDown() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry ="SELECT vm.id,vm.vtu_vendor_name,vm.vtu_vendor_address,vm.vtu_vendor_phone,vm.customer_care_number from rdvts_oltp.vtu_vendor_m as vm ";
+        return namedJdbc.query(qry,sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
+    }
+
+    public Boolean deactivateDeviceVehicle(Integer id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "UPDATE rdvts_oltp.vehicle_device_mapping SET is_active = false WHERE device_id=:id";
+        sqlParam.addValue("id", id);
+        Integer update = namedJdbc.update(qry, sqlParam);
+        return update > 0;
+    }
+    }
+
 
 
