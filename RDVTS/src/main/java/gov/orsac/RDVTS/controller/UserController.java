@@ -141,7 +141,7 @@ public class UserController {
                         userPasswordMasterDto.setPassword(password);
                         UserPasswordMasterEntity passwordObj = userService.saveUserPassword(userPasswordMasterDto);
 
-                        if (userArea.size() > 0) {
+                        if ( userArea != null && userArea.size() > 0) {
                             //Save User Area Mapping
                             List<UserAreaMappingEntity> userAreaMapping = new ArrayList<>();
                             for (UserAreaMappingRequestDTO item : userArea) {
