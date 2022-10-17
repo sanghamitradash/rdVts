@@ -140,6 +140,30 @@ public class RoadRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
     }
 
+    public List<GeoMasterDto> workByContractorIds(Integer contractorId){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +
+                "\tFROM rdvts_oltp.geo_master where is_active=true and contractor_id =:contractorId; ";
+        /*   "AND id>1 ORDER BY id";*/
+        sqlParam.addValue("contractorId", contractorId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
+    }
+
+    public List<GeoMasterDto> getworkByDistrictId(Integer districtId){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +
+                "\tFROM rdvts_oltp.geo_master where is_active=true and dist_id =:districtId; ";
+        /*   "AND id>1 ORDER BY id";*/
+        sqlParam.addValue("districtId", districtId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
+    }
+
+
+
+
+
     public List<RoadMasterDto> getGeomByRoadId(Integer roadId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;

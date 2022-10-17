@@ -21,6 +21,10 @@ public interface RoadService {
     Page<RoadMasterDto> getRoadList(RoadFilterDto roadFilterDto);
 
     List<GeoMasterDto> getWorkByroadIds(Integer roadId);
+    List<GeoMasterDto> workByContractorIds(Integer contractorId);
+    List<GeoMasterDto> getworkByDistrictId(Integer districtId);
+
+
     List<GeoMasterDto> getVehicleListByRoadId(Integer roadId);
 
 
