@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -53,12 +54,26 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
+       public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) {
+              List<Integer> workIds = new ArrayList<>();
+              for (VehicleWorkMappingDto eachWorkIds: vehicleWorkMapping) {
+                     eachWorkIds.setWorkId(eachWorkIds.getWorkId());
+                     eachWorkIds.setActive(false);
+                     vehicleWorkMapping.add(eachWorkIds);
+              }
+              List<Integer> vehicleIds = new ArrayList<>();
+              for (VehicleWorkMappingDto eachVehicleIds: vehicleWorkMapping) {
+                     eachVehicleIds.setVehicleId(eachVehicleIds.getVehicleId());
+                     eachVehicleIds.setActive(false);
+                     vehicleWorkMapping.add(eachVehicleIds);
+              }
+              return vehicleRepository.deactivateVehicleWork(vehicleWorkMapping);
+       }
+
+       @Override
        public List<VehicleWorkMappingEntity> assignVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
               SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
 //              formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-
-
-
 
               List<VehicleWorkMappingEntity> vehicleWork=new ArrayList<>();
               for(VehicleWorkMappingDto vehicle:vehicleWorkMapping){

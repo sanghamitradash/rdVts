@@ -245,13 +245,7 @@ public class VehicleController {
         try {
 /*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
                     && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
-//            List<Integer> workIds = new ArrayList<>();
-//            for (VehicleWorkMappingEntity workIds: vehicleWorkMapping) {
-//                workIds.setWorkId(workIds.getWorkId());
-//
-//            }
 
-            List<Integer> vehicleIds = new ArrayList<>();
             List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(vehicleWorkMapping);
             result.put("saveVehicleMapping", saveVehicleWorkMapping);
             response.setData(result);

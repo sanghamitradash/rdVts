@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.VehicleMaster;
+import gov.orsac.RDVTS.entities.VehicleWorkMappingEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.serviceImpl.HelperServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -207,6 +208,23 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             return null;
         }
         return vehicle;
+    }
+
+    @Override
+    public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        int resultCount=0;
+        String qry = "SELECT vwm.id, vwm.vehicle_id, vwm.work_id, vwm.start_time, vwm.end_time, vwm.start_date, vwm.end_date, vwm.is_active, " +
+                "vwm.created_by, vwm.created_on, vwm.updated_by, vwm.updated_on, vwm.deactivation_date " +
+                "FROM rdvts_oltp.vehicle_work_mapping AS vwm " +
+                "WHERE vwm.is_active=false";
+
+//        if (vehicleWorkMapping.get(0).getWorkId() != null && !vehicleWorkMapping.getWorkIds().isEmpty()) {
+//            qry += " AND vwm.work_id IN (:workIds)";
+//            sqlParam.addValue("workIds", vehicleWorkMapping.getWorkIds());
+//        }
+
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingEntity.class));
     }
 
 }
