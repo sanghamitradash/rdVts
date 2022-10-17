@@ -124,4 +124,26 @@ public class ContractorController {
         return response;
     }
 
+    @PostMapping("/getContractorDropDown")
+    public RDVTSResponse getContractorDropDown() {
+
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<ContractorDto> contractor = contractorService.getContractorDropDown();
+            result.put("contractor", contractor);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Contractor List");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 }
