@@ -53,9 +53,9 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping) {
+       public VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping) throws ParseException {
 
-
+              Integer count=vehicleDeviceRepository.deactivateVehicleDevice(vehicleDeviceMapping);
               return vehicleDeviceMappingRepository.save(vehicleDeviceMapping);
        }
 

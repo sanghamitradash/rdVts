@@ -48,7 +48,7 @@ public class DeviceController {
                         && !deviceDto.getImeiNo2().toString().isEmpty() && !deviceDto.getMobileNumber1().toString().isEmpty() &&
                         !deviceDto.getMobileNumber2().toString().isEmpty() && !deviceDto.getSimIccId1().toString().isEmpty() && !deviceDto.getSimIccId2().toString().isEmpty() && !deviceDto.getModelName().isEmpty()) {
 
-                    if (deviceDto.getMobileNumber1().toString().length() == 10 || deviceDto.getMobileNumber1().toString().length() == 18 && deviceDto.getMobileNumber2().toString().length() == 10 || deviceDto.getMobileNumber2().toString().length() == 18) {
+                    if (deviceDto.getMobileNumber1().toString().length() == 10 || deviceDto.getMobileNumber1().toString().length() == 16 && deviceDto.getMobileNumber2().toString().length() == 10 || deviceDto.getMobileNumber2().toString().length() == 16) {
                         DeviceEntity deviceEntity = deviceService.addDevice(deviceDto);
                         result.put("deviceEntity",deviceEntity);
                         DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(), deviceEntity.getId(),deviceEntity.getUserLevelId());
@@ -159,6 +159,7 @@ public class DeviceController {
         device.setUserId(userId);
         device.setLimit(length);
         device.setOffSet(start);
+        device.setDraw(draw);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {

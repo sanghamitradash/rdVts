@@ -204,7 +204,7 @@ public class VehicleController {
                 if(vehicleDevice==null){
                     VehicleDeviceMappingEntity mapped=vehicleDeviceMappingRepository.findByDeviceId(vehicleDeviceMapping.getDeviceId());
                     if(mapped==null) {*/
-                       // Integer count=vehicleService.deactivateVehicleDevice(vehicleDeviceMapping);
+                        //Integer count=vehicleService.deactivateVehicleDevice(vehicleDeviceMapping);
                         VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
                         result.put("saveVehicleMapping", saveVehicleMapping);
                         response.setData(result);
@@ -272,9 +272,9 @@ public class VehicleController {
                     && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
 
             List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(vehicleWorkMapping);
-            List<VehicleWorkMappingEntity> deactivateVehicleWork = vehicleService.deactivateVehicleWork(vehicleWorkMapping);
+            //List<VehicleWorkMappingEntity> deactivateVehicleWork = vehicleService.deactivateVehicleWork(vehicleWorkMapping);
             result.put("saveVehicleMapping", saveVehicleWorkMapping);
-            result.put("deactivateVehicleWork", deactivateVehicleWork);
+            //result.put("deactivateVehicleWork", deactivateVehicleWork);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Assign Vehicle Device Created Successfully");
