@@ -6,6 +6,7 @@ import io.swagger.models.auth.In;
 import org.springframework.data.domain.Page;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 public interface VehicleService {
@@ -43,6 +44,6 @@ public interface VehicleService {
 
     List<VehicleMasterDto> getVehicleById(Integer id, Integer userId);
 
-    List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId);
+    List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate,Date vehicleWorkEndDate);
 
 }

@@ -130,13 +130,13 @@ public class RoadRepositoryImpl {
         return new PageImpl<>(list, pageable, resultCount);
     }
 
-    public List<GeoMasterDto> getWorkByroadIds(List<Integer> roadIds){
+    public List<GeoMasterDto> getWorkByroadIds(Integer roadId){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +
-                "\tFROM rdvts_oltp.geo_master where is_active=true and road_id IN(:roadIds); ";
+                "\tFROM rdvts_oltp.geo_master where is_active=true and road_id =:roadId; ";
         /*   "AND id>1 ORDER BY id";*/
-        sqlParam.addValue("roadIds", roadIds);
+        sqlParam.addValue("roadId", roadId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
     }
 

@@ -11,5 +11,5 @@ public interface LocationService {
      List<VtuLocationDto> getLocationRecordByDateTime(List<Long> imei1,List<Long> imei2, Date startTime,Date endTime);
     List<VtuLocationDto> getLocationRecordByRoadData(List<Long> imei1,List<Long> imei2,List<VehicleWorkMappingDto> vehicleByWork);
 
-    List<VtuLocationDto> getLocationrecordList(Long imei1,Long imei2,Date startDate,Date endDate);
+    List<VtuLocationDto> getLocationrecordList(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
 }
