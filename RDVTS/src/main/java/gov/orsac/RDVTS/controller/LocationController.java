@@ -309,7 +309,8 @@ public class LocationController {
 
 
 
-            } else if (vehicleId != null) {
+            }
+            else if (vehicleId != null) {
                 for (Integer vehicleitem : vehicleId) {
                     List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate);
 
@@ -334,29 +335,10 @@ public class LocationController {
                     }
 
                 }
-//                for (Integer deviceid : deviceIds) {
-//                    List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceid);
-//                    for (DeviceDto imei : getImeiList) {
-//                        imeiArray1.add(imei.getImeiNo1());
-//                        imeiArray2.add(imei.getImeiNo2());
-//                    }
-//
-//                    device.put(deviceid, getImeiList);
-//                }
-//
-//                int i = 0;
-//                for (Long item : imeiArray1) {
-//                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(item, imeiArray2.get(i), startDate, endDate);
-//                    i++;
-//                    Map<String, Object> itemVal = new HashMap<>();
-//                    itemVal.put("imeiNo", item);
-//                    itemVal.put("vehicleLocation", vtuLocationDto);
-//                    result.add(itemVal);
-//
-//                }
 
 
-            } else if (workId != null) {
+            }
+            else if (workId != null) {
 
                 for (Integer workitem : workId) {
                     List<VehicleWorkMappingDto> vehicleIdList = workService.getVehicleListByRoadId(workitem);
@@ -386,7 +368,8 @@ public class LocationController {
                     }
                 }
 
-            } else if (roadId != null) {
+            }
+            else if (roadId != null) {
                 for (Integer roadid : roadId) {
                     List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(roadid);
 
@@ -433,7 +416,8 @@ public class LocationController {
                 }
 
 
-            } else {
+            }
+            else {
 //
 
                 response.setStatus(1);
@@ -445,7 +429,7 @@ public class LocationController {
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("All Location By Imei.");
+            response.setMessage("All Location Details");
 
 
         } catch (Exception ex) {
@@ -504,7 +488,7 @@ public class LocationController {
                     Date createdOn = null;
                     Date deactivationDate = null;
                     for (DeviceDto imei : getImeiList) {
-                        List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, createdOn, deactivationDate);
+                        List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, createdOn, deactivationDate);
 
                         for (VtuLocationDto vtuobj : vtuLocationDto) {
                             vtuobj.setDeviceId(imei.getId());
@@ -519,10 +503,8 @@ public class LocationController {
 
                 }
 
-
-
-
-            } else if (vehicleId != null) {
+            }
+            else if (vehicleId != null) {
                 for (Integer vehicleitem : vehicleId) {
                     List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate);
 
@@ -530,7 +512,7 @@ public class LocationController {
                         List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                         //int i = 0;
                         for (DeviceDto imei : getImeiList) {
-                            List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                            List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
 //                            i++;
                             for (VtuLocationDto vtuobj : vtuLocationDto) {
                                 vtuobj.setDeviceId(imei.getId());
@@ -580,7 +562,7 @@ public class LocationController {
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                             //int i = 0;
                             for (DeviceDto imei : getImeiList) {
-                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                 // i++;
                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
                                     vtuobj.setDeviceId(imei.getId());
@@ -622,7 +604,7 @@ public class LocationController {
                                 List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                 //int i = 0;
                                 for (DeviceDto imei : getImeiList) {
-                                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                    List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                     // i++;
                                     for (VtuLocationDto vtuobj : vtuLocationDto) {
                                         vtuobj.setDeviceId(imei.getId());
@@ -658,7 +640,7 @@ public class LocationController {
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("All Location By Imei.");
+            response.setMessage("All Last Location Details");
 
 
         } catch (Exception ex) {

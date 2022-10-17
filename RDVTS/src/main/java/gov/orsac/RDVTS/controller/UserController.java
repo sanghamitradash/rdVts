@@ -38,7 +38,8 @@ public class UserController {
     private MasterService masterService;
 
     @PostMapping("/createUser")
-    public RDVTSResponse saveUser(@RequestParam(name = "userData") String data, @RequestParam(name = "password") String password,
+    public RDVTSResponse saveUser(@RequestParam(name = "userData") String data,
+                                  @RequestParam(name = "password") String password,
                                   @RequestParam(name = "userArea",required = false) String userAreaData,
                                   @RequestParam(name = "userId",required = false)Integer userId) {
 
