@@ -48,7 +48,7 @@ public class DeviceController {
                         && !deviceDto.getImeiNo2().toString().isEmpty() && !deviceDto.getMobileNumber1().toString().isEmpty() &&
                         !deviceDto.getMobileNumber2().toString().isEmpty() && !deviceDto.getSimIccId1().toString().isEmpty() && !deviceDto.getSimIccId2().toString().isEmpty() && !deviceDto.getModelName().isEmpty()) {
 
-                    if (deviceDto.getMobileNumber1().toString().length() == 10 && deviceDto.getMobileNumber2().toString().length() == 10) {
+                    if (deviceDto.getMobileNumber1().toString().length() == 10 || deviceDto.getMobileNumber1().toString().length() == 18 && deviceDto.getMobileNumber2().toString().length() == 10 || deviceDto.getMobileNumber2().toString().length() == 18) {
                         DeviceEntity deviceEntity = deviceService.addDevice(deviceDto);
                         result.put("deviceEntity",deviceEntity);
                         DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(), deviceEntity.getId(),deviceEntity.getUserLevelId());
@@ -56,7 +56,7 @@ public class DeviceController {
                         VehicleDeviceMappingEntity vehicle = new VehicleDeviceMappingEntity();
                         BeanUtils.copyProperties(deviceDto.getVehicleDeviceMapping(), vehicle);
                         vehicle.setDeviceId(deviceEntity.getId());
-                        if (vehicle.getDeviceId() != null || vehicle.getInstallationDate() != null || !vehicle.getInstalledBy().toString().isEmpty()  || vehicle.getVehicleId() != null) {
+                        if (vehicle.getDeviceId() != null && vehicle.getInstallationDate() != null && !vehicle.getInstalledBy().toString().isEmpty()  && vehicle.getVehicleId() != null) {
 
                             VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle);
                             result.put("deviceVehicleMapping",saveVehicleMapping);
