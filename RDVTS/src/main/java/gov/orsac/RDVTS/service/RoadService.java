@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.service;
 import gov.orsac.RDVTS.dto.GeoMasterDto;
 import gov.orsac.RDVTS.dto.RoadFilterDto;
 import gov.orsac.RDVTS.dto.RoadMasterDto;
+import gov.orsac.RDVTS.dto.RoadWorkMappingDto;
 import gov.orsac.RDVTS.entities.RoadEntity;
 import org.springframework.data.domain.Page;
 
@@ -23,7 +24,7 @@ public interface RoadService {
 
     List<RoadMasterDto> getGeomByRoadId(Integer roadId, Integer userId);
 
-    List<RoadMasterDto> getWorkDetailsByRoadId(Integer roadId);
+    List<RoadWorkMappingDto> getWorkDetailsByRoadId(Integer roadId);
 
 //    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
 }

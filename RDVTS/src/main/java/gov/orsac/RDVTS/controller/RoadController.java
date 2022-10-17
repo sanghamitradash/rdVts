@@ -167,7 +167,7 @@ public class RoadController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoadMasterDto> road = roadService.getWorkDetailsByRoadId(roadId);
+            List<RoadWorkMappingDto> road = roadService.getWorkDetailsByRoadId(roadId);
             result.put("road", road);
             response.setData(result);
             response.setStatus(1);
