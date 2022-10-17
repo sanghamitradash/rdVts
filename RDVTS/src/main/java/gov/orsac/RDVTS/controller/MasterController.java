@@ -250,9 +250,9 @@ public class MasterController {
     }
 
     @PostMapping("/getDesignationList")
-    public RDVTSListResponse getDesignationList(@RequestParam (name = "id") Integer id,
-                                                @RequestParam (name = "userLevelId") Integer userLevelId,
-                                                @RequestParam (name = "parentId") Integer parentId,
+    public RDVTSListResponse getDesignationList(@RequestParam (name = "id",defaultValue = "0", required = false) Integer id,
+                                                @RequestParam (name = "userLevelId",defaultValue = "0", required = false) Integer userLevelId,
+                                                @RequestParam (name = "parentId",defaultValue = "0", required = false) Integer parentId,
                                                 @RequestParam(name = "start") Integer start,
                                                 @RequestParam(name = "length") Integer length,
                                                 @RequestParam(name = "draw") Integer draw ) {
