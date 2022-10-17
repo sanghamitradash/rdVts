@@ -263,10 +263,9 @@ public class VehicleController {
 /*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
                     && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
 
+            Integer count = vehicleService.deactivateVehicleWork(vehicleWorkMapping);
             List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(vehicleWorkMapping);
-            List<VehicleWorkMappingEntity> deactivateVehicleWork = vehicleService.deactivateVehicleWork(vehicleWorkMapping);
             result.put("saveVehicleMapping", saveVehicleWorkMapping);
-            result.put("deactivateVehicleWork", deactivateVehicleWork);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Assign Vehicle Device Created Successfully");
