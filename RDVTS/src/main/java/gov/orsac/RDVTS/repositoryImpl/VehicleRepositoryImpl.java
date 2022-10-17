@@ -79,7 +79,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "device.mobile_number_1 as mobileNumber1,device.imei_no_2 as imeiNo2,device.sim_icc_id_2 as simIccId2,"+
                 "device.mobile_number_2 as mobileNumber2,device.model_name,device.device_no as deviceNo " +
                 "FROM rdvts_oltp.vehicle_device_mapping as vd " +
-                "left join rdvts_oltp.device_m as device on vd.device_id=device.id where vehicle_id=:vehicleId ";
+                "left join rdvts_oltp.device_m as device on vd.device_id=device.id where vehicle_id=:vehicleId and vd.is_active=true  ";
 
         sqlParam.addValue("vehicleId", vehicleId);
         try {
@@ -325,13 +325,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
         return namedJdbc.update(qry, sqlParam);
     }
-    public List<LocationDto> getLocation(Integer vehicleId) {
+    public LocationDto getLatestLocationByDeviceId(Long imeiNo) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry ="UPDATE rdvts_oltp.vehicle_work_mapping " +
-                "SET is_active=false,deactivation_date=now()  WHERE work_id IN (:workIds) or vehicle_id IN (:vehicleIds) ";
+        String qry =" ";
 
-        return  namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(LocationDto.class));
+        return  namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(LocationDto.class));
     }
 
 }

@@ -4,6 +4,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.*;
+import gov.orsac.RDVTS.repositoryImpl.LocationRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.UserRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.HelperService;
@@ -28,6 +29,8 @@ public class VehicleServiceImpl implements VehicleService {
        private VehicleRepository vehicleRepository;
        @Autowired
        private VehicleDeviceRepository vehicleDeviceRepository;
+       @Autowired
+       private LocationRepositoryImpl locationRepositoryImpl;
 
        @Autowired
        private VehicleDeviceMappingRepository vehicleDeviceMappingRepository;
@@ -157,8 +160,8 @@ public class VehicleServiceImpl implements VehicleService {
 
        @Override
        public List<LocationDto> getLocation(Integer vehicleId) throws ParseException {
-             // List<DeviceDto> device =vehicleRepositoryimpl.getDeviceByVehicleId(vehicleId);
-
+           VehicleDeviceInfo device =vehicleRepositoryimpl.getVehicleDeviceMapping(vehicleId);
+            LocationDto location=vehicleRepositoryimpl.getLatestLocationByDeviceId(device.getImeiNo1());
 
               return null;
        }

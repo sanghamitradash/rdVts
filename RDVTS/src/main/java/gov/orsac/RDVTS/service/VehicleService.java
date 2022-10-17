@@ -20,12 +20,7 @@ public interface VehicleService {
     VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId);
 
     List<VehicleMasterDto> getVehicleHistoryList(int id);
-
-
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingList(List<Integer> vehicleId);
-
-
-
 
     List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer vehicleId);
     List<LocationDto> getLocation(Integer vehicleId) throws ParseException;
