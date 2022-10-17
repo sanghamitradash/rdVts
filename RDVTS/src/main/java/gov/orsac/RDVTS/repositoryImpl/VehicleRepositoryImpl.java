@@ -79,7 +79,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "device.mobile_number_1 as mobileNumber1,device.imei_no_2 as imeiNo2,device.sim_icc_id_2 as simIccId2,"+
                 "device.mobile_number_2 as mobileNumber2,device.model_name,device.device_no as deviceNo " +
                 "FROM rdvts_oltp.vehicle_device_mapping as vd " +
-                "left join rdvts_oltp.device_m as device on vd.device_id=device.id where vehicle_id=:vehicleId ";
+                "left join rdvts_oltp.device_m as device on vd.device_id=device.id where vd.is_active=true and  vehicle_id=:vehicleId ";
 
         sqlParam.addValue("vehicleId", vehicleId);
         try {
@@ -126,7 +126,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry ="SELECT workM.id,workM.vehicle_id,workM.work_id,workM.start_time,workM.end_time,workM.start_date," +
                 "workM.end_date,work.g_work_name as workName,workM.is_active as active " +
                 "FROM rdvts_oltp.vehicle_work_mapping  as workM " +
-                "left join rdvts_oltp.work_m as work on work.id=workM.work_id where vehicle_id=:vehicleId";
+                "left join rdvts_oltp.work_m as work on work.id=workM.work_id where workM.is_active=true and vehicle_id=:vehicleId";
 
         sqlParam.addValue("vehicleId", vehicleId);
 
