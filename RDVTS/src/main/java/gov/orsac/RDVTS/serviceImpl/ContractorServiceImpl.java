@@ -56,4 +56,9 @@ public class ContractorServiceImpl implements ContractorService {
     public Page<ContractorDto> getContractorDetails(ContractorFilterDto contractor) {
         return contractorRepository.getContractorDetails(contractor);
     }
+
+    @Override
+    public List<ContractorDto> getContractorDropDown() {
+        return contractorRepository.getContractorDropDown();
+    }
 }
