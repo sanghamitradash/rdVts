@@ -11,6 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class VtuLocationDto {
 
+    private Integer contractorId;
     private Integer roadId;
     private Integer workId;
     private Integer vehicleId;
