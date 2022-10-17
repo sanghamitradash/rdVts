@@ -254,7 +254,9 @@ public class VehicleController {
                     && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
 
             List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(vehicleWorkMapping);
+            List<VehicleWorkMappingEntity> deactivateVehicleWork = vehicleService.deactivateVehicleWork(vehicleWorkMapping);
             result.put("saveVehicleMapping", saveVehicleWorkMapping);
+            result.put("deactivateVehicleWork", deactivateVehicleWork);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Assign Vehicle Device Created Successfully");

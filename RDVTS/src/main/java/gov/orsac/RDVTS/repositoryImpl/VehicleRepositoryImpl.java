@@ -16,7 +16,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -245,13 +249,18 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
 
     @Override
-    public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds) {
+    public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds) throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+        String currentDateTime = dateFormat.format(new Date());
+        Date date = dateFormat.parse(currentDateTime);
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         int resultCount=0;
         String qry = "SELECT vwm.id, vwm.vehicle_id, vwm.work_id, vwm.start_time, vwm.end_time, vwm.start_date, vwm.end_date, vwm.is_active, " +
                 "vwm.created_by, vwm.created_on, vwm.updated_by, vwm.updated_on, vwm.deactivation_date " +
                 "FROM rdvts_oltp.vehicle_work_mapping AS vwm " +
-                "WHERE vwm.is_active=false";
+                "WHERE vwm.is_active=false ";
+
+//        sqlParam.addValue("deactivationDate",date);
 
         if (workIds != null && !workIds.isEmpty()) {
             qry += " AND vwm.work_id IN (:workIds)";
@@ -262,6 +271,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             qry += " AND vwm.vehicle_id IN (:vehicleIds)";
             sqlParam.addValue("vehicleIds", vehicleIds);
         }
+
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingEntity.class));
     }
 

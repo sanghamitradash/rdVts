@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.entities.VehicleWorkMappingEntity;
 import org.springframework.data.domain.Page;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface VehicleRepository {
@@ -25,5 +26,5 @@ public interface VehicleRepository {
     List<VehicleMasterDto> getVehicleById(Integer id, Integer userId);
 
 
-    List<VehicleWorkMappingEntity> deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds);
+    List<VehicleWorkMappingEntity> deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds) throws ParseException;
 }

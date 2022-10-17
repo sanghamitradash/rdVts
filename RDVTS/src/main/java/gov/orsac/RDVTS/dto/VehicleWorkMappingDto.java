@@ -31,4 +31,5 @@ public class VehicleWorkMappingDto {
     private Integer updatedBy;
     private Date updatedOn;
     private Date currentDate;
+    private Date deactivationDate;
 }
