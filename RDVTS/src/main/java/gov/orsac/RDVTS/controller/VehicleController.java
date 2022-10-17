@@ -39,11 +39,13 @@ public class VehicleController {
     @PostMapping("/addVehicle")
     public RDVTSResponse saveVehicle(@RequestParam(name = "vehicle") String vehicleData,
                                      @RequestParam (name = "vehicleDeviceMapping",required = false) String vehicleDeviceMappingData,
-                                     @RequestParam (name = "vehicleWorkMapping",required = false) String vehicleWorkMappingData ) throws JsonProcessingException {
+                                     @RequestParam (name = "vehicleWorkMapping",required = false) String vehicleWorkMappingData,
+                                     @RequestParam (name = "vehicleOwnerMapping",required = false) String vehicleOwnerMappingData) throws JsonProcessingException {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
         VehicleDeviceMappingEntity vehicleDeviceMapping=null;
+        VehicleOwnerMappingDto vehicleOwnerMapping=null;
         List<VehicleWorkMappingDto> vehicleWorkMapping=new ArrayList<>();
         VehicleMaster vehicle=mapper.readValue(vehicleData,VehicleMaster.class);
         if (vehicleDeviceMappingData != null) {
@@ -51,6 +53,9 @@ public class VehicleController {
         }
         if(vehicleWorkMappingData!=null) {
              vehicleWorkMapping = mapper.readValue(vehicleWorkMappingData, mapper.getTypeFactory().constructCollectionType(List.class, VehicleWorkMappingDto.class));
+        }
+        if(vehicleOwnerMappingData!=null) {
+            vehicleOwnerMapping = mapper.readValue(vehicleOwnerMappingData, VehicleOwnerMappingDto.class);
         }
         try {
             if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
@@ -62,6 +67,11 @@ public class VehicleController {
                  VehicleDeviceMappingEntity assignVehicleDevice = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
                  result.put("assignVehicleDevice",assignVehicleDevice);
                 }
+                if(vehicleOwnerMappingData != null)    {
+                    vehicleOwnerMapping.setVehicleId(saveVehicle.getId());
+                    VehicleOwnerMappingEntity assignVehicleOwner = vehicleService.assignVehicleOwner(vehicleOwnerMapping);
+                    result.put("assignVehicleOwner",assignVehicleOwner);
+                }
              if(vehicleWorkMapping != null && vehicleWorkMapping.size()>0){
                  List<VehicleWorkMappingDto> work=new ArrayList<>();
                  for(VehicleWorkMappingDto work1:vehicleWorkMapping){
@@ -69,7 +79,7 @@ public class VehicleController {
                     work.add(work1);
                  }
                  List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(work);
-                 result.put("saveVehicleWorkMapping",saveVehicleWorkMapping);
+                 result.put("assignVehicleWorkMapping",saveVehicleWorkMapping);
                 }
                 response.setData(result);
                 response.setStatus(1);

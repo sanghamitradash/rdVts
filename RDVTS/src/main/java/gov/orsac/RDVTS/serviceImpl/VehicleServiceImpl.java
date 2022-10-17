@@ -204,27 +204,11 @@ public class VehicleServiceImpl implements VehicleService {
        @Override
        public List<AlertDto> getAlert(Integer vehicleId) throws ParseException {
               List<AlertDto> alertList=new ArrayList<>();
+           VehicleDeviceInfo device =vehicleRepositoryimpl.getVehicleDeviceMapping(vehicleId);
+           if(device!=null){
+               alertList=vehicleRepositoryimpl.getAlertList(device.getImeiNo1());
+           }
 
-              for(int i=0;i<2;i++){
-                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                     AlertDto alert=new AlertDto();
-                     alert.setId(1);
-                     alert.setVmmId(1);
-                     alert.setAlertTypeId(1);
-                     alert.setLatitude(20.78378783);
-                     alert.setLongitude(81.78278278728);
-                     alert.setAltitude(21.877878);
-                     alert.setAccuracy(21.76737);
-                     alert.setSpeed(20.2);
-                     alert.setGpsDtm(dateTime);
-                     alert.setActive(true);
-                     alert.setResolve(true);
-                     alert.setResolvedBy(1);
-
-
-                     alertList.add(alert);
-              }
               return alertList;
        }
 
@@ -280,53 +264,14 @@ public class VehicleServiceImpl implements VehicleService {
 
        @Override
        public List<VehicleDeviceInfo> getVehicleDeviceMappingAssignedList(Integer vehicleId) throws ParseException {
-              List<VehicleDeviceInfo> vehicleList=new ArrayList<>();
 
-              for(int i=0;i<2;i++){
-                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                     VehicleDeviceInfo vehicle=new VehicleDeviceInfo();
-                     vehicle.setId(1);
-                     vehicle.setVehicleId(1);
-                     vehicle.setDeviceId(1);
-                     vehicle.setInstallationDate(dateTime);
-                     vehicle.setImeiNo1(12345678910L);
-                     vehicle.setImeiNo2(12345678910L);
-                     vehicle.setSimIccId1("6726832t873232t");
-                     vehicle.setSimIccId2("896298270923g");
-                     vehicle.setMobileNumber1(12345678910L);
-                     vehicle.setMobileNumber2(12345678910L);
-                     vehicle.setModelName("OnePlus9");
-                     vehicle.setDeviceNo(123);
-
-                     vehicleList.add(vehicle);
-              }
-              return vehicleList;
+              return vehicleRepositoryimpl.getVehicleDeviceMappingAssignedList(vehicleId);
        }
 
        @Override
        public List<VehicleWorkMappingDto> getVehicleWorkMappingList(Integer vehicleId) throws ParseException {
-              List<VehicleWorkMappingDto> workList=new ArrayList<>();
 
-              for(int i=0;i<2;i++){
-                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                     VehicleWorkMappingDto work=new VehicleWorkMappingDto();
-                     work.setId(1);
-                     work.setWorkId(1);
-                     work.setVehicleId(1);
-                     work.setWorkName("Test");
-                     work.setStartTime("2022-10-11 11:12:00");
-                     work.setEndTime("2022-10-25 11:12:00");
-                     work.setStartDate(dateTime);
-                     work.setEndDate(dateTime);
-                     work.setActive(true);
-
-
-
-                     workList.add(work);
-              }
-              return workList;
+              return  vehicleRepositoryimpl.getVehicleWorkMappingList(vehicleId);
        }
 
        @Override

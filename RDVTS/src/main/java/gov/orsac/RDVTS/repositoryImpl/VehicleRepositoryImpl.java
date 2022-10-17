@@ -90,8 +90,21 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }
         return vehicleDevice;
     }
+    public List<VehicleDeviceInfo> getVehicleDeviceMappingAssignedList(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT vd.id, vd.vehicle_id, vd.device_id, vd.installation_date,vd.installed_by,device.imei_no_1 as imeiNo1,device.sim_icc_id_1 as simIccId1," +
+                "device.mobile_number_1 as mobileNumber1,device.imei_no_2 as imeiNo2,device.sim_icc_id_2 as simIccId2," +
+                "device.mobile_number_2 as mobileNumber2,device.model_name,device.device_no as deviceNo " +
+                "FROM rdvts_oltp.vehicle_device_mapping as vd " +
+                "left join rdvts_oltp.device_m as device on vd.device_id=device.id where vehicle_id=:vehicleId and vd.is_active=false  ";
 
-    @Override
+        sqlParam.addValue("vehicleId", vehicleId);
+
+       return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceInfo.class));
+
+    }
+
+        @Override
     public List<VehicleDeviceMappingDto> getVehicleDeviceMappingList(List<Integer> vehicleId) {
         List<VehicleDeviceMappingDto> vehicleDevice = new ArrayList<>();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
@@ -133,13 +146,24 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry = "SELECT workM.id,workM.vehicle_id,workM.work_id,workM.start_time,workM.end_time,workM.start_date," +
                 "workM.end_date,work.g_work_name as workName,workM.is_active as active " +
                 "FROM rdvts_oltp.vehicle_work_mapping  as workM " +
-                "left join rdvts_oltp.work_m as work on work.id=workM.work_id where vehicle_id=:vehicleId";
+                "left join rdvts_oltp.work_m as work on work.id=workM.work_id where vehicle_id=:vehicleId and workM.is_active=true ";
 
         sqlParam.addValue("vehicleId", vehicleId);
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
+    }
 
+    public List<VehicleWorkMappingDto> getVehicleWorkMappingList(Integer vehicleId) {
+        List<VehicleWorkMappingDto> vehicleWork = new ArrayList<>();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT workM.id,workM.vehicle_id,workM.work_id,workM.start_time,workM.end_time,workM.start_date," +
+                "workM.end_date,work.g_work_name as workName,workM.is_active as active " +
+                "FROM rdvts_oltp.vehicle_work_mapping  as workM " +
+                "left join rdvts_oltp.work_m as work on work.id=workM.work_id where vehicle_id=:vehicleId and workM.is_active=false ";
 
+        sqlParam.addValue("vehicleId", vehicleId);
+
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
     }
 
     @Override
@@ -339,6 +363,17 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
 
         return locationDto ;
+    }
+    public List<AlertDto>  getAlertList(Long imeiNo) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry =" select imei,alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm," +
+                "is_resolve,resolved_by,userM.first_name as resolvedByUser from  rdvts_oltp.alert_data  as alert " +
+                "left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id " +
+                "left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by where imei=:imeiNo";
+        sqlParam.addValue("imeiNo", imeiNo);
+
+
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
     }
 
 }
