@@ -228,5 +228,17 @@ public class UserRepositoryImpl {
         sqlParam.addValue("userId",userId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
+    public List<Integer> getDivisionByUserId(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct division_id from rdvts_oltp.user_area_mapping where user_id=:userId";
+        sqlParam.addValue("userId",userId);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+    public List<Integer> getDistrictByDivisionId(List<Integer> divisionId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select dist_id from rdvts_oltp.division_m where id in(:divisionId) ";
+        sqlParam.addValue("divisionId",divisionId);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
 }
 

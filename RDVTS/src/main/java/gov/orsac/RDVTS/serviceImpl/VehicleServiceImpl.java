@@ -4,6 +4,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.*;
+import gov.orsac.RDVTS.repositoryImpl.LocationRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.UserRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.HelperService;
@@ -28,9 +29,13 @@ public class VehicleServiceImpl implements VehicleService {
        private VehicleRepository vehicleRepository;
        @Autowired
        private VehicleDeviceRepository vehicleDeviceRepository;
+       @Autowired
+       private LocationRepositoryImpl locationRepositoryImpl;
 
        @Autowired
        private VehicleDeviceMappingRepository vehicleDeviceMappingRepository;
+     /*  @Autowired
+       private VehicleServiceImpl vehicleServiceImpl;*/
        @Autowired
        private VehicleWorkMappingRepository vehicleWorkMappingRepository;
        @Autowired
@@ -39,6 +44,8 @@ public class VehicleServiceImpl implements VehicleService {
        private UserRepositoryImpl userRepositoryImpl;
        @Autowired
        private HelperService helperService;
+       @Autowired
+       private WorkServiceImpl workServiceImpl;
 
        @Autowired
        private VehicleRepositoryImpl vehicleRepositoryimpl;
@@ -69,12 +76,17 @@ public class VehicleServiceImpl implements VehicleService {
        @Override
        public Integer deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
               List<Integer> workIds = new ArrayList<>();
-              for (VehicleWorkMappingDto eachWorkIds: vehicleWorkMapping) {
+              List<Integer> vehicleIds = new ArrayList<>();
+          /*    for (VehicleWorkMappingDto eachWorkIds: vehicleWorkMapping) {
                      workIds.add(eachWorkIds.getWorkId());
               }
-              List<Integer> vehicleIds = new ArrayList<>();
+
               for (VehicleWorkMappingDto eachVehicleIds: vehicleWorkMapping) {
                      vehicleIds.add(eachVehicleIds.getVehicleId());
+              }*/
+              for (VehicleWorkMappingDto vehicle: vehicleWorkMapping) {
+                     vehicleIds.add(vehicle.getVehicleId());
+                     workIds.add(vehicle.getWorkId());
               }
               return vehicleRepository.deactivateVehicleWork(workIds, vehicleIds);
        }
@@ -85,7 +97,7 @@ public class VehicleServiceImpl implements VehicleService {
 //              formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
 
-
+              Integer count = workServiceImpl.deactivateVehicleWork(vehicleWorkMapping);
 
               List<VehicleWorkMappingEntity> vehicleWork=new ArrayList<>();
               for(VehicleWorkMappingDto vehicle:vehicleWorkMapping){
@@ -155,24 +167,17 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public List<LocationDto> getLocation(Integer vehicleId) throws ParseException {
-              List<LocationDto> locationList=new ArrayList<>();
+       public LocationDto getLocation(Integer vehicleId) throws ParseException {
+           VehicleDeviceInfo device =vehicleRepositoryimpl.getVehicleDeviceMapping(vehicleId);
+           LocationDto location=null;
+           if(device!=null) {
+                location = vehicleRepositoryimpl.getLatestLocationByDeviceId(device.getImeiNo1());
+           }
+           else{
+               return null;
+           }
 
-              for(int i=0;i<2;i++){
-                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                     LocationDto location=new LocationDto();
-                     location.setDateTime(dateTime);
-                     location.setLatitude(21.7787878);
-                     location.setLongitude(80.676767);
-                     location.setSpeed(20);
-                     location.setDistanceTravelledToday(200.5);
-                     location.setDistanceTravelledTotal(5000.2);
-                     location.setAvgDistanceTravelled(300.0);
-                     location.setAvgSpeed(30.2);
-                     locationList.add(location);
-              }
-              return locationList;
+              return location;
        }
 
        @Override
@@ -199,27 +204,11 @@ public class VehicleServiceImpl implements VehicleService {
        @Override
        public List<AlertDto> getAlert(Integer vehicleId) throws ParseException {
               List<AlertDto> alertList=new ArrayList<>();
+           VehicleDeviceInfo device =vehicleRepositoryimpl.getVehicleDeviceMapping(vehicleId);
+           if(device!=null){
+               alertList=vehicleRepositoryimpl.getAlertList(device.getImeiNo1());
+           }
 
-              for(int i=0;i<2;i++){
-                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                     AlertDto alert=new AlertDto();
-                     alert.setId(1);
-                     alert.setVmmId(1);
-                     alert.setAlertTypeId(1);
-                     alert.setLatitude(20.78378783);
-                     alert.setLongitude(81.78278278728);
-                     alert.setAltitude(21.877878);
-                     alert.setAccuracy(21.76737);
-                     alert.setSpeed(20.2);
-                     alert.setGpsDtm(dateTime);
-                     alert.setActive(true);
-                     alert.setResolve(true);
-                     alert.setResolvedBy(1);
-
-
-                     alertList.add(alert);
-              }
               return alertList;
        }
 
@@ -275,53 +264,14 @@ public class VehicleServiceImpl implements VehicleService {
 
        @Override
        public List<VehicleDeviceInfo> getVehicleDeviceMappingAssignedList(Integer vehicleId) throws ParseException {
-              List<VehicleDeviceInfo> vehicleList=new ArrayList<>();
 
-              for(int i=0;i<2;i++){
-                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                     VehicleDeviceInfo vehicle=new VehicleDeviceInfo();
-                     vehicle.setId(1);
-                     vehicle.setVehicleId(1);
-                     vehicle.setDeviceId(1);
-                     vehicle.setInstallationDate(dateTime);
-                     vehicle.setImeiNo1(12345678910L);
-                     vehicle.setImeiNo2(12345678910L);
-                     vehicle.setSimIccId1("6726832t873232t");
-                     vehicle.setSimIccId2("896298270923g");
-                     vehicle.setMobileNumber1(12345678910L);
-                     vehicle.setMobileNumber2(12345678910L);
-                     vehicle.setModelName("OnePlus9");
-                     vehicle.setDeviceNo(123);
-
-                     vehicleList.add(vehicle);
-              }
-              return vehicleList;
+              return vehicleRepositoryimpl.getVehicleDeviceMappingAssignedList(vehicleId);
        }
 
        @Override
        public List<VehicleWorkMappingDto> getVehicleWorkMappingList(Integer vehicleId) throws ParseException {
-              List<VehicleWorkMappingDto> workList=new ArrayList<>();
 
-              for(int i=0;i<2;i++){
-                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                     VehicleWorkMappingDto work=new VehicleWorkMappingDto();
-                     work.setId(1);
-                     work.setWorkId(1);
-                     work.setVehicleId(1);
-                     work.setWorkName("Test");
-                     work.setStartTime("2022-10-11 11:12:00");
-                     work.setEndTime("2022-10-25 11:12:00");
-                     work.setStartDate(dateTime);
-                     work.setEndDate(dateTime);
-                     work.setActive(true);
-
-
-
-                     workList.add(work);
-              }
-              return workList;
+              return  vehicleRepositoryimpl.getVehicleWorkMappingList(vehicleId);
        }
 
        @Override
@@ -336,7 +286,7 @@ public class VehicleServiceImpl implements VehicleService {
               existingVehicle.setSpeedLimit(vehicle.getSpeedLimit());
               existingVehicle.setChassisNo(vehicle.getChassisNo());
               existingVehicle.setEngineNo(vehicle.getEngineNo());
-              existingVehicle.setActive(vehicle.isActive());
+              existingVehicle.setActive(vehicle.getActive());
               existingVehicle.setUpdatedBy(vehicle.getUpdatedBy());
 
               return vehicleMasterSaveRepository.save(existingVehicle);

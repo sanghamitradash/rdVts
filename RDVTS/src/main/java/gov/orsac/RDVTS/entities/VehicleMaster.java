@@ -32,7 +32,7 @@ public class VehicleMaster {
     private String model;
 
     @Column(name = "speed_limit")
-    private Long speedLimit;
+    private Double speedLimit;
 
     @Column(name = "chassis_no")
     private String chassisNo;
@@ -41,7 +41,7 @@ public class VehicleMaster {
     private String engineNo;
 
     @Column(name = "is_active")
-    private boolean active;
+    private Boolean active;
 
     @Column(name = "created_by")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
