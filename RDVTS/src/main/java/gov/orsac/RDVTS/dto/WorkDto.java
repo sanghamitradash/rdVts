@@ -18,6 +18,8 @@ public class WorkDto {
 
     private Integer id;
 
+    private Integer userId;
+
     private Integer workId;
 
     private String workName;
