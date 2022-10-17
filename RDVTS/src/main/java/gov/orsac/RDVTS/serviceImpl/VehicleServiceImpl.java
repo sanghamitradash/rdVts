@@ -157,23 +157,10 @@ public class VehicleServiceImpl implements VehicleService {
 
        @Override
        public List<LocationDto> getLocation(Integer vehicleId) throws ParseException {
-              List<LocationDto> locationList=new ArrayList<>();
+             // List<DeviceDto> device =vehicleRepositoryimpl.getDeviceByVehicleId(vehicleId);
 
-              for(int i=0;i<2;i++){
-                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                     LocationDto location=new LocationDto();
-                     location.setDateTime(dateTime);
-                     location.setLatitude(21.7787878);
-                     location.setLongitude(80.676767);
-                     location.setSpeed(20);
-                     location.setDistanceTravelledToday(200.5);
-                     location.setDistanceTravelledTotal(5000.2);
-                     location.setAvgDistanceTravelled(300.0);
-                     location.setAvgSpeed(30.2);
-                     locationList.add(location);
-              }
-              return locationList;
+
+              return null;
        }
 
        @Override

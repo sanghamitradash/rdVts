@@ -152,7 +152,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         String qry ="SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
-                "vm.chassis_no,vm.engine_no,vm.is_active as active,device.device_id as deviceId " +
+                "vm.chassis_no,vm.engine_no,vm.is_active as active,device.device_id as deviceId, " +
                 "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,userM.first_name as firstName,userM.middle_name as middleName,userM.last_name as lastName " +
                 "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
@@ -324,6 +324,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         sqlParam.addValue("vehicleIds", vehicleIds);
 
         return namedJdbc.update(qry, sqlParam);
+    }
+    public List<LocationDto> getLocation(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry ="UPDATE rdvts_oltp.vehicle_work_mapping " +
+                "SET is_active=false,deactivation_date=now()  WHERE work_id IN (:workIds) or vehicle_id IN (:vehicleIds) ";
+
+        return  namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(LocationDto.class));
     }
 
 }
