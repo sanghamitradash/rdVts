@@ -32,7 +32,16 @@ public class WorkDto {
 
     private Date updatedOn;
 
+    private Integer piuId;
+    private String piuName;
+    private Integer packageId;
+    private String packageName;
+
+
+
     private Integer offSet;
     private Integer limit;
     private Integer draw;
+    private Integer slNo;
+
 }

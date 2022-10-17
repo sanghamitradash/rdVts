@@ -145,5 +145,12 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
 
+    @Override
+    public List<DeviceDto> getImeiListByDeviceId(Integer deviceId){
+        return deviceRepositoryImpl.getImeiListByDeviceId(deviceId);
+    }
+
+
+
 }
 

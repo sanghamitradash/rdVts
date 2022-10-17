@@ -68,10 +68,12 @@ public class WorkController {
         try {
             Page<WorkDto> workDtoPage = workService.getWorkList(workDto);
             List<WorkDto> workDtoList = workDtoPage.getContent();
-//            for(int i = 0; i < workDtoList.size(); i++){
-//                workDtoList.get(i).set
-//            }
-            //result.put("WorkDtoList", workDtoList);
+            Integer start1=start;
+            for(int i = 0; i < workDtoList.size(); i++){
+                start1=start1+1;
+                workDtoList.get(i).setSlNo(start1);
+            }
+            result.put("WorkDtoList", workDtoList);
             response.setData(workDtoList);
             response.setMessage("List of Work.");
             response.setStatus(1);

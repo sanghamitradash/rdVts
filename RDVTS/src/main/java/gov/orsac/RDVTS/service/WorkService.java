@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.service;
 
+import gov.orsac.RDVTS.dto.GeoMasterDto;
 import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.WorkDto;
 import gov.orsac.RDVTS.entities.WorkEntity;
@@ -14,5 +15,7 @@ public interface WorkService {
     WorkEntity updateWork(int id, WorkDto workDto);
 
     List<VehicleWorkMappingDto> getVehicleBywork(List<Integer> workIds);
+
+    List<VehicleWorkMappingDto> getVehicleListByRoadId(Integer workid);
 
 }

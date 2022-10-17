@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.*;
 import gov.orsac.RDVTS.repositoryImpl.UserRepositoryImpl;
+import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.HelperService;
 import gov.orsac.RDVTS.service.VehicleService;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static javafx.scene.input.KeyCode.L;
+/*import static javafx.scene.input.KeyCode.L;*/
 
 @Service
 public class VehicleServiceImpl implements VehicleService {
@@ -36,6 +37,9 @@ public class VehicleServiceImpl implements VehicleService {
        private UserRepositoryImpl userRepositoryImpl;
        @Autowired
        private HelperService helperService;
+
+       @Autowired
+       private VehicleRepositoryImpl vehicleRepositoryimpl;
        @Override
        public VehicleMaster saveVehicle(VehicleMaster vehicle) {
         return vehicleMasterSaveRepository.save(vehicle);
@@ -122,6 +126,11 @@ public class VehicleServiceImpl implements VehicleService {
        @Override
        public List<VehicleDeviceMappingDto> getVehicleDeviceMappingList(List<Integer> vehicleId) {
               return vehicleRepository.getVehicleDeviceMappingList(vehicleId);
+       }
+
+       @Override
+       public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId) {
+              return vehicleRepositoryimpl.getdeviceListByVehicleId(vehicleId);
        }
 
        @Override
