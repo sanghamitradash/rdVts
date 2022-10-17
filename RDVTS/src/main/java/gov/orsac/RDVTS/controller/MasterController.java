@@ -251,11 +251,15 @@ public class MasterController {
 
     @PostMapping("/getDesignationList")
     public RDVTSListResponse getDesignationList(@RequestParam (name = "id") Integer id,
+                                                @RequestParam (name = "userLevelId") Integer userLevelId,
+                                                @RequestParam (name = "parentId") Integer parentId,
                                                 @RequestParam(name = "start") Integer start,
                                                 @RequestParam(name = "length") Integer length,
                                                 @RequestParam(name = "draw") Integer draw ) {
         DesignationDto designationDto = new DesignationDto();
         designationDto.setId(id);
+        designationDto.setUserLevelId(userLevelId);
+        designationDto.setParentId(parentId);
         designationDto.setOffSet(start);
         designationDto.setLimit(length);
         RDVTSListResponse response = new RDVTSListResponse();

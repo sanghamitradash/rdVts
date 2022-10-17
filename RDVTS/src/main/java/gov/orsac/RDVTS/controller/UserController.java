@@ -600,31 +600,11 @@ public class UserController {
                         UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(dbUser.getId());
                         boolean verifyuserpassword = encoder.matches(request.getPassword(), userPasswordMasterDto.getPassword());
                         if (verifyuserpassword == true) {
-
-                            UserDto userDto = new UserDto();
-                            userDto.setId(dbUser.getId());
-                            userDto.setMobile1(dbUser.getMobile1());
-                            userDto.setMobile2(dbUser.getMobile2());
-                            userDto.setEmail(dbUser.getEmail());
-                            userDto.setFirstName(dbUser.getFirstName());
-                            userDto.setMiddleName(dbUser.getMiddleName());
-                            userDto.setLastName(dbUser.getLastName());
-                            userDto.setRoleId(dbUser.getRoleId());
-                            userDto.setDesignationId(dbUser.getDesignationId());
-                            userDto.setUserLevelId(dbUser.getUserLevelId());
-                            userDto.setContractorId(dbUser.getContractorId());
-                            userDto.setIsactive(dbUser.isIsactive());
-
-                            userDto.setCreatedBy(dbUser.getCreatedBy());
-                            userDto.setCreatedOn(dbUser.getCreatedOn());
-                            userDto.setUpdatedOn(dbUser.getUpdatedOn());
-                            userDto.setUpdatedBy(dbUser.getUpdatedBy());
-
-
+                            UserInfoDto userInfoDto = userService.getUserByUserId(dbUser.getId());
                             List<ParentMenuInfo> roleMenuType = masterService.getMenuHierarchyByRole(dbUser.getId(), dbUser.getRoleId());
                             List<RoleDto> roleByRoleId = masterService.getRoleByRoleId(dbUser.getRoleId());
 
-                            result.put("user", userDto);
+                            result.put("user", userInfoDto);
                             result.put("menu", roleMenuType);
                             result.put("access", roleByRoleId.get(0));
                             rdvtsResponse.setData(result);

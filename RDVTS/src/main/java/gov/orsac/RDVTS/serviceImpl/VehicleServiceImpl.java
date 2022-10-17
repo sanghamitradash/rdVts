@@ -154,6 +154,14 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
+       public VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping, Integer id) {
+                   vehicleDeviceMapping.setDeviceId(id);
+                   vehicleDeviceMapping.setActive(true);
+                   return vehicleDeviceMappingRepository.save(vehicleDeviceMapping);
+              }
+
+
+       @Override
        public List<VehicleWorkMappingDto>  getVehicleWorkMapping(Integer vehicleId) {
               return vehicleRepository.getVehicleWorkMapping(vehicleId);
        }
