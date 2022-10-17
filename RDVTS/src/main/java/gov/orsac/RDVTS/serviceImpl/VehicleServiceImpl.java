@@ -84,6 +84,9 @@ public class VehicleServiceImpl implements VehicleService {
               SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
 //              formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
+
+
+
               List<VehicleWorkMappingEntity> vehicleWork=new ArrayList<>();
               for(VehicleWorkMappingDto vehicle:vehicleWorkMapping){
                      VehicleWorkMappingEntity vehicle1=new VehicleWorkMappingEntity();
