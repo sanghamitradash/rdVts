@@ -296,30 +296,19 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
 
     @Override
-    public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds) throws ParseException {
+    public Integer deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds) throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
         String currentDateTime = dateFormat.format(new Date());
         Date date = dateFormat.parse(currentDateTime);
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         int resultCount=0;
-        String qry = "SELECT vwm.id, vwm.vehicle_id, vwm.work_id, vwm.start_time, vwm.end_time, vwm.start_date, vwm.end_date, vwm.is_active, " +
-                "vwm.created_by, vwm.created_on, vwm.updated_by, vwm.updated_on, vwm.deactivation_date " +
-                "FROM rdvts_oltp.vehicle_work_mapping AS vwm " +
-                "WHERE vwm.is_active=false ";
 
-//        sqlParam.addValue("deactivationDate",date);
+        String qry ="UPDATE rdvts_oltp.vehicle_work_mapping " +
+                "SET is_active=false,deactivation_date=now()  WHERE work_id IN (:workIds) or vehicle_id IN (:vehicleIds) ";
+        sqlParam.addValue("workIds", workIds);
+        sqlParam.addValue("vehicleIds", vehicleIds);
 
-        if (workIds != null && !workIds.isEmpty()) {
-            qry += " AND vwm.work_id IN (:workIds)";
-            sqlParam.addValue("workIds", workIds);
-        }
-
-        if (vehicleIds != null && !vehicleIds.isEmpty()) {
-            qry += " AND vwm.vehicle_id IN (:vehicleIds)";
-            sqlParam.addValue("vehicleIds", vehicleIds);
-        }
-
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingEntity.class));
+        return namedJdbc.update(qry, sqlParam);
     }
 
 }
