@@ -302,7 +302,6 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
     }
-}
 
     public List<VTUVendorMasterDto> getVtuVendorDropDown() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
