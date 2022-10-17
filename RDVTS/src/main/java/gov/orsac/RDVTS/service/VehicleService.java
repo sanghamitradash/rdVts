@@ -45,4 +45,5 @@ public interface VehicleService {
 
     List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId);
 
+
 }
