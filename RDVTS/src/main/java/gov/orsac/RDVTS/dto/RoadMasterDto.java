@@ -15,6 +15,8 @@ public class RoadMasterDto {
 
     private Integer userId;
 
+    private String workId;
+
     private Integer packageId;
 
     private String packageName;
