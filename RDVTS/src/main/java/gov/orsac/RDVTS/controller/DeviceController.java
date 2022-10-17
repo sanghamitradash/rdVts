@@ -2,10 +2,11 @@ package gov.orsac.RDVTS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.ContractorEntity;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
+import gov.orsac.RDVTS.exception.RecordExistException;
+import gov.orsac.RDVTS.repository.DeviceRepository;
 import gov.orsac.RDVTS.service.DeviceService;
 import gov.orsac.RDVTS.service.VehicleService;
 import org.springframework.beans.BeanUtils;
@@ -31,8 +32,18 @@ public class DeviceController {
     @Autowired
     private VehicleService vehicleService;
 
+    @Autowired
+    private DeviceRepository deviceRepository;
+
     //Add Device
 
+    public Boolean checkImeiNo1Exists(Long imeiNo1) {
+        return deviceRepository.existsByImeiNo1(imeiNo1);
+    }
+
+    public Boolean checkImeiNo2Exists(Long imeiNo2) {
+        return deviceRepository.existsByImeiNo2(imeiNo2);
+    }
     @PostMapping("/addDevice")
     public RDVTSResponse addDevice(@RequestParam(name = "data") String data) {
         RDVTSResponse response = new RDVTSResponse();
@@ -41,39 +52,46 @@ public class DeviceController {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 DeviceDto deviceDto = objectMapper.readValue(data, DeviceDto.class);
+
                 if (deviceDto.getImeiNo1() != null && deviceDto.getImeiNo2() != null
                         && deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber2() != null
                         && deviceDto.getSimIccId1() != null && deviceDto.getSimIccId2() != null && deviceDto.getModelName() != null && deviceDto.getVtuVendorId() != null &&
                         !deviceDto.getImeiNo1().toString().isEmpty()
                         && !deviceDto.getImeiNo2().toString().isEmpty() && !deviceDto.getMobileNumber1().toString().isEmpty() &&
                         !deviceDto.getMobileNumber2().toString().isEmpty() && !deviceDto.getSimIccId1().toString().isEmpty() && !deviceDto.getSimIccId2().toString().isEmpty() && !deviceDto.getModelName().isEmpty()) {
-
-                    if (deviceDto.getMobileNumber1().toString().length() == 10 || deviceDto.getMobileNumber1().toString().length() == 16 && deviceDto.getMobileNumber2().toString().length() == 10 || deviceDto.getMobileNumber2().toString().length() == 16) {
+                    if (checkImeiNo1Exists(deviceDto.getImeiNo1())) {
+                        throw new RecordExistException("Device", "imeiNo1", deviceDto.getImeiNo1());
+                    }
+                    if (checkImeiNo2Exists(deviceDto.getImeiNo2())) {
+                        throw new RecordExistException("Device", "imeiNo2", deviceDto.getImeiNo2());
+                    }
+                    if (deviceDto.getMobileNumber1().toString().length() >= 10 || deviceDto.getMobileNumber1().toString().length() <= 16 && deviceDto.getMobileNumber2().toString().length() >= 10 || deviceDto.getMobileNumber2().toString().length() <= 16) {
                         DeviceEntity deviceEntity = deviceService.addDevice(deviceDto);
-                        result.put("deviceEntity",deviceEntity);
-                        DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(), deviceEntity.getId(),deviceEntity.getUserLevelId());
+                        result.put("deviceEntity", deviceEntity);
+                        DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(), deviceEntity.getId(), deviceEntity.getUserLevelId());
                         result.put("deviceMapping", deviceMapping);
                         VehicleDeviceMappingEntity vehicle = new VehicleDeviceMappingEntity();
                         BeanUtils.copyProperties(deviceDto.getVehicleDeviceMapping(), vehicle);
                         vehicle.setDeviceId(deviceEntity.getId());
-                        if (vehicle.getDeviceId() != null && vehicle.getInstallationDate() != null && !vehicle.getInstalledBy().toString().isEmpty()  && vehicle.getVehicleId() != null) {
+                        if (vehicle.getDeviceId() != null && vehicle.getInstallationDate() != null && !vehicle.getInstalledBy().toString().isEmpty() && vehicle.getVehicleId() != null) {
 
                             VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle);
-                            result.put("deviceVehicleMapping",saveVehicleMapping);
+                            result.put("deviceVehicleMapping", saveVehicleMapping);
                         }
 
                         response.setData(result);
                         response.setStatus(1);
                         response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                         response.setMessage(" Device Added Successfully");
-                    }
-                    else {
+                    } else {
                         response = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter proper mobile number !!",
                                 result);
-                        }
+                    }
+
                 }
+
                 else{
                     response = new RDVTSResponse(0,
                             new ResponseEntity<>(HttpStatus.OK),
@@ -81,7 +99,8 @@ public class DeviceController {
                             result);
                 }
 
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 ex.printStackTrace();
                 response = new RDVTSResponse(0,
                         new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -255,6 +274,28 @@ public class DeviceController {
         }
         return response;
     }
+
+
+    @PostMapping("/getVtuVendorDropDown")
+    public RDVTSResponse getVtuVendorDropDown() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<VTUVendorMasterDto> vtuVendor = deviceService.getVtuVendorDropDown();
+            result.put("vtuVendor", vtuVendor);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Vtu Vendor List");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 
 }
