@@ -219,6 +219,7 @@ public class DeviceController {
             DeviceEntity updateDevice = deviceService.updateDeviceById(id, deviceDto);
             deviceService.deactivateDeviceArea(updateDevice.getId());
             DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(),updateDevice.getId(),updateDevice.getUserLevelId());
+            deviceService.deactivateDeviceVehicle(updateDevice.getId());
             result.put("updateDevice", updateDevice);
             result.put("deviceMapping", deviceMapping);
             response.setData(result);
