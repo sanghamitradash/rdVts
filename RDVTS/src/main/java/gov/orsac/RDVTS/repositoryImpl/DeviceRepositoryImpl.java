@@ -93,13 +93,16 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId,Integer userId) {
         List<DeviceAreaMappingDto> device ;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT dam.id, dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, block.district_name as distName, " +
-                "dam.division_id, dam.g_dist_id,geoDist.g_district_name as gdistName, dam.g_block_id,geoBlock.g_block_name as gblockName, " +
-                "dam.created_by,dam.created_on,dam.updated_by,dam.updated_on  " +
+        String qry = "SELECT dam.id, dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, dist.district_name as distName,dam.state_id,state.state_name as stateName,  " +
+                "dam.division_id,div.division_name as divName, dam.g_dist_id,geoDist.g_district_name as gdistName, dam.g_block_id,geoBlock.g_block_name as gblockName,   " +
+                "dam.created_by,dam.created_on,dam.updated_by,dam.updated_on   " +
                 "from rdvts_oltp.device_area_mapping as dam  " +
-                "left join rdvts_oltp.block_boundary as block on block.block_id = dam.block_id " +
-                "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id  " +
-                "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id =  dam.g_dist_id " +
+                "left join rdvts_oltp.district_boundary as dist on dist.dist_id=dam.dist_id   " +
+                "left join rdvts_oltp.block_boundary as block on block.block_id = dam.block_id  " +
+                "left join rdvts_oltp.division_m as div on div.id =dam.division_id  " +
+                "left join rdvts_oltp.state_m as state on state.id = dam.state_id  " +
+                "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id   " +
+                "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id =  dam.g_dist_id  " +
                 "WHERE dam.is_active = true ";
 
         if(deviceId>0){
@@ -127,9 +130,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     public Page<DeviceInfo> getDeviceList(DeviceListDto deviceDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
-        pageable = PageRequest.of(deviceDto.getOffSet(), deviceDto.getLimit(), Sort.Direction.fromString("desc"), "id");
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(deviceDto.getDraw()-1,deviceDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount = 0;
 
 
@@ -145,7 +149,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                 "left join rdvts_oltp.block_boundary as block on block.block_id = dam.block_id  " +
                 "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id  " +
                 "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id =  dam.g_dist_id  " +
-                "WHERE dm.is_active = true  ";
+                "WHERE dm.is_active = true ";
 
 
         if (deviceDto.getImeiNo1() != null && deviceDto.getImeiNo1() > 0) {
@@ -202,11 +206,14 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                     qry += " AND dam.g_block_id=:gBlockId ";
                     sqlParam.addValue("gBlockId", deviceDto.getGBlockId());
                 }
-                resultCount = count(qry, sqlParam);
-                if (deviceDto.getLimit() > 0) {
-                    qry += " LIMIT " + deviceDto.getLimit() + " OFFSET " + deviceDto.getOffSet();
+
+               // qry += " ORDER BY dm.  " + order.getProperty() + " " + order.getDirection().name();
+
                 }
             }
+        resultCount = count(qry, sqlParam);
+        if (deviceDto.getLimit() > 0) {
+            qry += " Order by dm.id desc LIMIT " + deviceDto.getLimit() + " OFFSET " + deviceDto.getOffSet();
         }
 
                 List<DeviceInfo> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceInfo.class));
@@ -221,9 +228,8 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String query =" ";
        // if(userLevelId == 2)
-            query = "select id,imei_no_1 as imeiNo1,sim_icc_id_1 as simIccId1,imei_no_2 as imeiNo2,sim_icc_id_2 as simIccId2,model_name as modelName ,mobile_number_1 as mobileNumber1,mobile_number_2 as mobileNumber2 from rdvts_oltp.device_m  " +
-                    "where id NOT IN " +
-                    "(select device_id from rdvts_oltp.vehicle_device_mapping) ";
+            query = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.model_name as modelName,dm.device_no as deviceNo from rdvts_oltp.device_m as dm where id not in  " +
+                    "(select distinct device_id from rdvts_oltp.vehicle_device_mapping as vdm where is_active=true) order by id  ";
         return namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
     }
 
