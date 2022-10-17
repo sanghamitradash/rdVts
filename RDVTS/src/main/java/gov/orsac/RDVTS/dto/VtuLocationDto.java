@@ -11,9 +11,13 @@ import java.util.Date;
 @NoArgsConstructor
 public class VtuLocationDto {
 
+    private Integer roadId;
+    private Integer workId;
+    private Integer vehicleId;
+    private Integer deviceId;
+
 
     private Integer id;
-
     private String firmwareVersion;
 
     private String packetType;
@@ -92,7 +96,7 @@ public class VtuLocationDto {
     private Integer updatedBy;
     private Date updatedOn;
 
-    private Integer deviceId;
+
 
 //    private Long UpdatedLatitude;
 //    private Long UpdatedLongitude;
