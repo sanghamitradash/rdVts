@@ -41,9 +41,9 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public List<VtuLocationDto> getLocationrecordList(Long imei1,Long imei2){
+    public List<VtuLocationDto> getLocationrecordList(Long imei1,Long imei2,Date startDate,Date endDate){
 
-        List<VtuLocationDto> vtuLocationDtoList=locationRepository.getLocationrecordList(imei2,imei1);
+        List<VtuLocationDto> vtuLocationDtoList=locationRepository.getLocationrecordList(imei2,imei1,startDate,endDate);
         return vtuLocationDtoList;
 
     }
