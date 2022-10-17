@@ -67,7 +67,7 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public List<VehicleWorkMappingEntity> deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
+       public Integer deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
               List<Integer> workIds = new ArrayList<>();
               for (VehicleWorkMappingDto eachWorkIds: vehicleWorkMapping) {
                      workIds.add(eachWorkIds.getWorkId());

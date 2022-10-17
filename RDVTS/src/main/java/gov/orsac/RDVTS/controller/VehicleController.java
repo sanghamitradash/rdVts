@@ -150,6 +150,10 @@ public class VehicleController {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
             for(int i=0;i<vehicleList.size();i++){
+                boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
+                boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
+              //  DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
+               // boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
                 vehicleList.get(i).setDeviceAssigned(true);
                 vehicleList.get(i).setWorkAssigned(true);
                 vehicleList.get(i).setTrackingStatus(true);
@@ -267,6 +271,7 @@ public class VehicleController {
 /*            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
                     && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {*/
 
+            Integer count = vehicleService.deactivateVehicleWork(vehicleWorkMapping);
             List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(vehicleWorkMapping);
             //List<VehicleWorkMappingEntity> deactivateVehicleWork = vehicleService.deactivateVehicleWork(vehicleWorkMapping);
             result.put("saveVehicleMapping", saveVehicleWorkMapping);
