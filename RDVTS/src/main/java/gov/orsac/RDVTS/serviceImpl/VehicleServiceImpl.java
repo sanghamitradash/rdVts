@@ -31,6 +31,8 @@ public class VehicleServiceImpl implements VehicleService {
 
        @Autowired
        private VehicleDeviceMappingRepository vehicleDeviceMappingRepository;
+     /*  @Autowired
+       private VehicleServiceImpl vehicleServiceImpl;*/
        @Autowired
        private VehicleWorkMappingRepository vehicleWorkMappingRepository;
        @Autowired
@@ -39,6 +41,8 @@ public class VehicleServiceImpl implements VehicleService {
        private UserRepositoryImpl userRepositoryImpl;
        @Autowired
        private HelperService helperService;
+       @Autowired
+       private WorkServiceImpl workServiceImpl;
 
        @Autowired
        private VehicleRepositoryImpl vehicleRepositoryimpl;
@@ -69,12 +73,17 @@ public class VehicleServiceImpl implements VehicleService {
        @Override
        public Integer deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
               List<Integer> workIds = new ArrayList<>();
-              for (VehicleWorkMappingDto eachWorkIds: vehicleWorkMapping) {
+              List<Integer> vehicleIds = new ArrayList<>();
+          /*    for (VehicleWorkMappingDto eachWorkIds: vehicleWorkMapping) {
                      workIds.add(eachWorkIds.getWorkId());
               }
-              List<Integer> vehicleIds = new ArrayList<>();
+
               for (VehicleWorkMappingDto eachVehicleIds: vehicleWorkMapping) {
                      vehicleIds.add(eachVehicleIds.getVehicleId());
+              }*/
+              for (VehicleWorkMappingDto vehicle: vehicleWorkMapping) {
+                     vehicleIds.add(vehicle.getVehicleId());
+                     workIds.add(vehicle.getWorkId());
               }
               return vehicleRepository.deactivateVehicleWork(workIds, vehicleIds);
        }
@@ -85,7 +94,7 @@ public class VehicleServiceImpl implements VehicleService {
 //              formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
 
-
+              Integer count = workServiceImpl.deactivateVehicleWork(vehicleWorkMapping);
 
               List<VehicleWorkMappingEntity> vehicleWork=new ArrayList<>();
               for(VehicleWorkMappingDto vehicle:vehicleWorkMapping){
@@ -328,7 +337,7 @@ public class VehicleServiceImpl implements VehicleService {
               existingVehicle.setSpeedLimit(vehicle.getSpeedLimit());
               existingVehicle.setChassisNo(vehicle.getChassisNo());
               existingVehicle.setEngineNo(vehicle.getEngineNo());
-              existingVehicle.setActive(vehicle.isActive());
+              existingVehicle.setActive(vehicle.getActive());
               existingVehicle.setUpdatedBy(vehicle.getUpdatedBy());
 
               return vehicleMasterSaveRepository.save(existingVehicle);

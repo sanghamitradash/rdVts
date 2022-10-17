@@ -305,9 +305,6 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     @Override
     public Integer deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds) throws ParseException {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
-        String currentDateTime = dateFormat.format(new Date());
-        Date date = dateFormat.parse(currentDateTime);
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         int resultCount=0;
 
