@@ -300,6 +300,30 @@ public class DeviceController {
         return response;
     }
 
-
+    @PostMapping("/deactivateDevice")
+    public RDVTSResponse deactivateDevice(@RequestParam Integer deviceId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Boolean res = deviceService.deactivateDevice(deviceId);
+            Boolean res1 = deviceService.deactivateDeviceArea(deviceId);
+            Boolean res2 = deviceService.deactivateDeviceVehicle(deviceId);
+            if (res==true && res1==true && res2==true) {
+                response.setData(result);
+                response.setStatus(1);
+                response.setMessage("Device Deactivated ");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                response.setStatus(0);
+                response.setMessage("Something went wrong");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(), result);
+        }
+        return response;
+    }
 
 }
