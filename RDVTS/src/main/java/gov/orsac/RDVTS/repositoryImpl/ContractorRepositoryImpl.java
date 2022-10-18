@@ -96,6 +96,30 @@ public class ContractorRepositoryImpl implements ContractorRepository {
         return contractor;
     }
 
+    //Swarup
+    public List<ContractorDto> getContractorByWorkId(Integer workId) {
+        List<ContractorDto> contractor;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on, cm.updated_by,cm.updated_on,gm.work_id from rdvts_oltp.contractor_m as cm  \n" +
+                "left join rdvts_oltp.geo_master as gm on gm.contractor_id = cm.id  \n" +
+                "where cm.is_active = true ";
+
+        if(workId > 0){
+            qry+=" AND gm.work_id= :workId";
+        }
+        sqlParam.addValue("workId", workId);
+
+        try {
+            contractor = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ContractorDto.class));
+        }
+        catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return contractor;
+    }
+
+
     public Page<ContractorDto> getContractorDetails(ContractorFilterDto contractor) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
