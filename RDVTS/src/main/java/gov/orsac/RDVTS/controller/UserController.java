@@ -11,6 +11,7 @@ import gov.orsac.RDVTS.dto.UserInfoDto;
 import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
+import gov.orsac.RDVTS.repository.UserPaswordMasterRepo;
 import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.UserService;
 import io.swagger.models.auth.In;
@@ -36,6 +37,9 @@ public class UserController {
 
     @Autowired
     private MasterService masterService;
+
+    @Autowired
+    private UserPaswordMasterRepo userPaswordMasterRepo;
 
     @PostMapping("/createUser")
     public RDVTSResponse saveUser(@RequestParam(name = "userData") String data, @RequestParam(name = "password") String password,
@@ -736,38 +740,34 @@ public class UserController {
         try {
             ObjectMapper mapper = new ObjectMapper();
             UserPasswordMasterDto userPasswordMasterDto = mapper.readValue(data, UserPasswordMasterDto.class);
+            UserPasswordMasterEntity existingUserId = userPaswordMasterRepo.findByUserId(userId);
 
-            UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userId, userPasswordMasterDto);
-            result.put("updatePassword", updatedPassword);
-            response.setData(result);
-            response.setStatus(1);
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("Password Updated Successfully");
+//            UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userId, userPasswordMasterDto);
+//            result.put("updatePassword", updatedPassword);
+//            response.setData(result);
+//            response.setStatus(1);
+//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//            response.setMessage("Password Updated Successfully");
 
-//            UserPasswordMasterEntity updatedPassword = null; /*= userService.updateUserPass(userId, userPasswordMasterDto);*/
-//
-//            if (userPasswordMasterDto.getOldPassword() == userPasswordMasterDto.getPassword()) {
-//                //check if the old and new password are same
-//                response.setStatus(0);
-//                response.setData(result);
-//                response.setMessage("New password shouldn't be same as old password !!!");
-//                response.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
-//            } else{
-//                if( updatedPassword == userService.updateUserPass(userId, userPasswordMasterDto)){
-//                    result.put("updatePassword", updatedPassword);
-//                    response.setData(result);
-//                    response.setStatus(1);
-//                    response.setMessage("Password updated successfully !!!");
-//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-//                } else{
-//                    response.setStatus(0);
-//                    response.setData(result);
-//                    response.setMessage("Something went wrong while resetting password !!!");
-//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-//                }
-//
-//            }
-
+            UserPasswordMasterEntity updatedPassword = new UserPasswordMasterEntity(); /*= userService.updateUserPass(userId, userPasswordMasterDto);*/
+//            if(existingUserId.getPassword() == userPasswordMasterDto.getOldPassword()){
+            if(encoder.matches(userPasswordMasterDto.getOldPassword(), existingUserId.getPassword())) {
+                if (userPasswordMasterDto.getOldPassword().equals(userPasswordMasterDto.getPassword())) {
+                    //check if the old and new password are same
+                    response.setStatus(0);
+                    response.setData(result);
+                    response.setMessage("New password shouldn't be same as old password !!!");
+                    response.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
+                }
+                else {
+                    UserPasswordMasterEntity userPasswordMasterEntity = userService.updateUserPass(userId, userPasswordMasterDto);
+                    //result.put("updatePassword", updatedPassword);
+                    response.setData(result);
+                    response.setStatus(1);
+                    response.setMessage("Password updated successfully !!!");
+                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             response = new RDVTSResponse(0,

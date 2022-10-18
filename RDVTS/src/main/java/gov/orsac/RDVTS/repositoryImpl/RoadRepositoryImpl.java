@@ -123,7 +123,7 @@ public class RoadRepositoryImpl {
 
         resultCount = count(queryString, sqlParam);
         if (roadFilterDto.getLimit() > 0){
-            queryString += " LIMIT " +roadFilterDto.getLimit() + " OFFSET " + roadFilterDto.getOffSet();
+            queryString += " Order by road.id desc LIMIT " +roadFilterDto.getLimit() + " OFFSET " + roadFilterDto.getOffSet();
         }
 
         List<RoadMasterDto> list = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
@@ -143,7 +143,7 @@ public class RoadRepositoryImpl {
     public List<RoadMasterDto> getGeomByRoadId(Integer roadId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
-        String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.geom, road.road_width, road.g_road_id as groadId,  " +
+        String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom), road.road_width, road.g_road_id as groadId,  " +
                 "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on " +
                 "FROM rdvts_oltp.geo_construction_m AS road " +
                 "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.id=road.geo_master_id " +

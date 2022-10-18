@@ -188,8 +188,8 @@ public class RoadController {
         Map<String, Object> result = new HashMap<>();
         try {
             List<RoadWorkMappingDto> road = roadService.getWorkDetailsByRoadId(roadId);
-            result.put("road", road);
-            response.setData(result);
+//            result.put("road", road);
+            response.setData(road);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("WorkDetails By roadId");
