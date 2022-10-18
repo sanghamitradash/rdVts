@@ -96,8 +96,7 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkById")
-    public RDVTSResponse getWorkById(@RequestParam int id,
-                                     @RequestParam int contractor ) {
+    public RDVTSResponse getWorkById(@RequestParam int id) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -106,8 +105,9 @@ public class WorkController {
             List<LocationDto> location=vehicleService.getLocationArray(id);
             List<AlertDto> alertDtoList=vehicleService.getAlertArray(id);
             List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
-//            List<ContractorDto> contractorDtoList = contractorService.getContractById();
+            List<ContractorDto> contractorDtoList = contractorService.getContractorByWorkId(id);
 
+                result.put("contractorDto", contractorDtoList );
                 result.put("workDto", workDto);
                 result.put("vehicleArray", vehicle);
                 result.put("locationArray", location);
