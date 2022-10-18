@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -50,6 +51,12 @@ public class ContractorServiceImpl implements ContractorService {
     @Override
     public List<ContractorDto> getContractById(Integer contractId,Integer userId) {
         return contractorRepository.getContractById(contractId,userId);
+    }
+
+    @Override
+    public List<ContractorDto> getContractorByWorkId(Integer workId) {
+//        List<ContractorDto> contractorDtoList = new ArrayList<>();
+        return contractorRepository.getContractorByWorkId(workId);
     }
 
     @Override
