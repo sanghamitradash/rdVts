@@ -177,7 +177,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         int resultCount=0;
         String qry ="SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
                 "vm.chassis_no,vm.engine_no,vm.is_active as active,device.device_id as deviceId, " +
-                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,userM.first_name as firstName,userM.middle_name as middleName,userM.last_name as lastName " +
+                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName " +
                 "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
                 " left join rdvts_oltp.vehicle_work_mapping as work on vm.id=work.vehicle_id  " +
