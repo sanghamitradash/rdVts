@@ -149,6 +149,34 @@ public class MasterController {
         return response;
     }
 
+    @PostMapping("/getRoleByUserLevelIdForList")
+    public RDVTSResponse getRoleByUserLevelIdForList(@RequestParam Integer userLevelId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<RoleDto> roleByUserLevelId = masterService.getRoleByUserLevelIdForList(userLevelId);
+            if (!roleByUserLevelId.isEmpty() && roleByUserLevelId.size() > 0) {
+                result.put("RoleByUserLevelId", roleByUserLevelId);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                response.setMessage("Role By UserLevelId");
+            } else {
+                result.put("RoleByUserLevelId", roleByUserLevelId);
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                response.setMessage("Record not found.");
+            }
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
     //Menu Master
     @PostMapping("/createMenu")
     public RDVTSResponse saveMenu(@RequestBody MenuEntity menuMaster) {

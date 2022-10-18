@@ -61,6 +61,21 @@ public class MasterRepositoryImpl implements MasterRepository {
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleDto.class));
     }
+    @Override
+    public List<RoleDto> getRoleByUserLevelIdForList(Integer userLevelId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "";
+        if (userLevelId == -1) {
+            qry += "SELECT id, name, description, can_edit, can_add, can_delete, can_approve, user_level_id as userLevelId,parent_role_id as parentRoleId,is_active as active FROM role_m ";
+            /* " WHERE true AND id>1 Order BY id";*/
+        } else {
+            qry += "SELECT id, name, description, can_edit, can_add, can_delete, can_approve,user_level_id,parent_role_id as parentRoleId,is_active as active FROM role_m " +
+                    " WHERE true AND user_level_id =:userLevelId  ";
+            /*   "AND id>1 ORDER BY id";*/
+            sqlParam.addValue("userLevelId", userLevelId);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleDto.class));
+    }
 
     @Override
     public List<MenuDto> getMenu(Integer userId, Integer id) {

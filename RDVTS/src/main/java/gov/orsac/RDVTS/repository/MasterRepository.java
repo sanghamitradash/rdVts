@@ -12,6 +12,7 @@ import java.util.List;
 public interface MasterRepository {
     List<RoleDto> getRoleByRoleId(Integer roleId);
     List<RoleDto> getRoleByUserLevelId(Integer userLevelId);
+    List<RoleDto> getRoleByUserLevelIdForList(Integer userLevelId);
     List<MenuDto> getMenu(Integer userId,Integer id);
     List<UserLevelMaster> getUserLevelById(Integer userLevelId);
     List<UserLevelMaster> getAllUserLevel(Integer userLevelId);
