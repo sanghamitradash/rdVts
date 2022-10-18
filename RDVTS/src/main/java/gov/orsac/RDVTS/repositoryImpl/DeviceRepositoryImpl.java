@@ -237,7 +237,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String query = "SELECT dv.id, dv.device_id,dv.vehicle_id,vm.vehicle_no, installation_date as installationDate ,dv.installed_by,dv.is_active as active,dv.created_by,dv.created_on,  " +
                 "dv.updated_by,dv.updated_on from rdvts_oltp.vehicle_device_mapping as dv   " +
-                "left join rdvts_oltp.vehicle_m as vm on vm.id = dv.vehicle_id WHERE dv.device_id=59 AND dv.is_active=true   ";
+                "left join rdvts_oltp.vehicle_m as vm on vm.id = dv.vehicle_id WHERE dv.device_id=:deviceId AND dv.is_active=true   ";
         sqlParam.addValue("deviceId", deviceId);
         sqlParam.addValue("userId", userId);
         return namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
