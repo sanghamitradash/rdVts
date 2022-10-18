@@ -131,7 +131,7 @@ public class WorkRepositoryImpl {
     }
 
 
-    public List<VehicleWorkMappingDto> getVehicleListByRoadId(Integer workId){
+    public List<VehicleWorkMappingDto> getVehicleListByWorkId(Integer workId){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, vehicle_id, work_id, start_time, end_time, start_date, end_date, is_active, created_by, created_on, updated_by, updated_on " +
