@@ -156,14 +156,14 @@ public class MasterController {
         try {
             List<RoleDto> roleByUserLevelId = masterService.getRoleByUserLevelIdForList(userLevelId);
             if (!roleByUserLevelId.isEmpty() && roleByUserLevelId.size() > 0) {
-                result.put("RoleByUserLevelId", roleByUserLevelId);
-                response.setData(result);
+               /* result.put("RoleByUserLevelId", roleByUserLevelId);*/
+                response.setData(roleByUserLevelId);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                 response.setMessage("Role By UserLevelId");
             } else {
-                result.put("RoleByUserLevelId", roleByUserLevelId);
-                response.setData(result);
+              //  result.put("RoleByUserLevelId", roleByUserLevelId);
+                response.setData(roleByUserLevelId);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
                 response.setMessage("Record not found.");
