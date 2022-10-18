@@ -160,7 +160,10 @@ public class DeviceServiceImpl implements DeviceService {
          return deviceRepositoryImpl.deactivateDeviceVehicle(id);
     }
 
-
+    @Override
+    public Boolean deactivateDevice(Integer deviceId) {
+        return deviceRepositoryImpl.deactivateDevice(deviceId);
+    }
 
 
 }
