@@ -16,6 +16,6 @@ public interface WorkService {
 
     List<VehicleWorkMappingDto> getVehicleBywork(List<Integer> workIds);
 
-    List<VehicleWorkMappingDto> getVehicleListByRoadId(Integer workid);
+    List<VehicleWorkMappingDto> getVehicleListByWorkId(Integer workid);
 
 }

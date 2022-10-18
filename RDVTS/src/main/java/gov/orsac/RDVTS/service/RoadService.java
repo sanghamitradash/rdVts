@@ -25,6 +25,10 @@ public interface RoadService {
     List<GeoMasterDto> getworkByDistrictId(Integer districtId);
 
 
+    List<GeoMasterDto> getworkByBlockId(Integer blockId);
+    List<GeoMasterDto> getworkByDivisionId(Integer divisionId);
+
+
     List<GeoMasterDto> getVehicleListByRoadId(Integer roadId);
 
 

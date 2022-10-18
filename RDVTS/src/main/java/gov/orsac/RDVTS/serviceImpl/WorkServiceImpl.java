@@ -70,8 +70,8 @@ public class WorkServiceImpl implements WorkService {
 
 
     @Override
-    public List<VehicleWorkMappingDto> getVehicleListByRoadId(Integer roadId){
-        return workRepositoryImpl.getVehicleListByRoadId(roadId);
+    public List<VehicleWorkMappingDto> getVehicleListByWorkId(Integer roadId){
+        return workRepositoryImpl.getVehicleListByWorkId(roadId);
     }
 
     public Integer deactivateVehicleWork(List<VehicleWorkMappingDto> vehicleWorkMapping) throws ParseException {
