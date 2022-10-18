@@ -66,11 +66,18 @@ public class MasterRepositoryImpl implements MasterRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "";
         if (userLevelId == -1) {
-            qry += "SELECT id, name, description, can_edit, can_add, can_delete, can_approve, user_level_id as userLevelId,parent_role_id as parentRoleId,is_active as active FROM role_m ";
+            qry += "SELECT role.id, role.name, role.description, role.can_edit, role.can_add, role.can_delete, role.can_approve, " +
+                    "role.user_level_id as userLevelId,level.name as userLevelName,role.parent_role_id as parentRoleId,role1.name parentRoleName,role.is_active as active " +
+                    "FROM rdvts_oltp.role_m  as role join rdvts_oltp.role_m  as role1 on role1.id=role.parent_role_id " +
+                    "left join rdvts_oltp.user_level_m as level " +
+                    "on level.id=role.user_level_id ";
             /* " WHERE true AND id>1 Order BY id";*/
         } else {
-            qry += "SELECT id, name, description, can_edit, can_add, can_delete, can_approve,user_level_id,parent_role_id as parentRoleId,is_active as active FROM role_m " +
-                    " WHERE true AND user_level_id =:userLevelId  ";
+            qry += "SELECT role.id, role.name, role.description, role.can_edit, role.can_add, role.can_delete, role.can_approve, " +
+            "role.user_level_id as userLevelId,level.name as userLevelName,role.parent_role_id as parentRoleId,role1.name parentRoleName,role.is_active as active " +
+            "FROM rdvts_oltp.role_m  as role join rdvts_oltp.role_m  as role1 on role1.id=role.parent_role_id " +
+            "left join rdvts_oltp.user_level_m as level " +
+            "on level.id=role.user_level_id WHERE role.is_active=true AND role.user_level_id =:userLevelId  ";
             /*   "AND id>1 ORDER BY id";*/
             sqlParam.addValue("userLevelId", userLevelId);
         }
