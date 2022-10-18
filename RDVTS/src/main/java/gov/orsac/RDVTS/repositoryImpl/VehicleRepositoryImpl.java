@@ -268,9 +268,11 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public List<VehicleMasterDto> getVehicleById(Integer id, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<VehicleMasterDto> vehicle;
-        String qry = "SELECT ve.id, ve.vehicle_no, ve.vehicle_type_id, ve.model, ve.speed_limit, ve.chassis_no, ve.engine_no, ve.engine_no, ve.is_active, ve.is_active, ve.created_by, " +
+        String qry = "SELECT ve.id, ve.vehicle_no, ve.vehicle_type_id, vt.name as vehicleTypeName , ve.model, ve.speed_limit, ve.chassis_no, ve.engine_no, ve.engine_no, ve.is_active, ve.is_active, ve.created_by, " +
                 "ve.created_on, ve.updated_by, ve.updated_on " +
-                "FROM rdvts_oltp.vehicle_m AS ve WHERE ve.is_active = true";
+                "FROM rdvts_oltp.vehicle_m AS ve " +
+                "LEFT JOIN rdvts_oltp.vehicle_type AS vt ON vt.id=ve.vehicle_type_id " +
+                "WHERE ve.is_active = true";
 
         if(id>0) {
             qry += " AND ve.id=:id";
