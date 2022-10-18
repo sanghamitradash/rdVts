@@ -39,4 +39,6 @@ public interface DeviceService {
     List<VTUVendorMasterDto> getVtuVendorDropDown();
 
     Boolean deactivateDeviceVehicle(Integer id);
+
+    Boolean deactivateDevice(Integer deviceId);
 }
