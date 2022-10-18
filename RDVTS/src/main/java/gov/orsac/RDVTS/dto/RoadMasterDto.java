@@ -19,7 +19,7 @@ public class RoadMasterDto {
 
     private Integer userId;
 
-//    private List<Integer> workIds;
+    private List<Integer> roadIds;
 
     private Integer workIds;
 
