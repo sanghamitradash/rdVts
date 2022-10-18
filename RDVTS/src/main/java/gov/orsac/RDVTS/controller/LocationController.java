@@ -676,6 +676,7 @@ public class LocationController {
                             for (VtuLocationDto vtuobj : vtuLocationDto) {
                                 vtuobj.setDeviceId(imei.getId());
                                 vtuobj.setVehicleId(vehicleid.getVehicleId());
+                                vtuobj.setVehicleNo(vehicleid.getVehicleNo());
 
                             }
                             Map<String, Object> itemVal = new HashMap<>();

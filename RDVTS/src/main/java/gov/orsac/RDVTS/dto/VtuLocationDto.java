@@ -16,6 +16,7 @@ public class VtuLocationDto {
     private Integer workId;
     private Integer vehicleId;
     private Integer deviceId;
+    private String vehicleNo;
 
 
     private Integer id;
