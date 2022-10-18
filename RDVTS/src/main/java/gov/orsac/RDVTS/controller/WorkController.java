@@ -61,6 +61,7 @@ public class WorkController {
         WorkDto workDto = new WorkDto();
         workDto.setId(id);
         workDto.setWorkId(workId);
+        workDto.setUserId(userId);
         workDto.setOffSet(start);
         workDto.setLimit(length);
         RDVTSListResponse response = new RDVTSListResponse();
@@ -103,10 +104,10 @@ public class WorkController {
             List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
 
                 result.put("workDto", workDto);
-                result.put("Vehicle Array", vehicle);
-                result.put("Location Array", location);
-                result.put("Road Array", roadMasterDtoList);
-                result.put("Alert Array", alertDtoList);
+                result.put("vehicleArray", vehicle);
+                result.put("locationArray", location);
+                result.put("roadArray", roadMasterDtoList);
+                result.put("alertArray", alertDtoList);
                 response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

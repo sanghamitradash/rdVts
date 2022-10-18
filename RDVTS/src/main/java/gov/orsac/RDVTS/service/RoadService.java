@@ -20,7 +20,7 @@ public interface RoadService {
     RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
     Page<RoadMasterDto> getRoadList(RoadFilterDto roadFilterDto);
 
-    List<GeoMasterDto> getWorkByroadIds(List<Integer> roadIds);
+    List<GeoMasterDto> getWorkByroadIds(Integer roadId);
     List<GeoMasterDto> getVehicleListByRoadId(Integer roadId);
 
 
