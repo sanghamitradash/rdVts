@@ -284,12 +284,17 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
         String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2, " +
                 " dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no as deviceNo ,  " +
-                " dm.created_by,dm.created_on,dm.updated_by,dm.updated_on   from rdvts_oltp.device_m as dm WHERE dm.is_active = true and dm.id=:deviceId ";
-        sqlParam.addValue("deviceId", deviceId);
+                " dm.created_by,dm.created_on,dm.updated_by,dm.updated_on   from rdvts_oltp.device_m as dm WHERE dm.is_active = true  ";
+        if (deviceId > 0) {
+            qry += " and dm.id=:deviceId ";
+            sqlParam.addValue("deviceId", deviceId);
+        }
+
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
     }
-    public DeviceDto getDeviceByIdForTracking(Integer deviceId){
+
+    public DeviceDto getDeviceByIdForTracking(Integer deviceId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2, " +

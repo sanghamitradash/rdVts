@@ -181,6 +181,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserPasswordMasterEntity resetPassword(Integer userId, UserPasswordMasterDto userPasswordMasterDto) {
+        UserPasswordMasterEntity existingUserId = userPaswordMasterRepo.findByUserId(userId);
+        if(existingUserId != null){
+            int saveHistory = userPaswordMasterRepoImpl.savePasswordInHistory(userId, userPasswordMasterDto);
+            if (saveHistory==1){
+                Boolean savePass = userPaswordMasterRepoImpl.savePassword(existingUserId.getUserId(), userPasswordMasterDto);
+            }
+        }
+
+
+
+
+        //existingUserId.setPassword(encoder.encode(userPasswordMasterDto.getPassword()));
+        //commented
+//        Boolean savePass = userPaswordMasterRepoImpl.savePassword(existingUserId.getUserId(), userPasswordMasterDto);
+        return existingUserId;
+    }
+
+    @Override
     public UserAreaMappingEntity updateUserAreaMappingByUserId(Integer userId, UserAreaMappingDto userAreaMapping) {
        UserAreaMappingEntity existingArea = userAreaMappingRepository.findByUserId(userId);
         if(existingArea == null){
