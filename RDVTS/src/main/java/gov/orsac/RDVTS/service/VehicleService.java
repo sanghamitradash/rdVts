@@ -35,6 +35,7 @@ public interface VehicleService {
     Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle);
     List<VehicleTypeDto> getVehicleTypeList();
     List<VehicleMasterDto> getUnAssignedVehicleData(Integer userId);
+    List<UserInfoDto> getUserDropDownForVehicleOwnerMapping(Integer userId);
     Page<VehicleMasterDto> getVehicleList1(VehicleMasterDto vehicle);
 
     List<VehicleMasterDto> getVehicleById(Integer id, Integer userId);

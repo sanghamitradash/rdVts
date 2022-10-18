@@ -183,7 +183,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         int resultCount=0;
         String qry ="SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
                 "vm.chassis_no,vm.engine_no,vm.is_active as active,device.device_id as deviceId, " +
-                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,userM.first_name as firstName,userM.middle_name as middleName,userM.last_name as lastName " +
+                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName " +
                 "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
                 " left join rdvts_oltp.vehicle_work_mapping as work on vm.id=work.vehicle_id  " +
@@ -255,16 +255,16 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     @Override
     public List<VehicleMasterDto> getUnAssignedVehicleData(List<Integer> userIdList,Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry ="select * from rdvts_oltp.vehicle_m as vm join " +
-                "rdvts_oltp.vehicle_owner_mapping as vom on vom.vehicle_id=vm.id " +
+        String qry ="select vm.* from rdvts_oltp.vehicle_m as vm  " +
+                " LEFT join rdvts_oltp.vehicle_owner_mapping as vom on vom.vehicle_id=vm.id " +
                 "where vm.id not in(select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping "+
-                " where is_active=true) and is_contractor=true ";
+                " where is_active=true)  ";
         if(userIdList!=null && userIdList.size()>0){
             qry+="or vom.user_id in(:userIdList)";
             sqlParam.addValue("userIdList",userIdList);
         }
         else{
-            qry+="and vom.contractor_id =:contractorId";
+            qry+=" and is_contractor=true and vom.contractor_id =:contractorId";
             sqlParam.addValue("contractorId",userId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
@@ -274,9 +274,11 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public List<VehicleMasterDto> getVehicleById(Integer id, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<VehicleMasterDto> vehicle;
-        String qry = "SELECT ve.id, ve.vehicle_no, ve.vehicle_type_id, ve.model, ve.speed_limit, ve.chassis_no, ve.engine_no, ve.engine_no, ve.is_active, ve.is_active, ve.created_by, " +
+        String qry = "SELECT ve.id, ve.vehicle_no, ve.vehicle_type_id, vt.name as vehicleTypeName , ve.model, ve.speed_limit, ve.chassis_no, ve.engine_no, ve.engine_no, ve.is_active, ve.is_active, ve.created_by, " +
                 "ve.created_on, ve.updated_by, ve.updated_on " +
-                "FROM rdvts_oltp.vehicle_m AS ve WHERE ve.is_active = true";
+                "FROM rdvts_oltp.vehicle_m AS ve " +
+                "LEFT JOIN rdvts_oltp.vehicle_type AS vt ON vt.id=ve.vehicle_type_id " +
+                "WHERE ve.is_active = true";
 
         if(id>0) {
             qry += " AND ve.id=:id";
@@ -381,5 +383,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
     }
+    public List<UserInfoDto>  getUserDropDownForVehicleOwnerMapping(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select  id,concat(first_name,' ',middle_name,' ',last_name)as userName,email,mobile_1 as mobile1,mobile_2 as mobile2 " +
+                "from rdvts_oltp.user_m order by id ";
 
+
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UserInfoDto.class));
+    }
 }

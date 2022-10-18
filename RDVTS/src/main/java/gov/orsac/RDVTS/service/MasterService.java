@@ -12,6 +12,7 @@ public interface MasterService {
     List<RoleDto> getRoleByRoleId(Integer id);
     RoleEntity updateRole(int id, RoleEntity role);
     List<RoleDto> getRoleByUserLevelId(Integer userLevelId);
+    List<RoleDto> getRoleByUserLevelIdForList(Integer userLevelId);
 
     //Menu Master
     MenuEntity saveMenu(MenuEntity menuMaster);

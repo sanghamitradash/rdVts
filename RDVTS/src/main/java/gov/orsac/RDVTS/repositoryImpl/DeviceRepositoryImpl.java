@@ -166,16 +166,17 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                 qry += " AND dm.sim_icc_id_1 LIKE(:simIccId1) ";
                 sqlParam.addValue("simIccId1", deviceDto.getSimIccId1());
             }
+        }
 
             if (deviceDto.getSimIccId2() != null && deviceDto.getSimIccId2().length() > 0) {
                 qry += " AND dm.sim_icc_id_2=:simIccId2 ";
                 if (deviceDto.getSimIccId2() != null) {
                     qry += " AND dm.sim_icc_id_2 LIKE(:simIccId2) ";
                     sqlParam.addValue("simIccId2", deviceDto.getSimIccId2());
-
                 }
+            }
 
-                if (deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0) {
+             if (deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0) {
                     qry += " AND dm.mobile_number_1=:mobileNumber1 ";
                     sqlParam.addValue("mobileNumber1", deviceDto.getMobileNumber1());
                 }
@@ -185,8 +186,8 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                     sqlParam.addValue("mobileNumber2", deviceDto.getMobileNumber2());
                 }
 
-                if (deviceDto.getVtuVendorId() != null && deviceDto.getVtuVendorId() > 0) {
-                    qry += " AND dm.vtu_vendor_id=:vtuVendorId ";
+                if ((deviceDto.getVtuVendorId() != null && deviceDto.getVtuVendorId() > 0)) {
+                    qry += " AND vtu.id=:vtuVendorId ";
                     sqlParam.addValue("vtuVendorId", deviceDto.getVtuVendorId());
                 }
 
@@ -207,8 +208,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
                 // qry += " ORDER BY dm.  " + order.getProperty() + " " + order.getDirection().name();
 
-            }
-        }
+
         resultCount = count(qry, sqlParam);
         if (deviceDto.getLimit() > 0) {
             qry += " Order by dm.id desc LIMIT " + deviceDto.getLimit() + " OFFSET " + deviceDto.getOffSet();
@@ -216,7 +216,9 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
         List<DeviceInfo> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceInfo.class));
         return new PageImpl<>(list, pageable, resultCount);
-    }
+        }
+
+
 
 
     @Override
@@ -235,7 +237,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String query = "SELECT dv.id, dv.device_id,dv.vehicle_id,vm.vehicle_no, installation_date as installationDate ,dv.installed_by,dv.is_active as active,dv.created_by,dv.created_on,  " +
                 "dv.updated_by,dv.updated_on from rdvts_oltp.vehicle_device_mapping as dv   " +
-                "left join rdvts_oltp.vehicle_m as vm on vm.id = dv.vehicle_id WHERE dv.device_id=59 AND dv.is_active=true   ";
+                "left join rdvts_oltp.vehicle_m as vm on vm.id = dv.vehicle_id WHERE dv.device_id=:deviceId AND dv.is_active=true   ";
         sqlParam.addValue("deviceId", deviceId);
         sqlParam.addValue("userId", userId);
         return namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));

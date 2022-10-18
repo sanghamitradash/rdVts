@@ -233,10 +233,11 @@ public class RoadRepositoryImpl {
         List<RoadWorkMappingDto> road;
         String qry = "SELECT road.id as roadId, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width,road.g_road_id as gRoadId, " +
                 "road.geo_master_id as geoMasterId, workm.id as workId, workm.g_work_id as gWorkId, workm.g_work_name as gWorkName, workm.is_active as isActive, workm.created_by as createdBy, workm.created_on as createdOn, " +
-                "workm.updated_by as updatedBy, workm.updated_on as updatedOn " +
+                "workm.updated_by as updatedBy, workm.updated_on as updatedOn, piu.name as piuName " +
                 "FROM rdvts_oltp.geo_construction_m AS road " +
                 "LEFT JOIN rdvts_oltp.geo_master AS gm ON gm.id = road.geo_master_id  " +
-                "LEFT JOIN rdvts_oltp.work_m AS workm ON workm.g_work_id = gm.g_work_id  " +
+                "LEFT JOIN rdvts_oltp.work_m AS workm ON workm.g_work_id = gm.g_work_id " +
+                "LEFT JOIN rdvts_oltp.piu_id AS piu ON piu.gpiu_id=gm.g_piu_id " +
                 "WHERE road.is_active = true ";
         if (roadId > 0) {
             qry += " AND road.id=:roadId";

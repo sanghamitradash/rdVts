@@ -158,7 +158,7 @@ public class UserController {
                                 umEt.setGBlockId(item.getGBlockId());
                                 umEt.setBlockId(item.getBlockId());
                                 umEt.setUserId(savedUser.getId());
-                                umEt.setDivisionId(savedUser.getDesignationId());
+                                umEt.setDivisionId(item.getDivisionId());
                                 umEt.setCreatedBy(savedUser.getId());
                                 umEt.setUpdatedBy(savedUser.getId());
                                 umEt.setIsActive(true);
