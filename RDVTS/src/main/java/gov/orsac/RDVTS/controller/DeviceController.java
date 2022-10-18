@@ -153,6 +153,7 @@ public class DeviceController {
                                            @RequestParam(name = "simIccId2",required = false)String simIccId2,
                                            @RequestParam(name = "mobileNumber2",required = false) Long mobileNumber2,
                                            @RequestParam(name = "vtuVendorId",required = false) Integer vtuVendorId,
+                                           @RequestParam(name = "vehicleId",required = false)Integer vehicleId,
                                            @RequestParam(name = "distId",required = false) Integer distId,
                                            @RequestParam(name = "blockId",required = false) Integer blockId,
                                            @RequestParam(name = "gDistId",required = false) Integer gDistId,
@@ -170,6 +171,7 @@ public class DeviceController {
         device.setSimIccId2(simIccId2);
         device.setMobileNumber2(mobileNumber2);
         device.setVtuVendorId(vtuVendorId);
+        device.setVehicleId(vehicleId);
         device.setDistId(distId);
         device.setBlockId(blockId);
         device.setGDistId(gDistId);
