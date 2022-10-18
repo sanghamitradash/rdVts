@@ -244,6 +244,7 @@ public class DeviceController {
         Map<String, Object> result = new HashMap<>();
         try {
            List<DeviceDto>device = deviceService.getUnassignedDeviceData(userId);
+
             result.put("device",device);
             response.setData(result);
             response.setStatus(1);
