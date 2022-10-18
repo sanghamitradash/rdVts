@@ -240,5 +240,6 @@ public class UserRepositoryImpl {
         sqlParam.addValue("divisionId",divisionId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
+
 }
 

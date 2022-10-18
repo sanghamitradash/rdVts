@@ -375,5 +375,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
     }
+    public List<UserInfoDto>  getUserDropDownForVehicleOwnerMapping(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select  id,concat(first_name,' ',middle_name,' ',last_name)as userName,email,mobile_1 as mobile1,mobile_2 as mobile2 " +
+                "from rdvts_oltp.user_m order by id ";
 
+
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UserInfoDto.class));
+    }
 }
