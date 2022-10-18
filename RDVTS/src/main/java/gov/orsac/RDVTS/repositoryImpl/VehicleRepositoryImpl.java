@@ -249,8 +249,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     @Override
     public List<VehicleMasterDto> getUnAssignedVehicleData(List<Integer> userIdList,Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry ="select * from rdvts_oltp.vehicle_m as vm join " +
-                "rdvts_oltp.vehicle_owner_mapping as vom on vom.vehicle_id=vm.id " +
+        String qry ="select vm.* from rdvts_oltp.vehicle_m as vm  " +
+                " join rdvts_oltp.vehicle_owner_mapping as vom on vom.vehicle_id=vm.id " +
                 "where vm.id not in(select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping "+
                 " where is_active=true)  ";
         if(userIdList!=null && userIdList.size()>0){
