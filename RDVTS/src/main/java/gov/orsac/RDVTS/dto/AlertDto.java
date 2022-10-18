@@ -12,7 +12,9 @@ import java.util.Date;
 public class AlertDto {
    private Integer id;
     private Integer vmmId ;
+    private Long imei;
     private Integer alertTypeId ;
+    private String alertTypeName;
     private Double latitude ;
     private Double longitude ;
     private Double altitude ;
@@ -26,4 +28,5 @@ public class AlertDto {
     private Date  updatedOn ;
     private boolean resolve ;
     private Integer resolvedBy ;
+    private String resolvedByUser;
 }
