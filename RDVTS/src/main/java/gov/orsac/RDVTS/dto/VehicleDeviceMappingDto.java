@@ -42,4 +42,6 @@ public class VehicleDeviceMappingDto {
     private Date deactivationDate;
 
     private String instalDate;
+
+
 }

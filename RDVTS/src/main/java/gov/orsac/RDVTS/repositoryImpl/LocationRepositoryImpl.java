@@ -255,11 +255,11 @@ public class LocationRepositoryImpl {
                 deviceVehicleDeactivationDate=new Date();
             }
 
-            if (deviceVehicleCreatedOn!=null && deviceVehicleDeactivationDate!=null){
-                qry+="and date_time BETWEEN :createdOn AND :deactivationDate ";
-                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
-                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
-            }
+//            if (deviceVehicleCreatedOn!=null && deviceVehicleDeactivationDate!=null){
+//                qry+="and date_time BETWEEN :createdOn AND :deactivationDate ";
+//                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+//                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+//            }
             qry+=" and imei =:imei1  order by date_time desc LIMIT 1";
             sqlParam.addValue("imei1", imei1);
 

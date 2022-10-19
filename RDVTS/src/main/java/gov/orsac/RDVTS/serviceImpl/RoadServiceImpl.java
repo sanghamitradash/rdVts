@@ -101,6 +101,11 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
+    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> roadIds) {
+        return roadRepositoryImpl.getRoadByRoadIds(roadIds);
+    }
+
+    @Override
     public List<GeoMasterDto> getVehicleListByRoadId(Integer roadId){
         return roadRepositoryImpl.getVehicleListByRoadId(roadId);
     }
