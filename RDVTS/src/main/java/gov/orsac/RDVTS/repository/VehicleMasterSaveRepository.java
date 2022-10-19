@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VehicleMasterSaveRepository extends JpaRepository<VehicleMaster, Integer> {
     VehicleMaster findVehicleById(Integer id);
+    VehicleMaster getByVehicleNo(String vehicleNo);
 }
