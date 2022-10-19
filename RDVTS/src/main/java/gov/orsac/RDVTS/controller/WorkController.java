@@ -55,7 +55,7 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkList")
-    public RDVTSListResponse getWorkList(@RequestParam (name = "id")Integer id,
+    public RDVTSListResponse getWorkList(@RequestParam (name = "id", required = false)Integer id,
                                          @RequestParam (name = "userId", required = false)Integer userId,
                                          @RequestParam (name = "workId", required = false)Integer workId,
                                          @RequestParam(name = "start") Integer start,

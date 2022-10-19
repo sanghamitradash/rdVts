@@ -38,6 +38,7 @@ public class WorkDto {
     private String piuName;
     private Integer packageId;
     private String packageName;
+    private String contractorId;
 
 
 
