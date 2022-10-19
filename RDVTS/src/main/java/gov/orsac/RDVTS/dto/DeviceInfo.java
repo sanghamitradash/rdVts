@@ -43,4 +43,7 @@ public class DeviceInfo {
     private String gblockName;
 
     private Integer slNo;
+
+    private boolean deviceAssigned;
+    private boolean vehicleAssigned;
 }
