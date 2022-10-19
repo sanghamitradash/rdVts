@@ -13,6 +13,9 @@ public class ContractorFilterDto {
     Integer userId;
     Integer gContractorId;
 
+    private String name;
+    private Long mobile;
+
     private Integer offSet;
     private Integer limit;
     private Integer draw;

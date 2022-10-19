@@ -41,4 +41,6 @@ public interface DeviceService {
     Boolean deactivateDeviceVehicle(Integer id);
 
     Boolean deactivateDevice(Integer deviceId);
+
+    List<VehicleDeviceMappingDto> getAllVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId);
 }

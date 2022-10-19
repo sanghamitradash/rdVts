@@ -226,6 +226,21 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return new PageImpl<>(list, pageable, resultCount);
         }
 
+    public boolean getDeviceAssignedOrNot(Integer deviceId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        Integer count=0;
+        boolean device=false;
+        String qry = "select count(id)  from  rdvts_oltp.vehicle_device_mapping  " +
+                "where device_id=:deviceId and is_active=true and   " +
+                "deactivation_date is null and created_on <=now()  ";
+        sqlParam.addValue("deviceId", deviceId);
+        count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
+        if(count>0){
+            device=true;
+        }
+        return device;
+    }
+
 
 
 
@@ -342,7 +357,29 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         }
         return result;
     }
-}
+
+    public List<VehicleDeviceMappingDto> getAllVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
+        List<VehicleDeviceMappingDto> vehicleDevice;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT vdm.id, vdm.vehicle_id, vdm.device_id, vdm.installation_date, vdm.installed_by, vdm.is_active, vdm.created_by, vdm.created_on,  " +
+                "vdm.updated_by, vdm.updated_on, vdm.deactivation_date  " +
+                "FROM rdvts_oltp.vehicle_device_mapping as vdm  " +
+                "WHERE vdm.device_id=:deviceId  ";
+
+        if (deviceId > 0) {
+            qry += " AND vdm.device_id=:deviceId";
+        }
+        sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("userId", userId);
+        try {
+            vehicleDevice = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        return vehicleDevice;
+    }
+    }
+
 
 
 
