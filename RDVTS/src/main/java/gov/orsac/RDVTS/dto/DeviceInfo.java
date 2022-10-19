@@ -22,6 +22,10 @@ public class DeviceInfo {
 
     private Integer deviceNo;
 
+    private Integer vehicleId;
+
+    private String vehicleNo;
+
     private String vtuVendorName;
     private String vendorAddress;
     private Long vendorPhone;
