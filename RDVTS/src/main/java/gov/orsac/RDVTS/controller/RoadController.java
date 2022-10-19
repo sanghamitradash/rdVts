@@ -203,11 +203,14 @@ public class RoadController {
     }
 
     @PostMapping("/getRoadByRoadIds")
-    public RDVTSResponse getRoadByRoadIds(@RequestParam(name = "roadIds", required = false) List<Integer> roadIds) {
+    public RDVTSResponse getRoadByRoadIds(@RequestParam(name = "roadId", required = false) List<Integer> id,
+                                          @RequestParam(name = "workIds", required = false) List<Integer> workIds,
+                                          @RequestParam(name = "distIds", required = false) List<Integer> distIds,
+                                          @RequestParam(name = "blockIds", required = false) List<Integer> blockIds) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoadMasterDto> road = roadService.getRoadByRoadIds(roadIds);
+            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds);
 //            result.put("road", road);
             response.setData(road);
             response.setStatus(1);
@@ -221,6 +224,4 @@ public class RoadController {
         }
         return response;
     }
-
-
 }

@@ -17,6 +17,8 @@ public class WorkRepositoryImpl {
 
     @Autowired
     private UserRepositoryImpl userRepositoryImpl;
+    @Autowired
+    private GeoMasterRepositoryImpl geoMasterRepositoryImpl;
 
 
 
@@ -55,12 +57,12 @@ public class WorkRepositoryImpl {
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         }
         int resultCount = 0;
-        String qry = "select wm.id, wm.g_work_id as workId,wm.g_work_name as workName,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name" +
-                " from rdvts_oltp.work_m as wm" +
+        String qry = "select wm.id, wm.g_work_id as workId,wm.g_work_name as workName,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on,gm.contractor_id, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name " +
+                " from rdvts_oltp.work_m as wm " +
                 " join rdvts_oltp.geo_master as gm on gm.work_id=wm.id " +
-                " join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id" +
-                " join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id"+
-                " where wm.is_active = true";
+                " join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id " +
+                " join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id "+
+                " where wm.is_active = true ";
         if (workDto.getId() > 0) {
             qry += " AND wm.id = :id";
             sqlParam.addValue("id", workDto.getId());
@@ -68,20 +70,23 @@ public class WorkRepositoryImpl {
 
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(workDto.getUserId());
 //        if(user.getUserLevelId()==5){
-//            qry+="and owner.contractor_id=:contractorId ";
+//            qry+=" and gm.contractor_id=:contractorId ";
 //            sqlParam.addValue("contractorId",workDto.getUserId());
 //        }
 //        else if(user.getUserLevelId()==2){
-//            List<Integer> distId=userRepositoryImpl.getDistIdByUserId(workDto.getUserId());
-//            List<Integer> workIdByDistId = getWorkIdByDistId(distId);
-//            qry+=" and wm.id in (:workIdList)";
-//            sqlParam.addValue("workIdList",workIdByDistId);
+//            List<Integer> distIdList=userRepositoryImpl.getDistIdByUserId(workDto.getUserId());
+//            qry+=" and gm.dist_id in (:distIdList)";
+//            sqlParam.addValue("distIdList",distIdList);
 //        }
 //        else if(user.getUserLevelId()==3){
-//            List<Integer> blockId=userRepositoryImpl.getBlockIdByUserId(workDto.getUserId());
-//            List<Integer> workIdByBlockId = getWorkIdByBlockId(blockId);
-//            qry+=" and wm.id in (:workIdList)";
-//            sqlParam.addValue("workIdList",workIdByBlockId);
+//            List<Integer> blockIdList=userRepositoryImpl.getBlockIdByUserId(workDto.getUserId());
+//            qry+=" and gm.block_id in (:blockIdList)";
+//            sqlParam.addValue("blockIdList",blockIdList);
+//        }
+//        else if(user.getUserLevelId() == 4){
+//            List<Integer> divisionId=userRepositoryImpl.getDivisionByUserId(workDto.getUserId());
+//            List<Integer> districtId=userRepositoryImpl.getDistrictByDivisionId(divisionId);
+//
 //        }
 
 
@@ -97,36 +102,42 @@ public class WorkRepositoryImpl {
 
     public List<WorkDto> getWorkById(int id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "";
-        if (id == -1) {
-            qry += "select wm.id, wm.g_work_id as workId,wm.g_work_name as workName,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name\n" +
-                    "from rdvts_oltp.work_m as wm\n" +
-                    "join rdvts_oltp.geo_master as gm on gm.work_id=wm.id \n" +
-                    "join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id\n" +
-                    "join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id\n" +
-                    "where wm.is_active = true  ";
-            /* " WHERE true AND id>1 Order BY id";*/
-        } else {
-            qry += "select wm.id, wm.g_work_id as workId,wm.g_work_name as workName,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name\n" +
-                    "from rdvts_oltp.work_m as wm\n" +
-                    "join rdvts_oltp.geo_master as gm on gm.work_id=wm.id \n" +
-                    "join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id\n" +
-                    "join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id\n" +
-                    "where wm.is_active = true and wm.id = :id ";
-            /*   "AND id>1 ORDER BY id";*/
+        String qry = "select wm.id, wm.g_work_id as workId,wm.g_work_name as workName,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name " +
+                "from rdvts_oltp.work_m as wm " +
+                "join rdvts_oltp.geo_master as gm on gm.work_id=wm.id " +
+                "join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id " +
+                "join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id " +
+                "where wm.is_active = true  ";
+        if (id > -1) {
+            qry += " and wm.id = :id ";
             sqlParam.addValue("id", id);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
 
-    public List<VehicleWorkMappingDto> getVehicleBywork(List<Integer> workIds){
+    public List<VehicleMasterDto> getVehicleBywork(List<Integer> workIds){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "SELECT id, vehicle_id, work_id, start_time, end_time, start_date, end_date, is_active, created_by, created_on, updated_by, updated_on \n" +
-                " FROM rdvts_oltp.vehicle_work_mapping where work_id IN(:workIds) ";
-        /*   "AND id>1 ORDER BY id";*/
-        sqlParam.addValue("workIds", workIds);
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
+        if (workIds.get(0) > 0){
+            String qry = "SELECT vm.* \n " +
+                    "\t FROM rdvts_oltp.vehicle_work_mapping vwm left join rdvts_oltp.vehicle_m as vm on vm.id=vwm.vehicle_id  where  work_id IN(:workIds) and vwm.is_active=true  ";
+            /*   "AND id>1 ORDER BY id";*/
+
+            sqlParam.addValue("workIds", workIds);
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
+        }
+
+        else {
+            String qry = "SELECT vm.* \n " +
+                    "\t FROM rdvts_oltp.vehicle_work_mapping vwm left join rdvts_oltp.vehicle_m as vm on vm.id=vwm.vehicle_id  where   vwm.is_active=true  ";
+            /*   "AND id>1 ORDER BY id";*/
+
+            sqlParam.addValue("workIds", workIds);
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
+        }
+
+
+
 
     }
 

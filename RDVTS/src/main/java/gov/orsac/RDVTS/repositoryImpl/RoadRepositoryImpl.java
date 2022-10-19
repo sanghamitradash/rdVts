@@ -220,7 +220,6 @@ public class RoadRepositoryImpl {
 
     public List<GeoMasterDto> getVehicleListByRoadId(Integer roadId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-
         String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +
                 "\tFROM rdvts_oltp.geo_master where is_active=true and road_id =:roadId; ";
         /*   "AND id>1 ORDER BY id";*/
@@ -254,18 +253,36 @@ public class RoadRepositoryImpl {
 //        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadWorkMappingDto.class));
     }
 
-    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> roadIds) {
+    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        List<RoadMasterDto> road;
         String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
-        "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on " +
+                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, geom.g_work_id as workIds, geom.g_dist_id as distIds, geom.g_block_id as blockIds " +
                 "FROM rdvts_oltp.geo_construction_m AS road " +
                 "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.id=road.geo_master_id " +
                 "WHERE road.is_active=true ";
-
-        if (roadIds != null) {
-            qry += " AND road.id IN (:roadIds)";
-            sqlParam.addValue("roadIds", roadIds);
+        if (id.get(0) > 0) {
+            qry += " AND road.id IN (:id)";
+            sqlParam.addValue("id", id);
         }
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
+        if (workIds.get(0) > 0) {
+            qry += " AND geom.g_work_id IN (:workIds)";
+            sqlParam.addValue("workIds", workIds);
+        }
+        if (distIds.get(0) > 0) {
+            qry += " AND geom.g_dist_id IN (:distIds)";
+            sqlParam.addValue("distIds", distIds);
+        }
+        if (blockIds.get(0) > 0) {
+            qry += " AND geom.g_block_id IN (:blockIds)";
+            sqlParam.addValue("blockIds", blockIds);
+        }
+
+        try {
+            road = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        return road;
     }
 }
