@@ -178,14 +178,6 @@ public class RoadRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
     }
 
-
-
-
-
-
-
-
-
     public List<RoadMasterDto> getGeomByRoadId(Integer roadId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
@@ -244,5 +236,20 @@ public class RoadRepositoryImpl {
         }
         return road;
 //        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadWorkMappingDto.class));
+    }
+
+    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> roadIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
+        "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on " +
+                "FROM rdvts_oltp.geo_construction_m AS road " +
+                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.id=road.geo_master_id " +
+                "WHERE road.is_active=true ";
+
+        if (roadIds != null) {
+            qry += " AND road.id IN (:roadIds)";
+            sqlParam.addValue("roadIds", roadIds);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
     }
 }
