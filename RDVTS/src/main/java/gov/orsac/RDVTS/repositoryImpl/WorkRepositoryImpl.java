@@ -127,13 +127,17 @@ public class WorkRepositoryImpl {
     }
 
 
-    public List<VehicleWorkMappingDto> getVehicleListByRoadId(Integer workId){
+    public List<VehicleWorkMappingDto> getVehicleListByWorkId(Integer workId){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, vehicle_id, work_id, start_time, end_time, start_date, end_date, is_active, created_by, created_on, updated_by, updated_on " +
-                " FROM rdvts_oltp.vehicle_work_mapping where work_id =:workId ";
+                " FROM rdvts_oltp.vehicle_work_mapping where is_active=true ";
         /*   "AND id>1 ORDER BY id";*/
-        sqlParam.addValue("workId", workId);
+        if (workId>0){
+            qry+="  and work_id =:workId ";
+            sqlParam.addValue("workId", workId);
+        }
+
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
     }
 }

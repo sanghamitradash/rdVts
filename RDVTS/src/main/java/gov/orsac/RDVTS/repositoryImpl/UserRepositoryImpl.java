@@ -58,18 +58,7 @@ public class UserRepositoryImpl {
                 "\t left join rdvts_oltp.role_m as rm on rm.id=um.role_id \n" +
                 "\t left join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id where um.is_active=true ";
 
-//        if (roleId==1){
-//
-//
-//
-//        }
-//
-//        else {
-//
-//            if (userlevel)
-//
-//
-//        }
+
 
         if( userListRequest.getId()!= null && userListRequest.getId() > 0 ){
             queryString+=" AND um.id=:id ";
@@ -212,7 +201,7 @@ public class UserRepositoryImpl {
         String qry = "SELECT div.dist_id,dist.district_name,dist.state_id,state.state_name  from rdvts_oltp.division_m as div  " +
                 "left join rdvts_oltp.district_boundary as dist on dist.dist_id= div.dist_id  " +
                 "left join rdvts_oltp.state_m as state on state.id= dist.state_id   " +
-                "WHERE  div.id =:divisionId ";
+                "WHERE  div.division_id =:divisionId ";
         sqlParam.addValue("divisionId",divisionId);
         return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(UserAreaMappingRequestDTO.class));
     }
@@ -240,5 +229,6 @@ public class UserRepositoryImpl {
         sqlParam.addValue("divisionId",divisionId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
+
 }
 

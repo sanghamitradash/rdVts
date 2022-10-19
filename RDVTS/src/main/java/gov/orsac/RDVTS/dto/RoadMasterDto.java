@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Geometry;
+import springfox.documentation.spring.web.json.Json;
+
+import javax.xml.soap.Text;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +19,7 @@ public class RoadMasterDto {
 
     private Integer userId;
 
-//    private List<Integer> workIds;
+    private List<Integer> ids;
 
     private Integer workIds;
 
@@ -34,7 +37,7 @@ public class RoadMasterDto {
 
     private String roadAllignment;
 
-    private Geometry geom;
+    private String geom;
 
     private Double roadWidth;
 

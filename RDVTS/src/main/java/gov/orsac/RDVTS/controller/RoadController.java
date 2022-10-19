@@ -202,5 +202,25 @@ public class RoadController {
         return response;
     }
 
+    @PostMapping("/getRoadByRoadIds")
+    public RDVTSResponse getRoadByRoadIds(@RequestParam(name = "roadId", required = false) List<Integer> id) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id);
+//            result.put("road", road);
+            response.setData(road);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Road By roadIds");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 }

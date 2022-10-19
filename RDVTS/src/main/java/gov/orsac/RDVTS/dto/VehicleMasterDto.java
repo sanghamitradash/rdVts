@@ -45,6 +45,7 @@ public class VehicleMasterDto {
     private Integer updatedBy;
 
     private Date updatedOn;
+    private Integer slNo;
 
     private Integer start;
     private String ownerName;

@@ -26,4 +26,6 @@ public class RoleDto {
     private Integer updatedBy;
     private Date updatedOn;
     private boolean active;
+    private String userLevelName;
+    private String parentRoleName;
 }

@@ -34,6 +34,7 @@ public class UserInfoDto {
     private Date createdOn;
     private Integer updatedBy;
     private Date updatedOn;
+    private String userName;
 
     private String password;
 

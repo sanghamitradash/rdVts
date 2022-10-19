@@ -73,6 +73,11 @@ public class MasterServiceImpl implements MasterService {
         List<RoleDto> role = masterRepository.getRoleByUserLevelId(userLevelId);
         return role;
     }
+    @Override
+    public List<RoleDto> getRoleByUserLevelIdForList(Integer userLevelId) {
+        List<RoleDto> role = masterRepository.getRoleByUserLevelIdForList(userLevelId);
+        return role;
+    }
 
     @Override
     public MenuEntity saveMenu(MenuEntity menuMaster) {

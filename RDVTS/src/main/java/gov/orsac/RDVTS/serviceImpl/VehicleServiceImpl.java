@@ -311,6 +311,10 @@ public class VehicleServiceImpl implements VehicleService {
               }
               return vehicleRepository.getUnAssignedVehicleData(userIdList,userId);
        }
+    @Override
+    public List<UserInfoDto> getUserDropDownForVehicleOwnerMapping(Integer userId) {
+        return vehicleRepositoryimpl.getUserDropDownForVehicleOwnerMapping(userId);
+    }
 
        @Override
        public Page<VehicleMasterDto> getVehicleList1(VehicleMasterDto vehicle) {

@@ -61,6 +61,28 @@ public class MasterRepositoryImpl implements MasterRepository {
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleDto.class));
     }
+    @Override
+    public List<RoleDto> getRoleByUserLevelIdForList(Integer userLevelId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "";
+        if (userLevelId == -1) {
+            qry += "SELECT role.id, role.name, role.description, role.can_edit, role.can_add, role.can_delete, role.can_approve, " +
+                    "role.user_level_id as userLevelId,level.name as userLevelName,role.parent_role_id as parentRoleId,role1.name parentRoleName,role.is_active as active " +
+                    "FROM rdvts_oltp.role_m  as role join rdvts_oltp.role_m  as role1 on role1.id=role.parent_role_id " +
+                    "left join rdvts_oltp.user_level_m as level " +
+                    "on level.id=role.user_level_id ";
+            /* " WHERE true AND id>1 Order BY id";*/
+        } else {
+            qry += "SELECT role.id, role.name, role.description, role.can_edit, role.can_add, role.can_delete, role.can_approve, " +
+            "role.user_level_id as userLevelId,level.name as userLevelName,role.parent_role_id as parentRoleId,role1.name parentRoleName,role.is_active as active " +
+            "FROM rdvts_oltp.role_m  as role join rdvts_oltp.role_m  as role1 on role1.id=role.parent_role_id " +
+            "left join rdvts_oltp.user_level_m as level " +
+            "on level.id=role.user_level_id WHERE role.is_active=true AND role.user_level_id =:userLevelId  ";
+            /*   "AND id>1 ORDER BY id";*/
+            sqlParam.addValue("userLevelId", userLevelId);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleDto.class));
+    }
 
     @Override
     public List<MenuDto> getMenu(Integer userId, Integer id) {

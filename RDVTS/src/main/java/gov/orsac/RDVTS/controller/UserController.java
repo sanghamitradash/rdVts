@@ -158,7 +158,7 @@ public class UserController {
                                 umEt.setGBlockId(item.getGBlockId());
                                 umEt.setBlockId(item.getBlockId());
                                 umEt.setUserId(savedUser.getId());
-                                umEt.setDivisionId(savedUser.getDesignationId());
+                                umEt.setDivisionId(item.getDivisionId());
                                 umEt.setCreatedBy(savedUser.getId());
                                 umEt.setUpdatedBy(savedUser.getId());
                                 umEt.setIsActive(true);
@@ -837,12 +837,12 @@ public class UserController {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
 
-        UserEntity userEntity = userService.findUserByMobileAndEmail(param.get("email"));
+        //UserEntity userEntity = userService.findUserByMobileAndEmail(param.get("email"));
+        UserDto userDtos = userService.getUserBymobile(Long.parseLong(param.get("mobile")));
+        UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(userDtos.getId());
 
-        UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(userEntity.getId());
-
-        if (!userEntity.toString().isEmpty()) {
-            if (userEntity.getOtp() == Integer.parseInt(param.get("otp"))) {
+        if (!userDtos.toString().isEmpty()) {
+            if (userDtos.getOtp() == Integer.parseInt(param.get("otp"))) {
 
                 boolean verifyuserpassword = encoder.matches(param.get("password"), userPasswordMasterDto.getPassword());
 
@@ -856,9 +856,11 @@ public class UserController {
 
                     userPasswordMasterDto.setPassword(param.get("password"));
 
-                    UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userEntity.getId(), userPasswordMasterDto);
+                   // UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userDtos.getId(), userPasswordMasterDto);
+                    UserPasswordMasterEntity updatedPassword = userService.resetPassword(userDtos.getId(), userPasswordMasterDto);
+
                     if (!updatedPassword.toString().isEmpty()) {
-                        rdvtsResponse.setData(updatedPassword);
+                        //rdvtsResponse.setData(updatedPassword);
                         rdvtsResponse.setStatus(1);
                         rdvtsResponse.setMessage("Password reset successfully !!!");
                         rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
