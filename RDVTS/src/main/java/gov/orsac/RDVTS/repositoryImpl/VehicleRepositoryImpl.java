@@ -125,13 +125,19 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         List<VehicleDeviceMappingDto> vehicleDevice = new ArrayList<>();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select id, vehicle_id, device_id, installation_date, installed_by, is_active, created_by, created_on, updated_by, updated_on, deactivation_date " +
-                "FROM rdvts_oltp.vehicle_device_mapping where is_active=true and vehicle_id =:vehicleId ";
-        sqlParam.addValue("vehicleId", vehicleId);
+                "FROM rdvts_oltp.vehicle_device_mapping where is_active=true  ";
+
+
+        if (vehicleId > 0){
+            qry += " and vehicle_id =:vehicleId ";
+            sqlParam.addValue("vehicleId", vehicleId);
+        }
+
         if (vehicleWorkEndDate == null) {
             vehicleWorkEndDate = new Date();
         }
         if (vehicleWorkStartDate != null && vehicleWorkEndDate != null) {
-            qry += "and deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
+            qry += "  and deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
             sqlParam.addValue("vehicleWorkStartDate", vehicleWorkStartDate);
             sqlParam.addValue("vehicleWorkEndDate", vehicleWorkEndDate);
         }
@@ -157,9 +163,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         List<VehicleWorkMappingDto> vehicleWork = new ArrayList<>();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT workM.id,workM.vehicle_id,workM.work_id,workM.start_time,workM.end_time,workM.start_date," +
-                "workM.end_date,work.g_work_name as workName,workM.is_active as active " +
-                "FROM rdvts_oltp.vehicle_work_mapping  as workM " +
-                "left join rdvts_oltp.work_m as work on work.id=workM.work_id where vehicle_id=:vehicleId and workM.is_active=false ";
+                " workM.end_date,work.g_work_name as workName,workM.is_active as active " +
+                " FROM rdvts_oltp.vehicle_work_mapping  as workM " +
+                " left join rdvts_oltp.work_m as work on work.id=workM.work_id where vehicle_id=:vehicleId and workM.is_active=false ";
 
         sqlParam.addValue("vehicleId", vehicleId);
 
@@ -250,7 +256,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public List<VehicleMasterDto> getUnAssignedVehicleData(List<Integer> userIdList,Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry ="select vm.* from rdvts_oltp.vehicle_m as vm  " +
-                " join rdvts_oltp.vehicle_owner_mapping as vom on vom.vehicle_id=vm.id " +
+                " LEFT join rdvts_oltp.vehicle_owner_mapping as vom on vom.vehicle_id=vm.id " +
                 "where vm.id not in(select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping "+
                 " where is_active=true)  ";
         if(userIdList!=null && userIdList.size()>0){

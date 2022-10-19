@@ -58,18 +58,7 @@ public class UserRepositoryImpl {
                 "\t left join rdvts_oltp.role_m as rm on rm.id=um.role_id \n" +
                 "\t left join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id where um.is_active=true ";
 
-//        if (roleId==1){
-//
-//
-//
-//        }
-//
-//        else {
-//
-//            if (userlevel)
-//
-//
-//        }
+
 
         if( userListRequest.getId()!= null && userListRequest.getId() > 0 ){
             queryString+=" AND um.id=:id ";
