@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Geometry;
 import springfox.documentation.spring.web.json.Json;
 
-import javax.xml.soap.Text;
+
 import java.util.Date;
 import java.util.List;
 

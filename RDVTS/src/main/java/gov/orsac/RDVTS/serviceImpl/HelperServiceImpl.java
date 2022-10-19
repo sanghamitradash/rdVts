@@ -25,6 +25,7 @@ public class HelperServiceImpl implements HelperService {
     @Override
     public List<Integer> getLowerUserByUserId(Integer userId) {
         Integer userLevel=helperRepository.getUserLevelByUserId(userId);
+
         List<Integer> userLevelIds=helperRepository.getLowerUserLevelIdsByUserLevelId(userLevel,userId);
         return helperRepository.getLowerUserByUserId(userLevelIds);
     }

@@ -982,5 +982,31 @@ public class LocationController {
     }
 
 
+    @PostMapping("/getVehicleListByWorkId")
+     public RDVTSResponse  getVehicleListByWorkId(@RequestParam(name = "workIds", required = false) List<Integer> workIds){
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<VehicleMasterDto> vehicleByWork = workService.getVehicleBywork(workIds);
+//            result.put("road", road);
+            response.setData(vehicleByWork);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Vehicle By workId");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+
+    }
+
+
+
+
+
+
 }
 
