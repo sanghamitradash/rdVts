@@ -135,17 +135,20 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         int resultCount = 0;
 
 
-        String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2,  " +
+        String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2,   " +
                 "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no,  " +
-                "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,    " +
-                "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber,  " +
-                "dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, block.district_name as distName, " +
-                "dam.division_id, dam.g_dist_id,geoDist.g_district_name as gdistName, dam.g_block_id,geoBlock.g_block_name as gblockName   " +
+                "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,     " +
+                "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber,    " +
+                "dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, block.district_name as distName,   " +
+                "dam.division_id, dam.g_dist_id,geoDist.g_district_name as gdistName, dam.g_block_id,geoBlock.g_block_name as gblockName,vdm.vehicle_id,  " +
+                "vm.vehicle_no  " +
                 "from rdvts_oltp.device_m as dm   " +
-                "left join rdvts_oltp.vtu_vendor_m as vtu on vtu.id = dm.vtu_vendor_id  " +
-                "left join rdvts_oltp.device_area_mapping as dam on dam.device_id = dm.id  " +
-                "left join rdvts_oltp.block_boundary as block on block.block_id = dam.block_id  " +
-                "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id  " +
+                "left join rdvts_oltp.vtu_vendor_m as vtu on vtu.id = dm.vtu_vendor_id   " +
+                "left join rdvts_oltp.device_area_mapping as dam on dam.device_id = dm.id    " +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id = dm.id   " +
+                "left join rdvts_oltp.vehicle_m as vm on vm.id = vdm.vehicle_id  " +
+                "left join rdvts_oltp.block_boundary as block on block.block_id = dam.block_id    " +
+                "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id    " +
                 "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id =  dam.g_dist_id  " +
                 "WHERE dm.is_active = true AND dam.is_active = true  ";
 
@@ -190,6 +193,11 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                     qry += " AND vtu.id=:vtuVendorId ";
                     sqlParam.addValue("vtuVendorId", deviceDto.getVtuVendorId());
                 }
+
+        if ((deviceDto.getVehicleId() != null && deviceDto.getVehicleId() > 0)) {
+            qry += " AND vm.id=:vehicleId ";
+            sqlParam.addValue("vehicleId", deviceDto.getVehicleId());
+        }
 
                 if (deviceDto.getBlockId() != null && deviceDto.getBlockId() > 0) {
                     qry += " AND dam.block_id=:blockId ";

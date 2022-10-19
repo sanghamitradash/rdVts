@@ -180,7 +180,10 @@ public class VehicleController {
         try {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
+            Integer start1=start;
             for(int i=0;i<vehicleList.size();i++){
+                    start1=start1+1;
+                vehicleList.get(i).setSlNo(start1);
              /*   boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
                 boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
                 DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
