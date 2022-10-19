@@ -333,7 +333,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         Integer count=0;
         boolean tracking=false;
-        String qry = "";
+        String qry = "select * from rdvts_oltp.vtu_location where imei=:imeiNo and date_time=now()";
         sqlParam.addValue("imeiNo", imeiNo);
         count=  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
         if(count>0){
