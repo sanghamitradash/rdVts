@@ -262,7 +262,7 @@ public class UserController {
     @PostMapping("/getUserList")
 
 
-    public RDVTSListResponse getUserList(@RequestParam(name = "id", required = false) Integer id,
+    public RDVTSListResponse getUserList(@RequestParam(name = "userId", required = false) Integer userId,
                                          @RequestParam(name = "designationId", required = false) Integer designationId,
                                          @RequestParam(name = "roleId", required = false) Integer roleId,
                                          @RequestParam(name = "contractorId", required = false) Integer contractorId,
@@ -275,7 +275,7 @@ public class UserController {
 
         UserListRequest userListDto = new UserListRequest();
 
-        userListDto.setId(id);
+        userListDto.setUserId(userId);
         userListDto.setDesignationId(designationId);
         userListDto.setRoleId(roleId);
         userListDto.setContractorId(contractorId);
@@ -284,12 +284,21 @@ public class UserController {
 
         userListDto.setLimit(length);
         userListDto.setOffSet(start);
+        userListDto.setDraw(draw);
 
 
         Map<String, Object> result = new HashMap<>();
         try {
             Page<UserInfoDto> userInfoDtos = userService.getUserList(userListDto);
             List<UserInfoDto> userList = userInfoDtos.getContent();
+            List<UserInfoDto> finalUserList=new ArrayList<>();
+            Integer start1=start;
+            for(UserInfoDto user:userList){
+
+                start1=start1+1;
+                user.setSlNo(start1);
+                finalUserList.add(user);
+            }
            // result.put("userList", userList);
             response.setData(userList);
             response.setMessage("User List");
@@ -799,35 +808,46 @@ public class UserController {
     public RDVTSResponse sendOtpToUser(@RequestParam Long mobile) {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
-        UserDto userDtos = userService.getUserBymobile(mobile);
-        //UserEntity user = userService.findUserByMobileAndEmail(email);
-        if (!userDtos.toString().isEmpty()) {
+        try{
+            UserDto userDtos = userService.getUserBymobile(mobile);
+            //UserEntity user = userService.findUserByMobileAndEmail(email);
+            if (!userDtos.toString().isEmpty()) {
 
-
-            UserDto userDto = new UserDto();
-            BeanUtils.copyProperties(userDtos, userDto);
+                UserDto userDto = new UserDto();
+                BeanUtils.copyProperties(userDtos, userDto);
            /* userDto.setId(user.getId());
             userDto.setFirstName(user.getFirstName());*/
-            Integer otp = userService.sendOtpToUser(userDto);
-            if (otp > 0) {
-                result.put("otp", otp);
-                rdvtsResponse.setData(result);
-                rdvtsResponse.setStatus(1);
-                rdvtsResponse.setMessage("OTP sent successfully !!!");
-                rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                Integer otp = userService.sendOtpToUser(userDto);
+                if (otp > 0) {
+                    result.put("otp", otp);
+                    rdvtsResponse.setData(result);
+                    rdvtsResponse.setStatus(1);
+                    rdvtsResponse.setMessage("OTP sent successfully !!!");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                } else {
+                    rdvtsResponse.setStatus(0);
+                    rdvtsResponse.setData(result);
+                    rdvtsResponse.setMessage("Something went wrong while sending otp !!!");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                }
+                return rdvtsResponse;
             } else {
                 rdvtsResponse.setStatus(0);
                 rdvtsResponse.setData(result);
-                rdvtsResponse.setMessage("Something went wrong while sending otp !!!");
+                rdvtsResponse.setMessage("User Not Found !!!");
                 rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
             }
-            return rdvtsResponse;
-        } else {
-            rdvtsResponse.setStatus(0);
-            rdvtsResponse.setData(result);
-            rdvtsResponse.setMessage("User Not Found !!!");
-            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         }
+        catch (Exception e){
+            e.printStackTrace();
+            e.printStackTrace();
+            rdvtsResponse.setStatus(0);
+            rdvtsResponse.setMessage("Something went wrong!! May be Invalid Mobile Number!!");
+            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+        }
+
+
         return rdvtsResponse;
     }
 

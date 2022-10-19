@@ -115,14 +115,29 @@ public class WorkRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
 
-    public List<VehicleWorkMappingDto> getVehicleBywork(List<Integer> workIds){
+    public List<VehicleMasterDto> getVehicleBywork(List<Integer> workIds){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "SELECT id, vehicle_id, work_id, start_time, end_time, start_date, end_date, is_active, created_by, created_on, updated_by, updated_on \n" +
-                " FROM rdvts_oltp.vehicle_work_mapping where work_id IN(:workIds) ";
-        /*   "AND id>1 ORDER BY id";*/
-        sqlParam.addValue("workIds", workIds);
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
+        if (workIds.get(0) > 0){
+            String qry = "SELECT vm.* \n " +
+                    "\t FROM rdvts_oltp.vehicle_work_mapping vwm left join rdvts_oltp.vehicle_m as vm on vm.id=vwm.vehicle_id  where  work_id IN(:workIds) and vwm.is_active=true  ";
+            /*   "AND id>1 ORDER BY id";*/
+
+            sqlParam.addValue("workIds", workIds);
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
+        }
+
+        else {
+            String qry = "SELECT vm.* \n " +
+                    "\t FROM rdvts_oltp.vehicle_work_mapping vwm left join rdvts_oltp.vehicle_m as vm on vm.id=vwm.vehicle_id  where   vwm.is_active=true  ";
+            /*   "AND id>1 ORDER BY id";*/
+
+            sqlParam.addValue("workIds", workIds);
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
+        }
+
+
+
 
     }
 
