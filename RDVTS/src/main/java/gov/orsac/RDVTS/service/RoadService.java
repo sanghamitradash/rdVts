@@ -36,7 +36,7 @@ public interface RoadService {
 
     List<RoadWorkMappingDto> getWorkDetailsByRoadId(Integer roadId);
 
-    List<RoadMasterDto> getRoadByRoadIds(List<Integer> roadIds);
+    List<RoadMasterDto> getRoadByRoadIds(List<Integer> id);
 
 //    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
 }
