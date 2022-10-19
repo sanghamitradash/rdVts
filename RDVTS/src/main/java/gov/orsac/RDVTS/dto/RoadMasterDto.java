@@ -19,9 +19,13 @@ public class RoadMasterDto {
 
     private Integer userId;
 
-    private List<Integer> ids;
+//    private List<Integer> workIds;
 
     private Integer workIds;
+
+    private Integer distIds;
+
+    private Integer blockIds;
 
     private Integer contractIds;
 
