@@ -128,8 +128,8 @@ public class ContractorRepositoryImpl implements ContractorRepository {
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
 
-        String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on,um.id as userId, cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
-                "left join rdvts_oltp.user_m as um on um.contractor_id = cm.id  " +
+        String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on, cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
+                //"left join rdvts_oltp.user_m as um on um.contractor_id = cm.id  " +
                 "where cm.is_active = true  ";
 
 
@@ -141,6 +141,19 @@ public class ContractorRepositoryImpl implements ContractorRepository {
         if(contractor.getGContractorId() != null && contractor.getGContractorId() > 0){
             qry += " AND cm.g_contractor_id=:gContractorId ";
             sqlParam.addValue("gContractorId", contractor.getGContractorId());
+        }
+
+        if (contractor.getMobile() != null && contractor.getMobile() > 0) {
+            qry += " AND cm.mobile=:mobile ";
+            sqlParam.addValue("mobile", contractor.getMobile());
+        }
+
+        if (contractor.getName() != null && contractor.getName().length() > 0) {
+            qry += " AND cm.name=:name ";
+            if (contractor.getName() != null) {
+                qry += " AND cm.name LIKE(:name) ";
+                sqlParam.addValue("name", contractor.getName());
+            }
         }
         resultCount = count(qry, sqlParam);
         if (contractor.getLimit() > 0){

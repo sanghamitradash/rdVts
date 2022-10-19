@@ -7,6 +7,7 @@ import gov.orsac.RDVTS.entities.DeviceMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.exception.RecordExistException;
 import gov.orsac.RDVTS.repository.DeviceRepository;
+import gov.orsac.RDVTS.repositoryImpl.DeviceRepositoryImpl;
 import gov.orsac.RDVTS.service.DeviceService;
 import gov.orsac.RDVTS.service.VehicleService;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +29,9 @@ public class DeviceController {
 
     @Autowired
     private DeviceService deviceService;
+
+    @Autowired
+    private DeviceRepositoryImpl deviceRepositoryImpl;
 
     @Autowired
     private VehicleService vehicleService;
@@ -129,9 +133,11 @@ public class DeviceController {
             List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
             List<DeviceAreaMappingDto> deviceArea = deviceService.getDeviceAreaByDeviceId(deviceId,userId);
             List<VehicleDeviceMappingDto> vehicle  = deviceService.getVehicleDeviceMappingByDeviceId(deviceId,userId);
+            List<VehicleDeviceMappingDto> vehicleDeviceMap = deviceService.getAllVehicleDeviceMappingByDeviceId(deviceId,userId);
             result.put("device", device);
             result.put("deviceArea",deviceArea);
             result.put("vehicle",vehicle);
+            result.put("vehicleDeviceMap",vehicleDeviceMap);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -189,15 +195,19 @@ public class DeviceController {
             List<DeviceInfo> deviceList = deviceListPage.getContent();
             List<DeviceInfo> finalDeviceList=new ArrayList<>();
             Integer start1=start;
-            for(DeviceInfo dev:deviceList){
+            for(int i=0;i<deviceList.size();i++){
 
                 start1=start1+1;
-                dev.setSlNo(start1);
-                finalDeviceList.add(dev);
+                deviceList.get(i).setSlNo(start1);
+
+                boolean device1= deviceRepositoryImpl.getDeviceAssignedOrNot(deviceList.get(i).getId());
+                deviceList.get(i).setDeviceAssigned(device1);
+                deviceList.get(i).setVehicleAssigned(device1);
+
             }
             //result.put("deviceList", deviceList);
-            response.setData(finalDeviceList);
-            response.setMessage("Vehicle List");
+            response.setData(deviceList);
+            response.setMessage("Device List");
             response.setStatus(1);
             response.setDraw(draw);
             response.setRecordsFiltered(deviceListPage.getTotalElements());
@@ -208,6 +218,8 @@ public class DeviceController {
         }
         return response;
     }
+
+
 
     //Update Device By ID
 
