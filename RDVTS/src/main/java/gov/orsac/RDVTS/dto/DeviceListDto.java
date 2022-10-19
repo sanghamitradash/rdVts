@@ -22,6 +22,8 @@ public class DeviceListDto {
     private Long mobileNumber2;
     private Integer vtuVendorId;
 
+    private Integer vehicleId;
+
     private Integer distId;
     private Integer blockId;
     private Integer divisionId;

@@ -23,6 +23,10 @@ public class RoadMasterDto {
 
     private Integer workIds;
 
+    private Integer distIds;
+
+    private Integer blockIds;
+
     private Integer contractIds;
 
     private Integer packageId;

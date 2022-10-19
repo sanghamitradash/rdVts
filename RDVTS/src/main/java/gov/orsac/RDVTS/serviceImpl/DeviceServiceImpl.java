@@ -78,6 +78,7 @@ public class DeviceServiceImpl implements DeviceService {
         existingDevice.setSimIccId1(deviceDto.getSimIccId1());
         existingDevice.setSimIccId2(deviceDto.getSimIccId2());
         existingDevice.setVtuVendorId(deviceDto.getVtuVendorId());
+        existingDevice.setUserLevelId(deviceDto.getUserLevelId());
         existingDevice.setDeviceNo(deviceDto.getDeviceNo());
         DeviceEntity save = deviceRepository.save(existingDevice);
         return save;
