@@ -127,7 +127,7 @@ public class VehicleServiceImpl implements VehicleService {
                             VehicleMasterDto vehicle =new VehicleMasterDto();
                             vehicle.setVehicleNo("OD33o0209");
                             vehicle.setVehicleTypeId(12);
-                            vehicle.setVehicleTypeName("JCB");
+                            vehicle.setVehicleTypeName("2 wheeler");
                             vehicle.setModel("Glamour");
                             vehicle.setSpeedLimit(20.2);
                             vehicle.setChassisNo("abdh3543HHJJ");
