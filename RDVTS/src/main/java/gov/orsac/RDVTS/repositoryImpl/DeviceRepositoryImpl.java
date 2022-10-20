@@ -361,13 +361,16 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     public List<VehicleDeviceMappingDto> getAllVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
         List<VehicleDeviceMappingDto> vehicleDevice;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT vdm.id, vdm.vehicle_id, vdm.device_id, vdm.installation_date, vdm.installed_by, vdm.is_active, vdm.created_by, vdm.created_on,  " +
+        String qry = "SELECT vdm.id, vdm.vehicle_id,vm.vehicle_no,vm.vehicle_type_id,type.name as typeName,vm.model,vm.chassis_no,  " +
+                "vm.engine_no,vdm.device_id, vdm.installation_date, vdm.installed_by, vdm.is_active, vdm.created_by, vdm.created_on,  " +
                 "vdm.updated_by, vdm.updated_on, vdm.deactivation_date  " +
-                "FROM rdvts_oltp.vehicle_device_mapping as vdm  " +
-                "WHERE vdm.device_id=:deviceId  ";
+                "FROM rdvts_oltp.vehicle_device_mapping as vdm   " +
+                "left join rdvts_oltp.vehicle_m as vm on vm.id =vdm.vehicle_id  " +
+                "left join rdvts_oltp.vehicle_type as type on type.id =vm.vehicle_type_id  " ;
+               // "WHERE vdm.device_id=:deviceId  ";
 
         if (deviceId > 0) {
-            qry += " AND vdm.device_id=:deviceId";
+            qry += " WHERE vdm.device_id=:deviceId";
         }
         sqlParam.addValue("deviceId", deviceId);
         sqlParam.addValue("userId", userId);
