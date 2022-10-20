@@ -57,7 +57,9 @@ public class WorkRepositoryImpl {
             order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         }
         int resultCount = 0;
-        String qry = "select wm.id, wm.g_work_id as workId,wm.g_work_name as workName,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on,gm.contractor_id, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name " +
+        String qry = "select wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
+                " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
+                " gm.contractor_id, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name " +
                 " from rdvts_oltp.work_m as wm " +
                 " join rdvts_oltp.geo_master as gm on gm.work_id=wm.id " +
                 " join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id " +
@@ -102,7 +104,9 @@ public class WorkRepositoryImpl {
 
     public List<WorkDto> getWorkById(int id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select wm.id, wm.g_work_id as workId,wm.g_work_name as workName,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name " +
+        String qry = "select wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.is_active,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
+                "wm.work_status,wm.approval_status,wm.approved_by,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
+                "gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name " +
                 "from rdvts_oltp.work_m as wm " +
                 "join rdvts_oltp.geo_master as gm on gm.work_id=wm.id " +
                 "join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id " +
