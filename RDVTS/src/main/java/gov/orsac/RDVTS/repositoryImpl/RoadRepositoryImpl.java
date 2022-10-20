@@ -35,7 +35,8 @@ public class RoadRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
         String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
-                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on " +
+                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, " +
+                "road.road_status, road.approval_status, road.approved_by  " +
                 "FROM rdvts_oltp.geo_construction_m AS road " +
                 "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.id=road.geo_master_id " +
                 "WHERE road.is_active=true ";
@@ -55,7 +56,8 @@ public class RoadRepositoryImpl {
     public List<RoadMasterDto> getRoadWorkById(Integer workId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
-        String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width,road.geom ,road.g_road_id as groadId,road.geo_master_id as geoMasterId,wm.id as work_id, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on " +
+        String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width,road.geom ,road.g_road_id as groadId,road.geo_master_id as geoMasterId,wm.id as work_id, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, " +
+                "road.road_status, road.approval_status, road.approved_by  " +
                 "FROM rdvts_oltp.geo_construction_m AS road " +
                 "LEFT JOIN rdvts_oltp.geo_master AS gm ON gm.id=road.geo_master_id " +
                 "left join rdvts_oltp.work_m as wm on wm.id=gm.work_id " +
@@ -84,7 +86,8 @@ public class RoadRepositoryImpl {
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         int resultCount = 0;
         String queryString = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width, road.g_road_id as groadId, " +
-                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, geom.g_work_id as workIds, geom.g_contractor_id as contractIds " +
+                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, geom.g_work_id as workIds, geom.g_contractor_id as contractIds, road.completed_road_length, road.sanction_date, road.road_code, \n" +
+                "road.road_status, road.approval_status, road.approved_by  " +
                 "FROM rdvts_oltp.geo_construction_m AS road " +
                 "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.id=road.geo_master_id " +
                 "WHERE road.is_active = true ";
@@ -200,7 +203,8 @@ public class RoadRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
         String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId,  " +
-                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on " +
+                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, \n" +
+                "road.road_status, road.approval_status, road.approved_by  " +
                 "FROM rdvts_oltp.geo_construction_m AS road " +
                 "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.id=road.geo_master_id " +
                 "WHERE road.is_active=true ";
@@ -257,7 +261,8 @@ public class RoadRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
         String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
-                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, geom.g_work_id as workIds, geom.g_dist_id as distIds, geom.g_block_id as blockIds " +
+                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, " +
+                "road.road_status, road.approval_status, road.approved_by, geom.g_work_id as workIds, geom.g_dist_id as distIds, geom.g_block_id as blockIds " +
                 "FROM rdvts_oltp.geo_construction_m AS road " +
                 "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.id=road.geo_master_id " +
                 "WHERE road.is_active=true ";
@@ -284,5 +289,12 @@ public class RoadRepositoryImpl {
             return null;
         }
         return road;
+    }
+
+    public RoadStatusDropDownDto getRoadStatusDD() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT rs.id, rs.name, rs.is_active , rs.created_by, rs.created_on, rs.updated_by, rs.updated_on " +
+                " FROM rdvts_oltp.road_status_m as rs ";
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(RoadStatusDropDownDto.class));
     }
 }

@@ -57,6 +57,12 @@ public class RoadServiceImpl implements RoadService {
         existingId.setRoadWidth(roadMasterDto.getRoadWidth());
         existingId.setGroadId(roadMasterDto.getGroadId());
         existingId.setGeoMasterId(roadMasterDto.getGeoMasterId());
+        existingId.setCompletedRoadLength(roadMasterDto.getCompletedRoadLength());
+        existingId.setSanctionDate(roadMasterDto.getSanctionDate());
+        existingId.setRoadCode(roadMasterDto.getRoadCode());
+        existingId.setRoadStatus(roadMasterDto.getRoadStatus());
+        existingId.setApprovalStatus(roadMasterDto.getApprovalStatus());
+        existingId.setApprovedBy(roadMasterDto.getApprovedBy());
         RoadEntity save = roadRepository.save(existingId);
         return save;
     }
@@ -103,6 +109,11 @@ public class RoadServiceImpl implements RoadService {
     @Override
     public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds) {
         return roadRepositoryImpl.getRoadByRoadIds(id, workIds, distIds, blockIds);
+    }
+
+    @Override
+    public RoadStatusDropDownDto getRoadStatusDD() {
+        return roadRepositoryImpl.getRoadStatusDD();
     }
 
     @Override
