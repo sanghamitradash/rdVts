@@ -166,6 +166,11 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceRepositoryImpl.deactivateDevice(deviceId);
     }
 
+    @Override
+    public List<VehicleDeviceMappingDto> getAllVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getAllVehicleDeviceMappingByDeviceId(deviceId,userId);
+    }
+
 
 }
 

@@ -7,6 +7,7 @@ import gov.orsac.RDVTS.entities.DeviceMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.exception.RecordExistException;
 import gov.orsac.RDVTS.repository.DeviceRepository;
+import gov.orsac.RDVTS.repositoryImpl.DeviceRepositoryImpl;
 import gov.orsac.RDVTS.service.DeviceService;
 import gov.orsac.RDVTS.service.VehicleService;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +31,9 @@ public class DeviceController {
     private DeviceService deviceService;
 
     @Autowired
+    private DeviceRepositoryImpl deviceRepositoryImpl;
+
+    @Autowired
     private VehicleService vehicleService;
 
     @Autowired
@@ -44,6 +48,10 @@ public class DeviceController {
     public Boolean checkImeiNo2Exists(Long imeiNo2) {
         return deviceRepository.existsByImeiNo2(imeiNo2);
     }
+
+
+    //Save Device
+
     @PostMapping("/addDevice")
     public RDVTSResponse addDevice(@RequestParam(name = "data") String data) {
         RDVTSResponse response = new RDVTSResponse();
@@ -129,9 +137,11 @@ public class DeviceController {
             List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
             List<DeviceAreaMappingDto> deviceArea = deviceService.getDeviceAreaByDeviceId(deviceId,userId);
             List<VehicleDeviceMappingDto> vehicle  = deviceService.getVehicleDeviceMappingByDeviceId(deviceId,userId);
+            List<VehicleDeviceMappingDto> vehicleDeviceMap = deviceService.getAllVehicleDeviceMappingByDeviceId(deviceId,userId);
             result.put("device", device);
             result.put("deviceArea",deviceArea);
             result.put("vehicle",vehicle);
+            result.put("vehicleDeviceMap",vehicleDeviceMap);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -144,6 +154,9 @@ public class DeviceController {
         }
         return response;
     }
+
+
+    //Get Device List
 
     @PostMapping("/getDeviceList")
     public RDVTSListResponse getDeviceList(@RequestParam(name = "imeiNo1",required = false) Long imeiNo1,
@@ -189,15 +202,19 @@ public class DeviceController {
             List<DeviceInfo> deviceList = deviceListPage.getContent();
             List<DeviceInfo> finalDeviceList=new ArrayList<>();
             Integer start1=start;
-            for(DeviceInfo dev:deviceList){
+            for(int i=0;i<deviceList.size();i++){
 
                 start1=start1+1;
-                dev.setSlNo(start1);
-                finalDeviceList.add(dev);
+                deviceList.get(i).setSlNo(start1);
+
+                boolean device1= deviceRepositoryImpl.getDeviceAssignedOrNot(deviceList.get(i).getId());
+                deviceList.get(i).setDeviceAssigned(device1);
+                deviceList.get(i).setVehicleAssigned(device1);
+
             }
             //result.put("deviceList", deviceList);
-            response.setData(finalDeviceList);
-            response.setMessage("Vehicle List");
+            response.setData(deviceList);
+            response.setMessage("Device List");
             response.setStatus(1);
             response.setDraw(draw);
             response.setRecordsFiltered(deviceListPage.getTotalElements());
@@ -208,6 +225,8 @@ public class DeviceController {
         }
         return response;
     }
+
+
 
     //Update Device By ID
 
@@ -249,6 +268,8 @@ public class DeviceController {
         return response;
     }
 
+    //Get UnAssigned Device By ID
+
     @PostMapping("/getUnassignedDeviceData")
     public RDVTSResponse getUnassignedDeviceData (@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
@@ -270,6 +291,8 @@ public class DeviceController {
         return response;
     }
 
+    //Get Device UserLevel DropDown
+
     @PostMapping("/getDeviceUserLevel")
     public RDVTSResponse getDeviceUserLevel() {
         RDVTSResponse response = new RDVTSResponse();
@@ -290,6 +313,7 @@ public class DeviceController {
         return response;
     }
 
+    //Get vtu Vendor DropDown
 
     @PostMapping("/getVtuVendorDropDown")
     public RDVTSResponse getVtuVendorDropDown() {
@@ -310,6 +334,8 @@ public class DeviceController {
         }
         return response;
     }
+
+    //Delete Device
 
     @PostMapping("/deactivateDevice")
     public RDVTSResponse deactivateDevice(@RequestParam Integer deviceId) {
