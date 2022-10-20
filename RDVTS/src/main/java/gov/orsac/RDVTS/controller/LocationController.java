@@ -689,27 +689,6 @@ public class LocationController {
                     }
 
                 }
-//                for (Integer deviceid : deviceIds) {
-//                    List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceid);
-//                    for (DeviceDto imei : getImeiList) {
-//                        imeiArray1.add(imei.getImeiNo1());
-//                        imeiArray2.add(imei.getImeiNo2());
-//                    }
-//
-//                    device.put(deviceid, getImeiList);
-//                }
-//
-//                int i = 0;
-//                for (Long item : imeiArray1) {
-//                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(item, imeiArray2.get(i), startDate, endDate);
-//                    i++;
-//                    Map<String, Object> itemVal = new HashMap<>();
-//                    itemVal.put("imeiNo", item);
-//                    itemVal.put("vehicleLocation", vtuLocationDto);
-//                    result.add(itemVal);
-//
-//                }
-
 
             } else if (workId != null) {
 
