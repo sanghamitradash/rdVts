@@ -220,17 +220,26 @@ public class DeviceController {
             DeviceDto deviceDto = objectMapper.readValue(data, DeviceDto.class);
             DeviceEntity updateDevice = deviceService.updateDeviceById(id, deviceDto);
             deviceService.deactivateDeviceArea(updateDevice.getId());
-            DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(),updateDevice.getId(),updateDevice.getUserLevelId());
-            deviceService.deactivateDeviceVehicle(updateDevice.getId());
-            VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(deviceDto.getVehicleDeviceMapping(),updateDevice.getId());
-            result.put("updateDevice", updateDevice);
-            result.put("deviceMapping", deviceMapping);
-            result.put("saveVehicleMapping",saveVehicleMapping);
-            response.setData(result);
-            response.setStatus(1);
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("Device Updated successfully.");
-        } catch (Exception ex) {
+            DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(), updateDevice.getId(), updateDevice.getUserLevelId());
+            VehicleDeviceMappingEntity vehicle = new VehicleDeviceMappingEntity();
+           /* BeanUtils.copyProperties(deviceDto.getVehicleDeviceMapping(), vehicle);
+            vehicle.setDeviceId(updateDevice.getId());*/
+            if (vehicle.getDeviceId() != null && vehicle.getInstallationDate() != null && vehicle.getInstalledBy() != null & vehicle.getVehicleId() != null) {
+                deviceService.deactivateDeviceVehicle(updateDevice.getId());
+                VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(deviceDto.getVehicleDeviceMapping(), updateDevice.getId());
+                result.put("saveVehicleMapping", saveVehicleMapping);
+            }
+
+                //VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(deviceDto.getVehicleDeviceMapping(), updateDevice.getId());
+                result.put("updateDevice", updateDevice);
+                result.put("deviceMapping", deviceMapping);
+
+                response.setData(result);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                response.setMessage("Device Updated successfully.");
+
+        }catch (Exception ex) {
             ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
