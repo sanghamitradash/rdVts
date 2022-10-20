@@ -48,6 +48,10 @@ public class DeviceController {
     public Boolean checkImeiNo2Exists(Long imeiNo2) {
         return deviceRepository.existsByImeiNo2(imeiNo2);
     }
+
+
+    //Save Device
+
     @PostMapping("/addDevice")
     public RDVTSResponse addDevice(@RequestParam(name = "data") String data) {
         RDVTSResponse response = new RDVTSResponse();
@@ -150,6 +154,9 @@ public class DeviceController {
         }
         return response;
     }
+
+
+    //Get Device List
 
     @PostMapping("/getDeviceList")
     public RDVTSListResponse getDeviceList(@RequestParam(name = "imeiNo1",required = false) Long imeiNo1,
@@ -261,6 +268,8 @@ public class DeviceController {
         return response;
     }
 
+    //Get UnAssigned Device By ID
+
     @PostMapping("/getUnassignedDeviceData")
     public RDVTSResponse getUnassignedDeviceData (@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
@@ -282,6 +291,8 @@ public class DeviceController {
         return response;
     }
 
+    //Get Device UserLevel DropDown
+
     @PostMapping("/getDeviceUserLevel")
     public RDVTSResponse getDeviceUserLevel() {
         RDVTSResponse response = new RDVTSResponse();
@@ -302,6 +313,7 @@ public class DeviceController {
         return response;
     }
 
+    //Get vtu Vendor DropDown
 
     @PostMapping("/getVtuVendorDropDown")
     public RDVTSResponse getVtuVendorDropDown() {
@@ -322,6 +334,8 @@ public class DeviceController {
         }
         return response;
     }
+
+    //Delete Device
 
     @PostMapping("/deactivateDevice")
     public RDVTSResponse deactivateDevice(@RequestParam Integer deviceId) {
