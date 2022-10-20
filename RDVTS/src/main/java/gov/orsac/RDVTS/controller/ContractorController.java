@@ -68,7 +68,7 @@ public class ContractorController {
         return response;
     }
 
-    //Contractor View ById, UserId, GContractId
+    //Contractor Listing
 
     @PostMapping("/getContractorDetails")
     public RDVTSListResponse getContractorDetails(@RequestParam(name = "userId",required = false) Integer userId,
@@ -127,6 +127,8 @@ public class ContractorController {
         }
         return response;
     }
+
+    //Contract For DropDown
 
     @PostMapping("/getContractorDropDown")
     public RDVTSResponse getContractorDropDown() {
