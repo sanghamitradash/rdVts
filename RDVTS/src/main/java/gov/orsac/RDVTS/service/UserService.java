@@ -48,4 +48,7 @@ public interface UserService {
     List<UserAreaMappingDto> getUserAreaMappingByUserId(Integer userId);
 
     List<UserAreaMappingEntity> saveUserAreaMapping(Integer userLevelId, Integer userId, List<UserAreaMappingEntity> userAreaMapping);
+
+
+    Boolean activateAndDeactivateUser(Integer id);
 }
