@@ -124,7 +124,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         List<VehicleDeviceMappingDto> vehicleDevice = new ArrayList<>();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select id, vehicle_id, device_id, installation_date, installed_by, is_active, created_by, created_on, updated_by, updated_on, deactivation_date " +
-                "FROM rdvts_oltp.vehicle_device_mapping where is_active=true  ";
+                "FROM rdvts_oltp.vehicle_device_mapping where is_active=true ";
 
 
         if (vehicleId > 0) {

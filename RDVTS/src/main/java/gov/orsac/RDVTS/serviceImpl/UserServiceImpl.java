@@ -393,5 +393,12 @@ public class UserServiceImpl implements UserService {
 
 
 
+    @Override
+    public Boolean activateAndDeactivateUser(Integer id) {
+        return userRepositoryImpl.activateAndDeactivateUser(id);
+    }
+
+
+
 
 }
