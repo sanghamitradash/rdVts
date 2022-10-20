@@ -119,6 +119,19 @@ public class WorkRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
 
+    public List<ActivityDto> getActivityByWorkId(int id){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT act.id, act.activity_name, act.activity_quantity, act.activity_start_date, act.activity_completion_date, act.actual_activity_start_date, " +
+                " act.actual_activity_completion_date, act.executed_quantity, act.work_id, act.is_active, act.created_by, act.created_on, act.updated_by, " +
+                " act.updated_on, act.activity_status FROM rdvts_oltp.activity_m as act left join rdvts_oltp.work_m as wm on wm.id = act.work_id " +
+                " where act.is_active = true " ;
+        if (id > 0){
+            qry +=" and wm.id = :id " ;
+            sqlParam.addValue("id", id);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+    }
+
     public List<VehicleMasterDto> getVehicleBywork(List<Integer> workIds){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 

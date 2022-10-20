@@ -171,5 +171,24 @@ public class WorkController {
         return rdvtsResponse;
     }
 
+    @PostMapping("/getActivityByWorkId")
+    public RDVTSResponse getActivityByWorkId(@RequestParam int id){
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<ActivityDto> activityDtoList = workService.getActivityByWorkId(id);
+            result.put("activityDtoList", activityDtoList);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 }

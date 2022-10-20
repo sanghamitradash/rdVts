@@ -45,6 +45,11 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
+    public List<ActivityDto> getActivityByWorkId(int id){
+        return workRepositoryImpl.getActivityByWorkId(id);
+    }
+
+    @Override
     public WorkEntity updateWork(int id, WorkDto workDto) {
         WorkEntity existingWork = workRepository.findById(id);
         if (existingWork == null) {
