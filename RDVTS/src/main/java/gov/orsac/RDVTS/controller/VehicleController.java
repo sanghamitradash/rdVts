@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.repository.VehicleDeviceMappingRepository;
+import gov.orsac.RDVTS.repository.VehicleMasterSaveRepository;
 import gov.orsac.RDVTS.repository.VehicleOwnerMappingRepository;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.repositoryImpl.DeviceRepositoryImpl;
@@ -28,6 +29,9 @@ public class VehicleController {
     private VehicleService vehicleService;
     @Autowired
     private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private VehicleMasterSaveRepository vehicleMasterSaveRepository;
     @Autowired
     private VehicleDeviceMappingRepository vehicleDeviceMappingRepository;
     @Autowired
@@ -58,40 +62,48 @@ public class VehicleController {
             vehicleOwnerMapping = mapper.readValue(vehicleOwnerMappingData, VehicleOwnerMappingDto.class);
         }
         try {
-            if(vehicle.getVehicleTypeId()!=null && vehicle.getVehicleNo()!=null && vehicle.getChassisNo()!=null
-                    && vehicle.getEngineNo()!=null && vehicle.getSpeedLimit()!=null) {
-                VehicleMaster saveVehicle = vehicleService.saveVehicle(vehicle);
-                result.put("saveVehicle", saveVehicle);
-             if(vehicleDeviceMappingData != null)    {
-                 vehicleDeviceMapping.setVehicleId(saveVehicle.getId());
-                 VehicleDeviceMappingEntity assignVehicleDevice = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
-                 result.put("assignVehicleDevice",assignVehicleDevice);
-                }
-                if(vehicleOwnerMappingData != null)    {
-                    vehicleOwnerMapping.setVehicleId(saveVehicle.getId());
-                    VehicleOwnerMappingEntity assignVehicleOwner = vehicleService.assignVehicleOwner(vehicleOwnerMapping);
-                    result.put("assignVehicleOwner",assignVehicleOwner);
-                }
-             if(vehicleWorkMapping != null && vehicleWorkMapping.size()>0){
-                 List<VehicleWorkMappingDto> work=new ArrayList<>();
-                 for(VehicleWorkMappingDto work1:vehicleWorkMapping){
-                     work1.setVehicleId(saveVehicle.getId());
-                    work.add(work1);
-                 }
-                 List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(work);
-                 result.put("assignVehicleWorkMapping",saveVehicleWorkMapping);
-                }
-                response.setData(result);
-                response.setStatus(1);
-                response.setMessage("Vehicle Created Successfully");
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            }
-            else {
-                response = new RDVTSResponse(0,
-                        new ResponseEntity<>(HttpStatus.OK),
-                        "Vehicle Type,Vehicle No.,Vehicle Chassis No.,Vehicle Engine No.,Vehicle SpeedLiMit mandatory",
-                        result);
-            }
+           VehicleMaster vehicleNo= vehicleMasterSaveRepository.getByVehicleNo(vehicle.getVehicleNo());
+           if(vehicleNo.getVehicleNo()==null) {
+               if (vehicle.getVehicleTypeId() != null && vehicle.getVehicleNo() != null && vehicle.getChassisNo() != null
+                       && vehicle.getEngineNo() != null && vehicle.getSpeedLimit() != null) {
+                   VehicleMaster saveVehicle = vehicleService.saveVehicle(vehicle);
+                   result.put("saveVehicle", saveVehicle);
+                   if (vehicleDeviceMappingData != null) {
+                       vehicleDeviceMapping.setVehicleId(saveVehicle.getId());
+                       VehicleDeviceMappingEntity assignVehicleDevice = vehicleService.assignVehicleDevice(vehicleDeviceMapping);
+                       result.put("assignVehicleDevice", assignVehicleDevice);
+                   }
+                   if (vehicleOwnerMappingData != null) {
+                       vehicleOwnerMapping.setVehicleId(saveVehicle.getId());
+                       VehicleOwnerMappingEntity assignVehicleOwner = vehicleService.assignVehicleOwner(vehicleOwnerMapping);
+                       result.put("assignVehicleOwner", assignVehicleOwner);
+                   }
+                   if (vehicleWorkMapping != null && vehicleWorkMapping.size() > 0) {
+                       List<VehicleWorkMappingDto> work = new ArrayList<>();
+                       for (VehicleWorkMappingDto work1 : vehicleWorkMapping) {
+                           work1.setVehicleId(saveVehicle.getId());
+                           work.add(work1);
+                       }
+                       List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(work);
+                       result.put("assignVehicleWorkMapping", saveVehicleWorkMapping);
+                   }
+                   response.setData(result);
+                   response.setStatus(1);
+                   response.setMessage("Vehicle Created Successfully");
+                   response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+               } else {
+                   response = new RDVTSResponse(0,
+                           new ResponseEntity<>(HttpStatus.OK),
+                           "Vehicle Type,Vehicle No.,Vehicle Chassis No.,Vehicle Engine No.,Vehicle SpeedLiMit mandatory",
+                           result);
+               }
+           }
+             else {
+                   response = new RDVTSResponse(0,
+                           new ResponseEntity<>(HttpStatus.OK),
+                           "Vehicle No Already Exist",
+                           result);
+                   }
         } catch (Exception e) {
             e.printStackTrace();
             response = new RDVTSResponse(0,

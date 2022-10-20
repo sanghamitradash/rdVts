@@ -68,17 +68,21 @@ public class ContractorController {
         return response;
     }
 
-    //Contractor View ById, UserId, GContractId
+    //Contractor Listing
 
     @PostMapping("/getContractorDetails")
     public RDVTSListResponse getContractorDetails(@RequestParam(name = "userId",required = false) Integer userId,
                                                   @RequestParam(name = "gContractorId",required = false)Integer gContractorId,
+                                                  @RequestParam(name = "name",required = false) String name,
+                                                  @RequestParam(name = "mobile",required = false)Long mobile,
                                                   @RequestParam(name = "start") Integer start,
                                                   @RequestParam(name = "length") Integer length,
                                                   @RequestParam(name = "draw") Integer draw) {
         ContractorFilterDto contractor = new ContractorFilterDto();
         contractor.setUserId(userId);
         contractor.setGContractorId(gContractorId);
+        contractor.setName(name);
+        contractor.setMobile(mobile);
         contractor.setLimit(length);
         contractor.setOffSet(start);
         RDVTSListResponse response = new RDVTSListResponse();
@@ -123,6 +127,8 @@ public class ContractorController {
         }
         return response;
     }
+
+    //Contract For DropDown
 
     @PostMapping("/getContractorDropDown")
     public RDVTSResponse getContractorDropDown() {
