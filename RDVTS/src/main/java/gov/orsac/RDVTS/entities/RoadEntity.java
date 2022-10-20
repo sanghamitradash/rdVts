@@ -71,4 +71,24 @@ public class RoadEntity {
     @Column(name = "updated_on")
     @UpdateTimestamp
     private Date updatedOn;
+
+    @Column(name = "completed_road_length")
+    private Double completedRoadLength;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "sanction_date")
+    @UpdateTimestamp
+    private Date sanctionDate;
+
+    @Column(name = "road_code")
+    private String roadCode;
+
+    @Column(name = "road_status")
+    private Integer roadStatus;
+
+    @Column(name = "approval_status")
+    private Integer approvalStatus;
+
+    @Column(name = "approved_by")
+    private Integer approvedBy;
 }

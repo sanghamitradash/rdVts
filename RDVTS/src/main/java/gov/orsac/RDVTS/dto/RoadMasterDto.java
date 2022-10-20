@@ -61,4 +61,10 @@ public class RoadMasterDto {
 
     private Integer slNo;
 
+    private Double completedRoadLength;
+    private Date sanctionDate;
+    private String roadCode;
+    private Integer roadStatus;
+    private Integer approvalStatus;
+    private Integer approvedBy;
 }
