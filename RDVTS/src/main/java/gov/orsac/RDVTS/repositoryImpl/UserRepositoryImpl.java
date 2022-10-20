@@ -72,15 +72,15 @@ public class UserRepositoryImpl {
 //            queryString+=" AND um.id=:id ";
 //            sqlParam.addValue("id",userListRequest.getId());
 //        }
-        if (userListRequest.getDistId() > 0) {
+        if (userListRequest.getDistId() != null && userListRequest.getDistId() > 0) {
             queryString += " and um.id in (select user_id from rdvts_oltp.user_area_mapping where dist_id=:distId)";
             sqlParam.addValue("distId", userListRequest.getDistId());
         }
-        if (userListRequest.getBlockId() > 0) {
+        if (userListRequest.getBlockId() != null && userListRequest.getBlockId() > 0) {
             queryString += " and um.id in (select user_id from rdvts_oltp.user_area_mapping where dist_id=:blockId)";
             sqlParam.addValue("blockId", userListRequest.getBlockId());
         }
-        if (userListRequest.getDivisionId() > 0) {
+        if (userListRequest.getDivisionId() != null && userListRequest.getDivisionId() > 0) {
             queryString += " and um.id in (select user_id from rdvts_oltp.user_area_mapping where division_id=:divisionId)";
             sqlParam.addValue("divisionId", userListRequest.getDivisionId());
         }
@@ -95,7 +95,7 @@ public class UserRepositoryImpl {
 //        if (userListRequest.getVillageId()>0){
 //            queryString+=" and um.id in (select user_id from rdvts_oltp.user_area_mapping where village_id=:villageId)";
 //            sqlParam.addValue("villageId",userListRequest.getVillageId());
-//        }
+//        }̵̵̵
 
         if (userListRequest.getDesignationId() != null && userListRequest.getDesignationId() > 0) {
             queryString += " AND   um.designation_id=:getDesignationId ";
@@ -127,7 +127,7 @@ public class UserRepositoryImpl {
 
         resultCount = count(queryString, sqlParam);
         if (userListRequest.getLimit() > 0) {
-            queryString += "  Order by um.id desc  LIMIT " + userListRequest.getLimit() + " OFFSET " + userListRequest.getOffSet();
+            queryString += "  LIMIT " + userListRequest.getLimit() + " OFFSET " + userListRequest.getOffSet();
 
         }
 

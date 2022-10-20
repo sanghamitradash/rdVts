@@ -77,7 +77,7 @@ public class UserController {
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter proper mobile number 1!!",
                                 result);
-                    } else if (userDto.getMobile2().toString().length() != 10) {
+                    } else if (userDto.getMobile2()!=null && userDto.getMobile2().toString().length() != 10) {
                         rdvtsResponse = new RDVTSResponse(0,
                                 new ResponseEntity<>(HttpStatus.OK),
                                 "Please enter proper mobile number 2!!",
@@ -265,6 +265,7 @@ public class UserController {
     public RDVTSListResponse getUserList(@RequestParam(name = "userId", required = false) Integer userId,
                                          @RequestParam(name = "designationId", required = false) Integer designationId,
                                          @RequestParam(name = "roleId", required = false) Integer roleId,
+                                         @RequestParam(name = "distId", required = false) Integer distId,
                                          @RequestParam(name = "contractorId", required = false) Integer contractorId,
                                          @RequestParam(name = "email", required = false) String email,
                                          @RequestParam(name = "mobile1", required = false) Long mobile1,
@@ -272,47 +273,57 @@ public class UserController {
                                          @RequestParam(name = "length") Integer length,
                                          @RequestParam(name = "draw") Integer draw) {
         RDVTSListResponse response = new RDVTSListResponse();
-
-        UserListRequest userListDto = new UserListRequest();
-
-        userListDto.setUserId(userId);
-        userListDto.setDesignationId(designationId);
-        userListDto.setRoleId(roleId);
-        userListDto.setContractorId(contractorId);
-        userListDto.setEmail(email);
-        userListDto.setMobile1(mobile1);
-
-        userListDto.setLimit(length);
-        userListDto.setOffSet(start);
-        userListDto.setDraw(draw);
-
-
         Map<String, Object> result = new HashMap<>();
-        try {
-            Page<UserInfoDto> userInfoDtos = userService.getUserList(userListDto);
-            List<UserInfoDto> userList = userInfoDtos.getContent();
-            List<UserInfoDto> finalUserList=new ArrayList<>();
-            Integer start1=start;
-            for(UserInfoDto user:userList){
+        if (userId!=null && !userId.toString().isEmpty()){
+            UserListRequest userListDto = new UserListRequest();
 
-                start1=start1+1;
-                user.setSlNo(start1);
-                finalUserList.add(user);
+            userListDto.setUserId(userId);
+            userListDto.setDesignationId(designationId);
+            userListDto.setRoleId(roleId);
+            userListDto.setContractorId(contractorId);
+            userListDto.setEmail(email);
+            userListDto.setMobile1(mobile1);
+            userListDto.setDistId(distId);
+
+            userListDto.setLimit(length);
+            userListDto.setOffSet(start);
+            userListDto.setDraw(draw);
+
+
+
+            try {
+                Page<UserInfoDto> userInfoDtos = userService.getUserList(userListDto);
+                List<UserInfoDto> userList = userInfoDtos.getContent();
+                List<UserInfoDto> finalUserList=new ArrayList<>();
+                Integer start1=start;
+                for(UserInfoDto user:userList){
+
+                    start1=start1+1;
+                    user.setSlNo(start1);
+                    finalUserList.add(user);
+                }
+                // result.put("userList", userList);
+                response.setData(userList);
+                response.setMessage("User List");
+                response.setStatus(1);
+                response.setDraw(draw);
+                response.setRecordsFiltered(userInfoDtos.getTotalElements());
+                response.setRecordsTotal(userInfoDtos.getTotalElements());
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } catch (Exception e) {
+                response = new RDVTSListResponse(0,
+                        new ResponseEntity<>(HttpStatus.OK),
+                        e.getMessage(),
+                        result);
             }
-           // result.put("userList", userList);
-            response.setData(userList);
-            response.setMessage("User List");
-            response.setStatus(1);
-            response.setDraw(draw);
-            response.setRecordsFiltered(userInfoDtos.getTotalElements());
-            response.setRecordsTotal(userInfoDtos.getTotalElements());
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-        } catch (Exception e) {
+        }
+        else {
             response = new RDVTSListResponse(0,
                     new ResponseEntity<>(HttpStatus.OK),
-                    e.getMessage(),
+                    "Please userId Can Not BE blank!!",
                     result);
         }
+
         return response;
     }
 
