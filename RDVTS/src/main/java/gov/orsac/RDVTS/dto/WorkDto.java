@@ -17,30 +17,27 @@ import java.util.Date;
 public class WorkDto {
 
     private Integer id;
-
     private Integer userId;
-
     private Integer workId;
-
     private String workName;
-
     private Boolean isActive=true;
-
     private Integer createdBy;
-
     private Date createdOn;
-
     private Integer updatedBy;
-
     private Date updatedOn;
+
+    private Date awardDate;
+    private Date completionDate;
+    private Date pmisFinalizeDate;
+    private Integer workStatus;
+    private Integer approvalStatus;
+    private Integer approvedBy;
 
     private Integer piuId;
     private String piuName;
     private Integer packageId;
     private String packageName;
     private String contractorId;
-
-
 
     private Integer offSet;
     private Integer limit;
