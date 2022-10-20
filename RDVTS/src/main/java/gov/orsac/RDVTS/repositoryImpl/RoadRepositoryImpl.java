@@ -290,4 +290,11 @@ public class RoadRepositoryImpl {
         }
         return road;
     }
+
+    public RoadStatusDropDownDto getRoadStatusDD() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT rs.id, rs.name, rs.is_active , rs.created_by, rs.created_on, rs.updated_by, rs.updated_on " +
+                " FROM rdvts_oltp.road_status_m as rs ";
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(RoadStatusDropDownDto.class));
+    }
 }

@@ -112,6 +112,11 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
+    public RoadStatusDropDownDto getRoadStatusDD() {
+        return roadRepositoryImpl.getRoadStatusDD();
+    }
+
+    @Override
     public List<GeoMasterDto> getVehicleListByRoadId(Integer roadId){
         return roadRepositoryImpl.getVehicleListByRoadId(roadId);
     }

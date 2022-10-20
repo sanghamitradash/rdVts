@@ -87,6 +87,7 @@ public class RoadController {
         return response;
     }
 
+    //update completion road status & update
     @PostMapping("/updateRoad")
     public RDVTSResponse updateRoad(@RequestParam Integer id,
                                     @RequestParam String data) {
@@ -216,6 +217,26 @@ public class RoadController {
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Road By roadIds");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getRoadStatusDD")
+    public RDVTSResponse getRoadStatusDD() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            RoadStatusDropDownDto roadDD = roadService.getRoadStatusDD();
+//            result.put("road", road);
+            response.setData(roadDD);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Road Dropdown");
         } catch (Exception ex) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
