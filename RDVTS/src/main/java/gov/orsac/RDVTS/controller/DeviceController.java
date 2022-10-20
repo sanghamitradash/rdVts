@@ -241,13 +241,16 @@ public class DeviceController {
             deviceService.deactivateDeviceArea(updateDevice.getId());
             DeviceMappingEntity deviceMapping = deviceService.saveDeviceAreaMapping(deviceDto.getDeviceMapping(), updateDevice.getId(), updateDevice.getUserLevelId());
             VehicleDeviceMappingEntity vehicle = new VehicleDeviceMappingEntity();
-           /* BeanUtils.copyProperties(deviceDto.getVehicleDeviceMapping(), vehicle);
-            vehicle.setDeviceId(updateDevice.getId());*/
-            if (vehicle.getDeviceId() != null && vehicle.getInstallationDate() != null && vehicle.getInstalledBy() != null & vehicle.getVehicleId() != null) {
-                deviceService.deactivateDeviceVehicle(updateDevice.getId());
-                VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(deviceDto.getVehicleDeviceMapping(), updateDevice.getId());
-                result.put("saveVehicleMapping", saveVehicleMapping);
+            if(deviceDto.getVehicleDeviceMapping() != null){
+                if (deviceDto.getVehicleDeviceMapping().getInstallationDate() != null && deviceDto.getVehicleDeviceMapping().getInstalledBy() != null & deviceDto.getVehicleDeviceMapping().getVehicleId() != null) {
+                    BeanUtils.copyProperties(deviceDto.getVehicleDeviceMapping(), vehicle);
+                    vehicle.setDeviceId(updateDevice.getId());
+                    deviceService.deactivateDeviceVehicle(updateDevice.getId());
+                    VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(vehicle, updateDevice.getId());
+                    result.put("saveVehicleMapping", saveVehicleMapping);
+                }
             }
+
 
                 //VehicleDeviceMappingEntity saveVehicleMapping = vehicleService.assignVehicleDevice(deviceDto.getVehicleDeviceMapping(), updateDevice.getId());
                 result.put("updateDevice", updateDevice);
