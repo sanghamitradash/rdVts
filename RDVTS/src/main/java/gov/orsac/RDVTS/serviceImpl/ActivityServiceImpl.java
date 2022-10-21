@@ -3,8 +3,6 @@ package gov.orsac.RDVTS.serviceImpl;
 import gov.orsac.RDVTS.dto.ActivityDto;
 import gov.orsac.RDVTS.dto.WorkDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
-import gov.orsac.RDVTS.entities.DeviceEntity;
-import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.ActivityMasterRepository;
 import gov.orsac.RDVTS.repository.ActivityRepository;
@@ -65,6 +63,8 @@ public class ActivityServiceImpl implements ActivityService {
     public List<ActivityEntity> getAllActivity() {
         return activityMasterRepository.findAll();
     }
+
+
 
     @Override
     public List<ActivityDto> getActivityDD() {
