@@ -109,5 +109,25 @@ public class ActivityController {
         return response;
     }
 
+    @PostMapping("/getActivityDD")
+    public RDVTSResponse getActivityDD() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<ActivityDto> activityDD = activityService.getActivityDD();
+            result.put("activityDD", activityDD);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("List of Activity Dropdown");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 }
