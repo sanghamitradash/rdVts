@@ -13,4 +13,6 @@ public interface ActivityService {
     ActivityEntity updateActivity(Integer id, ActivityDto activityData);
 
     List<ActivityEntity> getAllActivity();
+
+    List<ActivityDto> getActivityDD();
 }
