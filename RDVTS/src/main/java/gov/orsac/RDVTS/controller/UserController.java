@@ -919,6 +919,31 @@ public class UserController {
     }
 
 
+    @PostMapping("/activateAndDeactivateUser")
+    public RDVTSResponse activateAndDeactivateUser(@RequestParam Integer id) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Boolean res = userService.activateAndDeactivateUser(id);
+            if (res) {
+                response.setData(result);
+                response.setStatus(1);
+                response.setMessage("User Status Changed Successfully");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                response.setStatus(0);
+                response.setMessage("Something went wrong");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.OK),
+                    e.getMessage(), result);
+        }
+        return response;
+    }
+
+
 }
 
 

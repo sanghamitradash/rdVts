@@ -119,8 +119,8 @@ public class UserRepositoryImpl {
             queryString += " AND um.email=:email ";
             sqlParam.addValue("email", userListRequest.getEmail());
         }
-        if (userListRequest.getMobile1() != null) {
-            queryString += " AND um.mobile1=:mobile1 ";
+        if (userListRequest.getMobile1() != null && !userListRequest.getMobile1().toString().isEmpty()) {
+            queryString += " AND um.mobile_1=:mobile1 ";
             sqlParam.addValue("mobile1", userListRequest.getMobile1());
         }
 
@@ -259,6 +259,18 @@ public class UserRepositoryImpl {
         String qry = "select dist_id from rdvts_oltp.division_m where id in(:divisionId) ";
         sqlParam.addValue("divisionId", divisionId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+
+
+
+
+    public boolean activateAndDeactivateUser(int id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "UPDATE rdvts_oltp.user_m SET is_active = false WHERE id= :id ";
+        sqlParam.addValue("id", id);
+        int update = namedJdbc.update(qry, sqlParam);
+        return update > 0;
     }
 
 }
