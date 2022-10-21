@@ -9,4 +9,8 @@ public interface ActivityService {
     List<ActivityEntity> saveActivity(List<ActivityEntity> activityEntity);
 
     ActivityDto getActivityById(Integer activityId, Integer userId);
+
+    ActivityEntity updateActivity(Integer id, ActivityDto activityData);
+
+    List<ActivityEntity> getAllActivity();
 }

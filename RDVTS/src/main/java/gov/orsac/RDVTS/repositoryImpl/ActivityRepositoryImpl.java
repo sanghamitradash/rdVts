@@ -36,9 +36,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("userId",userId);
 
-           // activity = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
 
-        return null;
     }
 
 

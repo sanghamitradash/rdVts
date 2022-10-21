@@ -67,4 +67,47 @@ public class ActivityController {
     }
 
 
+    @PostMapping("/getAllActivity")
+    public RDVTSResponse getAllActivity() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<ActivityEntity> activityList = activityService.getAllActivity();
+            result.put("activityList", activityList);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("List of Activity");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/updateActivity")
+    public RDVTSResponse updateActivity(@RequestParam Integer id, @RequestParam(name = "data") String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            ActivityDto activityData = mapper.readValue(data, ActivityDto.class);
+            ActivityEntity activity1 = activityService.updateActivity(id, activityData);
+            result.put("activity1", activity1);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Activity Updated successfully.");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 }
