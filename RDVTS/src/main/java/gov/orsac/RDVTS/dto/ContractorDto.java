@@ -23,7 +23,7 @@ public class ContractorDto {
     private Integer updatedBy;
     private Date updatedOn;
 
-
+    private Integer slNo;
     private Integer userId;
 
 }
