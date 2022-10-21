@@ -145,12 +145,12 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                 "from rdvts_oltp.device_m as dm   " +
                 "left join rdvts_oltp.vtu_vendor_m as vtu on vtu.id = dm.vtu_vendor_id   " +
                 "left join rdvts_oltp.device_area_mapping as dam on dam.device_id = dm.id    " +
-                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id = dm.id   " +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id = dm.id AND vdm.is_active = true   " +
                 "left join rdvts_oltp.vehicle_m as vm on vm.id = vdm.vehicle_id  " +
                 "left join rdvts_oltp.block_boundary as block on block.block_id = dam.block_id    " +
                 "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id    " +
                 "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id =  dam.g_dist_id  " +
-                "WHERE dm.is_active = true AND dam.is_active = true  ";
+                "WHERE dm.is_active = true AND dam.is_active = true   ";
 
 
         if (deviceDto.getImeiNo1() != null && deviceDto.getImeiNo1() > 0) {
