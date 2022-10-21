@@ -1,10 +1,9 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.ActivityDto;
-import gov.orsac.RDVTS.dto.ContractorDto;
+import gov.orsac.RDVTS.dto.WorkDto;
 import gov.orsac.RDVTS.repository.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,7 +19,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     private NamedParameterJdbcTemplate namedJdbc;
 
     @Override
-    public ActivityDto getActivityById(Integer activityId, Integer userId) {
+    public List<ActivityDto> getActivityById(Integer activityId, Integer userId) {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT am.id,am.activity_name,am.activity_quantity,am.activity_start_date,am.activity_completion_date,am.actual_activity_start_date, " +
@@ -36,10 +35,12 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("userId",userId);
 
-            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
 
     }
 
 
-    }
+
+
+}
 

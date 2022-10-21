@@ -174,6 +174,7 @@ public class VehicleController {
     public RDVTSListResponse getVehicleList(@RequestParam(name = "vehicleTypeId") Integer vehicleTypeId,
                                             @RequestParam(name = "deviceId") Integer deviceId,
                                             @RequestParam(name = "workId") Integer workId,
+                                            @RequestParam(name = "activityId")Integer activityId,
                                             @RequestParam(name = "start") Integer start,
                                             @RequestParam(name = "length") Integer length,
                                             @RequestParam(name = "draw") Integer draw,
@@ -183,6 +184,7 @@ public class VehicleController {
         vehicle.setVehicleTypeId(vehicleTypeId);
         vehicle.setDeviceId(deviceId);
         vehicle.setWorkId(workId);
+        vehicle.setActivityId(activityId);
         vehicle.setLimit(length);
         vehicle.setOffSet(start);
         vehicle.setUserId(userId);
@@ -197,11 +199,11 @@ public class VehicleController {
                     start1=start1+1;
                 vehicleList.get(i).setSlNo(start1);
                 boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
-                boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
+               // boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
                 DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
                 boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
                 vehicleList.get(i).setDeviceAssigned(device);
-                vehicleList.get(i).setWorkAssigned(work);
+                //vehicleList.get(i).setWorkAssigned(work);
                 vehicleList.get(i).setTrackingStatus(tracking);
             }
            /* result.put("vehicleList", vehicleList);

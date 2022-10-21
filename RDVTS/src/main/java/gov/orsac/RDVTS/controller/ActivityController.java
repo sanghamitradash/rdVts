@@ -45,14 +45,16 @@ public class ActivityController {
         return response;
     }
 
-    @PostMapping("/getActivityById")
+        @PostMapping("/getActivityById")
     public RDVTSResponse getActivityById(@RequestParam(name = "activityId", required = false) Integer activityId,
-                                       @RequestParam(name = "userId",required = false)Integer userId) {
+                                         @RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            ActivityDto activity = activityService.getActivityById(activityId,userId);
+            List<ActivityDto> activity = activityService.getActivityById(activityId,userId);
+
             result.put("activity", activity);
+
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
