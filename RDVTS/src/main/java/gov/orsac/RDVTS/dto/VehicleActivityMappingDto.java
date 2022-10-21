@@ -24,4 +24,11 @@ public class VehicleActivityMappingDto {
     private Date updatedOn;
     private Date deactivationDate;
     private Integer gActivityId;
+
+    private String vehicleNo;
+    private Integer vehicleTypeId;
+    private String model;
+    private Double speedLimit;
+    private String chassisNo;
+    private String engineNo;
 }
