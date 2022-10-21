@@ -174,6 +174,16 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleRepositoryimpl.getVehicleByActivityId(activityId, userId);
     }
 
+    @Override
+    public List<VehicleMasterDto> getVehicleByVehicleTypeId(Integer vehicleTypeId) {
+        return vehicleRepositoryimpl.getVehicleByVehicleTypeId(vehicleTypeId);
+    }
+
+    @Override
+    public List<RoadMasterDto> getRoadDetailByVehicleId(Integer vehicleId) {
+        return vehicleRepositoryimpl.getRoadDetailByVehicleId(vehicleId);
+    }
+
 
     @Override
        public List<VehicleWorkMappingDto>  getVehicleWorkMapping(Integer vehicleId) {

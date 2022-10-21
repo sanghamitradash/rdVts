@@ -41,5 +41,11 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     }
 
 
+    public List<ActivityDto> getActivityDD() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT id, activity_name  " +
+                " FROM rdvts_oltp.activity_m";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
     }
+}
 

@@ -48,4 +48,8 @@ public interface VehicleService {
     VehicleActivityMappingEntity addVehicleActivityMapping(VehicleActivityMappingEntity vehicleActivityMappingEntity);
 
     List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId);
+
+    List<VehicleMasterDto> getVehicleByVehicleTypeId(Integer vehicleTypeId);
+
+    List<RoadMasterDto> getRoadDetailByVehicleId(Integer vehicleId);
 }
