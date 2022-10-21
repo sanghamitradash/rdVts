@@ -398,10 +398,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = " SELECT vam.id, vam.vehicle_id, vam.activity_id, vam.start_time, vam.end_time, vam.start_date, vam.end_date, vam.is_active, vam.created_by, " +
-                "vam.created_on, vam.updated_by, vam.updated_on, vam.deactivation_date, vam.g_activity_id " +
-                "FROM rdvts_oltp.vehicle_activity_mapping as vam ";
+                "vam.created_on, vam.updated_by, vam.updated_on, vam.deactivation_date, vam.g_activity_id, vm.vehicle_no as vehicleNo, vm.vehicle_type_id as vehicleTypeId, vm.model as model, vm.speed_limit as speedLimit, vm.chassis_no as chassisNo, " +
+                "vm.engine_no as engineNo " +
+                "FROM rdvts_oltp.vehicle_activity_mapping as vam " +
+                "LEFT JOIN rdvts_oltp.vehicle_m as vm on vm.id=vam.vehicle_id WHERE vam.is_active=true";
         if (activityId > 0 && activityId != null) {
-            qry += " WHERE vam.activity_id=:activityId ";
+            qry += " AND vam.activity_id=:activityId ";
             sqlParam.addValue("activityId", activityId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleActivityMappingDto.class));
