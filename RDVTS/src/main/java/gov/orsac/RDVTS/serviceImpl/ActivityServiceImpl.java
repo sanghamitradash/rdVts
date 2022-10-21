@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.ActivityDto;
+import gov.orsac.RDVTS.dto.WorkDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
@@ -40,7 +41,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityDto getActivityById(Integer activityId, Integer userId) {
+    public List<ActivityDto> getActivityById(Integer activityId, Integer userId) {
         return activityRepository.getActivityById(activityId,userId);
     }
 
@@ -69,6 +70,8 @@ public class ActivityServiceImpl implements ActivityService {
     public List<ActivityDto> getActivityDD() {
         return activityRepositoryImpl.getActivityDD();
     }
+
+
 
 }
 
