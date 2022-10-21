@@ -119,24 +119,25 @@ public class VehicleServiceImpl implements VehicleService {
        }
        @Override
        public List<VehicleMasterDto> getVehicleHistoryList(int id) {
-                     List<VehicleMasterDto> vehicleMasterDtoList=new ArrayList<>();
-
-                     for(int i=0;i<2;i++){
-//                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-//                            Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                            VehicleMasterDto vehicle =new VehicleMasterDto();
-                            vehicle.setVehicleNo("OD33o0209");
-                            vehicle.setVehicleTypeId(12);
-                            vehicle.setVehicleTypeName("2 wheeler");
-                            vehicle.setModel("Glamour");
-                            vehicle.setSpeedLimit(20.2);
-                            vehicle.setChassisNo("abdh3543HHJJ");
-                            vehicle.setEngineNo("ABCD123JHK");
-
-
-                            vehicleMasterDtoList.add(vehicle);
-                     }
-                     return vehicleMasterDtoList;
+           return vehicleRepository.getVehicleHistoryList(id);
+//                     List<VehicleMasterDto> vehicleMasterDtoList=new ArrayList<>();
+//
+//                     for(int i=0;i<2;i++){
+////                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+////                            Date dateTime = formatter.parse("2022-10-10 12:10:00");
+//                            VehicleMasterDto vehicle =new VehicleMasterDto();
+//                            vehicle.setVehicleNo("OD33o0209");
+//                            vehicle.setVehicleTypeId(12);
+//                            vehicle.setVehicleTypeName("2 wheeler");
+//                            vehicle.setModel("Glamour");
+//                            vehicle.setSpeedLimit(20.2);
+//                            vehicle.setChassisNo("abdh3543HHJJ");
+//                            vehicle.setEngineNo("ABCD123JHK");
+//
+//
+//                            vehicleMasterDtoList.add(vehicle);
+//                     }
+//                     return vehicleMasterDtoList;
               }
        @Override
        public VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId) {
@@ -240,26 +241,26 @@ public class VehicleServiceImpl implements VehicleService {
 
        @Override
        public List<RoadMasterDto> getRoadArray(int id) throws ParseException {
-              List<RoadMasterDto> roadList=new ArrayList<>();
-
-              for(int i=0;i<2;i++){
+           return vehicleRepositoryimpl.getRoadArray(id);
+//              List<RoadMasterDto> roadList=new ArrayList<>();
+//              for(int i=0;i<2;i++){
 //                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
 //                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                     RoadMasterDto road = new RoadMasterDto();
-                     road.setId(1);
-                     road.setPackageId(12);
-                     road.setPackageName("package2");
-                     road.setRoadName("road2");
-                     road.setRoadLength(3.788);
-                     road.setRoadLocation(2.555);
-                     road.setRoadAllignment("right");
-                     road.setRoadWidth(5.111);
-                     road.setGroadId(1);
-                     road.setGeoMasterId(2);
-
-                     roadList.add(road);
-              }
-              return roadList;
+//                     RoadMasterDto road = new RoadMasterDto();
+//                     road.setId(1);
+//                     road.setPackageId(12);
+//                     road.setPackageName("package2");
+//                     road.setRoadName("road2");
+//                     road.setRoadLength(3.788);
+//                     road.setRoadLocation(2.555);
+//                     road.setRoadAllignment("right");
+//                     road.setRoadWidth(5.111);
+//                     road.setGroadId(1);
+//                     road.setGeoMasterId(2);
+//
+//                     roadList.add(road);
+//              }
+//              return roadList;
        }
 
        @Override
