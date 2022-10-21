@@ -409,4 +409,30 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleActivityMappingDto.class));
 
     }
+
+    public List<VehicleMasterDto> getVehicleHistoryList(int id){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no,vm.is_active as active, " +
+                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on from rdvts_oltp.activity_m as act " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id= act.id " +
+                "left join rdvts_oltp.vehicle_m as vm on vam.vehicle_id = vm.id " +
+                "left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
+                "where vm.is_active = true " ;
+        if (id > 0){
+            qry +=" and act.work_id = :id " ;
+            sqlParam.addValue("id", id);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
+    }
+
+    public List<RoadMasterDto> getRoadArray(int id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry ="select gcm.*,gm.work_id from rdvts_oltp.geo_construction_m as gcm left join rdvts_oltp.geo_master as gm on gm.id = gcm.geo_master_id " +
+                "where gcm.is_active = true ";
+        if (id > 0){
+            qry +=" and gm.work_id = :id " ;
+            sqlParam.addValue("id", id);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
+    }
 }
