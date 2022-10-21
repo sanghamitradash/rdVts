@@ -90,13 +90,18 @@ public class ContractorController {
         try {
             Page<ContractorDto> contractorListPage = contractorService.getContractorDetails(contractor);
             List<ContractorDto> contractorList = contractorListPage.getContent();
-            response.setData(contractorList);
-            response.setMessage("contractor List");
-            response.setStatus(1);
-            response.setDraw(draw);
-            response.setRecordsFiltered(contractorListPage.getTotalElements());
-            response.setRecordsTotal(contractorListPage.getTotalElements());
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            Integer start1=start;
+            for(int i=0;i<contractorList.size();i++) {
+                start1 = start1 + 1;
+                contractorList.get(i).setSlNo(start1);
+                response.setData(contractorList);
+                response.setMessage("contractor List");
+                response.setStatus(1);
+                response.setDraw(draw);
+                response.setRecordsFiltered(contractorListPage.getTotalElements());
+                response.setRecordsTotal(contractorListPage.getTotalElements());
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            }
         } catch (Exception e) {
             response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
