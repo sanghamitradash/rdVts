@@ -180,14 +180,15 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         int resultCount = 0;
-        String qry = "SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
-                "vm.chassis_no,vm.engine_no,vm.is_active as active,device.device_id as deviceId, " +
-                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName " +
-                "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
-                "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id " +
-                " left join rdvts_oltp.vehicle_work_mapping as work on vm.id=work.vehicle_id  " +
-                " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id " +
-                " left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id where vm.is_active=true ";
+        String qry = "SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model, vm.chassis_no,  " +
+                "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,  " +
+                "concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName " +
+                "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id  " +
+                "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id  " +
+                "left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id  " +
+                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id  " +
+                "left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id where vm.is_active=true ";
+
         if (vehicle.getVehicleTypeId() > 0) {
             qry += " and vm.vehicle_type_id=:vehicleTypeId ";
             sqlParam.addValue("vehicleTypeId", vehicle.getVehicleTypeId());
@@ -196,9 +197,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             qry += " and device.device_id=:deviceId ";
             sqlParam.addValue("deviceId", vehicle.getDeviceId());
         }
-        if (vehicle.getWorkId() > 0) {
+      /*  if (vehicle.getWorkId() > 0) {
             qry += " and work.work_id=:workId ";
             sqlParam.addValue("workId", vehicle.getWorkId());
+        }*/
+
+        if (vehicle.getActivityId() > 0) {
+            qry += " and activity.activity_id=:activityId ";
+            sqlParam.addValue("activityId", vehicle.getActivityId());
         }
 
         //Validation on basis of userLevel and lower level user
@@ -319,8 +325,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         Integer count = 0;
         boolean work = false;
         String qry = "select count(id)  from  rdvts_oltp.vehicle_work_mapping " +
-                "where vehicle_id=5 and is_active=true and " +
-                "deactivation_date is null and start_time <=now()";
+                "where vehicle_id=5 and is_active=true and start_time <=now() " +
+                //"deactivation_date is null and start_time <=now()";
         sqlParam.addValue("vehicleId", vehicleId);
         count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
         if (count > 0) {

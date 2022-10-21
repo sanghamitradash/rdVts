@@ -165,8 +165,8 @@ public class VehicleServiceImpl implements VehicleService {
               }
 
        @Override
-       public VehicleActivityMappingEntity addVehicleActivityMapping(VehicleActivityMappingEntity vehicleActivityMappingEntity) {
-           return vehicleActivityMappingRepo.save(vehicleActivityMappingEntity);
+       public List<VehicleActivityMappingEntity> addVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMappingEntity) {
+           return vehicleActivityMappingRepo.saveAll(vehicleActivityMappingEntity);
        }
 
     @Override

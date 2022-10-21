@@ -12,6 +12,7 @@ public class VehicleFilterDto {
     private Integer userId;
     private Integer vehicleTypeId;
     private Integer  deviceId;
+    private Integer activityId;
     private Integer workId;
     private Integer offSet;
     private Integer limit;

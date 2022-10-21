@@ -45,7 +45,7 @@ public interface VehicleService {
 
     VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping, Integer id);
 
-    VehicleActivityMappingEntity addVehicleActivityMapping(VehicleActivityMappingEntity vehicleActivityMappingEntity);
+    List<VehicleActivityMappingEntity> addVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMappingEntity);
 
     List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId);
 
