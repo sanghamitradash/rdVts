@@ -425,5 +425,47 @@ public class VehicleController {
         return response;
     }
 
+    @PostMapping("/addVehicleActivityMapping")
+    public RDVTSResponse saveVTUVendor(@RequestParam String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            VehicleActivityMappingEntity vehicleActivityMappingEntity = new VehicleActivityMappingEntity();
+            ObjectMapper mapper = new ObjectMapper();
+            vehicleActivityMappingEntity = mapper.readValue(data, VehicleActivityMappingEntity.class);
 
+            vehicleActivityMappingEntity = vehicleService.addVehicleActivityMapping(vehicleActivityMappingEntity);
+            result.put("addVehicleActivityMapping", vehicleActivityMappingEntity);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
+            response.setMessage("Vehicle Activity Created Successfully!!");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getVehicleByActivityId")
+    public RDVTSResponse getVehicleByActivityId(@RequestParam(name = "activityId", required = false) Integer activityId, Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId, userId);
+            result.put("VehicleActivityMapping", veActMapDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Vehicle By activityId");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 }

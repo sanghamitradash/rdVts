@@ -49,6 +49,9 @@ public class VehicleServiceImpl implements VehicleService {
 
        @Autowired
        private VehicleRepositoryImpl vehicleRepositoryimpl;
+
+       @Autowired
+       private VehicleActivityMappingRepository vehicleActivityMappingRepo;
        @Override
        public VehicleMaster saveVehicle(VehicleMaster vehicle) {
         return vehicleMasterSaveRepository.save(vehicle);
@@ -161,8 +164,18 @@ public class VehicleServiceImpl implements VehicleService {
                    return vehicleDeviceMappingRepository.save(vehicleDeviceMapping);
               }
 
-
        @Override
+       public VehicleActivityMappingEntity addVehicleActivityMapping(VehicleActivityMappingEntity vehicleActivityMappingEntity) {
+           return vehicleActivityMappingRepo.save(vehicleActivityMappingEntity);
+       }
+
+    @Override
+    public List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId) {
+        return vehicleRepositoryimpl.getVehicleByActivityId(activityId, userId);
+    }
+
+
+    @Override
        public List<VehicleWorkMappingDto>  getVehicleWorkMapping(Integer vehicleId) {
               return vehicleRepository.getVehicleWorkMapping(vehicleId);
        }
