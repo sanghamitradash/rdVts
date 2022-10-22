@@ -10,6 +10,7 @@ import gov.orsac.RDVTS.repository.VehicleOwnerMappingRepository;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.repositoryImpl.DeviceRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
+import gov.orsac.RDVTS.service.ActivityService;
 import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.VehicleService;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +41,9 @@ public class VehicleController {
     private VehicleRepositoryImpl  vehicleRepositoryImpl;
     @Autowired
     private DeviceRepositoryImpl deviceRepositoryImpl;
+
+    @Autowired
+    private ActivityService activityService;
     @PostMapping("/addVehicle")
     public RDVTSResponse saveVehicle(@RequestParam(name = "vehicle") String vehicleData,
                                      @RequestParam (name = "vehicleDeviceMapping",required = false) String vehicleDeviceMappingData,
@@ -430,11 +434,13 @@ public class VehicleController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            VehicleActivityMappingEntity vehicleActivityMappingEntity = new VehicleActivityMappingEntity();
+            List<VehicleActivityMappingEntity> vehicleActivityMappingEntity = new ArrayList<>();
+            List<ActivityEntity> activityEntities = new ArrayList<>();
             ObjectMapper mapper = new ObjectMapper();
-            vehicleActivityMappingEntity = mapper.readValue(data, VehicleActivityMappingEntity.class);
+//            vehicleActivityMappingEntity = mapper.readValue(data, VehicleActivityMappingEntity.class);
 
             vehicleActivityMappingEntity = vehicleService.addVehicleActivityMapping(vehicleActivityMappingEntity);
+//            List<ActivityEntity> activityEntity = activityService.saveActivity(activityEntities);
             result.put("addVehicleActivityMapping", vehicleActivityMappingEntity);
             response.setData(result);
             response.setStatus(1);
