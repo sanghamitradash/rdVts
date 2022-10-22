@@ -67,7 +67,7 @@ public class VehicleController {
         }
         try {
            VehicleMaster vehicleNo= vehicleMasterSaveRepository.getByVehicleNo(vehicle.getVehicleNo());
-           if(vehicleNo.getVehicleNo()==null) {
+           if(vehicleNo==null) {
                if (vehicle.getVehicleTypeId() != null && vehicle.getVehicleNo() != null && vehicle.getChassisNo() != null
                        && vehicle.getEngineNo() != null && vehicle.getSpeedLimit() != null) {
                    VehicleMaster saveVehicle = vehicleService.saveVehicle(vehicle);
@@ -199,14 +199,21 @@ public class VehicleController {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
             Integer start1=start;
+            boolean tracking=false;
             for(int i=0;i<vehicleList.size();i++){
                     start1=start1+1;
                 vehicleList.get(i).setSlNo(start1);
                 boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
                // boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
-                DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
-                boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
+               // boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
+                if(vehicleList.get(i).getDeviceId()!=null) {
+                    DeviceDto deviceData = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
+                    boolean trackingVehicle = vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
+                    tracking=trackingVehicle;
+                }
                 vehicleList.get(i).setDeviceAssigned(device);
+               // vehicleList.get(i).setWorkAssigned(work);
+                vehicleList.get(i).setTrackingStatus(tracking);
                 //vehicleList.get(i).setWorkAssigned(work);
                 vehicleList.get(i).setTrackingStatus(tracking);
             }
@@ -436,19 +443,22 @@ public class VehicleController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<VehicleActivityMappingEntity> vehicleActivityMappingEntity = new ArrayList<>();
-            List<ActivityEntity> activityEntities = new ArrayList<>();
             ObjectMapper mapper = new ObjectMapper();
-//            vehicleActivityMappingEntity = mapper.readValue(data, VehicleActivityMappingEntity.class);
 
-            vehicleActivityMappingEntity = vehicleService.addVehicleActivityMapping(vehicleActivityMappingEntity);
-//            List<ActivityEntity> activityEntity = activityService.saveActivity(activityEntities);
-            result.put("addVehicleActivityMapping", vehicleActivityMappingEntity);
+            /*List<VehicleActivityMappingEntity> vehicleActivityMappingEntity =mapper.readValue(vehicleActivityData, mapper.getTypeFactory().constructCollectionType(List.class, VehicleActivityMappingEntity.class));
+            List<ActivityEntity> activityEntityList = mapper.readValue(activity, mapper.getTypeFactory().constructCollectionType(List.class, ActivityEntity.class));*/
+            ActivityDto activity=mapper.readValue(data,ActivityDto.class);
+            ActivityEntity activityMaster=activityService.addActivity(activity);
+            List<VehicleActivityMappingEntity> vehicleActivity=activityService.saveVehicleActivity(activity.getVehicleActivity(),activityMaster.getId());
+
+            result.put("activityMaster", activityMaster);
+            result.put("vehicleActivity", vehicleActivity);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
             response.setMessage("Vehicle Activity Created Successfully!!");
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),

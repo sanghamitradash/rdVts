@@ -22,10 +22,28 @@ public class WorkEntity {
     private Integer id;
 
     @Column(name = "g_work_id")
-    private Integer workId;
+    private Integer geoWorkId;
 
     @Column(name = "g_work_name")
-    private String workName;
+    private String geoWorkName;
+
+    @Column(name = "award_date")
+    private Date awardDate;
+
+    @Column(name = "completion_date")
+    private Date completionDate;
+
+    @Column(name = "pmis_finalize_date")
+    private Date pmisFinalizeDate;
+
+    @Column(name = "work_status")
+    private Integer workStatus;
+
+    @Column(name = "approval_status")
+    private Integer approvalStatus;
+
+    @Column(name = "approved_by")
+    private Integer approvedBy;
 
     @Column(name="is_active",nullable = false)
     private Boolean isActive=true;
