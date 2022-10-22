@@ -1,9 +1,11 @@
 package gov.orsac.RDVTS.dto;
 
+import gov.orsac.RDVTS.entities.ActivityEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -31,4 +33,6 @@ public class VehicleActivityMappingDto {
     private Double speedLimit;
     private String chassisNo;
     private String engineNo;
+
+    List<ActivityEntity> activityEntityList;
 }
