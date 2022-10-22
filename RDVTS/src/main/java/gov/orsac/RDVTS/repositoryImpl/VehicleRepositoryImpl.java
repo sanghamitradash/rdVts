@@ -341,11 +341,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         boolean tracking = false;
         String qry = "select * from rdvts_oltp.vtu_location where imei=:imeiNo and date_time=now()";
         sqlParam.addValue("imeiNo", imeiNo);
-        count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
-        if (count > 0) {
-            tracking = true;
+        try {
+            count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+            return true;
         }
-        return tracking;
+        catch(Exception e){
+            return  false;
+
+        }
     }
 
     @Override
