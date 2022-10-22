@@ -208,7 +208,11 @@ public class VehicleServiceImpl implements VehicleService {
        public List<LocationDto> getLocationArray(int id) throws ParseException {
               List<LocationDto> locationList=new ArrayList<>();
 
+
+             int count=vehicleRepositoryimpl.getvehicleCountByWorkId(id);
+
               for(int i=0;i<2;i++){
+
                      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
                      Date dateTime = formatter.parse("2022-10-10 12:10:00");
                      LocationDto location=new LocationDto();

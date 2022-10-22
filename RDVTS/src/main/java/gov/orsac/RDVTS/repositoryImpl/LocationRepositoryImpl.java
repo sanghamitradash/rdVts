@@ -157,7 +157,7 @@ public class LocationRepositoryImpl {
             }
 
             if (deviceVehicleCreatedOn!=null && deviceVehicleDeactivationDate!=null){
-                qry+="and date_time BETWEEN :createdOn AND :deactivationDate ";
+                qry+=" OR date_time BETWEEN :createdOn AND :deactivationDate ";
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
@@ -174,7 +174,7 @@ public class LocationRepositoryImpl {
                     "\tFROM rdvts_oltp.vtu_location where is_active=true ";
 
             if (startDate !=null && endDate !=null){
-                qry+="and date_time BETWEEN :startDate AND :endDate ";
+                qry+=" and date_time BETWEEN :startDate AND :endDate ";
                 sqlParam.addValue("startDate", startDate);
                 sqlParam.addValue("endDate", endDate);
             }
@@ -184,7 +184,7 @@ public class LocationRepositoryImpl {
             }
 
             if (deviceVehicleCreatedOn!=null && deviceVehicleDeactivationDate!=null){
-                qry+="and date_time BETWEEN :createdOn AND :deactivationDate ";
+                qry+=" OR  date_time BETWEEN :createdOn AND :deactivationDate ";
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
@@ -220,7 +220,7 @@ public class LocationRepositoryImpl {
                     "\tFROM rdvts_oltp.vtu_location where  is_active=true ";
 
             if (startDate !=null && endDate !=null){
-                qry+="and date_time BETWEEN :startDate AND :endDate ";
+                qry+=" OR date_time BETWEEN :startDate AND :endDate ";
                 sqlParam.addValue("startDate", startDate);
                 sqlParam.addValue("endDate", endDate);
             }
@@ -229,7 +229,7 @@ public class LocationRepositoryImpl {
             }
 
             if (deviceVehicleCreatedOn!=null && deviceVehicleDeactivationDate!=null){
-                qry+="and date_time BETWEEN :createdOn AND :deactivationDate ";
+                qry+=" OR date_time BETWEEN :createdOn AND :deactivationDate ";
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
@@ -246,7 +246,7 @@ public class LocationRepositoryImpl {
                     "\tFROM rdvts_oltp.vtu_location where is_active=true ";
 
             if (startDate !=null && endDate !=null){
-                qry+="and date_time BETWEEN :startDate AND :endDate ";
+                qry+=" OR date_time BETWEEN :startDate AND :endDate ";
                 sqlParam.addValue("startDate", startDate);
                 sqlParam.addValue("endDate", endDate);
             }
@@ -256,7 +256,7 @@ public class LocationRepositoryImpl {
             }
 
 //            if (deviceVehicleCreatedOn!=null && deviceVehicleDeactivationDate!=null){
-//                qry+="and date_time BETWEEN :createdOn AND :deactivationDate ";
+//                qry+=" OR date_time BETWEEN :createdOn AND :deactivationDate ";
 //                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
 //                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
 //            }

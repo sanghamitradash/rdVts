@@ -104,6 +104,20 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     }
 
+    public int getvehicleCountByWorkId(Integer id){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT vd.id, vd.vehicle_id, vd.device_id, vd.installation_date,vd.installed_by,device.imei_no_1 as imeiNo1,device.sim_icc_id_1 as simIccId1," +
+                "device.mobile_number_1 as mobileNumber1,device.imei_no_2 as imeiNo2,device.sim_icc_id_2 as simIccId2," +
+                "device.mobile_number_2 as mobileNumber2,device.model_name,device.device_no as deviceNo " +
+                "FROM rdvts_oltp.vehicle_device_mapping as vd " +
+                "left join rdvts_oltp.device_m as device on vd.device_id=device.id where vehicle_id=:vehicleId and vd.is_active=false  ";
+
+        sqlParam.addValue("vehicleId", id);
+
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(Integer.class));
+
+    }
+
     @Override
     public List<VehicleDeviceMappingDto> getVehicleDeviceMappingList(List<Integer> vehicleId) {
         List<VehicleDeviceMappingDto> vehicleDevice = new ArrayList<>();
@@ -136,7 +150,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             vehicleWorkEndDate = new Date();
         }
         if (vehicleWorkStartDate != null && vehicleWorkEndDate != null) {
-            qry += "  and deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
+            qry += "  OR deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
             sqlParam.addValue("vehicleWorkStartDate", vehicleWorkStartDate);
             sqlParam.addValue("vehicleWorkEndDate", vehicleWorkEndDate);
         }
@@ -463,8 +477,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "LEFT JOIN rdvts_oltp.work_m as wm on wm.id=gm.work_id " +
                 "LEFT JOIN rdvts_oltp.activity_m as am on am.work_id=wm.id " +
                 "LEFT JOIN rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=am.id " +
-                "LEFT JOIN rdvts_oltp.vehicle_m as vm on vm.id=vam.vehicle_id where vm.id=5";
-        sqlParam.addValue("vehicleId", vehicleId);
+                "LEFT JOIN rdvts_oltp.vehicle_m as vm on vm.id=vam.vehicle_id where vm.id= :vehicleId";
+                if (vehicleId>0){
+                    qry+=" and vm.id= :vehicleId";
+                    sqlParam.addValue("vehicleId", vehicleId);
+                }
+
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
     }
 }
