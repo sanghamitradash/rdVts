@@ -180,16 +180,16 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         int resultCount = 0;
-        String qry = "SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model, vm.chassis_no,  " +
+        String qry = "SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model, vm.chassis_no, " +
                 "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,  " +
-                "concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName   " +
-                "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id  " +
-                "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id  " +
+                "concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName  " +
+                "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id   " +
+                "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id  and device.is_active=true " +
                 "left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id   " +
-                "left join rdvts_oltp.activity_m as am on am.id = activity.activity_id  " +
-                "left join rdvts_oltp.work_m as work on work.id = am.work_id  " +
-                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id  " +
-                "left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id where vm.is_active=true and device.is_active=true ";
+                "left join rdvts_oltp.activity_m as am on am.id = activity.activity_id   " +
+                "left join rdvts_oltp.work_m as work on work.id = am.work_id   " +
+                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id   " +
+                "left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id where vm.is_active=true ";
 
         if (vehicle.getVehicleTypeId() > 0) {
             qry += " and vm.vehicle_type_id=:vehicleTypeId ";
@@ -262,10 +262,13 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     @Override
     public List<VehicleMasterDto> getUnAssignedVehicleData(List<Integer> userIdList, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select vm.* from rdvts_oltp.vehicle_m as vm  " +
-                " LEFT join rdvts_oltp.vehicle_owner_mapping as vom on vom.vehicle_id=vm.id " +
-                "where vm.id not in(select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping " +
-                " where is_active=true)  ";
+        String qry = "SELECT vm.id,vm.vehicle_no,vm.vehicle_type_id,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no,vm.is_active,vm.created_by,vm.created_on,  " +
+                "vm.updated_by,vm.updated_on,  " +
+                "type.name as vehicleTypeName from rdvts_oltp.vehicle_m as vm   " +
+                "LEFT join rdvts_oltp.vehicle_owner_mapping as vom on vom.vehicle_id=vm.id   " +
+                "left join rdvts_oltp.vehicle_type as type on type.id =vm.vehicle_type_id  " +
+                "where vm.id not in(select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping  " +
+                " where is_active=true) ";
         if (userIdList != null && userIdList.size() > 0) {
             qry += "or vom.user_id in(:userIdList)";
             sqlParam.addValue("userIdList", userIdList);
