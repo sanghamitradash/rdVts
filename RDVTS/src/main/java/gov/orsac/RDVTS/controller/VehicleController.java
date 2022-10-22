@@ -203,8 +203,6 @@ public class VehicleController {
                 vehicleList.get(i).setSlNo(start1);
                 boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
                 boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
-                DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
-                boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
                // boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
                 if(vehicleList.get(i).getDeviceId()!=null) {
                     DeviceDto deviceData = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
