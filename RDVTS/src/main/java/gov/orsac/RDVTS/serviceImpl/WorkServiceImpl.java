@@ -55,8 +55,8 @@ public class WorkServiceImpl implements WorkService {
         if (existingWork == null) {
             throw new RecordNotFoundException("WorkEntity", "id", id);
         }
-        existingWork.setWorkId(workDto.getWorkId());
-        existingWork.setWorkName(workDto.getWorkName());
+        existingWork.setGeoWorkId(workDto.getGeoWorkId());
+        existingWork.setGeoWorkName(workDto.getGeoWorkName());
         existingWork.setUpdatedBy(workDto.getUpdatedBy());
         existingWork.setCreatedBy(workDto.getCreatedBy());
 
