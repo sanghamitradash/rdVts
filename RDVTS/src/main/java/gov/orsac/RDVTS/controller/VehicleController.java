@@ -178,7 +178,6 @@ public class VehicleController {
     public RDVTSListResponse getVehicleList(@RequestParam(name = "vehicleTypeId") Integer vehicleTypeId,
                                             @RequestParam(name = "deviceId") Integer deviceId,
                                             @RequestParam(name = "workId") Integer workId,
-                                            @RequestParam(name = "activityId")Integer activityId,
                                             @RequestParam(name = "start") Integer start,
                                             @RequestParam(name = "length") Integer length,
                                             @RequestParam(name = "draw") Integer draw,
@@ -188,7 +187,6 @@ public class VehicleController {
         vehicle.setVehicleTypeId(vehicleTypeId);
         vehicle.setDeviceId(deviceId);
         vehicle.setWorkId(workId);
-        vehicle.setActivityId(activityId);
         vehicle.setLimit(length);
         vehicle.setOffSet(start);
         vehicle.setUserId(userId);
@@ -204,6 +202,9 @@ public class VehicleController {
                     start1=start1+1;
                 vehicleList.get(i).setSlNo(start1);
                 boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
+                boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
+                DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
+                boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
                // boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
                 if(vehicleList.get(i).getDeviceId()!=null) {
                     DeviceDto deviceData = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
@@ -211,6 +212,8 @@ public class VehicleController {
                     tracking=trackingVehicle;
                 }
                 vehicleList.get(i).setDeviceAssigned(device);
+                vehicleList.get(i).setWorkAssigned(work);
+                vehicleList.get(i).setTrackingStatus(tracking);
                 //vehicleList.get(i).setWorkAssigned(work);
                 vehicleList.get(i).setTrackingStatus(tracking);
             }
@@ -440,19 +443,22 @@ public class VehicleController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<VehicleActivityMappingEntity> vehicleActivityMappingEntity = new ArrayList<>();
-            List<ActivityEntity> activityEntities = new ArrayList<>();
             ObjectMapper mapper = new ObjectMapper();
-//            vehicleActivityMappingEntity = mapper.readValue(data, VehicleActivityMappingEntity.class);
 
-            vehicleActivityMappingEntity = vehicleService.addVehicleActivityMapping(vehicleActivityMappingEntity);
-//            List<ActivityEntity> activityEntity = activityService.saveActivity(activityEntities);
-            result.put("addVehicleActivityMapping", vehicleActivityMappingEntity);
+            /*List<VehicleActivityMappingEntity> vehicleActivityMappingEntity =mapper.readValue(vehicleActivityData, mapper.getTypeFactory().constructCollectionType(List.class, VehicleActivityMappingEntity.class));
+            List<ActivityEntity> activityEntityList = mapper.readValue(activity, mapper.getTypeFactory().constructCollectionType(List.class, ActivityEntity.class));*/
+            ActivityDto activity=mapper.readValue(data,ActivityDto.class);
+            ActivityEntity activityMaster=activityService.addActivity(activity);
+            List<VehicleActivityMappingEntity> vehicleActivity=activityService.saveVehicleActivity(activity.getVehicleActivity(),activityMaster.getId());
+
+            result.put("activityMaster", activityMaster);
+            result.put("vehicleActivity", vehicleActivity);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
             response.setMessage("Vehicle Activity Created Successfully!!");
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
