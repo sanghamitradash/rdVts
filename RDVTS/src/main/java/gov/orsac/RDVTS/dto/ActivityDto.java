@@ -1,10 +1,12 @@
 package gov.orsac.RDVTS.dto;
 
+import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -27,4 +29,5 @@ public class ActivityDto {
     private Date updatedOn;
     private Integer activityStatus;
     private Integer slNo;
+    List<VehicleActivityMappingEntity> vehicleActivity;
 }

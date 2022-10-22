@@ -18,8 +18,9 @@ public class WorkDto {
 
     private Integer id;
     private Integer userId;
-    private Integer workId;
-    private String workName;
+    private Integer geoWorkId;
+    private Integer activityId;
+    private String geoWorkName;
     private Boolean isActive=true;
     private Integer createdBy;
     private Date createdOn;

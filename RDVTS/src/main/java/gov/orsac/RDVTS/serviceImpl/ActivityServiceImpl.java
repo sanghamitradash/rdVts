@@ -1,12 +1,18 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.dto.ActivityDto;
+import gov.orsac.RDVTS.dto.VehicleActivityMappingDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
+import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
+import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.ActivityMasterRepository;
 import gov.orsac.RDVTS.repository.ActivityRepository;
+import gov.orsac.RDVTS.repository.VehicleActivityMappingRepository;
 import gov.orsac.RDVTS.repositoryImpl.ActivityRepositoryImpl;
 import gov.orsac.RDVTS.service.ActivityService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -26,6 +32,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     ActivityRepositoryImpl activityRepositoryImpl;
+
+    @Autowired
+    VehicleActivityMappingRepository vehicleActivityMappingRepository;
 
 
     @Override
@@ -76,7 +85,42 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepository.getActivityList(activity);
     }
 
+    @Override
+    public ActivityEntity addActivity(ActivityDto activity) {
+        ActivityEntity activityEntity = new ActivityEntity();
+        BeanUtils.copyProperties(activity, activityEntity);
+        return activityMasterRepository.save(activityEntity);
+    }
 
+    @Override
+    public List<VehicleActivityMappingEntity> saveVehicleActivity(List<VehicleActivityMappingEntity> vehicleActivity, Integer id) {
+
+
+        for(VehicleActivityMappingEntity vehicleActivityMappingEntity1 : vehicleActivity) {
+
+            vehicleActivityMappingEntity1.setActivityId(id);
+            vehicleActivityMappingEntity1.setIsActive(true);
+        }
+        return vehicleActivityMappingRepository.saveAll(vehicleActivity);
+
+
+}
+
+
+
+
+
+/*    @Override
+    public List<VehicleActivityMappingEntity> saveVehicleActivity(List<VehicleActivityMappingDto> vehicleActivity, Integer id) {
+        List<VehicleActivityMappingEntity> vehicleActivityMappingEntities=new ArrayList<>();
+        for(VehicleActivityMappingDto VehicleActivity1 : vehicleActivity) {
+            VehicleActivity1.setActivityId(id);
+           // VehicleActivityMappingEntity vehicleActivityMappingEntity=new VehicleActivityMappingEntity();
+          //  BeanUtils.copyProperties(VehicleActivity1, vehicleActivityMappingEntity);
+            //vehicleActivityMappingEntities.add(vehicleActivityMappingRepository.save(vehicleActivity));
+        }
+        return vehicleActivityMappingRepository.saveAll(vehicleActivity);
+    }*/
 
 }
 
