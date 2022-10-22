@@ -336,12 +336,16 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry = "select count(id)  from  rdvts_oltp.vehicle_work_mapping " +
                 "where vehicle_id=5 and is_active=true and start_time <=now() " +
                 //"deactivation_date is null and start_time <=now()";
-        sqlParam.addValue("vehicleId", vehicleId);
-        count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
-        if (count > 0) {
-            work = true;
+                sqlParam.addValue("vehicleId", vehicleId);
+        try {
+            count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+            return true;
+        } catch (Exception e) {
+            if (count > 0) {
+                work = true;
+            }
+            return work;
         }
-        return work;
     }
 
     public boolean getTrackingLiveOrNot(Long imeiNo) {
