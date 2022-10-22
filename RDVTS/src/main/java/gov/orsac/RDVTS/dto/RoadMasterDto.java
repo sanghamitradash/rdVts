@@ -67,4 +67,7 @@ public class RoadMasterDto {
     private Integer roadStatus;
     private Integer approvalStatus;
     private Integer approvedBy;
+
+    private Integer activityId;
+    private Integer vehicleId;
 }

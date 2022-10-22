@@ -816,11 +816,17 @@ public class UserController {
 //    }
 
     @PostMapping("/sendOtpToUser")
-    public RDVTSResponse sendOtpToUser(@RequestParam Long mobile) {
+    public RDVTSResponse sendOtpToUser(@RequestParam String mobile) {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
+        try {
+
+            Long.parseLong(mobile);
+
+
+
         try{
-            UserDto userDtos = userService.getUserBymobile(mobile);
+            UserDto userDtos = userService.getUserBymobile(Long.parseLong(mobile));
             //UserEntity user = userService.findUserByMobileAndEmail(email);
             if (!userDtos.toString().isEmpty()) {
 
@@ -857,6 +863,13 @@ public class UserController {
             rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
         }
+        }catch (NumberFormatException e) {
+            e.printStackTrace();
+            e.printStackTrace();
+            rdvtsResponse.setStatus(0);
+            rdvtsResponse.setMessage("Something went wrong!! May be Invalid Mobile Number!!");
+            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+        }
 
 
         return rdvtsResponse;
@@ -873,42 +886,51 @@ public class UserController {
         UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(userDtos.getId());
 
         if (!userDtos.toString().isEmpty()) {
-            if (userDtos.getOtp() == Integer.parseInt(param.get("otp"))) {
+            if (param.get("otp")==null){
+                if (userDtos.getOtp() == Integer.parseInt(param.get("otp"))) {
 
-                boolean verifyuserpassword = encoder.matches(param.get("password"), userPasswordMasterDto.getPassword());
+                    boolean verifyuserpassword = encoder.matches(param.get("password"), userPasswordMasterDto.getPassword());
 
 
-                if (verifyuserpassword) {
-                    rdvtsResponse.setStatus(0);
-                    rdvtsResponse.setData(result);
-                    rdvtsResponse.setMessage("New password shouldn't be same as old password !!!");
-                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
-                } else {
-
-                    userPasswordMasterDto.setPassword(param.get("password"));
-
-                   // UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userDtos.getId(), userPasswordMasterDto);
-                    UserPasswordMasterEntity updatedPassword = userService.resetPassword(userDtos.getId(), userPasswordMasterDto);
-
-                    if (!updatedPassword.toString().isEmpty()) {
-                        //rdvtsResponse.setData(updatedPassword);
-                        rdvtsResponse.setStatus(1);
-                        rdvtsResponse.setMessage("Password reset successfully !!!");
-                        rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                    } else {
+                    if (verifyuserpassword) {
                         rdvtsResponse.setStatus(0);
                         rdvtsResponse.setData(result);
-                        rdvtsResponse.setMessage("Something went wrong while resetting password !!!");
-                        rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                    }
-                }
+                        rdvtsResponse.setMessage("New password shouldn't be same as old password !!!");
+                        rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
+                    } else {
 
-            } else {
+                        userPasswordMasterDto.setPassword(param.get("password"));
+
+                        // UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userDtos.getId(), userPasswordMasterDto);
+                        UserPasswordMasterEntity updatedPassword = userService.resetPassword(userDtos.getId(), userPasswordMasterDto);
+
+                        if (!updatedPassword.toString().isEmpty()) {
+                            //rdvtsResponse.setData(updatedPassword);
+                            rdvtsResponse.setStatus(1);
+                            rdvtsResponse.setMessage("Password reset successfully !!!");
+                            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                        } else {
+                            rdvtsResponse.setStatus(0);
+                            rdvtsResponse.setData(result);
+                            rdvtsResponse.setMessage("Something went wrong while resetting password !!!");
+                            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                        }
+                    }
+
+                } else {
+                    rdvtsResponse.setStatus(0);
+                    rdvtsResponse.setData(result);
+                    rdvtsResponse.setMessage("Otp is not Correct Please Check Again !!!");
+                    rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                }
+            }
+            else {
                 rdvtsResponse.setStatus(0);
                 rdvtsResponse.setData(result);
                 rdvtsResponse.setMessage("Otp is not Correct Please Check Again !!!");
                 rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             }
+
         } else {
             rdvtsResponse.setStatus(0);
             rdvtsResponse.setData(result);

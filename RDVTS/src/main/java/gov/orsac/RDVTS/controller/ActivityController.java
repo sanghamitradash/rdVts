@@ -7,10 +7,12 @@ import gov.orsac.RDVTS.entities.ActivityEntity;
 import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,14 +47,16 @@ public class ActivityController {
         return response;
     }
 
-    @PostMapping("/getActivityById")
+        @PostMapping("/getActivityById")
     public RDVTSResponse getActivityById(@RequestParam(name = "activityId", required = false) Integer activityId,
-                                       @RequestParam(name = "userId",required = false)Integer userId) {
+                                         @RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            ActivityDto activity = activityService.getActivityById(activityId,userId);
+            List<ActivityDto> activity = activityService.getActivityById(activityId,userId);
+
             result.put("activity", activity);
+
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -108,6 +112,28 @@ public class ActivityController {
         }
         return response;
     }
+
+    @PostMapping("/getActivityDD")
+    public RDVTSResponse getActivityDD() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<ActivityDto> activityDD = activityService.getActivityDD();
+            result.put("activityDD", activityDD);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("List of Activity Dropdown");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 
 
 }

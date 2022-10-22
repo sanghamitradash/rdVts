@@ -1,12 +1,12 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.ActivityDto;
+import gov.orsac.RDVTS.dto.WorkDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
-import gov.orsac.RDVTS.entities.DeviceEntity;
-import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.ActivityMasterRepository;
 import gov.orsac.RDVTS.repository.ActivityRepository;
+import gov.orsac.RDVTS.repositoryImpl.ActivityRepositoryImpl;
 import gov.orsac.RDVTS.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,9 @@ public class ActivityServiceImpl implements ActivityService {
     @Autowired
     ActivityRepository activityRepository;
 
+    @Autowired
+    ActivityRepositoryImpl activityRepositoryImpl;
+
 
     @Override
     public List<ActivityEntity> saveActivity(List<ActivityEntity> activityEntity) {
@@ -36,7 +39,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityDto getActivityById(Integer activityId, Integer userId) {
+    public List<ActivityDto> getActivityById(Integer activityId, Integer userId) {
         return activityRepository.getActivityById(activityId,userId);
     }
 
@@ -60,6 +63,15 @@ public class ActivityServiceImpl implements ActivityService {
     public List<ActivityEntity> getAllActivity() {
         return activityMasterRepository.findAll();
     }
+
+
+
+    @Override
+    public List<ActivityDto> getActivityDD() {
+        return activityRepositoryImpl.getActivityDD();
+    }
+
+
 
 }
 
