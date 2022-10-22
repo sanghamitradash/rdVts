@@ -7,6 +7,7 @@ import gov.orsac.RDVTS.entities.ActivityEntity;
 import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -131,5 +132,57 @@ public class ActivityController {
         return response;
     }
 
+
+    @PostMapping("/getActivityList")
+    public RDVTSListResponse getActivityList(@RequestParam(name = "activityStatus") Integer activityStatus,
+                                            @RequestParam(name = "roadId") Integer roadId,
+                                            @RequestParam(name = "workId") Integer workId,
+                                            @RequestParam(name = "activityId")Integer activityId,
+                                            @RequestParam(name = "userId") String startDate,
+                                            @RequestParam(name = "userId") String endDate,
+                                            @RequestParam(name = "userId") String actualStartDate,
+                                            @RequestParam(name = "userId") String actualEndDate,
+                                            @RequestParam(name = "start") Integer start,
+                                            @RequestParam(name = "length") Integer length,
+                                            @RequestParam(name = "draw") Integer draw,
+                                            @RequestParam(name = "userId") Integer userId) {
+
+        ActivityListDto activity = new ActivityListDto();
+        activity.setActivityId(activityId);
+        activity.setActivityStatus(activityStatus);
+        activity.setWorkId(workId);
+        activity.setRoadId(roadId);
+        activity.setStartDate(startDate);
+        activity.setEndDate(endDate);
+        activity.setActualStartDate(actualStartDate);
+        activity.setActualEndDate(actualEndDate);
+        activity.setLimit(length);
+        activity.setOffSet(start);
+        activity.setUserId(userId);
+        activity.setDraw(draw);
+        RDVTSListResponse response = new RDVTSListResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Page<ActivityDto> activityListPage=activityService.getActivityList(activity);
+            List<ActivityDto> activityList = activityListPage.getContent();
+            Integer start1=start;
+            for(int i=0;i<activityList.size();i++){
+                start1=start1+1;
+                activityList.get(i).setSlNo(start1);
+            }
+            response.setData(activityList);
+            response.setMessage("Activity List");
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(activityListPage.getTotalElements());
+            response.setRecordsTotal(activityListPage.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),e.getMessage(),result);
+        }
+
+        return response;
+    }
 
 }

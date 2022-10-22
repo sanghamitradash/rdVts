@@ -26,4 +26,5 @@ public class ActivityDto {
     private Integer updatedBy;
     private Date updatedOn;
     private Integer activityStatus;
+    private Integer slNo;
 }

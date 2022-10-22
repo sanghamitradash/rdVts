@@ -67,7 +67,7 @@ public class VehicleController {
         }
         try {
            VehicleMaster vehicleNo= vehicleMasterSaveRepository.getByVehicleNo(vehicle.getVehicleNo());
-           if(vehicleNo.getVehicleNo()==null) {
+           if(vehicleNo==null) {
                if (vehicle.getVehicleTypeId() != null && vehicle.getVehicleNo() != null && vehicle.getChassisNo() != null
                        && vehicle.getEngineNo() != null && vehicle.getSpeedLimit() != null) {
                    VehicleMaster saveVehicle = vehicleService.saveVehicle(vehicle);
