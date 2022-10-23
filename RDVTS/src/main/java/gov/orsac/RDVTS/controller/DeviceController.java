@@ -173,6 +173,7 @@ public class DeviceController {
                                            @RequestParam(name = "gBlockId", required = false) Integer gBlockId,
                                            @RequestParam(name = "divisionId",required = false) Integer divisionId,
                                            @RequestParam(name = "userId",required = false)Integer userId,
+                                           @RequestParam(name = "isVehicleAssigned", required = false)Boolean isVehicleAssigned,
                                            @RequestParam(name = "start") Integer start,
                                            @RequestParam(name = "length") Integer length,
                                            @RequestParam(name = "draw") Integer draw) {
@@ -191,6 +192,7 @@ public class DeviceController {
         device.setGBlockId(gBlockId);
         device.setDivisionId(divisionId);
         device.setUserId(userId);
+        //device.setVehicleAssigned(isVehicleAssigned);
         device.setLimit(length);
         device.setOffSet(start);
         device.setDraw(draw);
@@ -217,10 +219,11 @@ public class DeviceController {
             response.setMessage("Device List");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(deviceListPage.getTotalElements());
+            response.setRecordsFiltered(Long.valueOf(deviceListPage.getNumberOfElements()));
             response.setRecordsTotal(deviceListPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
         return response;

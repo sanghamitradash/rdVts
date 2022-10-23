@@ -467,7 +467,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry ="select gcm.*,gm.work_id from rdvts_oltp.geo_construction_m as gcm " +
                 "left join rdvts_oltp.geo_master as gm on gm.road_id = gcm.id and gm.is_active = true " +
                 "where gcm.is_active = true ";
-        if (id > 0) {
+        if (id > 0){
             qry +=" and gm.work_id = :id " ;
             sqlParam.addValue("id", id);
         }
@@ -524,4 +524,19 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
 
 
+
+    public ActivityDto getActivityListByVehicleId(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT am.id,am.activity_name,am.activity_quantity,am.activity_start_date,am.activity_completion_date,am.actual_activity_start_date,   " +
+                "am.actual_activity_completion_date,am.executed_quantity,am.activity_status,status.name from rdvts_oltp.activity_m as am   " +
+                "left join rdvts_oltp.activity_status_m as status on status.id=am.activity_status  " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = am.id  "  +
+                "WHERE vam.is_active = true  ";
+
+        if(vehicleId>0){
+            qry+=" AND vam.vehicle_id=:vehicleId";
+        }
+        sqlParam.addValue("vehicleId", vehicleId);
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+    }
 }

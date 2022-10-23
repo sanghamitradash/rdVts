@@ -37,7 +37,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT am.id,am.activity_name,am.activity_quantity,am.activity_start_date,am.activity_completion_date,am.actual_activity_start_date, " +
-                "am.actual_activity_completion_date,am.executed_quantity,am.work_id,am.activity_status,status.name,work.g_work_name,work.work_status  " +
+                "am.actual_activity_completion_date,am.executed_quantity,am.work_id,am.activity_status,status.name,work.g_work_name,work.work_status,am.g_activity_id  " +
                 "from rdvts_oltp.activity_m as am  " +
                 "left join rdvts_oltp.activity_status_m as status on status.id = am.activity_status  " +
                 "left join rdvts_oltp.work_m as work on work.id =am.work_id   " +
@@ -58,6 +58,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
                 " FROM rdvts_oltp.activity_m";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
     }
+
+
     @Override
     public Page<ActivityDto> getActivityList(ActivityListDto activity) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
