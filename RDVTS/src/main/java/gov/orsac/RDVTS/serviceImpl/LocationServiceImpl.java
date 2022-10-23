@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class LocationServiceImpl implements LocationService {
@@ -54,6 +55,11 @@ public class LocationServiceImpl implements LocationService {
         List<VtuLocationDto> vtuLocationDtoList=locationRepository.getLastLocationrecordList(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);
         return vtuLocationDtoList;
 
+    }
+    @Override
+    public  Double getDistance(Map<String,Object> coordinates){
+        Double d=locationRepository.getDistance(coordinates);
+        return d;
     }
 
 

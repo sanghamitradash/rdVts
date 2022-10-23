@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
@@ -174,7 +175,7 @@ public class LocationRepositoryImpl {
                     "\tFROM rdvts_oltp.vtu_location where is_active=true ";
 
             if (startDate !=null && endDate !=null){
-                qry+=" and date_time BETWEEN :startDate AND :endDate ";
+                qry+=" OR date_time BETWEEN :startDate AND :endDate ";
                 sqlParam.addValue("startDate", startDate);
                 sqlParam.addValue("endDate", endDate);
             }
@@ -283,6 +284,14 @@ public class LocationRepositoryImpl {
 //
 //            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
 //        }
+    }
+
+
+    public  Double getDistance(Map<String,Object> coordinates){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select st_length(st_transform(st_setsrid(ST_GeomFromGeoJSON('"+coordinates.toString()+"'),4326),26986))";
+        //sqlParam.addValue("coordinates", );
+        return   namedJdbc.queryForObject(qry, sqlParam,Double.class);
     }
 
 
