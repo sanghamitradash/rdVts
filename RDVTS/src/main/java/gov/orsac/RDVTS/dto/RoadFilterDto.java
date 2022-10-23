@@ -27,4 +27,5 @@ public class RoadFilterDto {
 
     List<Integer> workIds;
     List<Integer> contractIds;
+    List<Integer> activityIds;
 }

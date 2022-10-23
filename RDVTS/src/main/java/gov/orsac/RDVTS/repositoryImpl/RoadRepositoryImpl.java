@@ -86,10 +86,13 @@ public class RoadRepositoryImpl {
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         int resultCount = 0;
         String queryString = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width, road.g_road_id as groadId, " +
-                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, geom.g_work_id as workIds, geom.g_contractor_id as contractIds, road.completed_road_length, road.sanction_date, road.road_code, " +
-                "road.road_status, road.approval_status, road.approved_by  " +
+                "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, geom.g_work_id as workIds, " +
+                "geom.g_contractor_id as contractIds, road.completed_road_length, road.sanction_date, road.road_code, " +
+                "road.road_status, road.approval_status, road.approved_by, am.id as activityId " +
                 "FROM rdvts_oltp.geo_construction_m AS road " +
-                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.id=road.geo_master_id " +
+                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.id=road.geo_master_id  " +
+                "LEFT JOIN rdvts_oltp.work_m as wm on wm.id=geom.work_id " +
+                "LEFT JOIN rdvts_oltp.activity_m as am on am.work_id=wm.id " +
                 "WHERE road.is_active = true ";
 
         if (roadFilterDto.getId() != null && roadFilterDto.getId() > 0) {
@@ -120,6 +123,11 @@ public class RoadRepositoryImpl {
         if (roadFilterDto.getContractIds() != null && !roadFilterDto.getContractIds().isEmpty()) {
             queryString += " AND geom.g_contractor_id IN (:contractIds)";
             sqlParam.addValue("contractIds", roadFilterDto.getContractIds());
+        }
+
+        if (roadFilterDto.getActivityIds() != null && !roadFilterDto.getActivityIds().isEmpty()) {
+            queryString += " AND am.id IN (:activityids)";
+            sqlParam.addValue("activityids", roadFilterDto.getActivityIds());
         }
 
         resultCount = count(queryString, sqlParam);
