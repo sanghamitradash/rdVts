@@ -219,7 +219,7 @@ public class DeviceController {
             response.setMessage("Device List");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(deviceListPage.getTotalElements());
+            response.setRecordsFiltered(Long.valueOf(deviceListPage.getNumberOfElements()));
             response.setRecordsTotal(deviceListPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {

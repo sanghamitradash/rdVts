@@ -127,11 +127,14 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
     public Page<DeviceInfo> getDeviceList(DeviceListDto deviceDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        PageRequest pageable = null;
+/*        PageRequest pageable = null;
         Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
         pageable = PageRequest.of(deviceDto.getDraw() - 1, deviceDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");*/
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        int pageNo = deviceDto.getOffSet()/deviceDto.getLimit();
+        PageRequest pageable = PageRequest.of(pageNo, deviceDto.getLimit(), Sort.Direction.fromString("asc"), "id");
+        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         int resultCount = 0;
 
 
