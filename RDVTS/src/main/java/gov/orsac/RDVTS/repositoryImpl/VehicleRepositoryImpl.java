@@ -174,11 +174,15 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     @Override
     public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
-        pageable = PageRequest.of(vehicle.getDraw() - 1, vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
+        /*PageRequest pageable = null;
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");*/
+       /* pageable = PageRequest.of(1, vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
+//        vehicle.getDraw() - 1   (vehicle.getOffSet()/vehicle.getLimit())+1
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");*/
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        PageRequest pageable = PageRequest.of((vehicle.getOffSet()/vehicle.getLimit())+1, vehicle.getLimit(), Sort.Direction.fromString("asc"), "id");
+        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+
         int resultCount = 0;
         String qry = "SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model, vm.chassis_no, " +
                 "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,  " +
@@ -317,15 +321,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry = "select count(id)  from  rdvts_oltp.vehicle_device_mapping " +
                 "where vehicle_id=:vehicleId and is_active=true and " +
                 "deactivation_date is null and created_on <=now()";
-
-        try {
-            sqlParam.addValue("vehicleId", vehicleId);
+        sqlParam.addValue("vehicleId",vehicleId);
             count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
-            device=true;
-        }
-        catch(Exception e){
-            device=false;
-        }
+
+       if(count>0){
+           device=true;
+       }
         return device;
     }
 
@@ -352,16 +353,13 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         Integer count = 0;
         boolean tracking = false;
-        String qry = "select * from rdvts_oltp.vtu_location where imei=:imeiNo and date_time=now()";
+        String qry = "select count(id) from rdvts_oltp.vtu_location where imei=:imeiNo and date(date_time)=date(now())";
         sqlParam.addValue("imeiNo", imeiNo);
-        try {
             count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
-            return true;
-        }
-        catch(Exception e){
-            return  false;
-
-        }
+            if(count>0){
+                tracking=true;
+            }
+      return tracking;
     }
 
     @Override
