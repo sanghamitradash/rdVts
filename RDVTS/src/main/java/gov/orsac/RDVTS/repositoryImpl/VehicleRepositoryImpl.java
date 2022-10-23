@@ -449,12 +449,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<VehicleMasterDto> getVehicleHistoryList(int id){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no,vm.is_active as active, " +
-                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on from rdvts_oltp.activity_m as act " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id= act.id " +
-                "left join rdvts_oltp.vehicle_m as vm on vam.vehicle_id = vm.id " +
-                "left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
-                "where vm.is_active = true " ;
+        String qry = "select vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicle_type_name,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no,vm.is_active as active, " +
+                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on  from rdvts_oltp.vehicle_m as vm " +
+                "join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id " +
+                "join rdvts_oltp.activity_m as act on vam.activity_id = act.id " +
+                "join rdvts_oltp.vehicle_type as vt on vt.id = vm.vehicle_type_id " +
+                "where vm.is_active = true and vam.is_active = true and act.is_active = true and vt.is_active= true  " ;
         if (id > 0){
             qry +=" and act.work_id = :id " ;
             sqlParam.addValue("id", id);
@@ -464,7 +464,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<RoadMasterDto> getRoadArray(int id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry ="select gcm.*,gm.work_id from rdvts_oltp.geo_construction_m as gcm left join rdvts_oltp.geo_master as gm on gm.id = gcm.geo_master_id " +
+        String qry ="select gcm.*,gm.work_id from rdvts_oltp.geo_construction_m as gcm " +
+                "left join rdvts_oltp.geo_master as gm on gm.road_id = gcm.id and gm.is_active = true " +
                 "where gcm.is_active = true ";
         if (id > 0){
             qry +=" and gm.work_id = :id " ;
@@ -498,6 +499,31 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         sqlParam.addValue("vehicleId", vehicleId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
     }
+
+    public List<Integer> getVehicleIdsByActivityId(List<Integer> activityList){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select vm.id as vehicle_id from rdvts_oltp.vehicle_m as vm " +
+                "join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id =vm.id " +
+                "where vm.is_active = true and vam.activity_id IN (:activityList) ";
+        sqlParam.addValue("activityList", activityList);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>());
+    }
+
+    public List<Integer> getDeviceIdsByVehicleIds(List<Integer> vehicleIds){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select device_id from rdvts_oltp.vehicle_device_mapping where is_active = true and vehicle_id IN (:vehicleIds) ";
+        sqlParam.addValue("vehicleIds", vehicleIds);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>());
+    }
+
+    public List<String> getImeiByDeviceId(List<Integer> deviceIds){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select imei_no_1 from rdvts_oltp.device_m where is_active = true and id IN (:deviceIds) ";
+        sqlParam.addValue("deviceIds", deviceIds);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>());
+    }
+
+
 
     public ActivityDto getActivityListByVehicleId(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();

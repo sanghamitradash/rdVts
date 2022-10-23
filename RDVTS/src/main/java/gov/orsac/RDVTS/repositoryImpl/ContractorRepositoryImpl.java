@@ -102,7 +102,7 @@ public class ContractorRepositoryImpl implements ContractorRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on, cm.updated_by,cm.updated_on,gm.work_id from rdvts_oltp.contractor_m as cm  " +
-                "left join rdvts_oltp.geo_master as gm on gm.contractor_id = cm.id  " +
+                "left join rdvts_oltp.geo_master as gm on gm.contractor_id = cm.id and gm.is_active = true " +
                 "where cm.is_active = true ";
 
         if(workId > 0){
