@@ -241,58 +241,20 @@ public class VehicleServiceImpl implements VehicleService {
               List<AlertDto> alertList=new ArrayList<>();
 
               List<ActivityDto> activityDtoList = workServiceImpl.getActivityByWorkId(id);
-              List<Integer> activityList=new ArrayList<>();
-              for(ActivityDto activity:activityDtoList){
-                  activityList.add(activity.getId());
-              }
-            /*  List<Integer> vehicleIds= vehicleRepositoryimpl.getVehicleIdsByActivityId(activityList);
-              List<Integer> deviceIds=vehicleRepositoryimpl.getDeviceByVehicleIds(vehicleIds);
-              List<String> imei=vehicleRepositoryimpl.getImeiByDeviceId(deviceIds);*/
-
-//              for(int i=0;i<2;i++){
-//                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-//                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-//                     AlertDto alert=new AlertDto();
-//                     alert.setVmmId(1);
-//                     alert.setAlertTypeId(1);
-//                     alert.setLatitude(20.78378783);
-//                     alert.setLongitude(81.78278278728);
-//                     alert.setAltitude(21.877878);
-//                     alert.setAccuracy(21.76737);
-//                     alert.setSpeed(20.2);
-//                     alert.setGpsDtm(dateTime);
-//                     alert.setActive(true);
-//                     alert.setResolve(true);
-//                     alert.setResolvedBy(1);
-//
-//
-//                     alertList.add(alert);
+//              List<Integer> activityList=new ArrayList<>();
+//              for(ActivityDto activity:activityDtoList){
+//                  activityList.add(activity.getId());
 //              }
+//              List<Integer> vehicleIds= vehicleRepositoryimpl.getVehicleIdsByActivityId(activityList);
+//              List<Integer> deviceIds=vehicleRepositoryimpl.getDeviceIdsByVehicleIds(vehicleIds);
+//              List<String> imei=vehicleRepositoryimpl.getImeiByDeviceId(deviceIds);
+
               return alertList;
        }
 
        @Override
        public List<RoadMasterDto> getRoadArray(int id) throws ParseException {
            return vehicleRepositoryimpl.getRoadArray(id);
-//              List<RoadMasterDto> roadList=new ArrayList<>();
-//              for(int i=0;i<2;i++){
-//                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-//                     Date dateTime = formatter.parse("2022-10-10 12:10:00");
-//                     RoadMasterDto road = new RoadMasterDto();
-//                     road.setId(1);
-//                     road.setPackageId(12);
-//                     road.setPackageName("package2");
-//                     road.setRoadName("road2");
-//                     road.setRoadLength(3.788);
-//                     road.setRoadLocation(2.555);
-//                     road.setRoadAllignment("right");
-//                     road.setRoadWidth(5.111);
-//                     road.setGroadId(1);
-//                     road.setGeoMasterId(2);
-//
-//                     roadList.add(road);
-//              }
-//              return roadList;
        }
 
        @Override
