@@ -67,7 +67,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         int resultCount = 0;
-        String qry = "select activity.id, activity_name,work.g_work_name as workName,construction.road_name,status.name as status,activity.activity_start_date,activity.activity_completion_date " +
+        String qry = "select activity.id, activity_name,work.g_work_name as workName,construction.road_name,status.name as status,"+
+                "activity.activity_start_date as startDate,activity.activity_completion_date as  endDate " +
                 "from rdvts_oltp.activity_m as activity " +
                 "left join rdvts_oltp.activity_status_m as status on status.id=activity.activity_status " +
                 "left join rdvts_oltp.work_m as work on activity.work_id=work.id " +
