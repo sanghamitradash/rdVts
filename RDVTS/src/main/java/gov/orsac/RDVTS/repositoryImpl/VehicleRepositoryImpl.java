@@ -481,4 +481,19 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         sqlParam.addValue("vehicleId", vehicleId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
     }
+
+    public ActivityDto getActivityListByVehicleId(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT am.id,am.activity_name,am.activity_quantity,am.activity_start_date,am.activity_completion_date,am.actual_activity_start_date,   " +
+                "am.actual_activity_completion_date,am.executed_quantity,am.activity_status,status.name from rdvts_oltp.activity_m as am   " +
+                "left join rdvts_oltp.activity_status_m as status on status.id=am.activity_status  " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = am.id  "  +
+                "WHERE vam.is_active = true  ";
+
+        if(vehicleId>0){
+            qry+=" AND vam.vehicle_id=:vehicleId";
+        }
+        sqlParam.addValue("vehicleId", vehicleId);
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+    }
 }

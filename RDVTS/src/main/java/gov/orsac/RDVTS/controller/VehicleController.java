@@ -130,6 +130,7 @@ public class VehicleController {
             List<AlertDto> alertList=vehicleService.getAlert(vehicleId);
             List<VehicleDeviceInfo> deviceHistory=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
             List<VehicleWorkMappingDto> workHistory=vehicleService.getVehicleWorkMappingList(vehicleId);
+            ActivityDto activity=vehicleService.getActivityListByVehicleId(vehicleId);
 
             result.put("vehicle", vehicle);
             result.put("device",device);
@@ -138,6 +139,7 @@ public class VehicleController {
             result.put("alertList",alertList);
             result.put("deviceHistoryList",deviceHistory);
             result.put("workHistoryList",workHistory);
+            result.put("activity",activity);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Vehicle By Id");
