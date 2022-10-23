@@ -154,7 +154,8 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
 
         if (deviceDto.getImeiNo1() != null && deviceDto.getImeiNo1() > 0) {
-            qry += " AND dm.imei_no_1=:imeiNo1 ";
+              qry += " AND dm.imei_no_1=:imeiNo1 ";
+            // qry += " AND dm.imei_no_1 ::varchar LIKE('imeiNo1%') ";
             sqlParam.addValue("imeiNo1", deviceDto.getImeiNo1());
         }
 
