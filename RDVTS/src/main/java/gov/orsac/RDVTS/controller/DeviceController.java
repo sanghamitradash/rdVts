@@ -214,9 +214,9 @@ public class DeviceController {
                 start1=start1+1;
                 deviceList.get(i).setSlNo(start1);
 
-               /* boolean device1= deviceRepositoryImpl.getDeviceAssignedOrNot(deviceList.get(i).getId());
+                boolean device1= deviceRepositoryImpl.getDeviceAssignedOrNot(deviceList.get(i).getId());
                 deviceList.get(i).setDeviceAssigned(device1);
-                deviceList.get(i).setVehicleAssigned(device1);*/
+                deviceList.get(i).setVehicleAssigned(device1);
 
             }
             //result.put("deviceList", deviceList);
