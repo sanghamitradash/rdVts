@@ -50,12 +50,16 @@ public class WorkRepositoryImpl {
 
     public Page<WorkDto> getWorkList(WorkDto workDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
-        if (workDto != null) {
-            pageable = PageRequest.of(workDto.getOffSet(), workDto.getLimit(), Sort.Direction.fromString("desc"), "id");
-            order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
-        }
+//        PageRequest pageable = null;
+//        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
+//        if (workDto != null) {
+//            pageable = PageRequest.of(workDto.getOffSet(), workDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+//            order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+//        }
+        int pageNo = workDto.getOffSet()/workDto.getLimit();
+        PageRequest pageable = PageRequest.of(pageNo, workDto.getLimit(),Sort.Direction.fromString("asc"),"id");
+        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0): new Sort.Order(Sort.Direction.DESC,"id");
+
         int resultCount = 0;
         String qry = "select wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
                 " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
