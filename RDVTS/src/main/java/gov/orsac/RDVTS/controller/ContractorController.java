@@ -85,6 +85,7 @@ public class ContractorController {
         contractor.setMobile(mobile);
         contractor.setLimit(length);
         contractor.setOffSet(start);
+        contractor.setDraw(draw);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -98,11 +99,12 @@ public class ContractorController {
                 response.setMessage("contractor List");
                 response.setStatus(1);
                 response.setDraw(draw);
-                response.setRecordsFiltered(contractorListPage.getTotalElements());
+                response.setRecordsFiltered(Long.valueOf(contractorListPage.getNumberOfElements()));
                 response.setRecordsTotal(contractorListPage.getTotalElements());
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
         return response;

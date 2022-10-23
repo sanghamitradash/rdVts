@@ -192,7 +192,7 @@ public class DeviceController {
         device.setGBlockId(gBlockId);
         device.setDivisionId(divisionId);
         device.setUserId(userId);
-        //device.setVehicleAssigned(isVehicleAssigned);
+        device.setIsVehicleAssigned(isVehicleAssigned);
         device.setLimit(length);
         device.setOffSet(start);
         device.setDraw(draw);
@@ -220,6 +220,7 @@ public class DeviceController {
             response.setStatus(1);
             response.setDraw(draw);
             response.setRecordsFiltered(Long.valueOf(deviceListPage.getNumberOfElements()));
+            response.setRecordsFiltered(deviceListPage.getTotalElements());
             response.setRecordsTotal(deviceListPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
