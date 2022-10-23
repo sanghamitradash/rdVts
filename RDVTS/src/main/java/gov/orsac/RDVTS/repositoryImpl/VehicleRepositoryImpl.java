@@ -317,10 +317,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry = "select count(id)  from  rdvts_oltp.vehicle_device_mapping " +
                 "where vehicle_id=:vehicleId and is_active=true and " +
                 "deactivation_date is null and created_on <=now()";
-        sqlParam.addValue("vehicleId", vehicleId);
-        count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
-        if (count > 0) {
-            device = true;
+
+        try {
+            sqlParam.addValue("vehicleId", vehicleId);
+            count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+            device=true;
+        }
+        catch(Exception e){
+            device=false;
         }
         return device;
     }

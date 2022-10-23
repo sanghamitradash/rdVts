@@ -197,6 +197,7 @@ public class VehicleController {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
             Integer start1=start;
+            boolean tracking=false;
             for(int i=0;i<vehicleList.size();i++){
                     start1=start1+1;
                 vehicleList.get(i).setSlNo(start1);
@@ -205,13 +206,16 @@ public class VehicleController {
                 DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
                 boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
                // boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
-               // DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
-               // boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
+                if(vehicleList.get(i).getDeviceId()!=null) {
+                    DeviceDto deviceData = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
+                    boolean trackingVehicle = vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
+                    tracking=trackingVehicle;
+                }
                 vehicleList.get(i).setDeviceAssigned(device);
                 vehicleList.get(i).setWorkAssigned(work);
                 vehicleList.get(i).setTrackingStatus(tracking);
                 //vehicleList.get(i).setWorkAssigned(work);
-                //vehicleList.get(i).setTrackingStatus(tracking);
+                vehicleList.get(i).setTrackingStatus(tracking);
             }
            /* result.put("vehicleList", vehicleList);
             result.put("recordsFiltered", vehicleListPage.getTotalElements());
