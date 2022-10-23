@@ -154,9 +154,9 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
 
         if (deviceDto.getImeiNo1() != null && deviceDto.getImeiNo1() > 0) {
-              qry += " AND dm.imei_no_1=:imeiNo1 ";
-            //qry += " AND dm.imei_no_1::varchar LIKE('imeiNo1%') ";
-            sqlParam.addValue("imeiNo1", deviceDto.getImeiNo1());
+              //qry += " AND dm.imei_no_1=:imeiNo1 ";
+             qry += " AND dm.imei_no_1::varchar LIKE :imeiNo1 ";
+            sqlParam.addValue("imeiNo1",String.valueOf(deviceDto.getImeiNo1()+"%"));
         }
 
         if (deviceDto.getImeiNo2() != null && deviceDto.getImeiNo2() > 0) {
@@ -181,8 +181,9 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             }
 
              if (deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0) {
-                    qry += " AND dm.mobile_number_1=:mobileNumber1 ";
-                    sqlParam.addValue("mobileNumber1", deviceDto.getMobileNumber1());
+                    qry += " AND dm.mobile_number_1::varchar LIKE :mobileNumber1 ";
+                   // qry += " AND dm.mobile_number_1=:mobileNumber1 ";
+                    sqlParam.addValue("mobileNumber1", String.valueOf(deviceDto.getMobileNumber1()+"%"));
                 }
 
                 if (deviceDto.getMobileNumber2() != null && deviceDto.getMobileNumber2() > 0) {
@@ -195,10 +196,18 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                     sqlParam.addValue("vtuVendorId", deviceDto.getVtuVendorId());
                 }
 
-        if ((deviceDto.getVehicleId() != null && deviceDto.getVehicleId() > 0)) {
+    /*           if (deviceDto.getIsVehicleAssigned() != null) {
+               qry += " AND vtu.id=:vtuVendorId ";
+               sqlParam.addValue("vtuVendorId", deviceDto.getIsVehicleAssigned());
+        }*/
+
+
+
+
+            if ((deviceDto.getVehicleId() != null && deviceDto.getVehicleId() > 0)) {
             qry += " AND vm.id=:vehicleId ";
             sqlParam.addValue("vehicleId", deviceDto.getVehicleId());
-        }
+            }
 
                 if (deviceDto.getBlockId() != null && deviceDto.getBlockId() > 0) {
                     qry += " AND dam.block_id=:blockId ";

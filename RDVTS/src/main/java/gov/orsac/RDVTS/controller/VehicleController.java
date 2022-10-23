@@ -125,20 +125,22 @@ public class VehicleController {
 
         try {
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
-            VehicleDeviceInfo device = vehicleService.getVehicleDeviceMapping(vehicleId);
-            List<VehicleWorkMappingDto> work = vehicleService.getVehicleWorkMapping(vehicleId);
-            LocationDto location = vehicleService.getLocation(vehicleId);
-            List<AlertDto> alertList = vehicleService.getAlert(vehicleId);
-            List<VehicleDeviceInfo> deviceHistory = vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
-            List<VehicleWorkMappingDto> workHistory = vehicleService.getVehicleWorkMappingList(vehicleId);
+            VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
+            List<VehicleWorkMappingDto> work=vehicleService.getVehicleWorkMapping(vehicleId);
+            LocationDto location=vehicleService.getLocation(vehicleId);
+            List<AlertDto> alertList=vehicleService.getAlert(vehicleId);
+            List<VehicleDeviceInfo> deviceHistory=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
+            List<VehicleWorkMappingDto> workHistory=vehicleService.getVehicleWorkMappingList(vehicleId);
+            ActivityDto activity=vehicleService.getActivityListByVehicleId(vehicleId);
 
             result.put("vehicle", vehicle);
-            result.put("device", device);
-            result.put("work", work);
-            result.put("location", location);
-            result.put("alertList", alertList);
-            result.put("deviceHistoryList", deviceHistory);
-            result.put("workHistoryList", workHistory);
+            result.put("device",device);
+            result.put("work",work);
+            result.put("location",location);
+            result.put("alertList",alertList);
+            result.put("deviceHistoryList",deviceHistory);
+            result.put("workHistoryList",workHistory);
+            result.put("activity",activity);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Vehicle By Id");
