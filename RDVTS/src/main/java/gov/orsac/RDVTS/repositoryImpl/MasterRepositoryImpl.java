@@ -256,14 +256,28 @@ public class MasterRepositoryImpl implements MasterRepository {
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         String queryString = " ";
-        queryString = "SELECT DISTINCT vtuM.id as vendorId, vtuM.vtu_vendor_name as vtuVendorName , vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, vtuM.is_active, vtuM.created_by,  " +
-                "vtuM.created_on, vtuM.updated_by, vtuM.updated_on FROM rdvts_oltp.vtu_vendor_m AS vtuM   " +
-                "WHERE vtuM.is_active = true ";
+        queryString = "SELECT DISTINCT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
+                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on " +
+                "FROM rdvts_oltp.vtu_vendor_m as vtuM " +
+                "Left join rdvts_oltp.device_m as dev on dev.vtu_vendor_id=vtuM.id and dev.is_active=true " +
+                "where vtuM.is_active=true ";
 
         if(vtuVendorFilterDto.getVendorId() != null && vtuVendorFilterDto.getVendorId() > 0){
             queryString += " AND vtuM.id=:vendorId ";
             sqlParam.addValue("vendorId", vtuVendorFilterDto.getVendorId());
         }
+
+        if(vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0){
+            queryString += " AND dev.id=:deviceId ";
+            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDeviceId());
+        }
+
+
+//        if (deviceIds != null && !deviceIds.isEmpty()) {
+//            queryString += " AND dev.id IN (:deviceIds)";
+//            sqlParam.addValue("deviceIds", deviceIds);
+//        }
+
 
 //        if(vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0){
 //            queryString += " AND dev.id=:deviceId ";
@@ -282,6 +296,16 @@ public class MasterRepositoryImpl implements MasterRepository {
 
         List<VTUVendorMasterDto> list = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
         return new PageImpl<>(list, pageable, resultCount);
+    }
+
+    @Override
+    public List<Integer> getDeviceByVendorId(Integer deviceId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select dev.id, dev.model_name  " +
+                "from rdvts_oltp.device_m as dev  " +
+                "where dev.vtu_vendor_id=deviceId";
+        sqlParam.addValue("deviceId", deviceId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 
     public List<DistrictBoundaryDto> getAllDistrict() {

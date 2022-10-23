@@ -18,4 +18,6 @@ public interface MasterRepository {
     List<UserLevelMaster> getAllUserLevel(Integer userLevelId);
     List<VTUVendorMasterDto> getVTUVendorById(Integer id, Integer userId);
     Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto);
+
+    List<Integer> getDeviceByVendorId(Integer deviceId);
 }

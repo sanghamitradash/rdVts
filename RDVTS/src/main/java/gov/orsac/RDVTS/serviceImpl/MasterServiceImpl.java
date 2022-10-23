@@ -260,9 +260,11 @@ public class MasterServiceImpl implements MasterService {
     public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto) {
 
         List<Integer> deviceIds = new ArrayList<>();
-
-
-        return masterRepository.getVTUVendorList(vtuVendorFilterDto);
+//        if (vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0) {
+//            deviceIds = masterRepository.getDeviceByVendorId(vtuVendorFilterDto.getDeviceId());
+//        }
+        Page<VTUVendorMasterDto> vtuVendorList = masterRepository.getVTUVendorList(vtuVendorFilterDto);
+        return vtuVendorList;
     }
 
     @Override
