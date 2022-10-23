@@ -225,9 +225,9 @@ public class MasterRepositoryImpl implements MasterRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<VTUVendorMasterDto> vendor;
         String qry ="SELECT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
-                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId, dev.model_name as deviceName " +
+                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on  " +
                 "FROM rdvts_oltp.vtu_vendor_m AS vtuM " +
-                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id " +
+//                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id " +
                 "WHERE vtuM.is_active = true ";
 
         if(id>0){

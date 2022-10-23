@@ -762,7 +762,7 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorById")
-    public RDVTSResponse getVTUVendorById(@RequestParam Integer id,@RequestParam Integer userId) {
+    public RDVTSResponse getVTUVendorById(@RequestParam Integer id,@RequestParam(value = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
