@@ -22,10 +22,10 @@ public class WorkEntity {
     private Integer id;
 
     @Column(name = "g_work_id")
-    private Integer workId;
+    private Integer geoWorkId;
 
     @Column(name = "g_work_name")
-    private String workName;
+    private String geoWorkName;
 
     @Column(name="is_active",nullable = false)
     private Boolean isActive=true;

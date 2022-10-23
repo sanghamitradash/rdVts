@@ -67,7 +67,7 @@ public class VehicleController {
         }
         try {
            VehicleMaster vehicleNo= vehicleMasterSaveRepository.getByVehicleNo(vehicle.getVehicleNo());
-           if(vehicleNo.getVehicleNo()==null) {
+           if(vehicleNo==null) {
                if (vehicle.getVehicleTypeId() != null && vehicle.getVehicleNo() != null && vehicle.getChassisNo() != null
                        && vehicle.getEngineNo() != null && vehicle.getSpeedLimit() != null) {
                    VehicleMaster saveVehicle = vehicleService.saveVehicle(vehicle);
@@ -204,9 +204,14 @@ public class VehicleController {
                 boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
                 DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
                 boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
+               // boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
+               // DeviceDto  deviceData  = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
+               // boolean tracking=vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
                 vehicleList.get(i).setDeviceAssigned(device);
                 vehicleList.get(i).setWorkAssigned(work);
                 vehicleList.get(i).setTrackingStatus(tracking);
+                //vehicleList.get(i).setWorkAssigned(work);
+                //vehicleList.get(i).setTrackingStatus(tracking);
             }
            /* result.put("vehicleList", vehicleList);
             result.put("recordsFiltered", vehicleListPage.getTotalElements());
