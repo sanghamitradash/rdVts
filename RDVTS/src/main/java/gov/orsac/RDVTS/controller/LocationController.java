@@ -424,7 +424,7 @@ public class LocationController {
                                         //int i = 0;
                                         for (DeviceDto imei : getImeiList) {
                                             List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                            // i++;
+
                                             for (VtuLocationDto vtuobj : vtuLocationDto) {
                                                 vtuobj.setDeviceId(imei.getId());
                                                 vtuobj.setVehicleId(vehicleid.getVehicleId());

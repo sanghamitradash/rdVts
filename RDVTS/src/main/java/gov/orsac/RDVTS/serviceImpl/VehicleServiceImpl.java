@@ -208,8 +208,8 @@ public class VehicleServiceImpl implements VehicleService {
        public List<LocationDto> getLocationArray(int id) throws ParseException {
               List<LocationDto> locationList=new ArrayList<>();
 
-           Integer workId=Integer.valueOf(id);
-             Integer totalVehicleCount=vehicleRepositoryimpl.getvehicleCountByWorkId(workId);
+
+             int totalVehicleCount=vehicleRepositoryimpl.getvehicleCountByWorkId(id);
 
            LocationDto location=new LocationDto();
            location.setTotalVehicleCount(totalVehicleCount);

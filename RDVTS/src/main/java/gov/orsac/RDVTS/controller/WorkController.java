@@ -2,19 +2,16 @@ package gov.orsac.RDVTS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.DesignationEntity;
-import gov.orsac.RDVTS.entities.RoleEntity;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.service.*;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.util.*;
 
 @RestController
@@ -32,7 +29,6 @@ public class WorkController {
 
     @Autowired
     private LocationService locationService;
-
 
 
     @Autowired
@@ -61,9 +57,9 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkList")
-    public RDVTSListResponse getWorkList(@RequestParam (name = "id", required = false)Integer id,
-                                         @RequestParam (name = "userId", required = false)Integer userId,
-                                         @RequestParam (name = "activityId", required = false)Integer activityId,
+    public RDVTSListResponse getWorkList(@RequestParam(name = "id", required = false) Integer id,
+                                         @RequestParam(name = "userId", required = false) Integer userId,
+                                         @RequestParam(name = "activityId", required = false) Integer activityId,
                                          @RequestParam(name = "start") Integer start,
                                          @RequestParam(name = "length") Integer length,
                                          @RequestParam(name = "draw") Integer draw) {
@@ -78,9 +74,9 @@ public class WorkController {
         try {
             Page<WorkDto> workDtoPage = workService.getWorkList(workDto);
             List<WorkDto> workDtoList = workDtoPage.getContent();
-            Integer start1=start;
-            for(int i = 0; i < workDtoList.size(); i++){
-                start1=start1+1;
+            Integer start1 = start;
+            for (int i = 0; i < workDtoList.size(); i++) {
+                start1 = start1 + 1;
                 workDtoList.get(i).setSlNo(start1);
             }
             result.put("WorkDtoList", workDtoList);
@@ -108,8 +104,8 @@ public class WorkController {
         try {
             List<WorkDto> workDto = workService.getWorkById(id);
             List<VehicleMasterDto> vehicle = vehicleService.getVehicleHistoryList(id);
-            List<LocationDto> location=vehicleService.getLocationArray(id);
-            List<AlertDto> alertDtoList=vehicleService.getAlertArray(id);
+            List<LocationDto> location = vehicleService.getLocationArray(id);
+            List<AlertDto> alertDtoList = vehicleService.getAlertArray(id);
             List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
             List<ContractorDto> contractorDtoList = contractorService.getContractorByWorkId(id);
 
@@ -121,37 +117,40 @@ public class WorkController {
             startDate = null;
             endDate = null;
             ArrayList<ArrayList<String>> outer = new ArrayList<ArrayList<String>>();
-            Map<String,Object> coordinates=new HashMap<>();
+            Map<String, Object> coordinates = new HashMap<>();
 
 
-            List<Integer> workids=new ArrayList<>();
-
+            List<Integer> workids = new ArrayList<>();
+            Double totalDistance = 0.0;
             workids.add(id);
             for (Integer workitem : workids) {
                 List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem);
                 for (ActivityDto activityId : activityDtoList) {
                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
-                    for (VehicleActivityMappingDto vehicleList:veActMapDto) {
+                    for (VehicleActivityMappingDto vehicleList : veActMapDto) {
 
                         List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
                         for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                             //int i = 0;
                             for (DeviceDto imei : getImeiList) {
-                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                // i++;
-                                for (VtuLocationDto vtuobj : vtuLocationDto) {
-                                    ArrayList<String> inner = new ArrayList<String>();
-                                    inner.add(vtuobj.getLongitude());
-                                    inner.add(vtuobj.getLatitude());
-                                    outer.add(inner);
-//                                    LocationLatLonDto latLonDtos= new LocationLatLonDto();
-//                                    latLonDtos.setLatitude(vtuobj.getLatitude());
-//                                    latLonDtos.setLongitude(vtuobj.getLongitude());
-                                }
-                                Map<String, Object> itemVal = new HashMap<>();
-                                itemVal.put("vehicleLocation", vtuLocationDto);
-                                resultlocation.add(itemVal);
+
+                                totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+
+     //                        List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+//                                // i++;
+//                                for (VtuLocationDto vtuobj : vtuLocationDto) {
+//                                    ArrayList<String> inner = new ArrayList<String>();
+//                                    inner.add(vtuobj.getLatitude());
+//                                    inner.add(vtuobj.getLongitude());
+//                                    outer.add(inner);
+////                                    LocationLatLonDto latLonDtos= new LocationLatLonDto();
+////                                    latLonDtos.setLatitude(vtuobj.getLatitude());
+////                                    latLonDtos.setLongitude(vtuobj.getLongitude());
+//                                }
+//                                Map<String, Object> itemVal = new HashMap<>();
+//                                itemVal.put("vehicleLocation", vtuLocationDto);
+//                                resultlocation.add(itemVal);
                             }
                             // deviceIds.add(vehicleid.getDeviceId());
 
@@ -160,22 +159,20 @@ public class WorkController {
 
                 }
             }
-
-                coordinates.put("coordinates",outer);
-                coordinates.put("type","LineString");
-                Double d=locationService.getDistance(coordinates);
-           // outer.add(inner);
+            coordinates.put("coordinates", outer);
+            coordinates.put("type", outer);
+            // outer.add(inner);
             // System.out.println(outer);
 
-                result.put("contractorDto", contractorDtoList );
-                result.put("workDto", workDto);
-                result.put("vehicleArray", vehicle);
-                result.put("locationArray", coordinates);
-                result.put("roadArray", roadMasterDtoList);
-                result.put("alertArray", alertDtoList);
-                response.setData(result);
-                response.setStatus(1);
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            result.put("contractorDto", contractorDtoList);
+            result.put("workDto", workDto);
+            result.put("vehicleArray", vehicle);
+            result.put("locationArray", totalDistance);
+            result.put("roadArray", roadMasterDtoList);
+            result.put("alertArray", alertDtoList);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
         } catch (Exception e) {
             response = new RDVTSResponse(0,
@@ -232,7 +229,7 @@ public class WorkController {
     }
 
     @PostMapping("/getActivityByWorkId")
-    public RDVTSResponse getActivityByWorkId(@RequestParam int id){
+    public RDVTSResponse getActivityByWorkId(@RequestParam int id) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
