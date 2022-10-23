@@ -257,8 +257,7 @@ public class MasterRepositoryImpl implements MasterRepository {
         int resultCount=0;
         String queryString = " ";
         queryString = "SELECT DISTINCT vtuM.id as vendorId, vtuM.vtu_vendor_name as vtuVendorName , vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, vtuM.is_active, vtuM.created_by,  " +
-                "vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dev.id as deviceId, dev.model_name as deviceName FROM rdvts_oltp.vtu_vendor_m AS vtuM   " +
-                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id   " +
+                "vtuM.created_on, vtuM.updated_by, vtuM.updated_on FROM rdvts_oltp.vtu_vendor_m AS vtuM   " +
                 "WHERE vtuM.is_active = true ";
 
         if(vtuVendorFilterDto.getVendorId() != null && vtuVendorFilterDto.getVendorId() > 0){
@@ -266,10 +265,10 @@ public class MasterRepositoryImpl implements MasterRepository {
             sqlParam.addValue("vendorId", vtuVendorFilterDto.getVendorId());
         }
 
-        if(vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0){
-            queryString += " AND dev.id=:deviceId ";
-            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDeviceId());
-        }
+//        if(vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0){
+//            queryString += " AND dev.id=:deviceId ";
+//            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDeviceId());
+//        }
 
         if(vtuVendorFilterDto.getVtuVendorName() != null){
             queryString += " AND vtuM.vtu_vendor_name LIKE(:vtuVendorName) ";

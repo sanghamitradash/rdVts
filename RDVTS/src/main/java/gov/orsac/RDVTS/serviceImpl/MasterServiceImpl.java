@@ -259,6 +259,9 @@ public class MasterServiceImpl implements MasterService {
     @Override
     public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto) {
 
+        List<Integer> deviceIds = new ArrayList<>();
+
+
         return masterRepository.getVTUVendorList(vtuVendorFilterDto);
     }
 
