@@ -134,6 +134,56 @@ public class ActivityController {
     }
 
 
+    @PostMapping("/getActivityList")
+    public RDVTSListResponse getActivityList(@RequestParam(name = "activityStatus", required = false) Integer activityStatus,
+                                            @RequestParam(name = "roadId", required = false) Integer roadId,
+                                            @RequestParam(name = "workId", required = false) Integer workId,
+                                            @RequestParam(name = "activityId", required = false)Integer activityId,
+                                            @RequestParam(name = "startDate", required = false) String startDate,
+                                            @RequestParam(name = "endDate", required = false) String endDate,
+                                            @RequestParam(name = "actualStartDate", required = false) String actualStartDate,
+                                            @RequestParam(name = "actualEndDate", required = false) String actualEndDate,
+                                            @RequestParam(name = "start", required = false) Integer start,
+                                            @RequestParam(name = "length", required = false) Integer length,
+                                            @RequestParam(name = "draw", required = false) Integer draw,
+                                            @RequestParam(name = "userId", required = false) Integer userId) {
 
+        ActivityListDto activity = new ActivityListDto();
+        activity.setActivityId(activityId);
+        activity.setActivityStatus(activityStatus);
+        activity.setWorkId(workId);
+        activity.setRoadId(roadId);
+        activity.setStartDate(startDate);
+        activity.setEndDate(endDate);
+        activity.setActualStartDate(actualStartDate);
+        activity.setActualEndDate(actualEndDate);
+        activity.setLimit(length);
+        activity.setOffSet(start);
+        activity.setUserId(userId);
+        activity.setDraw(draw);
+        RDVTSListResponse response = new RDVTSListResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Page<ActivityDto> activityListPage=activityService.getActivityList(activity);
+            List<ActivityDto> activityList = activityListPage.getContent();
+            Integer start1=start;
+            for(int i=0;i<activityList.size();i++){
+                start1=start1+1;
+                activityList.get(i).setSlNo(start1);
+            }
+            response.setData(activityList);
+            response.setMessage("Activity List");
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(activityListPage.getTotalElements());
+            response.setRecordsTotal(activityListPage.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),e.getMessage(),result);
+        }
+
+        return response;
+    }
 
 }

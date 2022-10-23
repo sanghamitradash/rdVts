@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.serviceImpl;
 
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.dto.ActivityDto;
 import gov.orsac.RDVTS.dto.VehicleActivityMappingDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
@@ -13,6 +14,7 @@ import gov.orsac.RDVTS.repositoryImpl.ActivityRepositoryImpl;
 import gov.orsac.RDVTS.service.ActivityService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -76,6 +78,11 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public List<ActivityDto> getActivityDD() {
         return activityRepositoryImpl.getActivityDD();
+    }
+
+    @Override
+    public Page<ActivityDto> getActivityList(ActivityListDto activity) {
+        return activityRepository.getActivityList(activity);
     }
 
     @Override
