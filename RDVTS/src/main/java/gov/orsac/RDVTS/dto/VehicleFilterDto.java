@@ -17,4 +17,7 @@ public class VehicleFilterDto {
     private Integer offSet;
     private Integer limit;
     private Integer draw;
+    private Boolean deviceAssign;
+    private Boolean trackingAssign;
+    private Boolean activityAssign;
 }

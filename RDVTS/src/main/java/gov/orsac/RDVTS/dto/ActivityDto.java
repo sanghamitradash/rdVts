@@ -29,5 +29,8 @@ public class ActivityDto {
     private Date updatedOn;
     private Integer activityStatus;
     private Integer slNo;
+    private String roadName;
+    private String status;
+    private String workName;
     List<VehicleActivityMappingEntity> vehicleActivity;
 }

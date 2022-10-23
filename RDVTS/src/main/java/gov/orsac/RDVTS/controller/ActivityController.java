@@ -135,18 +135,18 @@ public class ActivityController {
 
 
     @PostMapping("/getActivityList")
-    public RDVTSListResponse getActivityList(@RequestParam(name = "activityStatus") Integer activityStatus,
-                                            @RequestParam(name = "roadId") Integer roadId,
-                                            @RequestParam(name = "workId") Integer workId,
-                                            @RequestParam(name = "activityId")Integer activityId,
-                                            @RequestParam(name = "userId") String startDate,
-                                            @RequestParam(name = "userId") String endDate,
-                                            @RequestParam(name = "userId") String actualStartDate,
-                                            @RequestParam(name = "userId") String actualEndDate,
-                                            @RequestParam(name = "start") Integer start,
-                                            @RequestParam(name = "length") Integer length,
-                                            @RequestParam(name = "draw") Integer draw,
-                                            @RequestParam(name = "userId") Integer userId) {
+    public RDVTSListResponse getActivityList(@RequestParam(name = "activityStatus", required = false) Integer activityStatus,
+                                            @RequestParam(name = "roadId", required = false) Integer roadId,
+                                            @RequestParam(name = "workId", required = false) Integer workId,
+                                            @RequestParam(name = "activityId", required = false)Integer activityId,
+                                            @RequestParam(name = "startDate", required = false) String startDate,
+                                            @RequestParam(name = "endDate", required = false) String endDate,
+                                            @RequestParam(name = "actualStartDate", required = false) String actualStartDate,
+                                            @RequestParam(name = "actualEndDate", required = false) String actualEndDate,
+                                            @RequestParam(name = "start", required = false) Integer start,
+                                            @RequestParam(name = "length", required = false) Integer length,
+                                            @RequestParam(name = "draw", required = false) Integer draw,
+                                            @RequestParam(name = "userId", required = false) Integer userId) {
 
         ActivityListDto activity = new ActivityListDto();
         activity.setActivityId(activityId);

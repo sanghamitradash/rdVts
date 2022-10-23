@@ -175,14 +175,17 @@ public class VehicleController {
         return response;
     }
     @PostMapping("/getVehicleList")
-    public RDVTSListResponse getVehicleList(@RequestParam(name = "vehicleTypeId") Integer vehicleTypeId,
-                                            @RequestParam(name = "deviceId") Integer deviceId,
-                                            @RequestParam(name = "workId") Integer workId,
-                                            @RequestParam(name = "activityId")Integer activityId,
-                                            @RequestParam(name = "start") Integer start,
-                                            @RequestParam(name = "length") Integer length,
-                                            @RequestParam(name = "draw") Integer draw,
-                                            @RequestParam(name = "userId") Integer userId) {
+    public RDVTSListResponse getVehicleList(@RequestParam(name = "vehicleTypeId",required = false) Integer vehicleTypeId,
+                                            @RequestParam(name = "deviceId",required = false) Integer deviceId,
+                                            @RequestParam(name = "workId",required = false) Integer workId,
+                                            @RequestParam(name = "activityId",required = false)Integer activityId,
+                                            @RequestParam(name = "start",required = false) Integer start,
+                                            @RequestParam(name = "length",required = false) Integer length,
+                                            @RequestParam(name = "draw",required = false) Integer draw,
+                                            @RequestParam(name = "userId",required = false) Integer userId,
+                                            @RequestParam(name="deviceAssign",required = false) Boolean deviceAssign,
+                                            @RequestParam(name="trackingActive",required = false) Boolean trackingActive,
+                                            @RequestParam(name="activityAssign",required = false)Boolean activityAssign) {
 
         VehicleFilterDto vehicle = new VehicleFilterDto();
         vehicle.setVehicleTypeId(vehicleTypeId);
@@ -193,34 +196,115 @@ public class VehicleController {
         vehicle.setOffSet(start);
         vehicle.setUserId(userId);
         vehicle.setDraw(draw);
+        if(activityAssign!=null){
+            vehicle.setActivityAssign(activityAssign);
+        }
+        if(deviceAssign!=null){
+            vehicle.setDeviceAssign(deviceAssign);
+        }
+        if(trackingActive!=null){
+            vehicle.setTrackingAssign(trackingActive);
+        }
+
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
-        try {
+       /* try {
             Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
             List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
+            List<VehicleMasterDto> vehicleUpdatedList=new ArrayList<>();
             Integer start1=start;
             boolean tracking=false;
             for(int i=0;i<vehicleList.size();i++){
                     start1=start1+1;
                 vehicleList.get(i).setSlNo(start1);
                 boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
-               // boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
-               // boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
-                if(vehicleList.get(i).getDeviceId()!=null) {
-                    DeviceDto deviceData = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
-                    boolean trackingVehicle = vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
-                    tracking=trackingVehicle;
+                if(deviceAssign!=null||activityAssign!=null||trackingAssign!=null){
+//                    if(vehicleList.get(i).getDeviceId()!=null) {
+                        DeviceDto deviceData = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
+                        boolean trackingVehicle = vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
+                        tracking=trackingVehicle;
+//                    }
+                    if(deviceAssign!=null && deviceAssign==device){
+                        if(trackingAssign!=null && trackingVehicle==trackingAssign){
+                            vehicleUpdatedList.add(vehicleList.get(i));
+                        }else if(trackingAssign==null) {
+                            vehicleUpdatedList.add(vehicleList.get(i));
+                        }
+                    }else if(deviceAssign==null){
+                        if(trackingAssign!=null && trackingVehicle==trackingAssign){
+                            vehicleUpdatedList.add(vehicleList.get(i));
+                        }else if(trackingAssign==null) {
+                            vehicleUpdatedList.add(vehicleList.get(i));
+                        }
+//                        vehicleUpdatedList.add(vehicleList.get(i));
+                    }
                 }
-                vehicleList.get(i).setDeviceAssigned(device);
-               // vehicleList.get(i).setWorkAssigned(work);
-                vehicleList.get(i).setTrackingStatus(tracking);
-                //vehicleList.get(i).setWorkAssigned(work);
-                vehicleList.get(i).setTrackingStatus(tracking);
+                else{
+                        boolean device1=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
+                        DeviceDto deviceData = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
+                        boolean trackingVehicle = vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
+                        tracking=trackingVehicle;
+                    vehicleList.get(i).setDeviceAssigned(device);
+                    // vehicleList.get(i).setWorkAssigned(work);
+                    vehicleList.get(i).setTrackingStatus(tracking);
+                    vehicleUpdatedList.add(vehicleList.get(i));
+                }
+               // boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
             }
-           /* result.put("vehicleList", vehicleList);
-            result.put("recordsFiltered", vehicleListPage.getTotalElements());
-            result.put("recordsTotal", vehicleListPage.getTotalElements());
-            result.put("draw", draw);*/
+
+
+            response.setData(vehicleList);
+            response.setMessage("Vehicle List");
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(vehicleListPage.getTotalElements());
+            response.setRecordsTotal(vehicleListPage.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+        } */
+        try {
+            Page<VehicleMasterDto> vehicleListPage=vehicleService.getVehicleList(vehicle);
+            List<VehicleMasterDto> vehicleList = vehicleListPage.getContent();
+            List<VehicleMasterDto> vehicleDeviceList=new ArrayList<>();
+            List<VehicleMasterDto> vehicleTrackingList=new ArrayList<>();
+            Integer start1=start;
+            for(int i=0;i<vehicleList.size();i++){
+                start1=start1+1;
+                vehicleList.get(i).setSlNo(start1);
+                    boolean device=vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
+//                    boolean work=vehicleRepositoryImpl.getWorkAssignedOrNot(vehicleList.get(i).getId());
+                    if(vehicleList.get(i).getDeviceId()!=null) {
+                        DeviceDto deviceData = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
+                        boolean trackingVehicle = vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
+                        vehicleList.get(i).setTrackingStatus(trackingVehicle);
+                    }
+                    vehicleList.get(i).setDeviceAssigned(device);
+                    // vehicleList.get(i).setWorkAssigned(work);;
+                }
+         /*   if(vehicleList!=null && vehicleList.size()>0) {
+                for (VehicleMasterDto master : vehicleList) {
+                    if (deviceAssign != null) {
+                        if (deviceAssign == master.isDeviceAssigned()) {
+                            vehicleDeviceList.add(master);
+                        }
+                    } else {
+                        vehicleDeviceList.add(master);
+                    }
+
+                }
+            }
+            if(vehicleDeviceList!=null && vehicleDeviceList.size()>0) {
+                for (VehicleMasterDto master : vehicleDeviceList) {
+                    if (trackingActive != null) {
+                        if (trackingActive == master.isTrackingStatus()) {
+                            vehicleTrackingList.add(master);
+                        }
+                    } else {
+                        vehicleTrackingList.add(master);
+                    }
+
+                }
+            }*/
+
             response.setData(vehicleList);
             response.setMessage("Vehicle List");
             response.setStatus(1);
