@@ -49,11 +49,12 @@ public class VehicleMasterDto {
 
     private Integer start;
     private String ownerName;
-    private String firstName;
-    private String lastName;
-    private String middleName;
     private boolean deviceAssigned;
     private boolean workAssigned;
+    private boolean activityAssigned;
     private boolean trackingStatus;
+    private String contractorName;
+    private Integer userId;
+    private Integer contractorId;
 
 }
