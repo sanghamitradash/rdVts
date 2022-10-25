@@ -68,9 +68,10 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
 
         int resultCount = 0;
-        String qry = "select activity.id, activity_name,work.g_work_name as workName,construction.road_name,status.id as activityStatus,status.name as status,"+
+        String qry = "select distinct activity.id, activity_name,work.g_work_name as workName,construction.road_name,status.id as activityStatus,status.name as status," +
                 "activity.activity_start_date as startDate,activity.activity_completion_date as  endDate " +
                 "from rdvts_oltp.activity_m as activity " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vehicleActivity on vehicleActivity.activity_id=activity.id " +
                 "left join rdvts_oltp.activity_status_m as status on status.id=activity.activity_status " +
                 "left join rdvts_oltp.work_m as work on activity.work_id=work.id " +
                 "left join rdvts_oltp.geo_master as master on master.work_id=work.id " +
@@ -88,8 +89,12 @@ public class ActivityRepositoryImpl implements ActivityRepository {
             sqlParam.addValue("activityId",activity.getActivityId());
         }
         if(activity.getActivityStatus()!=null && activity.getActivityStatus() >0){
-            qry+="and activity.activity_status=:activityStatus ";
+            qry+=" and activity.activity_status=:activityStatus ";
             sqlParam.addValue("activityStatus",activity.getActivityStatus());
+        }
+        if(activity.getVehicleId()!=null && activity.getVehicleId() >0){
+            qry+=" and vehicleActivity.vehicle_id=:vehicleId ";
+            sqlParam.addValue("vehicleId",activity.getVehicleId());
         }
         if(activity.getStartDate() != null && !activity.getStartDate().isEmpty()){
             qry+=" and activity.activity_start_date >=:startDate ";
