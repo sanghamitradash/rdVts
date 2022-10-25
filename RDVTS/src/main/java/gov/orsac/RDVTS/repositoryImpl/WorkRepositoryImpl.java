@@ -66,10 +66,10 @@ public class WorkRepositoryImpl {
                 " gm.contractor_id, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name,act.id as activityId , gm.contractor_id " +
                 "  from rdvts_oltp.work_m as wm " +
                 "  join rdvts_oltp.geo_master as gm on gm.work_id=wm.id " +
-                " join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id and gcm.is_active = true " +
+                " join rdvts_oltp.geo_construction_m as gcm on gcm.id=gm.road_id and gcm.is_active = true " +
                 " join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id and piu.is_active = true " +
                 " join rdvts_oltp.activity_m as act on act.work_id=wm.id and act.is_active = true " +
-                " where wm.is_active = true  ";
+                " where wm.is_active = true ";
         if (workDto.getId() > 0) {
             qry += " and wm.id = :id";
             sqlParam.addValue("id", workDto.getId());
@@ -78,6 +78,7 @@ public class WorkRepositoryImpl {
             qry += " and act.id = :activityId";
             sqlParam.addValue("activityId", workDto.getActivityId());
         }
+//        qry+= "order by geoWorkName DESC ";
 
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(workDto.getUserId());
 //        if(user.getUserLevelId()==5){
@@ -97,7 +98,7 @@ public class WorkRepositoryImpl {
 //        else if(user.getUserLevelId() == 4){
 //            List<Integer> divisionId=userRepositoryImpl.getDivisionByUserId(workDto.getUserId());
 //            List<Integer> districtId=userRepositoryImpl.getDistrictByDivisionId(divisionId);
-//
+//            qry+= "";
 //        }
 
 
@@ -118,13 +119,14 @@ public class WorkRepositoryImpl {
                 "gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name " +
                 "from rdvts_oltp.work_m as wm " +
                 "join rdvts_oltp.geo_master as gm on gm.work_id=wm.id and gm.is_active = true " +
-                "join rdvts_oltp.geo_construction_m as gcm on gcm.geo_master_id=gm.id and gcm.is_active = true " +
+                "join rdvts_oltp.geo_construction_m as gcm on gcm.id=gm.road_id and gcm.is_active = true " +
                 "join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id and piu.is_active = true " +
-                "where wm.is_active = true  ";
+                "where wm.is_active = true ";
         if (id > -1) {
             qry += " and wm.id = :id ";
             sqlParam.addValue("id", id);
         }
+        qry+=" order by geoWorkName";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
 

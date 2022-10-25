@@ -117,6 +117,11 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
+    public RoadEntity updateGeom(Integer roadId, String geom) {
+        return roadRepositoryImpl.updateGeom(roadId, geom);
+    }
+
+    @Override
     public List<GeoMasterDto> getVehicleListByRoadId(Integer roadId){
         return roadRepositoryImpl.getVehicleListByRoadId(roadId);
     }

@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Repository
 public class VehicleRepositoryImpl implements VehicleRepository {
@@ -120,23 +121,25 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return vehicleDevice;
     }
 
-    public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate, Date vehicleWorkEndDate) {
+    public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate, Date vehicleWorkEndDate) throws ParseException {
         List<VehicleDeviceMappingDto> vehicleDevice = new ArrayList<>();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select id, vehicle_id, device_id, installation_date, installed_by, is_active, created_by, created_on, updated_by, updated_on, deactivation_date " +
                 "FROM rdvts_oltp.vehicle_device_mapping where is_active=true ";
 
 
-        if (vehicleId > 0) {
+        if (vehicleId!=null && vehicleId > 0) {
             qry += " and vehicle_id =:vehicleId ";
             sqlParam.addValue("vehicleId", vehicleId);
         }
 
-        if (vehicleWorkEndDate == null) {
-            vehicleWorkEndDate = new Date();
+        if (vehicleWorkStartDate != null && vehicleWorkEndDate == null) {
+            qry += "  and created_on BETWEEN :vehicleWorkStartDate AND now() or deactivation_date BETWEEN :vehicleWorkStartDate AND now() ";
+            sqlParam.addValue("vehicleWorkStartDate", vehicleWorkStartDate);
+
         }
-        if (vehicleWorkStartDate != null && vehicleWorkEndDate != null) {
-            qry += "  and deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
+        if(vehicleWorkStartDate != null && vehicleWorkEndDate != null){
+            qry += "  and created_on BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate or deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
             sqlParam.addValue("vehicleWorkStartDate", vehicleWorkStartDate);
             sqlParam.addValue("vehicleWorkEndDate", vehicleWorkEndDate);
         }
@@ -174,11 +177,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     @Override
     public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        /*PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");*/
-       /* pageable = PageRequest.of(1, vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
-//        vehicle.getDraw() - 1   (vehicle.getOffSet()/vehicle.getLimit())+1
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");*/
+//        PageRequest pageable = null;
+//        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
+//        pageable = PageRequest.of(vehicle.getDraw() - 1, vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
 
         int pageNo = vehicle.getOffSet()/vehicle.getLimit();
         PageRequest pageable = PageRequest.of(pageNo, vehicle.getLimit(), Sort.Direction.fromString("asc"), "id");
@@ -540,6 +541,19 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleActivityMappingDto.class));
 
     }
+    public Integer getvehicleCountByWorkId(Integer id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " SELECT  count(distinct vam.vehicle_id) FROM rdvts_oltp.vehicle_activity_mapping as vam " +
+                " LEFT JOIN rdvts_oltp.vehicle_m as vm on vm.id=vam.vehicle_id " +
+                " left join rdvts_oltp.activity_m as am on am.id=vam.activity_id " +
+
+                " WHERE 1=1 and am.is_active=true and vm.is_active=true and vam.is_active=true and am.work_id=:workId ";
+        sqlParam.addValue("workId", id);
+        return   namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+
+
+    }
+
 
     public List<VehicleMasterDto> getVehicleHistoryList(int id){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();

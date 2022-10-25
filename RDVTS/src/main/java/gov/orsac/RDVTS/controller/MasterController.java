@@ -867,6 +867,32 @@ public class MasterController {
     }
 
 
+    @PostMapping("/deactivateVendor")
+    public RDVTSResponse deactivateVendor(@RequestParam Integer vendorId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Boolean res = masterService.deactivateVendor(vendorId);
+
+            if (res==true) {
+                response.setData(result);
+                response.setStatus(1);
+                response.setMessage("Vendor Deactivated ");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                response.setStatus(0);
+                response.setMessage("Something went wrong");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(), result);
+        }
+        return response;
+    }
+
+
     @PostMapping("/getAllDistrict")
     public RDVTSResponse getAllDistrict() {
         RDVTSResponse response = new RDVTSResponse();
