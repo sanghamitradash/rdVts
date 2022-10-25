@@ -146,7 +146,6 @@ public class WorkController {
 
                                 totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
 
-
                             }
 
                         }
