@@ -68,6 +68,9 @@ public class ActivityEntity {
     @Column(name = "activity_status")
     private Integer activityStatus;
 
+    @Column(name = "g_activity_id")
+    private Integer gActivityId;
+
 
 
 
