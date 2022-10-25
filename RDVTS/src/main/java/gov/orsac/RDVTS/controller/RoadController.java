@@ -252,4 +252,28 @@ public class RoadController {
         }
         return response;
     }
+
+    @PostMapping("/updateGeom")
+    public RDVTSResponse updateGeom(@RequestParam Integer roadId, String geom) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            RoadEntity updateGeom = roadService.updateGeom(roadId, geom);
+            result.put("updateGeom", updateGeom);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Road Updated Successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 }

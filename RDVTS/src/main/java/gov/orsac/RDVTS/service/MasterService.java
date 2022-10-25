@@ -56,4 +56,6 @@ public interface MasterService {
     List<BlockBoundaryDto> getListOfBlockByListOfDistId(List<Integer> distId);
 
     List<DivisionDto> getListOfDivisionByListOfDistId(List<Integer> distId);
+
+    Boolean deactivateVendor(Integer vendorId);
 }

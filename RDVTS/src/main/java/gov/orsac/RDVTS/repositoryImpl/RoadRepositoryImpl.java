@@ -4,6 +4,7 @@ import gov.orsac.RDVTS.dto.GeoMasterDto;
 import gov.orsac.RDVTS.dto.RoadMasterDto;
 import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.RoadEntity;
 import gov.orsac.RDVTS.repository.RoadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -80,10 +81,10 @@ public class RoadRepositoryImpl {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(roadFilterDto.getDraw()-1,roadFilterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
+        pageable = PageRequest.of(roadFilterDto.getDraw() - 1, roadFilterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         int resultCount = 0;
 
         String queryString = "SELECT DISTINCT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width, road.g_road_id as groadId, " +
@@ -170,7 +171,7 @@ public class RoadRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
     }
 
-    public List<GeoMasterDto> getworkByDistrictId(Integer districtId){
+    public List<GeoMasterDto> getworkByDistrictId(Integer districtId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +
@@ -190,8 +191,8 @@ public class RoadRepositoryImpl {
         String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +
                 " FROM rdvts_oltp.geo_master where is_active=true  ";
         /*   "AND id>1 ORDER BY id";*/
-        if (blockId>0){
-            qry+=" and block_id =:blockId";
+        if (blockId > 0) {
+            qry += " and block_id =:blockId";
             sqlParam.addValue("blockId", blockId);
         }
 
@@ -306,5 +307,14 @@ public class RoadRepositoryImpl {
         String qry = "SELECT rs.id, rs.name, rs.is_active , rs.created_by, rs.created_on, rs.updated_by, rs.updated_on " +
                 " FROM rdvts_oltp.road_status_m as rs ";
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(RoadStatusDropDownDto.class));
+    }
+
+    public RoadEntity updateGeom(Integer roadId,String geom) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "UPDATE rdvts_oltp.geo_construction_m " +
+                    "SET geom=st_setsrid(ST_GeomFromGeoJSON('"+geom+"'),4326)  " +
+                    "WHERE id=:roadId;";
+        sqlParam.addValue("roadId", roadId);
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(RoadEntity.class));
     }
 }
