@@ -151,7 +151,12 @@ public class MasterRepositoryImpl implements MasterRepository {
                 "rm.created_by, rm.updated_by, rm.is_default from rdvts_oltp.menu_m as m " +
                 "left join rdvts_oltp.role_menu as rm ON rm.menu_id = m.id and rm.role_id=:roleId and " +
                 "rm.is_active=true where m.is_active=true";
+
+         if(roleId >= -1){
+            qry+= " AND roleMenu.role_id=:roleId";
             sqlParam.addValue("roleId", roleId);
+        }
+          // sqlParam.addValue("roleId", roleId);
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleMenuInfo.class));
 
     }
@@ -162,7 +167,7 @@ public class MasterRepositoryImpl implements MasterRepository {
                 " FROM  rdvts_oltp.role_menu as roleMenu " +
                 " left join  rdvts_oltp.menu_m as menu on menu.id=roleMenu.menu_id " +
                 " WHERE parent_id = 0 AND menu.is_active = true";
-        if(roleId > 0){
+        if(roleId >= 0){
             qry+= " AND roleMenu.role_id=:roleId";
             sqlParam.addValue("roleId", roleId);
         }
