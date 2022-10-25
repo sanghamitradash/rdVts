@@ -550,20 +550,14 @@ public class VehicleController {
     }
 
     @PostMapping("/addVehicleActivityMapping")
-    public RDVTSResponse saveVTUVendor(@RequestParam String data) {
+    public RDVTSResponse saveVTUVendor(@RequestBody List<VehicleActivityMappingEntity> vehicleActivityMappingEntities) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
+            List<VehicleActivityMappingEntity> vehicleActivityEntity = activityService.saveVehicleActivity(vehicleActivityMappingEntities);
 
-            /*List<VehicleActivityMappingEntity> vehicleActivityMappingEntity =mapper.readValue(vehicleActivityData, mapper.getTypeFactory().constructCollectionType(List.class, VehicleActivityMappingEntity.class));
-            List<ActivityEntity> activityEntityList = mapper.readValue(activity, mapper.getTypeFactory().constructCollectionType(List.class, ActivityEntity.class));*/
-            ActivityDto activity = mapper.readValue(data, ActivityDto.class);
-            ActivityEntity activityMaster = activityService.addActivity(activity);
-            List<VehicleActivityMappingEntity> vehicleActivity = activityService.saveVehicleActivity(activity.getVehicleActivity(), activityMaster.getId());
-
-            result.put("activityMaster", activityMaster);
-            result.put("vehicleActivity", vehicleActivity);
+            result.put("saveVendor", vehicleActivityEntity);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
