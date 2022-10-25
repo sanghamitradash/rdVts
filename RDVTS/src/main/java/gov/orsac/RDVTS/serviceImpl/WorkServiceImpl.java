@@ -57,6 +57,12 @@ public class WorkServiceImpl implements WorkService {
         }
         existingWork.setGeoWorkId(workDto.getGeoWorkId());
         existingWork.setGeoWorkName(workDto.getGeoWorkName());
+        existingWork.setAwardDate(workDto.getAwardDate());
+        existingWork.setCompletionDate(workDto.getCompletionDate());
+        existingWork.setPmisFinalizeDate(workDto.getPmisFinalizeDate());
+        existingWork.setWorkStatus(workDto.getWorkStatus());
+        existingWork.setApprovalStatus(workDto.getApprovalStatus());
+        existingWork.setApprovedBy(workDto.getApprovedBy());
         existingWork.setUpdatedBy(workDto.getUpdatedBy());
         existingWork.setCreatedBy(workDto.getCreatedBy());
 
