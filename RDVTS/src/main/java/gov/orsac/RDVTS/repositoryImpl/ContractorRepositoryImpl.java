@@ -122,11 +122,16 @@ public class ContractorRepositoryImpl implements ContractorRepository {
 
     public Page<ContractorDto> getContractorDetails(ContractorFilterDto contractor) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        PageRequest pageable = null;
+  /*      PageRequest pageable = null;
         Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
         pageable = PageRequest.of(contractor.getOffSet(),contractor.getLimit(), Sort.Direction.fromString("desc"), "id");
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
-        int resultCount=0;
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");*/
+
+        int pageNo = contractor.getOffSet()/contractor.getLimit();
+        PageRequest pageable = PageRequest.of(pageNo, contractor.getLimit(), Sort.Direction.fromString("desc"), "id");
+        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        int resultCount = 0;
+
 
         String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on, cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
                 //"left join rdvts_oltp.user_m as um on um.contractor_id = cm.id  " +

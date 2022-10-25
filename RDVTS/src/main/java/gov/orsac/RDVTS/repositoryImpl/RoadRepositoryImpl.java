@@ -80,11 +80,12 @@ public class RoadRepositoryImpl {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
-        pageable = PageRequest.of(roadFilterDto.getDraw() - 1, roadFilterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(roadFilterDto.getDraw()-1,roadFilterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount = 0;
+
         String queryString = "SELECT DISTINCT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width, road.g_road_id as groadId, " +
                 "road.geo_master_id as geoMasterId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, geom.g_work_id as workIds, " +
                 "geom.g_contractor_id as contractIds, road.completed_road_length, road.sanction_date, road.road_code, " +

@@ -30,7 +30,7 @@ public class DeviceListDto {
     private Integer gDistId;
     private Integer gBlockId;
 
-    private Boolean isVehicleAssigned;
+    private Boolean vehicleAssigned;
 
     private Integer userId;
 

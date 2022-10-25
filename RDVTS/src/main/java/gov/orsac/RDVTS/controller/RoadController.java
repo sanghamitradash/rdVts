@@ -145,21 +145,26 @@ public class RoadController {
             List<RoadMasterDto> roadList = roadPageList.getContent();
             List<RoadMasterDto> finalRoadList=new ArrayList<>();
             Integer start1=start;
-            for(RoadMasterDto rd:roadList){
+//            for(RoadMasterDto rd:roadList){
+//                start1=start1+1;
+//                rd.setSlNo(start1);
+//                finalRoadList.add(rd);
+//            }
 
+            for(int i=0;i<roadList.size();i++){
                 start1=start1+1;
-                rd.setSlNo(start1);
-                finalRoadList.add(rd);
+                roadList.get(i).setSlNo(start1);
             }
             //result.put("deviceList", deviceList);
             response.setData(roadList);
             response.setMessage("Road List");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(roadPageList.getTotalElements());
+            response.setRecordsFiltered(Long.valueOf(roadPageList.getNumberOfElements()));
             response.setRecordsTotal(roadPageList.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
         return response;
