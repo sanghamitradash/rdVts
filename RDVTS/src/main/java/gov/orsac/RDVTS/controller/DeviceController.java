@@ -173,7 +173,7 @@ public class DeviceController {
                                            @RequestParam(name = "gBlockId", required = false) Integer gBlockId,
                                            @RequestParam(name = "divisionId",required = false) Integer divisionId,
                                            @RequestParam(name = "userId",required = false)Integer userId,
-                                           @RequestParam(name = "isVehicleAssigned", required = false)Boolean isVehicleAssigned,
+                                           @RequestParam(name = "vehicleAssigned", required = false)Boolean vehicleAssigned,
                                            @RequestParam(name = "start") Integer start,
                                            @RequestParam(name = "length") Integer length,
                                            @RequestParam(name = "draw") Integer draw) {
@@ -192,10 +192,15 @@ public class DeviceController {
         device.setGBlockId(gBlockId);
         device.setDivisionId(divisionId);
         device.setUserId(userId);
-        device.setIsVehicleAssigned(isVehicleAssigned);
+
         device.setLimit(length);
         device.setOffSet(start);
         device.setDraw(draw);
+
+        if (vehicleAssigned != null) {
+            device.setVehicleAssigned(vehicleAssigned);
+        }
+
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -209,9 +214,9 @@ public class DeviceController {
                 start1=start1+1;
                 deviceList.get(i).setSlNo(start1);
 
-                boolean device1= deviceRepositoryImpl.getDeviceAssignedOrNot(deviceList.get(i).getId());
+               /* boolean device1= deviceRepositoryImpl.getDeviceAssignedOrNot(deviceList.get(i).getId());
                 deviceList.get(i).setDeviceAssigned(device1);
-                deviceList.get(i).setVehicleAssigned(device1);
+                deviceList.get(i).setVehicleAssigned(device1);*/
 
             }
             //result.put("deviceList", deviceList);
@@ -219,7 +224,7 @@ public class DeviceController {
             response.setMessage("Device List");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(Long.valueOf(deviceListPage.getNumberOfElements()));
+           // response.setRecordsFiltered(Long.valueOf(deviceListPage.getNumberOfElements()));
             response.setRecordsFiltered(deviceListPage.getTotalElements());
             response.setRecordsTotal(deviceListPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
