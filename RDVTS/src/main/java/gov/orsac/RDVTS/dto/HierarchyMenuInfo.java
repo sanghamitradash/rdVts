@@ -13,4 +13,5 @@ public class HierarchyMenuInfo {
     private Integer parentId;
     private String module;
     private Boolean isDefault;
+    private String menuIcon;
 }

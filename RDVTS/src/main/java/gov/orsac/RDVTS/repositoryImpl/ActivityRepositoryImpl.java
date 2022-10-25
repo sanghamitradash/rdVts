@@ -63,15 +63,15 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     @Override
     public Page<ActivityDto> getActivityList(ActivityListDto activity) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
-        pageable = PageRequest.of(activity.getDraw() - 1, activity.getLimit(), Sort.Direction.fromString("desc"), "id");
+        int pageNo = activity.getOffSet()/activity.getLimit();
+        PageRequest pageable = PageRequest.of(pageNo, activity.getLimit(), Sort.Direction.fromString("asc"), "id");
+        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
         int resultCount = 0;
-        String qry = "select activity.id, activity_name,work.g_work_name as workName,construction.road_name,status.name as status,"+
+        String qry = "select distinct activity.id, activity_name,work.g_work_name as workName,construction.road_name,status.id as activityStatus,status.name as status," +
                 "activity.activity_start_date as startDate,activity.activity_completion_date as  endDate " +
                 "from rdvts_oltp.activity_m as activity " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vehicleActivity on vehicleActivity.activity_id=activity.id " +
                 "left join rdvts_oltp.activity_status_m as status on status.id=activity.activity_status " +
                 "left join rdvts_oltp.work_m as work on activity.work_id=work.id " +
                 "left join rdvts_oltp.geo_master as master on master.work_id=work.id " +
@@ -89,8 +89,12 @@ public class ActivityRepositoryImpl implements ActivityRepository {
             sqlParam.addValue("activityId",activity.getActivityId());
         }
         if(activity.getActivityStatus()!=null && activity.getActivityStatus() >0){
-            qry+="and activity.activity_status=:activityStatus ";
+            qry+=" and activity.activity_status=:activityStatus ";
             sqlParam.addValue("activityStatus",activity.getActivityStatus());
+        }
+        if(activity.getVehicleId()!=null && activity.getVehicleId() >0){
+            qry+=" and vehicleActivity.vehicle_id=:vehicleId ";
+            sqlParam.addValue("vehicleId",activity.getVehicleId());
         }
         if(activity.getStartDate() != null && !activity.getStartDate().isEmpty()){
             qry+=" and activity.activity_start_date >=:startDate ";
@@ -111,7 +115,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
         resultCount = count(qry, sqlParam);
         if (activity.getLimit() > 0) {
-            qry += " LIMIT " + activity.getLimit() + " OFFSET " + activity.getOffSet();
+            qry +=  " LIMIT " + activity.getLimit() + " OFFSET " + activity.getOffSet();
         }
         List<ActivityDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
         return new PageImpl<>(list, pageable, resultCount);

@@ -15,6 +15,7 @@ public class ParentMenuInfo {
     private Integer parentId;
     private String module;
     private Boolean isDefault;
+    private String menuIcon;
     private List<HierarchyMenuInfo> children;
 
 }
