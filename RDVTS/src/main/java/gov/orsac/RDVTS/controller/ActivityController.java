@@ -139,6 +139,7 @@ public class ActivityController {
                                             @RequestParam(name = "roadId", required = false) Integer roadId,
                                             @RequestParam(name = "workId", required = false) Integer workId,
                                             @RequestParam(name = "activityId", required = false)Integer activityId,
+                                             @RequestParam(name = "vehicleId", required = false)Integer vehicleId,
                                             @RequestParam(name = "startDate", required = false) String startDate,
                                             @RequestParam(name = "endDate", required = false) String endDate,
                                             @RequestParam(name = "actualStartDate", required = false) String actualStartDate,
@@ -153,6 +154,7 @@ public class ActivityController {
         activity.setActivityStatus(activityStatus);
         activity.setWorkId(workId);
         activity.setRoadId(roadId);
+        activity.setVehicleId(vehicleId);
         activity.setStartDate(startDate);
         activity.setEndDate(endDate);
         activity.setActualStartDate(actualStartDate);

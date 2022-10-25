@@ -160,10 +160,11 @@ public class RoadController {
             response.setMessage("Road List");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(roadPageList.getTotalElements());
+            response.setRecordsFiltered(Long.valueOf(roadPageList.getNumberOfElements()));
             response.setRecordsTotal(roadPageList.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
         return response;

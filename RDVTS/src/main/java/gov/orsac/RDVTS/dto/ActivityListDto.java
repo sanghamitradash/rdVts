@@ -22,4 +22,5 @@ public class ActivityListDto {
     private Integer limit;
     private Integer draw;
     private Integer userId;
+    private Integer vehicleId;
 }
