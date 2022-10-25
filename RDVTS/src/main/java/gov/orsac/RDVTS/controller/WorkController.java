@@ -84,7 +84,7 @@ public class WorkController {
             response.setMessage("List of Work.");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(workDtoPage.getTotalElements());
+            response.setRecordsFiltered(Long.valueOf(workDtoPage.getNumberOfElements()));
             response.setRecordsTotal(workDtoPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
