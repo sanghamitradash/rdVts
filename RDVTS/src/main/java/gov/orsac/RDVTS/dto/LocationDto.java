@@ -20,4 +20,5 @@ public class LocationDto {
     private Double avgDistanceTravelled;
     private Double avgSpeed;
     private Integer totalVehicleCount;
+
 }

@@ -104,27 +104,36 @@ public class WorkController {
         try {
             List<WorkDto> workDto = workService.getWorkById(id);
             List<VehicleMasterDto> vehicle = vehicleService.getVehicleHistoryList(id);
-            List<LocationDto> location = vehicleService.getLocationArray(id);
+          //  List<LocationDto> location = vehicleService.getLocationArray(id);
             List<AlertDto> alertDtoList = vehicleService.getAlertArray(id);
             List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
             List<ContractorDto> contractorDtoList = contractorService.getContractorByWorkId(id);
 
-            List<Map<String, Object>> resultlocation = new ArrayList<>();
+
+
+//                     location.setDateTime(dateTime);
+//                     location.setLatitude(21.7787878);
+//                     location.setLongitude(80.676767);
+//                     location.setSpeed(20);
+//                     location.setDistanceTravelledToday(200.5);
+//                     location.setDistanceTravelledTotal(5000.2);
+//                     location.setAvgDistanceTravelled(300.0);
+//                     location.setAvgSpeed(30.2);
+//                     locationList.add(location);
+
+
+
+
+
             Date startDate = null;
             Date endDate = null;
             Date vehicleStartDate = null;
             Date vehicleendDate = null;
-            startDate = null;
-            endDate = null;
-            ArrayList<ArrayList<String>> outer = new ArrayList<ArrayList<String>>();
-            Map<String, Object> coordinates = new HashMap<>();
 
-
-            List<Integer> workids = new ArrayList<>();
             Double totalDistance = 0.0;
-            workids.add(id);
-            for (Integer workitem : workids) {
-                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem);
+
+            for (WorkDto workitem : workDto) {
+                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
                 for (ActivityDto activityId : activityDtoList) {
                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
@@ -137,37 +146,27 @@ public class WorkController {
 
                                 totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
 
-     //                        List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-//                                // i++;
-//                                for (VtuLocationDto vtuobj : vtuLocationDto) {
-//                                    ArrayList<String> inner = new ArrayList<String>();
-//                                    inner.add(vtuobj.getLatitude());
-//                                    inner.add(vtuobj.getLongitude());
-//                                    outer.add(inner);
-////                                    LocationLatLonDto latLonDtos= new LocationLatLonDto();
-////                                    latLonDtos.setLatitude(vtuobj.getLatitude());
-////                                    latLonDtos.setLongitude(vtuobj.getLongitude());
-//                                }
-//                                Map<String, Object> itemVal = new HashMap<>();
-//                                itemVal.put("vehicleLocation", vtuLocationDto);
-//                                resultlocation.add(itemVal);
+
                             }
-                            // deviceIds.add(vehicleid.getDeviceId());
 
                         }
                     }
 
                 }
             }
-            coordinates.put("coordinates", outer);
-            coordinates.put("type", outer);
-            // outer.add(inner);
-            // System.out.println(outer);
+            List<LocationDto> locationList=new ArrayList<>();
+            int totalVehicleCount=vehicleService.getvehicleCountByWorkId(id);
+            Double avgDistance=totalDistance/totalVehicleCount;
+            LocationDto location=new LocationDto();
+            location.setTotalVehicleCount(totalVehicleCount);
+            location.setDistanceTravelledTotal(totalDistance);
+            location.setAvgDistanceTravelled(avgDistance);
+            locationList.add(location);
 
             result.put("contractorDto", contractorDtoList);
             result.put("workDto", workDto);
             result.put("vehicleArray", vehicle);
-            result.put("locationArray", totalDistance);
+            result.put("locationArray", locationList);
             result.put("roadArray", roadMasterDtoList);
             result.put("alertArray", alertDtoList);
             response.setData(result);

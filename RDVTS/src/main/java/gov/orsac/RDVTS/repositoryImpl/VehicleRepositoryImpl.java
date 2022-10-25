@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Repository
 public class VehicleRepositoryImpl implements VehicleRepository {
@@ -120,23 +121,25 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return vehicleDevice;
     }
 
-    public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate, Date vehicleWorkEndDate) {
+    public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate, Date vehicleWorkEndDate) throws ParseException {
         List<VehicleDeviceMappingDto> vehicleDevice = new ArrayList<>();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select id, vehicle_id, device_id, installation_date, installed_by, is_active, created_by, created_on, updated_by, updated_on, deactivation_date " +
                 "FROM rdvts_oltp.vehicle_device_mapping where is_active=true ";
 
 
-        if (vehicleId > 0) {
+        if (vehicleId!=null && vehicleId > 0) {
             qry += " and vehicle_id =:vehicleId ";
             sqlParam.addValue("vehicleId", vehicleId);
         }
 
-        if (vehicleWorkEndDate == null) {
-            vehicleWorkEndDate = new Date();
+        if (vehicleWorkStartDate != null && vehicleWorkEndDate == null) {
+            qry += "  and created_on BETWEEN :vehicleWorkStartDate AND now() or deactivation_date BETWEEN :vehicleWorkStartDate AND now() ";
+            sqlParam.addValue("vehicleWorkStartDate", vehicleWorkStartDate);
+
         }
-        if (vehicleWorkStartDate != null && vehicleWorkEndDate != null) {
-            qry += "  OR deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
+        if(vehicleWorkStartDate != null && vehicleWorkEndDate != null){
+            qry += "  and created_on BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate or deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
             sqlParam.addValue("vehicleWorkStartDate", vehicleWorkStartDate);
             sqlParam.addValue("vehicleWorkEndDate", vehicleWorkEndDate);
         }

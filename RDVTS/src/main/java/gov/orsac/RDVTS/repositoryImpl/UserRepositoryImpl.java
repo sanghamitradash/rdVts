@@ -48,11 +48,12 @@ public class UserRepositoryImpl {
 
 
         List<Integer> userIds = helperService.getLowerUserByUserId(userListRequest.getUserId());
-        PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
-        pageable = PageRequest.of(userListRequest.getDraw() - 1, userListRequest.getLimit(), Sort.Direction.fromString("desc"), "id");
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        int pageNo = userListRequest.getOffSet()/userListRequest.getLimit();
+        PageRequest pageable = PageRequest.of(pageNo, userListRequest.getLimit(), Sort.Direction.fromString("asc"), "id");
+        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+
+
         int resultCount = 0;
 
         String queryString = " ";
@@ -116,12 +117,17 @@ public class UserRepositoryImpl {
 
 
         if (userListRequest.getEmail() != null && !userListRequest.getEmail().isEmpty()) {
-            queryString += " AND um.email=:email ";
+            queryString += " AND um.email Like(:email) ";
             sqlParam.addValue("email", userListRequest.getEmail());
         }
         if (userListRequest.getMobile1() != null && !userListRequest.getMobile1().toString().isEmpty()) {
-            queryString += " AND um.mobile_1=:mobile1 ";
+            queryString += " AND um.mobile_1 Like(:mobile1)  ";
             sqlParam.addValue("mobile1", userListRequest.getMobile1());
+        }
+
+        if (userListRequest.getUserLevelId() !=null && userListRequest.getUserLevelId() > 0){
+            queryString += " AND um.user_level_id = :userLevelId ";
+            sqlParam.addValue("userLevelId", userListRequest.getUserLevelId());
         }
 
 

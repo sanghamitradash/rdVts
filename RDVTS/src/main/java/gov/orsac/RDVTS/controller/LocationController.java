@@ -282,7 +282,7 @@ public class LocationController {
             try {
 
 
-                if (deviceId != null) {
+                if (deviceId != null && !deviceId.isEmpty()) {
                     for (Integer deviceid : deviceId) {
                         List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceid);
 
@@ -305,7 +305,7 @@ public class LocationController {
                     }
 
 
-                } else if (vehicleId != null) {
+                } else if (vehicleId != null && !vehicleId.isEmpty()) {
 
                     for (Integer vehicleitem : vehicleId) {
                         List<RoadMasterDto> veActMapDto = vehicleService.getRoadDetailByVehicleId(vehicleitem);
@@ -340,7 +340,7 @@ public class LocationController {
 
 
                 }
-                else if (activityIds !=null) {
+                else if (activityIds !=null && !activityIds.isEmpty()) {
                     for (Integer activityItem:activityIds) {
                         List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityItem, userId);
                         for (VehicleActivityMappingDto vehicleList:veActMapDto) {
@@ -371,7 +371,7 @@ public class LocationController {
                     }
 
                 }
-                else if (workId != null) {
+                else if (workId != null && !workId.isEmpty()) {
 
                     for (Integer workitem : workId) {
                         List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem);
@@ -408,7 +408,7 @@ public class LocationController {
                     }
 
 
-                } else if (roadId != null) {
+                } else if (roadId != null && !roadId.isEmpty()) {
                     for (Integer roadid : roadId) {
                         List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(roadid);
 
@@ -446,7 +446,7 @@ public class LocationController {
                     }
 
 
-                } else if (contractorId != null) {
+                } else if (contractorId != null && !contractorId.isEmpty()) {
                     for (Integer contractorid : contractorId) {
                         List<GeoMasterDto> workByContractorIds = roadService.workByContractorIds(contractorid);
                         for (GeoMasterDto workByContractorId : workByContractorIds) {
@@ -487,7 +487,7 @@ public class LocationController {
                     }
 
 
-                } else if (districtId != null) {
+                } else if (districtId != null && !districtId.isEmpty()) {
                     for (Integer districtitem : districtId) {
                         List<GeoMasterDto> workByDistrictIds = roadService.getworkByDistrictId(districtitem);
                         for (GeoMasterDto WorkObj : workByDistrictIds) {
@@ -523,7 +523,7 @@ public class LocationController {
                     }
 
 
-                } else if (blockId != null) {
+                } else if (blockId != null && ! blockId.isEmpty()) {
 
 
                     for (Integer blockObj : blockId) {
@@ -560,7 +560,7 @@ public class LocationController {
 
                     }
 
-                } else if (divisionId != null) {
+                } else if (divisionId != null && ! divisionId.isEmpty()) {
 
                     for (Integer divisionObj : divisionId) {
                         List<GeoMasterDto> workByDivisionId = roadService.getworkByDivisionId(divisionObj);
@@ -671,7 +671,7 @@ public class LocationController {
 
         try {
 
-            if (deviceId != null) {
+            if (deviceId != null && ! deviceId.isEmpty()) {
                 for (Integer deviceid : deviceId) {
                     List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceid);
 
@@ -693,7 +693,7 @@ public class LocationController {
 
                 }
 
-            } else if (vehicleId != null) {
+            } else if (vehicleId != null && ! vehicleId.isEmpty()) {
                 for (Integer vehicleitem : vehicleId) {
                     List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate);
 
@@ -723,7 +723,7 @@ public class LocationController {
 
 
             }
-            else if (activityIds !=null) {
+            else if (activityIds !=null && !activityIds.isEmpty()) {
                 for (Integer activityItem:activityIds) {
                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityItem, userId);
                     for (VehicleActivityMappingDto vehicleList:veActMapDto) {
@@ -751,7 +751,7 @@ public class LocationController {
                 }
 
             }
-            else if (workId != null) {
+            else if (workId != null && !workId.isEmpty()) {
 
                 for (Integer workitem : workId) {
                     List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem);
@@ -789,7 +789,7 @@ public class LocationController {
 //                    }
                 }
 
-            } else if (roadId != null) {
+            } else if (roadId != null && !roadId.isEmpty()) {
                 for (Integer roadid : roadId) {
                     List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(roadid);
 
@@ -830,7 +830,7 @@ public class LocationController {
 
 
             }
-            else if (contractorId != null) {
+            else if (contractorId != null && !contractorId.isEmpty()) {
                 for (Integer contractorid : contractorId) {
                     List<GeoMasterDto> workByContractorIds = roadService.workByContractorIds(contractorid);
 
@@ -877,7 +877,7 @@ public class LocationController {
 
 
             }
-            else if (districtId != null) {
+            else if (districtId != null && ! districtId.isEmpty()) {
                 for (Integer districtitem : districtId) {
                     List<GeoMasterDto> workByDistrictIds = roadService.getworkByDistrictId(districtitem);
                     for (GeoMasterDto WorkObj : workByDistrictIds) {
@@ -914,7 +914,7 @@ public class LocationController {
                 }
 
 
-            } else if (blockId != null) {
+            } else if (blockId != null && !blockId.isEmpty()) {
 
 
                 for (Integer blockObj : blockId) {
@@ -951,7 +951,7 @@ public class LocationController {
 
                 }
 
-            } else if (divisionId != null) {
+            } else if (divisionId != null && !divisionId.isEmpty()) {
 
                 for (Integer divisionObj : divisionId) {
                     List<GeoMasterDto> workByDivisionId = roadService.getworkByDivisionId(divisionObj);

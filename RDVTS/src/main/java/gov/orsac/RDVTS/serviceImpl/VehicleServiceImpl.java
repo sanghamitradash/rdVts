@@ -155,7 +155,7 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate,Date vehicleWorkEndDate) {
+       public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate,Date vehicleWorkEndDate) throws ParseException {
               return vehicleRepositoryimpl.getdeviceListByVehicleId(vehicleId,vehicleWorkStartDate,vehicleWorkEndDate);
        }
 
@@ -265,6 +265,10 @@ public class VehicleServiceImpl implements VehicleService {
 //              List<String> imei=vehicleRepositoryimpl.getImeiByDeviceId(deviceIds);
 
               return alertList;
+       }
+
+       public int getvehicleCountByWorkId(int id){
+           return vehicleRepositoryimpl.getvehicleCountByWorkId(id);
        }
 
        @Override

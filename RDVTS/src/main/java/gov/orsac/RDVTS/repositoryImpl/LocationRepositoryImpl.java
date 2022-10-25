@@ -283,22 +283,16 @@ public class LocationRepositoryImpl {
             String qry = "with c as " +
                     "(select st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint " +
                     "from rdvts_oltp.vtu_location where  is_active=true ";
-
-            if (startDate != null && endDate != null) {
-                qry += " OR date_time BETWEEN :startDate AND :endDate ";
-                sqlParam.addValue("startDate", startDate);
-                sqlParam.addValue("endDate", endDate);
-            }
-            if (deviceVehicleDeactivationDate == null) {
-                deviceVehicleDeactivationDate = new Date();
-            }
-
-            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
-                qry += " OR date_time BETWEEN :createdOn AND :deactivationDate ";
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate == null) {
+                qry += "  OR date_time BETWEEN :createdOn AND now() ";
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+                qry += "  OR date_time BETWEEN :createdOn AND :deactivationDate ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
             qry += "and imei=:imei2  order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
@@ -310,20 +304,13 @@ public class LocationRepositoryImpl {
                     "(select st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint " +
                     "from rdvts_oltp.vtu_location where  is_active=true  ";
 
-            if (startDate != null && endDate != null) {
-                qry += " OR date_time BETWEEN :startDate AND :endDate ";
-                sqlParam.addValue("startDate", startDate);
-                sqlParam.addValue("endDate", endDate);
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate == null) {
+                qry += "  AND date_time BETWEEN :createdOn AND now() ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-
-            if (deviceVehicleDeactivationDate == null) {
-               // SimpleDateFormat deviceVehicleDeactivationDate = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-                //Date dateTime = formatter.parse("2022-10-10 12:10:00");
-                deviceVehicleDeactivationDate = new Date();
-            }
-
             if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
-                qry += " OR date_time BETWEEN :createdOn AND :deactivationDate ";
+                qry += "  AND date_time BETWEEN :createdOn AND :deactivationDate ";
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
