@@ -606,6 +606,7 @@ public class UserController {
 
     @PostMapping("/login")
     public RDVTSResponse loginUser(@RequestBody UserInfoDto request) {
+
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         if (request.getMobile1() == null && request.getPassword() == null && !request.getMobile1().toString().isEmpty() &&
                 !request.getPassword().isEmpty()) {
