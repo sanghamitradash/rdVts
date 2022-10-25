@@ -384,7 +384,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     @Override
     public List<VehicleMasterDto> getVehicleById(Integer id, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        List<VehicleMasterDto> vehicle;
+        List<VehicleMasterDto> vehicle=new ArrayList<>();
         String qry = "SELECT ve.id, ve.vehicle_no, ve.vehicle_type_id, vt.name as vehicleTypeName , ve.model, ve.speed_limit, ve.chassis_no, ve.engine_no, ve.engine_no, ve.is_active, ve.is_active, ve.created_by, " +
                 "ve.created_on, ve.updated_by, ve.updated_on " +
                 "FROM rdvts_oltp.vehicle_m AS ve " +
@@ -631,6 +631,11 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             qry+=" AND vam.vehicle_id=:vehicleId";
         }
         sqlParam.addValue("vehicleId", vehicleId);
-        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+        try{
+         return   namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+        }
+        catch(Exception e){
+            return null;
+        }
     }
 }
