@@ -34,6 +34,7 @@ public class ActivityDto {
     private String workName;
     private String startDate;
     private  String endDate;
+    private Integer gActivityId;
     List<VehicleActivityMappingEntity> vehicleActivity;
     private Integer gActivityId;
 }
