@@ -44,6 +44,7 @@ public class ContractorServiceImpl implements ContractorService {
         existingContract.setAddress(contractorDto.getAddress());
         existingContract.setGContractorId(contractorDto.getGContractorId());
         existingContract.setMobile(contractorDto.getMobile());
+        existingContract.setIsActive(contractorDto.getIsActive());
         ContractorEntity save = contractorMasterRepository.save(existingContract);
         return save;
     }

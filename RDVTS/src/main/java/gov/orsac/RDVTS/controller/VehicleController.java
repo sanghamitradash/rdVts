@@ -278,7 +278,7 @@ public class VehicleController {
             for (int i = 0; i < vehicleList.size(); i++) {
                 start1 = start1 + 1;
                 vehicleList.get(i).setSlNo(start1);
-                boolean device = vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
+             /*   boolean device = vehicleRepositoryImpl.getDeviceAssignedOrNot(vehicleList.get(i).getId());
                 if (vehicleList.get(i).getDeviceId() != null) {
                     DeviceDto deviceData = deviceRepositoryImpl.getDeviceByIdForTracking(vehicleList.get(i).getDeviceId());
                     boolean trackingVehicle = vehicleRepositoryImpl.getTrackingLiveOrNot(deviceData.getImeiNo1());
@@ -286,9 +286,9 @@ public class VehicleController {
                 }
                 boolean activity = vehicleRepositoryImpl.getActivityAssignOrNot(vehicleList.get(i).getId());
                 vehicleList.get(i).setDeviceAssigned(device);
-                vehicleList.get(i).setActivityAssigned(activity);
+                vehicleList.get(i).setActivityAssigned(activity);*/
             }
-
+/*
 
             if (vehicleList != null && vehicleList.size() > 0) {
                 for (VehicleMasterDto master : vehicleList) {
@@ -325,14 +325,15 @@ public class VehicleController {
                     }
 
                 }
-            }
+            }*/
 
-            response.setData(vehicleActivityList);
+            response.setData(vehicleList);
             // response.setData(vehicleActivityList);
             response.setMessage("Vehicle List");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(Long.valueOf(vehicleListPage.getNumberOfElements()));
+           // response.setRecordsFiltered(Long.valueOf(vehicleListPage.getNumberOfElements()));
+            response.setRecordsFiltered(vehicleListPage.getTotalElements());
             response.setRecordsTotal(vehicleListPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
@@ -377,7 +378,7 @@ public class VehicleController {
             result.put("saveVehicleMapping", saveVehicleMapping);
             response.setData(result);
             response.setStatus(1);
-            response.setMessage("Assign Vehicle Device Created Successfully");
+            response.setMessage("Assign Vehicle Device Updated Successfully");
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             /*        }
                     else {
@@ -549,20 +550,14 @@ public class VehicleController {
     }
 
     @PostMapping("/addVehicleActivityMapping")
-    public RDVTSResponse saveVTUVendor(@RequestParam String data) {
+    public RDVTSResponse saveVTUVendor(@RequestBody List<VehicleActivityMappingEntity> vehicleActivityMappingEntities) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
+            List<VehicleActivityMappingEntity> vehicleActivityEntity = activityService.saveVehicleActivity(vehicleActivityMappingEntities);
 
-            /*List<VehicleActivityMappingEntity> vehicleActivityMappingEntity =mapper.readValue(vehicleActivityData, mapper.getTypeFactory().constructCollectionType(List.class, VehicleActivityMappingEntity.class));
-            List<ActivityEntity> activityEntityList = mapper.readValue(activity, mapper.getTypeFactory().constructCollectionType(List.class, ActivityEntity.class));*/
-            ActivityDto activity = mapper.readValue(data, ActivityDto.class);
-            ActivityEntity activityMaster = activityService.addActivity(activity);
-            List<VehicleActivityMappingEntity> vehicleActivity = activityService.saveVehicleActivity(activity.getVehicleActivity(), activityMaster.getId());
-
-            result.put("activityMaster", activityMaster);
-            result.put("vehicleActivity", vehicleActivity);
+            result.put("saveVendor", vehicleActivityEntity);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));

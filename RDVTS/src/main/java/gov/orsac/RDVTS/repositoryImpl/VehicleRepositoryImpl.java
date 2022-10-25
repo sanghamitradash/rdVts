@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Repository
 public class VehicleRepositoryImpl implements VehicleRepository {
@@ -120,23 +121,25 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return vehicleDevice;
     }
 
-    public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate, Date vehicleWorkEndDate) {
+    public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate, Date vehicleWorkEndDate) throws ParseException {
         List<VehicleDeviceMappingDto> vehicleDevice = new ArrayList<>();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select id, vehicle_id, device_id, installation_date, installed_by, is_active, created_by, created_on, updated_by, updated_on, deactivation_date " +
                 "FROM rdvts_oltp.vehicle_device_mapping where is_active=true ";
 
 
-        if (vehicleId > 0) {
+        if (vehicleId!=null && vehicleId > 0) {
             qry += " and vehicle_id =:vehicleId ";
             sqlParam.addValue("vehicleId", vehicleId);
         }
 
-        if (vehicleWorkEndDate == null) {
-            vehicleWorkEndDate = new Date();
+        if (vehicleWorkStartDate != null && vehicleWorkEndDate == null) {
+            qry += "  and created_on BETWEEN :vehicleWorkStartDate AND now() or deactivation_date BETWEEN :vehicleWorkStartDate AND now() ";
+            sqlParam.addValue("vehicleWorkStartDate", vehicleWorkStartDate);
+
         }
-        if (vehicleWorkStartDate != null && vehicleWorkEndDate != null) {
-            qry += "  and deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
+        if(vehicleWorkStartDate != null && vehicleWorkEndDate != null){
+            qry += "  and created_on BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate or deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
             sqlParam.addValue("vehicleWorkStartDate", vehicleWorkStartDate);
             sqlParam.addValue("vehicleWorkEndDate", vehicleWorkEndDate);
         }
@@ -174,88 +177,180 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     @Override
     public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        /*PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");*/
-       /* pageable = PageRequest.of(1, vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
-//        vehicle.getDraw() - 1   (vehicle.getOffSet()/vehicle.getLimit())+1
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");*/
+//        PageRequest pageable = null;
+//        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
+//        pageable = PageRequest.of(vehicle.getDraw() - 1, vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
 
         int pageNo = vehicle.getOffSet()/vehicle.getLimit();
         PageRequest pageable = PageRequest.of(pageNo, vehicle.getLimit(), Sort.Direction.fromString("asc"), "id");
         Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
 
         int resultCount = 0;
-        String qry = "SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model, vm.chassis_no," +
+        String qry = "select * from (SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,vm.model, vm.chassis_no," +
                 "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ," +
-                "owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id as contractorId,contractor.name as contractorName " +
-                "FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id   " +
-                "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id  and device.is_active=true " +
+                "owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id as contractorId," +
+                "contractor.name as contractorName," +
+                "case when vdCount.vehicleCount>0 then true else false end as deviceAssigned," +
+                "case when vtuLocation.imeiCount>0 then true else false end as trackingStatus," +
+                "case when actCount.activityCount>0 then true else false end as activityAssigned " +
+                "FROM rdvts_oltp.vehicle_m as vm " +
+                "left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id   " +
+                "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true " +
                 "left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id " +
                 "left join rdvts_oltp.activity_m as am on am.id = activity.activity_id  " +
                 "left join rdvts_oltp.work_m as work on work.id = am.work_id  " +
-                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id   " +
+                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id " +
                 "left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id " +
                 "left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id " +
-                "where vm.is_active=true ";
+                "left join rdvts_oltp.device_m as dm on dm.id=device.device_id " +
+                "left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping " +
+                " where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id " +
+                "left join (select count(id) over (partition by imei) as imeiCount,imei from rdvts_oltp.vtu_location where date(date_time)=date(now())) as vtuLocation " +
+                "on vtuLocation.imei=dm.imei_no_1 " +
+                "left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount " +
+                "on actCount.vehicle_id=activity.vehicle_id) as vehicleList ";
+        String subQuery = "";
+        if(vehicle.getDeviceAssign()!=null){
+            if(subQuery.length()<=0){
+                subQuery+=" WHERE deviceAssigned=:deviceAssigned ";
+                sqlParam.addValue("deviceAssigned",vehicle.getDeviceAssign());
+            }
+            else{
+                subQuery+=" and deviceAssigned=:deviceAssigned ";
+                sqlParam.addValue("deviceAssigned",vehicle.getDeviceAssign());
+            }
+
+        }
+        if(vehicle.getTrackingAssign()!=null){
+            if(subQuery.length()<=0){
+                subQuery+=" WHERE trackingStatus=:trackingStatus ";
+                sqlParam.addValue("trackingStatus",vehicle.getTrackingAssign());
+            }
+            else{
+                subQuery+=" and trackingStatus=:trackingStatus ";
+                sqlParam.addValue("trackingStatus",vehicle.getTrackingAssign());
+            }
+
+        }
+        if(vehicle.getActivityAssign()!=null){
+            if(subQuery.length()<=0){
+                subQuery+=" WHERE activityAssigned=:activityAssigned ";
+                sqlParam.addValue("activityAssigned",vehicle.getActivityAssign());
+            }
+            else{
+                subQuery+=" and activityAssigned=:activityAssigned ";
+                sqlParam.addValue("activityAssigned",vehicle.getActivityAssign());
+            }
+
+        }
 
         if (vehicle.getVehicleTypeId() > 0) {
-            qry += " and vm.vehicle_type_id=:vehicleTypeId ";
-            sqlParam.addValue("vehicleTypeId", vehicle.getVehicleTypeId());
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE  vehicleTypeId=:vehicleTypeId ";
+                sqlParam.addValue("vehicleTypeId", vehicle.getVehicleTypeId());
+            }
+            else{
+                subQuery += " and  vehicleTypeId=:vehicleTypeId ";
+                sqlParam.addValue("vehicleTypeId", vehicle.getVehicleTypeId());
+            }
         }
         if (vehicle.getDeviceId() > 0) {
-            qry += " and device.device_id=:deviceId ";
-            sqlParam.addValue("deviceId", vehicle.getDeviceId());
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE deviceId=:deviceId ";
+                sqlParam.addValue("deviceId", vehicle.getDeviceId());
+            }
+            else{
+                subQuery += " and deviceId=:deviceId ";
+                sqlParam.addValue("deviceId", vehicle.getDeviceId());
+            }
         }
+/*
         if (vehicle.getWorkId() > 0) {
-            qry += " and work.id=:workId ";
-            sqlParam.addValue("workId", vehicle.getWorkId());
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE work.id=:workId ";
+                sqlParam.addValue("workId", vehicle.getWorkId());
+            }
+            else{
+                subQuery += " and work.id=:workId ";
+                sqlParam.addValue("workId", vehicle.getWorkId());
+            }
         }
+*/
 
         if (vehicle.getActivityId() > 0) {
-            qry += " and activity.activity_id=:activityId ";
-            sqlParam.addValue("activityId", vehicle.getActivityId());
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE activityId=:activityId ";
+                sqlParam.addValue("activityId", vehicle.getActivityId());
+            }
+            else{
+                subQuery += " and activityId=:activityId ";
+                sqlParam.addValue("activityId", vehicle.getActivityId());
+            }
         }
 
         //Validation on basis of userLevel and lower level user
-      /*  UserInfoDto user=userRepositoryImpl.getUserByUserId(vehicle.getUserId());
+   /*     UserInfoDto user=userRepositoryImpl.getUserByUserId(vehicle.getUserId());
         if(user.getUserLevelId()==5){
-            qry+="and owner.contractor_id=:contractorId ";
-            sqlParam.addValue("contractorId",vehicle.getUserId());
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE  owner.contractor_id=:contractorId ";
+                sqlParam.addValue("contractorId",vehicle.getUserId());
+            }
+            else{
+                subQuery += " and owner.contractor_id=:contractorId  ";
+                sqlParam.addValue("contractorId",vehicle.getUserId());
+            }
         }
        *//* else if(user.getUserLevelId()==1){
-         *//**//*    List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());*//**//*
+             List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());
            qry+=" ";
         }*//*
         else if(user.getUserLevelId()==2){
             List<Integer> distId=userRepositoryImpl.getDistIdByUserId(vehicle.getUserId());
              List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(distId);
              List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
-             qry+=" and vm.id in(:vehicleIds)";
-             sqlParam.addValue("vehicleIds",vehicle);
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE  vm.id in(:vehicleIds) ";
+                sqlParam.addValue("vehicleIds",vehicleId);;
+            }
+            else{
+                subQuery += " and vm.id in(:vehicleIds)  ";
+                sqlParam.addValue("vehicleIds",vehicleId);;
+            }
         }
         else if(user.getUserLevelId()==3){
             List<Integer> blockId=userRepositoryImpl.getBlockIdByUserId(vehicle.getUserId());
             List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByBlockList(blockId);
             List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
-            qry+=" and vm.id in(:vehicleIds)";
-            sqlParam.addValue("vehicleIds",vehicleId);
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE  vm.id in(:vehicleIds) ";
+                sqlParam.addValue("vehicleIds",vehicleId);;
+            }
+            else{
+                subQuery += " and vm.id in(:vehicleIds) ";
+                sqlParam.addValue("vehicleIds",vehicleId);;
+            }
         }
         else if(user.getUserLevelId()==4){
             List<Integer> divisionId=userRepositoryImpl.getDivisionByUserId(vehicle.getUserId());
             List<Integer> districtId=userRepositoryImpl.getDistrictByDivisionId(divisionId);
             List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(districtId);
             List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
-            qry+=" and vm.id in(:vehicleIds)";
-            sqlParam.addValue("vehicleIds",vehicleId);
-        }
-*/
-
-        resultCount = count(qry, sqlParam);
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE  vm.id in(:vehicleIds) ";
+                sqlParam.addValue("vehicleIds",vehicleId);;
+            }
+            else{
+                subQuery += " and vm.id in(:vehicleIds) ";
+                sqlParam.addValue("vehicleIds",vehicleId);;
+            }
+        }*/
+        String finalQry=qry+" "+subQuery;
+        resultCount = count(finalQry, sqlParam);
         if (vehicle.getLimit() > 0) {
-            qry += " LIMIT " + vehicle.getLimit() + " OFFSET " + vehicle.getOffSet();
+            finalQry += " LIMIT " + vehicle.getLimit() + " OFFSET " + vehicle.getOffSet();
         }
 //        resultCount = count(qry, sqlParam);
-        List<VehicleMasterDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
+        List<VehicleMasterDto> list = namedJdbc.query(finalQry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
         return new PageImpl<>(list, pageable, resultCount);
     }
 
@@ -290,7 +385,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     @Override
     public List<VehicleMasterDto> getVehicleById(Integer id, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        List<VehicleMasterDto> vehicle;
+        List<VehicleMasterDto> vehicle=new ArrayList<>();
         String qry = "SELECT ve.id, ve.vehicle_no, ve.vehicle_type_id, vt.name as vehicleTypeName , ve.model, ve.speed_limit, ve.chassis_no, ve.engine_no, ve.engine_no, ve.is_active, ve.is_active, ve.created_by, " +
                 "ve.created_on, ve.updated_by, ve.updated_on " +
                 "FROM rdvts_oltp.vehicle_m AS ve " +
@@ -324,7 +419,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         boolean device = false;
         String qry = "select count(id)  from  rdvts_oltp.vehicle_device_mapping " +
                 "where vehicle_id=:vehicleId and is_active=true and " +
-                "deactivation_date is null and created_on <=now()";
+                "deactivation_date is null ";
         sqlParam.addValue("vehicleId",vehicleId);
             count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
 
@@ -369,7 +464,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         Integer count = 0;
         boolean activity = false;
-        String qry = "select count(id) from rdvts_oltp.vehicle_activity_mapping where vehicle_id=:vehicleId and is_active=true";
+            String qry = "select count(id) from rdvts_oltp.vehicle_activity_mapping where vehicle_id=:vehicleId and is_active=true";
         sqlParam.addValue("vehicleId", vehicleId);
         count = namedJdbc.queryForObject(qry, sqlParam, Integer.class);
         if(count>0){
@@ -446,6 +541,19 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleActivityMappingDto.class));
 
     }
+    public Integer getvehicleCountByWorkId(Integer id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " SELECT  count(distinct vam.vehicle_id) FROM rdvts_oltp.vehicle_activity_mapping as vam " +
+                " LEFT JOIN rdvts_oltp.vehicle_m as vm on vm.id=vam.vehicle_id " +
+                " left join rdvts_oltp.activity_m as am on am.id=vam.activity_id " +
+
+                " WHERE 1=1 and am.is_active=true and vm.is_active=true and vam.is_active=true and am.work_id=:workId ";
+        sqlParam.addValue("workId", id);
+        return   namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+
+
+    }
+
 
     public List<VehicleMasterDto> getVehicleHistoryList(int id){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
@@ -537,6 +645,11 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             qry+=" AND vam.vehicle_id=:vehicleId";
         }
         sqlParam.addValue("vehicleId", vehicleId);
-        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+        try{
+         return   namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+        }
+        catch(Exception e){
+            return null;
+        }
     }
 }

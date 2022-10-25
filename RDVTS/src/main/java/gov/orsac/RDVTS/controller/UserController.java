@@ -11,6 +11,7 @@ import gov.orsac.RDVTS.dto.UserInfoDto;
 import gov.orsac.RDVTS.dto.UserPasswordMasterDto;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
+import gov.orsac.RDVTS.exception.RecordExistException;
 import gov.orsac.RDVTS.repository.UserPaswordMasterRepo;
 import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.UserService;
@@ -40,7 +41,6 @@ public class UserController {
 
     @Autowired
     private UserPaswordMasterRepo userPaswordMasterRepo;
-
     @PostMapping("/createUser")
     public RDVTSResponse saveUser(@RequestParam(name = "userData") String data,
                                   @RequestParam(name = "password") String password,
@@ -267,6 +267,7 @@ public class UserController {
                                          @RequestParam(name = "roleId", required = false) Integer roleId,
                                          @RequestParam(name = "distId", required = false) Integer distId,
                                          @RequestParam(name = "contractorId", required = false) Integer contractorId,
+                                         @RequestParam(name = "userLevelId", required = false) Integer userLevelId,
                                          @RequestParam(name = "email", required = false) String email,
                                          @RequestParam(name = "mobile1", required = false) Long mobile1,
                                          @RequestParam(name = "start") Integer start,
@@ -288,6 +289,7 @@ public class UserController {
             userListDto.setLimit(length);
             userListDto.setOffSet(start);
             userListDto.setDraw(draw);
+            userListDto.setUserLevelId(userLevelId);
 
 
 
@@ -295,12 +297,17 @@ public class UserController {
                 Page<UserInfoDto> userInfoDtos = userService.getUserList(userListDto);
                 List<UserInfoDto> userList = userInfoDtos.getContent();
                 List<UserInfoDto> finalUserList=new ArrayList<>();
-                Integer start1=start;
-                for(UserInfoDto user:userList){
-
-                    start1=start1+1;
-                    user.setSlNo(start1);
-                    finalUserList.add(user);
+//                Integer start1=start;
+//                for(UserInfoDto user:userList){
+//
+//                    start1=start1+1;
+//                    user.setSlNo(start1);
+//                    finalUserList.add(user);
+//                }
+                Integer start1 = start;
+                for (int i = 0; i < userList.size(); i++) {
+                    start1 = start1 + 1;
+                    userList.get(i).setSlNo(start1);
                 }
                 // result.put("userList", userList);
                 response.setData(userList);
@@ -606,6 +613,7 @@ public class UserController {
 
     @PostMapping("/login")
     public RDVTSResponse loginUser(@RequestBody UserInfoDto request) {
+
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         if (request.getMobile1() == null && request.getPassword() == null && !request.getMobile1().toString().isEmpty() &&
                 !request.getPassword().isEmpty()) {
@@ -743,32 +751,45 @@ public class UserController {
             UserPasswordMasterDto userPasswordMasterDto = mapper.readValue(data, UserPasswordMasterDto.class);
             UserPasswordMasterEntity existingUserId = userPaswordMasterRepo.findByUserId(userId);
 
-//            UserPasswordMasterEntity updatedPassword = userService.updateUserPass(userId, userPasswordMasterDto);
-//            result.put("updatePassword", updatedPassword);
-//            response.setData(result);
-//            response.setStatus(1);
-//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-//            response.setMessage("Password Updated Successfully");
+            UserPasswordMasterEntity updatedPassword = new UserPasswordMasterEntity();
 
-            UserPasswordMasterEntity updatedPassword = new UserPasswordMasterEntity(); /*= userService.updateUserPass(userId, userPasswordMasterDto);*/
-//            if(existingUserId.getPassword() == userPasswordMasterDto.getOldPassword()){
-            if(encoder.matches(userPasswordMasterDto.getOldPassword(), existingUserId.getPassword())) {
-                if (userPasswordMasterDto.getOldPassword().equals(userPasswordMasterDto.getPassword())) {
-                    //check if the old and new password are same
-                    response.setStatus(0);
-                    response.setData(result);
-                    response.setMessage("New password shouldn't be same as old password !!!");
-                    response.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
-                }
-                else {
-                    UserPasswordMasterEntity userPasswordMasterEntity = userService.updateUserPass(userId, userPasswordMasterDto);
-                    //result.put("updatePassword", updatedPassword);
-                    response.setData(result);
-                    response.setStatus(1);
-                    response.setMessage("Password updated successfully !!!");
-                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                }
+            if(!userPasswordMasterDto.getOldPassword().isEmpty()) {
+//                if (checkPasswordExists(userPasswordMasterDto.getPassword())) {
+//                    throw new RecordExistException("oldPassword", "oldPassword", existingUserId.getPassword());
+//                }
+                    if (encoder.matches(userPasswordMasterDto.getOldPassword(), existingUserId.getPassword())) {
+                        if (userPasswordMasterDto.getOldPassword().equals(userPasswordMasterDto.getPassword())) {
+                            //check if the old and new password are same
+                            response.setStatus(0);
+                            response.setData(result);
+                            response.setMessage("New password shouldn't be same as old password !!!");
+                            response.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
+                        } else {
+                            UserPasswordMasterEntity userPasswordMasterEntity = userService.updateUserPass(userId, userPasswordMasterDto);
+                            //result.put("updatePassword", updatedPassword);
+                            response.setData(result);
+                            response.setStatus(1);
+                            response.setMessage("Password updated successfully !!!");
+                            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                        }
+
+                    } else {
+                        response.setStatus(0);
+                        response.setData(result);
+                        response.setMessage("Something went wrong while reseting password!");
+                        response.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
+                    }
+//                } else {
+//                    throw new RecordExistException("oldPassword", "oldPassword", existingUserId.getPassword());
+//                }
+            } else {
+                response.setStatus(0);
+                response.setData(result);
+                response.setMessage("Oldpasword can't be empty!");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.CONFLICT));
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
             response = new RDVTSResponse(0,

@@ -31,6 +31,9 @@ public class MenuEntity {
     @Column(name = "module")
     private String module;
 
+    @Column(name = "menu_icon")
+    private String menuIcon;
+
     @Column(name = "menu_order")
     private Integer menuOrder;
 
