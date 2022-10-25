@@ -111,15 +111,7 @@ public class WorkController {
 
 
 
-//                     location.setDateTime(dateTime);
-//                     location.setLatitude(21.7787878);
-//                     location.setLongitude(80.676767);
-//                     location.setSpeed(20);
-//                     location.setDistanceTravelledToday(200.5);
-//                     location.setDistanceTravelledTotal(5000.2);
-//                     location.setAvgDistanceTravelled(300.0);
-//                     location.setAvgSpeed(30.2);
-//                     locationList.add(location);
+
 
 
 
@@ -129,7 +121,7 @@ public class WorkController {
             Date endDate = null;
             Date vehicleStartDate = null;
             Date vehicleendDate = null;
-
+            Double todayDistance=0.0;
             Double totalDistance = 0.0;
 
             for (WorkDto workitem : workDto) {
@@ -145,7 +137,7 @@ public class WorkController {
                             for (DeviceDto imei : getImeiList) {
 
                                 totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-
+                                todayDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
 
                             }
 
@@ -161,6 +153,17 @@ public class WorkController {
             location.setTotalVehicleCount(totalVehicleCount);
             location.setDistanceTravelledTotal(totalDistance);
             location.setAvgDistanceTravelled(avgDistance);
+
+            //Static DAta
+              // location.setDateTime(dateTime);
+                     location.setLatitude(21.7787878);
+                     location.setLongitude(80.676767);
+                     location.setSpeed(20);
+                     location.setDistanceTravelledToday(200.5);
+                     location.setDistanceTravelledTotal(5000.2);
+                     location.setAvgDistanceTravelled(300.0);
+                     location.setAvgSpeed(30.2);
+                     locationList.add(location);
             locationList.add(location);
 
             result.put("contractorDto", contractorDtoList);

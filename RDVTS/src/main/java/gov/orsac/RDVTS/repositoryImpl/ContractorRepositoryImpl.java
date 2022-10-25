@@ -149,17 +149,17 @@ public class ContractorRepositoryImpl implements ContractorRepository {
         }
 
         if (contractor.getMobile() != null && contractor.getMobile() > 0) {
-            qry += " AND cm.mobile=:mobile ";
-            sqlParam.addValue("mobile", contractor.getMobile());
+            qry += " AND cm.mobile::varchar LIKE :mobile " ;
+            sqlParam.addValue("mobile",  String.valueOf(contractor.getMobile()+"%"));
         }
 
         if (contractor.getName() != null && contractor.getName().length() > 0) {
-            qry += " AND cm.name=:name ";
-            if (contractor.getName() != null) {
+//            qry += " AND cm.name=:name ";
+//            if (contractor.getName() != null) {
                 qry += " AND cm.name LIKE(:name) ";
-                sqlParam.addValue("name", contractor.getName());
+                sqlParam.addValue("name",String.valueOf("%" + contractor.getName() + "%"));
             }
-        }
+
         resultCount = count(qry, sqlParam);
         if (contractor.getLimit() > 0){
             qry += "  Order by cm.id desc LIMIT  " +contractor.getLimit() + " OFFSET " + contractor.getOffSet();
