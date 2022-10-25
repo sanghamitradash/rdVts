@@ -18,4 +18,5 @@ public class RoleMenuInfo {
     private Integer createdBy;
     private Integer updatedBy;
     private Boolean isDefault;
+    private String menuIcon;
 }
