@@ -31,6 +31,7 @@ public interface MasterService {
     List<RoleMenuInfo> getMenuByRoleId(Integer userId, Integer id);
 
     List<ParentMenuInfo> getMenuHierarchyByRole(Integer userId, Integer roleId);
+    List<ParentMenuInfo> getMenuHierarchy(Integer roleId);
     List<ParentMenuInfo> getMenuHierarchyWithoutRoleId(Integer userId);
     List<RoleMenuInfo> getAllMenuByRoleIds(Integer userId,Integer roleId);
     Boolean deactivateMenu(int roleId, int menuId, boolean isActive);
