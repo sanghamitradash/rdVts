@@ -170,13 +170,13 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
         }
 
-        if(deviceDto.getImeiNo1()!=null && deviceDto.getImeiNo1() > 0){
+        if(deviceDto.getImeiNo1() != null && deviceDto.getImeiNo1() > 0 ){
             if(subQuery.length()<=0){
-                subQuery+=" WHERE and imeiNo1::varchar LIKE :imeiNo1   ";
+                subQuery+=" WHERE imeiNo1::varchar LIKE :imeiNo1   ";
                 sqlParam.addValue("imeiNo1",String.valueOf(deviceDto.getImeiNo1()+"%"));
             }
             else{
-                subQuery+=" AND and imeiNo1::varchar LIKE :imeiNo1  ";
+                subQuery+=" AND imeiNo1::varchar LIKE :imeiNo1  ";
                 sqlParam.addValue("imeiNo1",String.valueOf(deviceDto.getImeiNo1()+"%"));
             }
 
@@ -256,11 +256,11 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
         if(deviceDto.getVehicleId()!=null && deviceDto.getVehicleId() > 0){
             if(subQuery.length()<=0){
-                subQuery+=" WHERE vehicleId=:vehicleId   ";
+                subQuery+=" WHERE vehicle_id=:vehicleId   ";
                 sqlParam.addValue("vehicleId", deviceDto.getVehicleId());
             }
             else{
-                subQuery+=" AND vehicleId=:vehicleId ";
+                subQuery+=" AND vehicle_id=:vehicleId ";
                 sqlParam.addValue("vehicleId", deviceDto.getVehicleId());
             }
 
