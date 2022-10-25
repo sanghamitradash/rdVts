@@ -162,7 +162,7 @@ public class ContractorRepositoryImpl implements ContractorRepository {
         }
         resultCount = count(qry, sqlParam);
         if (contractor.getLimit() > 0){
-            qry += " LIMIT " +contractor.getLimit() + " OFFSET " + contractor.getOffSet();
+            qry += "  Order by cm.id desc LIMIT  " +contractor.getLimit() + " OFFSET " + contractor.getOffSet();
         }
         List<ContractorDto> list=namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ContractorDto.class));
         return new PageImpl<>(list, pageable, resultCount);
