@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.dto.ActivityDto;
 import gov.orsac.RDVTS.dto.VehicleActivityMappingDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
 import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
+import gov.orsac.RDVTS.entities.VTUVendorMasterEntity;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.ActivityMasterRepository;
@@ -93,18 +94,49 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<VehicleActivityMappingEntity> saveVehicleActivity(List<VehicleActivityMappingEntity> vehicleActivity, Integer id) {
-
-
-        for(VehicleActivityMappingEntity vehicleActivityMappingEntity1 : vehicleActivity) {
-
-            vehicleActivityMappingEntity1.setActivityId(id);
-            vehicleActivityMappingEntity1.setIsActive(true);
+    public List<VehicleActivityMappingEntity> saveVehicleActivity(List<VehicleActivityMappingEntity> vehicleActivityMappingEntities) {
+        for(VehicleActivityMappingEntity vehicleActivityMapping1 :vehicleActivityMappingEntities){
+            vehicleActivityMapping1.setIsActive(true);
         }
-        return vehicleActivityMappingRepository.saveAll(vehicleActivity);
+        return vehicleActivityMappingRepository.saveAll(vehicleActivityMappingEntities);
+    }
+
+//    @Override
+//    public List<VehicleActivityMappingEntity> workActivityVehicleMap(VehicleActivityWorkMappingDto vehicleActivityWorkMappingDto) {
+//        List<VehicleActivityMappingEntity> vehicleActivityMappingEntity = new ArrayList<>();
+//        for(int i=0; i<=vehicleActivityWorkMappingDto.getVehicleId().size(); i++){
+//            VehicleActivityMappingEntity vehicleAct = new VehicleActivityMappingEntity();
+//            vehicleAct.setVehicleId(vehicleActivityWorkMappingDto.getVehicleId().get(i));
+//            vehicleAct.setActivityId(vehicleActivityWorkMappingDto.getActivityId());
+//            vehicleAct.setCreatedBy(vehicleActivityWorkMappingDto.getUserId());
+//            vehicleAct.setIsActive(true);
+//            vehicleActivityMappingEntity.add(vehicleAct);
+//        }
+//        return vehicleActivityMappingRepository.saveAll(vehicleActivityMappingEntity);
+//    }
 
 
-}
+
+//    public VehicleActivityMappingEntity saveVehicleActivity(VehicleActivityWorkMappingDto vehicleActivityDto) {
+////        for (VehicleActivityMappingEntity vehicleActivityMappingEntity1: vehicleActivityEntity) {
+////
+////        }
+//        VehicleActivityMappingEntity vehicleActivityMappingEntity = new VehicleActivityMappingEntity();
+//        BeanUtils.copyProperties(vehicleActivityDto, vehicleActivityMappingEntity);
+//     /*   vehicleActivityMappingEntity.setVehicleId(vehicleActivityEntity.getVehicleId());
+//        vehicleActivityMappingEntity.setActivityId(vehicleActivityMappingEntity.getActivityId());
+//        vehicleActivityEntity.setIsActive(true);*/
+//        return vehicleActivityMappingRepository.save(vehicleActivityMappingEntity);
+//    }
+
+//    @Override
+//    public List<VehicleActivityMappingEntity> saveVehicleActivity(List<VehicleActivityMappingEntity> vehicleActivity, Integer id) {
+//        for(VehicleActivityMappingEntity vehicleActivityMappingEntity1 : vehicleActivity) {
+//            vehicleActivityMappingEntity1.setActivityId(id);
+//            vehicleActivityMappingEntity1.setIsActive(true);
+//        }
+//        return vehicleActivityMappingRepository.saveAll(vehicleActivity);
+//}
 
 
 

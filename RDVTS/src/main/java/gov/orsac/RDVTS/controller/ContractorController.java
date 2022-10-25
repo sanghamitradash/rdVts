@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,18 +92,22 @@ public class ContractorController {
         try {
             Page<ContractorDto> contractorListPage = contractorService.getContractorDetails(contractor);
             List<ContractorDto> contractorList = contractorListPage.getContent();
+            List<DeviceInfo> finalDeviceList=new ArrayList<>();
             Integer start1=start;
             for(int i=0;i<contractorList.size();i++) {
+
                 start1 = start1 + 1;
                 contractorList.get(i).setSlNo(start1);
+            }
                 response.setData(contractorList);
-                response.setMessage("contractor List");
+                response.setMessage("Contractor List");
                 response.setStatus(1);
                 response.setDraw(draw);
-                response.setRecordsFiltered(Long.valueOf(contractorListPage.getNumberOfElements()));
+                //response.setRecordsFiltered(Long.valueOf(contractorListPage.getNumberOfElements()));
+                response.setRecordsFiltered(contractorListPage.getTotalElements());
                 response.setRecordsTotal(contractorListPage.getTotalElements());
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
             response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
