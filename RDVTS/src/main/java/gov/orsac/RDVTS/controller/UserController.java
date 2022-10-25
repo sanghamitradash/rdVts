@@ -267,6 +267,7 @@ public class UserController {
                                          @RequestParam(name = "roleId", required = false) Integer roleId,
                                          @RequestParam(name = "distId", required = false) Integer distId,
                                          @RequestParam(name = "contractorId", required = false) Integer contractorId,
+                                         @RequestParam(name = "userLevelId", required = false) Integer userLevelId,
                                          @RequestParam(name = "email", required = false) String email,
                                          @RequestParam(name = "mobile1", required = false) Long mobile1,
                                          @RequestParam(name = "start") Integer start,
@@ -288,6 +289,7 @@ public class UserController {
             userListDto.setLimit(length);
             userListDto.setOffSet(start);
             userListDto.setDraw(draw);
+            userListDto.setUserLevelId(userLevelId);
 
 
 
@@ -295,12 +297,17 @@ public class UserController {
                 Page<UserInfoDto> userInfoDtos = userService.getUserList(userListDto);
                 List<UserInfoDto> userList = userInfoDtos.getContent();
                 List<UserInfoDto> finalUserList=new ArrayList<>();
-                Integer start1=start;
-                for(UserInfoDto user:userList){
-
-                    start1=start1+1;
-                    user.setSlNo(start1);
-                    finalUserList.add(user);
+//                Integer start1=start;
+//                for(UserInfoDto user:userList){
+//
+//                    start1=start1+1;
+//                    user.setSlNo(start1);
+//                    finalUserList.add(user);
+//                }
+                Integer start1 = start;
+                for (int i = 0; i < userList.size(); i++) {
+                    start1 = start1 + 1;
+                    userList.get(i).setSlNo(start1);
                 }
                 // result.put("userList", userList);
                 response.setData(userList);

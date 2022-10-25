@@ -48,11 +48,12 @@ public class UserRepositoryImpl {
 
 
         List<Integer> userIds = helperService.getLowerUserByUserId(userListRequest.getUserId());
-        PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
-        pageable = PageRequest.of(userListRequest.getDraw() - 1, userListRequest.getLimit(), Sort.Direction.fromString("desc"), "id");
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        int pageNo = userListRequest.getOffSet()/userListRequest.getLimit();
+        PageRequest pageable = PageRequest.of(pageNo, userListRequest.getLimit(), Sort.Direction.fromString("asc"), "id");
+        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+
+
         int resultCount = 0;
 
         String queryString = " ";
@@ -60,13 +61,13 @@ public class UserRepositoryImpl {
         queryString += "SELECT  um.id, um.first_name, um.middle_name, um.last_name, um.email, um.mobile_1 as mobile1, um.mobile_2 as mobile2 ,\n" +
                 "um.designation_id as designationId , um.user_level_id, um.role_id as roleId , um.is_active as isactive, um.created_by , \n" +
                 "um.created_on, um.updated_by, um.updated_on, um.contractor_id as contractorId,dm.name as designation,ulm.name as userLevel ,\n" +
-                "rm.name as role,cm.name as contractor \n" +
-                " FROM rdvts_oltp.user_m as um \n" +
-                " left join rdvts_oltp.designation_m as dm on dm.id=um.designation_id  " +
-                "  left join rdvts_oltp.user_level_m as ulm on ulm.id=um.user_level_id  " +
-                "  left join rdvts_oltp.role_m as rm on rm.id=um.role_id \n" +
-                "  left join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id  " +
-                "left join rdvts_oltp.user_area_mapping uam on uam.user_id=um.id where um.is_active=true and um.id IN (:userIds)";
+                "rm.name as role,cm.name as contractor " +
+                " FROM rdvts_oltp.user_m as um " +
+                " left join rdvts_oltp.designation_m as dm on dm.id=um.designation_id and dm.is_active=true " +
+                "  left join rdvts_oltp.user_level_m as ulm on ulm.id=um.user_level_id  and ulm.is_active=true " +
+                "  left join rdvts_oltp.role_m as rm on rm.id=um.role_id and rm.is_active=true " +
+                "  left join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id and cm.is_active=true " +
+                "left join rdvts_oltp.user_area_mapping uam on uam.user_id=um.id where um.is_active=true and uam.is_active=true  and um.id IN (:userIds)";
         sqlParam.addValue("userIds", userIds);
 //        if( userListRequest.getUserId()!= null && userListRequest.getUserId() > 0 ){
 //            queryString+=" AND um.id=:id ";
@@ -116,18 +117,25 @@ public class UserRepositoryImpl {
 
 
         if (userListRequest.getEmail() != null && !userListRequest.getEmail().isEmpty()) {
-            queryString += " AND um.email=:email ";
-            sqlParam.addValue("email", userListRequest.getEmail());
+            queryString += " AND um.email Like :email ";
+            sqlParam.addValue("email", String.valueOf("%"+userListRequest.getEmail()+"%"));
+
         }
         if (userListRequest.getMobile1() != null && !userListRequest.getMobile1().toString().isEmpty()) {
-            queryString += " AND um.mobile_1=:mobile1 ";
-            sqlParam.addValue("mobile1", userListRequest.getMobile1());
+            queryString += " AND um.mobile_1::varchar Like :mobile1  ";
+            sqlParam.addValue("mobile1",String.valueOf(userListRequest.getMobile1()+"%"));
+
+        }
+
+        if (userListRequest.getUserLevelId() !=null && userListRequest.getUserLevelId() > 0){
+            queryString += " AND um.user_level_id = :userLevelId ";
+            sqlParam.addValue("userLevelId", userListRequest.getUserLevelId());
         }
 
 
         resultCount = count(queryString, sqlParam);
         if (userListRequest.getLimit() > 0) {
-            queryString += "  LIMIT " + userListRequest.getLimit() + " OFFSET " + userListRequest.getOffSet();
+            queryString += " order by um.id desc  LIMIT " + userListRequest.getLimit() + " OFFSET " + userListRequest.getOffSet();
 
         }
 

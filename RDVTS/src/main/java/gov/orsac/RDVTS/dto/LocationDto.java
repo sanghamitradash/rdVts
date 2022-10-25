@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.dto;
 
+import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,6 @@ public class LocationDto {
     private Double distanceTravelledTotal;
     private Double avgDistanceTravelled;
     private Double avgSpeed;
+    private Integer totalVehicleCount;
+
 }
