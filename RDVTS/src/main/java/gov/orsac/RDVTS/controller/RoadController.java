@@ -145,11 +145,15 @@ public class RoadController {
             List<RoadMasterDto> roadList = roadPageList.getContent();
             List<RoadMasterDto> finalRoadList=new ArrayList<>();
             Integer start1=start;
-            for(RoadMasterDto rd:roadList){
+//            for(RoadMasterDto rd:roadList){
+//                start1=start1+1;
+//                rd.setSlNo(start1);
+//                finalRoadList.add(rd);
+//            }
 
+            for(int i=0;i<roadList.size();i++){
                 start1=start1+1;
-                rd.setSlNo(start1);
-                finalRoadList.add(rd);
+                roadList.get(i).setSlNo(start1);
             }
             //result.put("deviceList", deviceList);
             response.setData(roadList);
