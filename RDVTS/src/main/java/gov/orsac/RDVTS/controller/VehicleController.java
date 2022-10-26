@@ -124,7 +124,7 @@ public class VehicleController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            List<VehicleWorkMappingDto> work=new ArrayList<>();
+            VehicleWorkMappingDto work=null;
             List<VehicleWorkMappingDto> workHistory=new ArrayList<>();
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
             VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);

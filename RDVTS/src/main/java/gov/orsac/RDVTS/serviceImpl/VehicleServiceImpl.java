@@ -193,7 +193,7 @@ public class VehicleServiceImpl implements VehicleService {
 
 
     @Override
-       public List<VehicleWorkMappingDto>  getVehicleWorkMapping(Integer activityId) {
+       public VehicleWorkMappingDto  getVehicleWorkMapping(Integer activityId) {
               return vehicleRepository.getVehicleWorkMapping(activityId);
        }
 
