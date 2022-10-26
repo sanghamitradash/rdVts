@@ -20,6 +20,7 @@ public class VehicleWorkMappingDto {
     private Integer id;
     private Integer vehicleId;
     private Integer workId;
+    private Integer gWorkId;
     private String workName;
     private String startTime;
     private String endTime;
@@ -32,4 +33,7 @@ public class VehicleWorkMappingDto {
     private Date updatedOn;
     private Date currentDate;
     private Date deactivationDate;
+    private String completionDate;
+    private Integer workStatusId;
+    private String status;
 }

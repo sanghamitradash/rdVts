@@ -408,6 +408,10 @@ public class MasterRepositoryImpl implements MasterRepository {
         }
         return result;
     }
+
+    public List<Integer> getDeviceIdsByDistIds(List<Integer> distId) {
+        return null;
     }
+}
 
 

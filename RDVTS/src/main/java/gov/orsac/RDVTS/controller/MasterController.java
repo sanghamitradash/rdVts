@@ -281,6 +281,7 @@ public class MasterController {
     public RDVTSListResponse getDesignationList(@RequestParam (name = "id",defaultValue = "0", required = false) Integer id,
                                                 @RequestParam (name = "userLevelId",defaultValue = "0", required = false) Integer userLevelId,
                                                 @RequestParam (name = "parentId",defaultValue = "0", required = false) Integer parentId,
+                                                @RequestParam (name= "userId",defaultValue = "0", required = false) Integer userId,
                                                 @RequestParam(name = "start") Integer start,
                                                 @RequestParam(name = "length") Integer length,
                                                 @RequestParam(name = "draw") Integer draw ) {
@@ -288,6 +289,7 @@ public class MasterController {
         designationDto.setId(id);
         designationDto.setUserLevelId(userLevelId);
         designationDto.setParentId(parentId);
+        designationDto.setUserId(userId);
         designationDto.setOffSet(start);
         designationDto.setLimit(length);
         RDVTSListResponse response = new RDVTSListResponse();
@@ -300,7 +302,7 @@ public class MasterController {
             response.setMessage("List of Designation.");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(designationDtoPage.getTotalElements());
+            response.setRecordsFiltered(Long.valueOf(designationDtoPage.getNumberOfElements()));
             response.setRecordsTotal(designationDtoPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 

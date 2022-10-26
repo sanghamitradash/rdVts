@@ -21,6 +21,8 @@ public class WorkController {
     @Autowired
     private WorkService workService;
     @Autowired
+    private UserService userService;
+    @Autowired
     private VehicleService vehicleService;
     @Autowired
     private VehicleRepository vehicleRepository;
@@ -98,10 +100,12 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkById")
-    public RDVTSResponse getWorkById(@RequestParam int id, @RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse getWorkById(@RequestParam int id,
+                                     @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
+//            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
             List<WorkDto> workDto = workService.getWorkById(id);
             List<VehicleMasterDto> vehicle = vehicleService.getVehicleHistoryList(id);
           //  List<LocationDto> location = vehicleService.getLocationArray(id);
@@ -195,10 +199,12 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkDDById")
-    public RDVTSResponse getWorkDDById(@RequestParam int id) {
+    public RDVTSResponse getWorkDDById(@RequestParam int id,
+                                       @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
+//            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
             List<WorkDto> workDto = workService.getWorkById(id);
 
             result.put("workDto", workDto);
@@ -256,4 +262,24 @@ public class WorkController {
         }
         return response;
     }
+
+//    @PostMapping("/getUnAssignedWorkData")
+//    public RDVTSResponse getUnAssignedWorkData(@RequestParam Integer userId) {
+//        RDVTSResponse response = new RDVTSResponse();
+//        Map<String, Object> result = new HashMap<>();
+//        try {
+//            List<WorkDto> work = workService.getUnAssignedWorkData(userId);
+//            result.put("work", work);
+//            response.setData(result);
+//            response.setStatus(1);
+//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//            response.setMessage("Unassigned Work Data");
+//        } catch (Exception ex) {
+//            response = new RDVTSResponse(0,
+//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+//                    ex.getMessage(),
+//                    result);
+//        }
+//        return response;
+//    }
 }
