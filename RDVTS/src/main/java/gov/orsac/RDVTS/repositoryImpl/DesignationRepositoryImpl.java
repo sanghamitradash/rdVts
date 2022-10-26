@@ -36,10 +36,14 @@ public class DesignationRepositoryImpl {
 
     public Page<DesignationDto> getDesignationList(DesignationDto designationDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        PageRequest pageable = null;
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
-            pageable = PageRequest.of(designationDto.getOffSet(), designationDto.getLimit(), Sort.Direction.fromString("desc"),"id");
-            order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+//        PageRequest pageable = null;
+//        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
+//            pageable = PageRequest.of(designationDto.getOffSet(), designationDto.getLimit(), Sort.Direction.fromString("desc"),"id");
+//            order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        int pageNo = designationDto.getOffSet()/designationDto.getLimit();
+        PageRequest pageable = PageRequest.of(pageNo, designationDto.getLimit(),Sort.Direction.fromString("asc"), "id");
+        Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0): new Sort.Order(Sort.Direction.DESC,"id");
+
         int resultCount = 0;
         String qry = "select ac.*,b.name as parent_name,ul.name as user_level_name " +
                 "from rdvts_oltp.designation_m ac " +
@@ -71,7 +75,7 @@ public class DesignationRepositoryImpl {
         if (designationDto.getLimit() > 0) {
             qry += " LIMIT " + designationDto.getLimit() + " OFFSET " + designationDto.getOffSet();
         }
-        System.out.println(qry);
+//        System.out.println(qry);
 
         List<DesignationDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DesignationDto.class));
         return new PageImpl<>(list, pageable, resultCount);

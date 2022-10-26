@@ -17,4 +17,6 @@ public interface WorkService {
 
     List<VehicleWorkMappingDto> getVehicleListByWorkId(Integer workid);
 
+//    List<WorkDto> getUnAssignedWorkData(Integer userId);
+
 }
