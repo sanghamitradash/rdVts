@@ -42,5 +42,6 @@ public class DeviceDto {
     private DeviceMappingEntity deviceMapping;
 
     private VehicleDeviceMappingEntity vehicleDeviceMapping;
+    private Integer vehicleId;
 }
 
