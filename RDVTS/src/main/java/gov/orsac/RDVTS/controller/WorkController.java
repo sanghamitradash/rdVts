@@ -163,7 +163,7 @@ public class WorkController {
             location.setTotalVehicleCount(totalVehicleCount);
             location.setDistanceTravelledTotal(totalDistance);
             location.setAvgDistanceTravelled(avgDistance);
-            location.setDistanceTravelledTotal(todayDistance);
+            location.setDistanceTravelledToday(todayDistance);
             location.setAvgDistanceTravelled(todayAvgDistance);
             location.setSpeed(totalSpeed);
             location.setAvgSpeed(avgSpeed);
