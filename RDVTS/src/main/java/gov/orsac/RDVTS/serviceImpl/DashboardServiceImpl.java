@@ -2,10 +2,14 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.ActiveAndInactiveVehicleDto;
 import gov.orsac.RDVTS.dto.CompletedAndNotCompletedWorkDto;
+import gov.orsac.RDVTS.dto.DistrictWiseVehicleDto;
 import gov.orsac.RDVTS.repository.DashboardRepository;
 import gov.orsac.RDVTS.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -41,5 +45,40 @@ public class DashboardServiceImpl implements DashboardService {
         work.setCompletedPercentage(completedPercentage);
         work.setInCompletedPercentage(inCompletedPercentage);
         return work;
+    }
+
+    @Override
+    public List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount() {
+        List<DistrictWiseVehicleDto>  count=new ArrayList<>();
+        for(int i=0;i<5;i++){
+            DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();
+            if(i==0){
+              count1.setDistrictId(1);
+              count1.setDistrictName("Baleswar");
+              count1.setVehicleCount(5);
+            }
+            if(i==1){
+                count1.setDistrictId(1);
+                count1.setDistrictName("Bolangir");
+                count1.setVehicleCount(10);
+            }
+            if(i==2){
+                count1.setDistrictId(1);
+                count1.setDistrictName("Cuttack");
+                count1.setVehicleCount(4);
+            }
+            if(i==3){
+                count1.setDistrictId(1);
+                count1.setDistrictName("Dhenkanala");
+                count1.setVehicleCount(6);
+            }
+            if(i==4){
+                count1.setDistrictId(1);
+                count1.setDistrictName("Khurda");
+                count1.setVehicleCount(8);
+            }
+           count.add(count1);
+        }
+        return count;
     }
 }
