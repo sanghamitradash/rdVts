@@ -22,7 +22,7 @@ public interface VehicleService {
     List<VehicleMasterDto> getVehicleHistoryList(int id);
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingList(List<Integer> vehicleId);
 
-    List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer vehicleId);
+    List<VehicleWorkMappingDto> getVehicleWorkMapping(Integer activityId);
     LocationDto getLocation(Integer vehicleId) throws ParseException;
     List<LocationDto> getLocationArray(int id) throws ParseException;
     List<AlertDto>getAlert(Integer vehicleId) throws ParseException;
@@ -31,7 +31,7 @@ public interface VehicleService {
 
     List<RoadMasterDto>getRoadArray(int id) throws ParseException;
     List<VehicleDeviceInfo> getVehicleDeviceMappingAssignedList(Integer vehicleId) throws ParseException;
-    List<VehicleWorkMappingDto> getVehicleWorkMappingList(Integer vehicleId) throws ParseException;
+    List<VehicleWorkMappingDto> getVehicleWorkMappingList(List<Integer> activityIds) throws ParseException;
 
     VehicleMaster updateVehicle(int id, VehicleMaster vehicle);
     Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle);

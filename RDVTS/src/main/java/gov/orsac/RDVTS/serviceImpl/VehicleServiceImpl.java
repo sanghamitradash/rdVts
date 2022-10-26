@@ -193,8 +193,8 @@ public class VehicleServiceImpl implements VehicleService {
 
 
     @Override
-       public List<VehicleWorkMappingDto>  getVehicleWorkMapping(Integer vehicleId) {
-              return vehicleRepository.getVehicleWorkMapping(vehicleId);
+       public List<VehicleWorkMappingDto>  getVehicleWorkMapping(Integer activityId) {
+              return vehicleRepository.getVehicleWorkMapping(activityId);
        }
 
        @Override
@@ -283,9 +283,9 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public List<VehicleWorkMappingDto> getVehicleWorkMappingList(Integer vehicleId) throws ParseException {
+       public List<VehicleWorkMappingDto> getVehicleWorkMappingList(List<Integer> activityIds) throws ParseException {
 
-              return  vehicleRepositoryimpl.getVehicleWorkMappingList(vehicleId);
+              return  vehicleRepositoryimpl.getVehicleWorkMappingList(activityIds);
        }
 
        @Override
