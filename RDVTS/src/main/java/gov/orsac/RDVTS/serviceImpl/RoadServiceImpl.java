@@ -56,7 +56,7 @@ public class RoadServiceImpl implements RoadService {
         existingId.setRoadAllignment(roadMasterDto.getRoadAllignment());
         existingId.setRoadWidth(roadMasterDto.getRoadWidth());
         existingId.setGroadId(roadMasterDto.getGroadId());
-        existingId.setGeoMasterId(roadMasterDto.getGeoMasterId());
+//        existingId.setGeoMasterId(roadMasterDto.getGeoMasterId());
         existingId.setCompletedRoadLength(roadMasterDto.getCompletedRoadLength());
         existingId.setSanctionDate(roadMasterDto.getSanctionDate());
         existingId.setRoadCode(roadMasterDto.getRoadCode());
@@ -117,7 +117,7 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public RoadEntity updateGeom(Integer roadId, String geom) {
+    public int updateGeom(Integer roadId, String geom) {
         return roadRepositoryImpl.updateGeom(roadId, geom);
     }
 

@@ -46,6 +46,7 @@ public class UserController {
                                   @RequestParam(name = "password") String password,
                                   @RequestParam(name = "userArea",required = false) String userAreaData,
                                   @RequestParam(name = "userId",required = false)Integer userId) {
+//        name,surname
 
 //        List<UserAreaMappingEntity> userArea;
 
