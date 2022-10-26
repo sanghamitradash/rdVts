@@ -5,7 +5,9 @@ import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.repository.WorkRepository;
+import gov.orsac.RDVTS.repositoryImpl.UserRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.WorkRepositoryImpl;
+import gov.orsac.RDVTS.service.HelperService;
 import gov.orsac.RDVTS.service.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,10 @@ public class WorkServiceImpl implements WorkService {
     private WorkRepositoryImpl workRepositoryImpl;
     @Autowired
     private VehicleRepository vehicleRepository;
+    @Autowired
+    private UserRepositoryImpl userRepositoryImpl;
+    @Autowired
+    private HelperService helperService;
 
     RDVTSResponse rdvtsResponse = new RDVTSResponse();
     NamedParameterJdbcTemplate namedJdbc;
@@ -91,5 +97,15 @@ public class WorkServiceImpl implements WorkService {
         }
         return vehicleRepository.deactivateVehicleWork(workIds, vehicleIds);
     }
+
+//    @Override
+//    public List<WorkDto> getUnAssignedWorkData(Integer userId) {
+//        List<Integer> userIdList=new ArrayList<>();
+//        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
+//        if(user.getUserLevelId()!=5){
+//            userIdList=helperService.getLowerUserByUserId(userId);
+//        }
+//        return workRepositoryImpl.getUnAssignedWorkData(userIdList,userId);
+//    }
 
 }

@@ -122,10 +122,24 @@ public class WorkRepositoryImpl {
                 "join rdvts_oltp.geo_construction_m as gcm on gcm.id=gm.road_id and gcm.is_active = true " +
                 "join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id and piu.is_active = true " +
                 "where wm.is_active = true ";
+//        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
         if (id > -1) {
             qry += " and wm.id = :id ";
             sqlParam.addValue("id", id);
         }
+//         else {
+//            if(user.getUserLevelId() == 2) {
+//                List<Integer> distIdList=userRepositoryImpl.getDistIdByUserId(userId);
+//                qry+=" and gm.dist_id in (:distIdList)";
+//                sqlParam.addValue("distIdList",distIdList);
+//            }
+//            if(user.getUserLevelId() == 3) {
+//                List<Integer> blockIdList=userRepositoryImpl.getBlockIdByUserId(userId);
+//                qry+=" and gm.block_id in (:blockIdList)";
+//                sqlParam.addValue("blockIdList",blockIdList);
+//            }
+//        }
+
         qry+=" order by geoWorkName";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
@@ -180,4 +194,12 @@ public class WorkRepositoryImpl {
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
     }
+
+//    public List<WorkDto> getUnAssignedWorkData(List<Integer> userIdList, Integer userId) {
+//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+//        String qry = "select wm.id,wm.g_work_name as geoWorkName, from rdvts_oltp.work_m as wm where wm.id " +
+//                     "not in (select distinct work_id from rdvts_oltp.activity_m ) and wm.is_active = true ";
+//
+//        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
+//    }
 }
