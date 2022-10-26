@@ -18,6 +18,7 @@ public class VehicleActivityWorkMappingDto {
     private List<Integer> vehicleId;
     private Integer userId;
     private Integer activityId;
+
     private Date startTime;
     private Date endTime;
     private Date startDate;
