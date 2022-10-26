@@ -494,6 +494,12 @@ public class MasterController {
         Map<String, Object> result = new HashMap<>();
         try {
             List<UserLevelMaster> userLevelList = masterService.getAllUserLevel(userId);
+            UserLevelMaster user=new UserLevelMaster();
+            user.setId(5);
+            user.setName("CONTRACTOR");
+            user.setParentId(0);
+            user.setActive(true);
+            userLevelList.add(user);
             if (!userLevelList.isEmpty() && userLevelList.size() > 0) {
                 result.put("userLevelList", userLevelList);
                 response.setData(result);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.RoadEntity;
 import gov.orsac.RDVTS.service.RoadService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -160,7 +161,7 @@ public class RoadController {
             response.setMessage("Road List");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(Long.valueOf(roadPageList.getNumberOfElements()));
+            response.setRecordsFiltered(roadPageList.getTotalElements());
             response.setRecordsTotal(roadPageList.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
@@ -252,4 +253,28 @@ public class RoadController {
         }
         return response;
     }
+
+    @PostMapping("/updateGeom")
+    public RDVTSResponse updateGeom(@RequestParam Integer roadId, @RequestParam String geom) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            int updateGeom = roadService.updateGeom(roadId, (new JSONObject(geom)).get("geometry").toString());
+            result.put("updateGeom", updateGeom);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Road Updated Successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 }

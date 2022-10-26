@@ -139,9 +139,9 @@ public class UserServiceImpl implements UserService {
     public UserPasswordMasterEntity saveUserPassword(UserPasswordMasterDto userPasswordMasterDto){
 
         userPasswordMasterDto.setPassword(encoder.encode(userPasswordMasterDto.getPassword()));
-        userPasswordMasterDto.setIsActive(true);
-        userPasswordMasterDto.setCreatedBy(1);
-        userPasswordMasterDto.setUpdatedBy(1);
+//        userPasswordMasterDto.setIsActive(true);
+//        userPasswordMasterDto.setCreatedBy(1);
+//        userPasswordMasterDto.setUpdatedBy(1);
         UserPasswordMasterEntity userPasswordMasterEntity= new UserPasswordMasterEntity();
         BeanUtils.copyProperties(userPasswordMasterDto, userPasswordMasterEntity);
         return userPaswordMasterRepo.save(userPasswordMasterEntity);

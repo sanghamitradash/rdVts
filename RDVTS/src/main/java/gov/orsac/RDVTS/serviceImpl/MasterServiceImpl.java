@@ -196,6 +196,20 @@ public class MasterServiceImpl implements MasterService {
         }
         return finalList;
     }
+    @Override
+    public List<ParentMenuInfo> getMenuHierarchy(Integer roleId) {
+        List<ParentMenuInfo> parentMenuList = masterRepositoryImpl.getAllParentMenu(roleId);
+
+        for (ParentMenuInfo parentMenuInfo : parentMenuList) {
+            List<HierarchyMenuInfo> menuListByParentId = masterRepositoryImpl.getHierarchyMenuListById(parentMenuInfo.getValue(), roleId);
+            if (menuListByParentId.size() > 0) {
+                parentMenuInfo.setChildren(menuListByParentId);
+            } else {
+                parentMenuInfo.setChildren(new ArrayList<>());
+            }
+        }
+        return parentMenuList;
+    }
 
     @Override
     public List<ParentMenuInfo> getMenuHierarchyWithoutRoleId(Integer userId) {
