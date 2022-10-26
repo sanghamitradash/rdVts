@@ -61,23 +61,22 @@ public class WorkRepositoryImpl {
         Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0): new Sort.Order(Sort.Direction.DESC,"id");
 
         int resultCount = 0;
-        String qry = "select wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
+        String qry = "select distinct  wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
                 " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
-                " gm.contractor_id, gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name,act.id as activityId , gm.contractor_id " +
-                "  from rdvts_oltp.work_m as wm " +
-                "  join rdvts_oltp.geo_master as gm on gm.work_id=wm.id " +
-                " join rdvts_oltp.geo_construction_m as gcm on gcm.id=gm.road_id and gcm.is_active = true " +
-                " join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id and piu.is_active = true " +
-                " join rdvts_oltp.activity_m as act on act.work_id=wm.id and act.is_active = true " +
+                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name, geo.contractor_id " +
+                " from rdvts_oltp.work_m as wm " +
+                " left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
+                " left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
+                " left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
                 " where wm.is_active = true ";
         if (workDto.getId() > 0) {
             qry += " and wm.id = :id";
             sqlParam.addValue("id", workDto.getId());
         }
-        if (workDto.getActivityId() > 0) {
-            qry += " and act.id = :activityId";
-            sqlParam.addValue("activityId", workDto.getActivityId());
-        }
+//        if (workDto.getActivityId() > 0) {
+//            qry += " and act.id = :activityId";
+//            sqlParam.addValue("activityId", workDto.getActivityId());
+//        }
 //        qry+= "order by geoWorkName DESC ";
 
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(workDto.getUserId());
@@ -114,16 +113,16 @@ public class WorkRepositoryImpl {
 
     public List<WorkDto> getWorkById(int id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.is_active,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
-                "wm.work_status,wm.approval_status,wm.approved_by,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on,gm.contractor_id, " +
-                "gm.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name " +
-                "from rdvts_oltp.work_m as wm " +
-                "join rdvts_oltp.geo_master as gm on gm.work_id=wm.id and gm.is_active = true " +
-                "join rdvts_oltp.geo_construction_m as gcm on gcm.id=gm.road_id and gcm.is_active = true " +
-                "join rdvts_oltp.piu_id as piu on piu.id=gm.piu_id and piu.is_active = true " +
-                "where wm.is_active = true ";
+        String qry = "select distinct  wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
+                "                 wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
+                "                 geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name, geo.contractor_id " +
+                "                 from rdvts_oltp.work_m as wm " +
+                "                 left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
+                "                 left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
+                "                 left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
+                "                 where wm.is_active = true ";
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
-        if (id > -1) {
+        if (id > 0) {
             qry += " and wm.id = :id ";
             sqlParam.addValue("id", id);
         }
