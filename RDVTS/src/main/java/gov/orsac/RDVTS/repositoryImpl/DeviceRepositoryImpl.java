@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.repository.DeviceMasterRepository;
 import gov.orsac.RDVTS.service.HelperService;
+import gov.orsac.RDVTS.serviceImpl.HelperServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,15 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
     @Autowired
     private HelperService helperService;
+
+    @Autowired
+    private HelperServiceImpl helperServiceImpl;
+
+    @Autowired
+    private MasterRepositoryImpl masterRepositoryImpl;
+
+    @Autowired
+    private UserRepositoryImpl userRepositoryImpl;
 
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
@@ -360,6 +370,32 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                 }
 */
                 // qry += " ORDER BY dm.  " + order.getProperty() + " " + order.getDirection().name();
+
+//        UserInfoDto user=userRepositoryImpl.getUserByUserId(deviceDto.getUserId());
+//        if(user.getUserLevelId()==1){
+//            List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(deviceDto.getUserId());
+//            if(subQuery.length()<=0) {
+//                subQuery += " WHERE  owner.contractor_id=:contractorId ";
+//                sqlParam.addValue("contractorId",deviceDto.getUserId());
+//            }
+//            else{
+//                subQuery += " and owner.contractor_id=:contractorId  ";
+//                sqlParam.addValue("contractorId",deviceDto.getUserId());
+//            }
+//        }
+//        else if(user.getUserLevelId()==2){
+//            List<Integer> distId=userRepositoryImpl.getDistIdByUserId(deviceDto.getUserId());
+//            List<Integer> deviceIds  =masterRepositoryImpl.getDeviceIdsByDistIds(distId);
+//            if(subQuery.length()<=0) {
+//                subQuery += " WHERE  dm.id in(:deviceIds) ";
+//                sqlParam.addValue("deviceIds",deviceIds);;
+//            }
+//            else{
+//                subQuery += " and dm.id in(:deviceIds) ";
+//                sqlParam.addValue("deviceIds",deviceIds);;
+//            }
+//        }
+
 
 
         String finalQry=qry+" "+subQuery;
