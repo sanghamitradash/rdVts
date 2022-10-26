@@ -595,11 +595,11 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public List<RoadMasterDto> getRoadDetailByVehicleId(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry ="SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, " +
-                "road.road_allignment, road.geom, road.road_width, road.g_road_id, road.geo_master_id as gMasterId, road.is_active, road.created_by, " +
+                "road.road_allignment, road.geom, road.road_width, road.g_road_id, road.is_active, road.created_by, " +
                 "road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, road.road_status, " +
                 "road.approval_status, road.approved_by, gm.work_id as workIds, am.id as activityId, vm.id as vehicleId  " +
                 "FROM rdvts_oltp.geo_construction_m as road " +
-                "LEFT JOIN rdvts_oltp.geo_master as gm on gm.id=road.geo_master_id " +
+                "LEFT JOIN rdvts_oltp.geo_master as gm on gm.road_id=road.id " +
                 "LEFT JOIN rdvts_oltp.work_m as wm on wm.id=gm.work_id " +
                 "LEFT JOIN rdvts_oltp.activity_m as am on am.work_id=wm.id " +
                 "LEFT JOIN rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=am.id " +

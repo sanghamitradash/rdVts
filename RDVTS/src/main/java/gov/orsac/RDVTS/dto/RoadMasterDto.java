@@ -47,7 +47,7 @@ public class RoadMasterDto {
 
     private Integer groadId;
 
-    private Integer geoMasterId;
+//    private Integer geoMasterId;
 
     private Boolean isActive;
 
