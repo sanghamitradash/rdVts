@@ -172,10 +172,11 @@ public class MasterRepositoryImpl implements MasterRepository {
 
     public List<HierarchyMenuInfo> getHierarchyMenuListById(Integer parentId, Integer roleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module,roleMenu.is_default as isDefault,menu.menu_icon as menuIcon " +
-                " FROM rdvts_oltp.menu_m as menu " +
-                " left join rdvts_oltp.role_menu as roleMenu on menu.id=roleMenu.menu_id " +
-                " WHERE parent_id =:parentId  AND menu.is_active = true  And role_id=:roleId ORDER BY menu.menu_order ASC";
+            String qry = "SELECT menu.id AS value, menu.name AS label,menu.parent_id, menu.module,roleMenu.is_default as isDefault,menu.menu_icon as menuIcon " +
+                    " FROM rdvts_oltp.menu_m as menu " +
+                    " left join rdvts_oltp.role_menu as roleMenu on menu.id=roleMenu.menu_id " +
+                    " WHERE parent_id =:parentId  " +
+                    " AND menu.is_active = true  And role_id=:roleId ORDER BY menu.menu_order ASC";
         sqlParam.addValue("parentId", parentId);
         sqlParam.addValue("roleId", roleId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(HierarchyMenuInfo.class));

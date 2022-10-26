@@ -67,7 +67,7 @@ public class UserRepositoryImpl {
                 "  left join rdvts_oltp.user_level_m as ulm on ulm.id=um.user_level_id  and ulm.is_active=true " +
                 "  left join rdvts_oltp.role_m as rm on rm.id=um.role_id and rm.is_active=true " +
                 "  left join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id and cm.is_active=true " +
-                "left join rdvts_oltp.user_area_mapping uam on uam.user_id=um.id where um.is_active=true and uam.is_active=true  and um.id IN (:userIds)";
+                "  where um.is_active=true  and um.id IN (:userIds)";
         sqlParam.addValue("userIds", userIds);
 //        if( userListRequest.getUserId()!= null && userListRequest.getUserId() > 0 ){
 //            queryString+=" AND um.id=:id ";

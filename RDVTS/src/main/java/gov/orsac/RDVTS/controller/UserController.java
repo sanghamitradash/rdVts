@@ -46,6 +46,7 @@ public class UserController {
                                   @RequestParam(name = "password") String password,
                                   @RequestParam(name = "userArea",required = false) String userAreaData,
                                   @RequestParam(name = "userId",required = false)Integer userId) {
+//        name,surname
 
 //        List<UserAreaMappingEntity> userArea;
 
@@ -629,12 +630,18 @@ public class UserController {
                     rdvtsResponse.setMessage("User Is Not Active!!");
                     rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                 } else {
+                    List<ParentMenuInfo> roleMenuType=new ArrayList<>();
                     if (dbUser != null && !dbUser.getEmail().isEmpty()) {
                         UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(dbUser.getId());
                         boolean verifyuserpassword = encoder.matches(request.getPassword(), userPasswordMasterDto.getPassword());
                         if (verifyuserpassword == true) {
                             UserInfoDto userInfoDto = userService.getUserByUserId(dbUser.getId());
-                            List<ParentMenuInfo> roleMenuType = masterService.getMenuHierarchyByRole(dbUser.getId(), dbUser.getRoleId());
+                            if (dbUser.getRoleId() > 0) {
+                                roleMenuType = masterService.getMenuHierarchyByRole(dbUser.getId(), dbUser.getRoleId());
+                            }
+                            else {
+                                roleMenuType = masterService.getMenuHierarchy(dbUser.getRoleId());
+                            }
                             List<RoleDto> roleByRoleId = masterService.getRoleByRoleId(dbUser.getRoleId());
 
                             result.put("user", userInfoDto);
