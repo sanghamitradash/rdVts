@@ -37,5 +37,7 @@ public interface RoadService {
 
     RoadStatusDropDownDto getRoadStatusDD();
 
+    RoadEntity updateGeom(Integer roadId, String geom);
+
 //    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
 }
