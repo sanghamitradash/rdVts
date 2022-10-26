@@ -22,4 +22,6 @@ public class VehicleDeviceInfo {
     private Long mobileNumber2;
     private String modelName;
     private Integer deviceNo;
+    private String installedBy;
+    private String deactivationDate;
 }

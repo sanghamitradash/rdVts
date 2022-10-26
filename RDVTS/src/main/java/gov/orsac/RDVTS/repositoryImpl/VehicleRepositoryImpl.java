@@ -76,7 +76,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId) {
         VehicleDeviceInfo vehicleDevice = new VehicleDeviceInfo();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT vd.id, vd.vehicle_id, vd.device_id, vd.installation_date,vd.installed_by,device.imei_no_1 as imeiNo1,device.sim_icc_id_1 as simIccId1," +
+        String qry = "SELECT vd.id, vd.vehicle_id, vd.device_id, vd.installation_date,vd.installed_by as installedBy,device.imei_no_1 as imeiNo1,device.sim_icc_id_1 as simIccId1," +
                 "device.mobile_number_1 as mobileNumber1,device.imei_no_2 as imeiNo2,device.sim_icc_id_2 as simIccId2," +
                 "device.mobile_number_2 as mobileNumber2,device.model_name,device.device_no as deviceNo " +
                 "FROM rdvts_oltp.vehicle_device_mapping as vd " +
@@ -93,9 +93,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<VehicleDeviceInfo> getVehicleDeviceMappingAssignedList(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT vd.id, vd.vehicle_id, vd.device_id, vd.installation_date,vd.installed_by,device.imei_no_1 as imeiNo1,device.sim_icc_id_1 as simIccId1," +
+        String qry = "SELECT vd.id, vd.vehicle_id, vd.device_id, vd.installation_date,vd.installed_by as installedBy,device.imei_no_1 as imeiNo1,device.sim_icc_id_1 as simIccId1," +
                 "device.mobile_number_1 as mobileNumber1,device.imei_no_2 as imeiNo2,device.sim_icc_id_2 as simIccId2," +
-                "device.mobile_number_2 as mobileNumber2,device.model_name,device.device_no as deviceNo " +
+                "device.mobile_number_2 as mobileNumber2,device.model_name,device.device_no as deviceNo,vd.deactivation_date as deactivationDate " +
                 "FROM rdvts_oltp.vehicle_device_mapping as vd " +
                 "left join rdvts_oltp.device_m as device on vd.device_id=device.id where vehicle_id=:vehicleId and vd.is_active=false  ";
 
