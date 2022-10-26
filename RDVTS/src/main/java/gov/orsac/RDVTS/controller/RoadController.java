@@ -161,7 +161,7 @@ public class RoadController {
             response.setMessage("Road List");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(Long.valueOf(roadPageList.getNumberOfElements()));
+            response.setRecordsFiltered(roadPageList.getTotalElements());
             response.setRecordsTotal(roadPageList.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
