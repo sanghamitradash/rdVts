@@ -61,13 +61,12 @@ public class UserRepositoryImpl {
         queryString += "SELECT  um.id, um.first_name, um.middle_name, um.last_name, um.email, um.mobile_1 as mobile1, um.mobile_2 as mobile2 ,\n" +
                 "um.designation_id as designationId , um.user_level_id, um.role_id as roleId , um.is_active as isactive, um.created_by , \n" +
                 "um.created_on, um.updated_by, um.updated_on, um.contractor_id as contractorId,dm.name as designation,ulm.name as userLevel ,\n" +
-                "rm.name as role,cm.name as contractor " +
+                "rm.name as role  " +
                 " FROM rdvts_oltp.user_m as um " +
                 " left join rdvts_oltp.designation_m as dm on dm.id=um.designation_id and dm.is_active=true " +
                 "  left join rdvts_oltp.user_level_m as ulm on ulm.id=um.user_level_id  and ulm.is_active=true " +
                 "  left join rdvts_oltp.role_m as rm on rm.id=um.role_id and rm.is_active=true " +
-                "  left join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id and cm.is_active=true " +
-                "  where um.is_active=true  and um.id IN (:userIds)";
+                "  where  um.id IN (:userIds) ";
         sqlParam.addValue("userIds", userIds);
 //        if( userListRequest.getUserId()!= null && userListRequest.getUserId() > 0 ){
 //            queryString+=" AND um.id=:id ";
@@ -85,18 +84,6 @@ public class UserRepositoryImpl {
             queryString += " and um.id in (select user_id from rdvts_oltp.user_area_mapping where division_id=:divisionId)";
             sqlParam.addValue("divisionId", userListRequest.getDivisionId());
         }
-//        if (userListRequest.getSubDivisionId()>0){
-//            queryString+=" and um.id in (select user_id from rdvts_oltp.user_area_mapping where sub=:distId)";
-//            sqlParam.addValue("distId",userListRequest.getSubDivisionId());
-//        }
-//        if (userListRequest.getSectionId()>0){
-//            queryString+=" and um.id in (select user_id from rdvts_oltp.user_area_mapping where section_id=:sectionId)";
-//            sqlParam.addValue("sectionId",userListRequest.getSectionId());
-//        }
-//        if (userListRequest.getVillageId()>0){
-//            queryString+=" and um.id in (select user_id from rdvts_oltp.user_area_mapping where village_id=:villageId)";
-//            sqlParam.addValue("villageId",userListRequest.getVillageId());
-//        }̵̵̵
 
         if (userListRequest.getDesignationId() != null && userListRequest.getDesignationId() > 0) {
             queryString += " AND   um.designation_id=:getDesignationId ";
@@ -110,10 +97,7 @@ public class UserRepositoryImpl {
             sqlParam.addValue("roleId", userListRequest.getRoleId());
         }
 
-        if (userListRequest.getContractorId() != null && userListRequest.getContractorId() > 0) {
-            queryString += " AND um.contractor_id=:contractorId ";
-            sqlParam.addValue("contractorId", userListRequest.getContractorId());
-        }
+
 
 
         if (userListRequest.getEmail() != null && !userListRequest.getEmail().isEmpty()) {

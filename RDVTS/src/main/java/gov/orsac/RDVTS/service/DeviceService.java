@@ -35,6 +35,8 @@ public interface DeviceService {
 
     //for Imei Get SOubhagya
     List<DeviceDto> getImeiListByDeviceId(Integer deviceId);
+    Integer  getvehicleIdbydevice(Integer deviceId);
+
 
     List<VTUVendorMasterDto> getVtuVendorDropDown();
 
