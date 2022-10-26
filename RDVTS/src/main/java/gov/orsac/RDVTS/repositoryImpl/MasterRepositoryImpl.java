@@ -145,9 +145,9 @@ public class MasterRepositoryImpl implements MasterRepository {
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoleMenuInfo.class));
         }
     }
-    public List<RoleMenuInfo> getMenuByRoleId(int userId, int roleId) {
+        public List<RoleMenuInfo> getMenuByRoleId(int userId, int roleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry ="SELECT rm.id as id,m.name, m.parent_id,module, rm.role_id, m.id as menuId, rm.is_active as active,m.menu_icon as menuIcon " +
+        String qry ="SELECT rm.id as id,m.name, m.parent_id,module, rm.role_id, m.id as menuId, rm.is_active as active,m.menu_icon as menuIcon, " +
                 "rm.created_by, rm.updated_by, rm.is_default from rdvts_oltp.menu_m as m " +
                 "left join rdvts_oltp.role_menu as rm ON rm.menu_id = m.id and rm.role_id=:roleId and " +
                 "rm.is_active=true where m.is_active=true";
@@ -162,7 +162,7 @@ public class MasterRepositoryImpl implements MasterRepository {
                 " FROM  rdvts_oltp.role_menu as roleMenu " +
                 " left join  rdvts_oltp.menu_m as menu on menu.id=roleMenu.menu_id " +
                 " WHERE parent_id = 0 AND menu.is_active = true";
-        if(roleId > 0){
+        if(roleId >= 0){
             qry+= " AND roleMenu.role_id=:roleId";
             sqlParam.addValue("roleId", roleId);
         }
