@@ -394,5 +394,19 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 
-}
+    public Boolean deactivateVendor(Integer vendorId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "UPDATE rdvts_oltp.vtu_vendor_m  " +
+                "SET is_active=false WHERE id=:vendorId  ";
+        sqlParam.addValue("vendorId", vendorId);
+
+        int update = namedJdbc.update(qry, sqlParam);
+        boolean result = false;
+        if (update > 0) {
+            result = true;
+        }
+        return result;
+    }
+    }
+
 

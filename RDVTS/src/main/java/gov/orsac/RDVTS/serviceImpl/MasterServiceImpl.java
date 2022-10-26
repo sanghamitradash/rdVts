@@ -314,5 +314,10 @@ public class MasterServiceImpl implements MasterService {
         return masterRepositoryImpl.getListOfDivisionByListOfDistId(distId);
     }
 
+    @Override
+    public Boolean deactivateVendor(Integer vendorId) {
+        return masterRepositoryImpl.deactivateVendor(vendorId);
+    }
+
 
 }
