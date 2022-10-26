@@ -189,14 +189,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry = "select * from (SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,vm.model, vm.chassis_no," +
                 "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ," +
                 "owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id as contractorId," +
-                "contractor.name as contractorName," +
+                "contractor.name as contractorName,am.id  as activityId," +
                 "case when vdCount.vehicleCount>0 then true else false end as deviceAssigned," +
                 "case when vtuLocation.imeiCount>0 then true else false end as trackingStatus," +
                 "case when actCount.activityCount>0 then true else false end as activityAssigned " +
                 "FROM rdvts_oltp.vehicle_m as vm " +
-                "left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id   " +
+                "left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id  " +
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true " +
-                "left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id " +
+                "left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true " +
                 "left join rdvts_oltp.activity_m as am on am.id = activity.activity_id  " +
                 "left join rdvts_oltp.work_m as work on work.id = am.work_id  " +
                 "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id " +

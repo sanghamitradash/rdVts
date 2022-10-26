@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.controller;
 
 import gov.orsac.RDVTS.dto.ActiveAndInactiveVehicleDto;
+import gov.orsac.RDVTS.dto.CompletedAndNotCompletedWorkDto;
 import gov.orsac.RDVTS.dto.RDVTSResponse;
 import gov.orsac.RDVTS.dto.RoleMenuInfo;
 import gov.orsac.RDVTS.service.DashboardService;
@@ -31,6 +32,27 @@ public class DashboardController {
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                 response.setMessage("All vehicleData");
+
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+    @PostMapping("/getStatusWiseWorkCount")
+    public RDVTSResponse getStatusWiseWorkCount() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            CompletedAndNotCompletedWorkDto work = dashboardService.getStatusWiseWorkCount();
+
+            result.put("work", work);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("All workData");
 
         } catch (Exception ex) {
             response = new RDVTSResponse(0,

@@ -27,4 +27,18 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             String qry = "select count(id) from rdvts_oltp.vehicle_device_mapping where is_active=true and deactivation_date is null" ;
             return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
     }
+
+    @Override
+    public Integer getTotalWork() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select count(id) from rdvts_oltp.work_m where is_active=true " ;
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+    }
+
+    @Override
+    public Integer getCompletedWork() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select count(id) from rdvts_oltp.work_m where is_active=true and work_status is null " ;
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+    }
 }
