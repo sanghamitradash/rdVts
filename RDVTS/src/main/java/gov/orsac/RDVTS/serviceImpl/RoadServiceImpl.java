@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -107,8 +108,12 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds) {
-        return roadRepositoryImpl.getRoadByRoadIds(id, workIds, distIds, blockIds);
+    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds) {
+        List<Integer> workIdList = new ArrayList<>();
+        List<Integer> distIdList = new ArrayList<>();
+        workIdList = roadRepositoryImpl.getWorkIdsByRoadId(id);
+        distIdList = roadRepositoryImpl.getDistIdsByRoadId(id);
+        return roadRepositoryImpl.getRoadByRoadIds(id, workIdList, distIdList, blockIds, vehicleIds);
     }
 
     @Override
