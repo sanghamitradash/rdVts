@@ -4,8 +4,6 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.dto.ActivityDto;
 import gov.orsac.RDVTS.dto.VehicleActivityMappingDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
-import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
-import gov.orsac.RDVTS.entities.VTUVendorMasterEntity;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.ActivityMasterRepository;
@@ -94,12 +92,31 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<VehicleActivityMappingEntity> saveVehicleActivity(List<VehicleActivityMappingEntity> vehicleActivityMappingEntities) {
-        for(VehicleActivityMappingEntity vehicleActivityMapping1 :vehicleActivityMappingEntities){
-            vehicleActivityMapping1.setIsActive(true);
+    public List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer activityId,Integer userId) {
+        List<VehicleActivityMappingEntity> vehicleActivity = new ArrayList<>();
+        for (int j = 0; j < vehicleActivityMapping.size(); j++) {
+            VehicleActivityMappingEntity vehicleActivityMappingEntity = new VehicleActivityMappingEntity();
+            vehicleActivityMappingEntity.setActivityId(activityId);
+            vehicleActivityMappingEntity.setVehicleId(vehicleActivityMapping.get(0).getVehicleId());
+            vehicleActivityMappingEntity.setStartTime(vehicleActivityMapping.get(0).getStartTime());
+            vehicleActivityMappingEntity.setEndTime(vehicleActivityMapping.get(0).getEndTime());
+            vehicleActivityMappingEntity.setStartDate(vehicleActivityMapping.get(0).getStartDate());
+            vehicleActivityMappingEntity.setEndDate(vehicleActivityMapping.get(0).getEndDate());
+            vehicleActivityMappingEntity.setIsActive(true);
+            vehicleActivityMappingEntity.setCreatedBy(userId);
+            vehicleActivityMappingEntity.setUpdatedBy(vehicleActivityMapping.get(0).getUpdatedBy());
+            vehicleActivityMappingEntity.setDeactivationDate(vehicleActivityMapping.get(0).getDeactivationDate());
+            vehicleActivityMappingEntity.setGActivityId(vehicleActivityMapping.get(0).getGActivityId());
+            vehicleActivity.add(vehicleActivityMappingEntity);
         }
-        return vehicleActivityMappingRepository.saveAll(vehicleActivityMappingEntities);
+        return vehicleActivityMappingRepository.saveAll(vehicleActivity);
     }
+
+    @Override
+    public Integer updateWorkId(Integer workId, Integer activityId) {
+        return activityRepositoryImpl.updateWorkId(workId, activityId);
+    }
+
 
 //    @Override
 //    public List<VehicleActivityMappingEntity> workActivityVehicleMap(VehicleActivityWorkMappingDto vehicleActivityWorkMappingDto) {

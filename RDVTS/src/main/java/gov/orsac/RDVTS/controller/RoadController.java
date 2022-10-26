@@ -212,20 +212,22 @@ public class RoadController {
     }
 
     @PostMapping("/getRoadByRoadIds")
-    public RDVTSResponse getRoadByRoadIds(@RequestParam(name = "roadId", required = false) List<Integer> id,
+    public RDVTSResponse getRoadByRoadIds(@RequestParam(name = "roadIds", required = false) List<Integer> id,
                                           @RequestParam(name = "workIds", required = false) List<Integer> workIds,
                                           @RequestParam(name = "distIds", required = false) List<Integer> distIds,
-                                          @RequestParam(name = "blockIds", required = false) List<Integer> blockIds) {
+                                          @RequestParam(name = "blockIds", required = false) List<Integer> blockIds,
+                                          @RequestParam(name = "blockIds", required = false) List<Integer> vehicleIds) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds);
+            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds);
 //            result.put("road", road);
             response.setData(road);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Road By roadIds");
         } catch (Exception ex) {
+            ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),

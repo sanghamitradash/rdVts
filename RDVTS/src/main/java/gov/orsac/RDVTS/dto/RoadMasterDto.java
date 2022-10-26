@@ -43,6 +43,8 @@ public class RoadMasterDto {
 
     private String geom;
 
+    private String geoJSON;
+
     private Double roadWidth;
 
     private Integer groadId;

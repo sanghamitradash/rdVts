@@ -120,6 +120,16 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         List<ActivityDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
         return new PageImpl<>(list, pageable, resultCount);
     }
+
+    public Integer updateWorkId(Integer workId, Integer activityId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry="UPDATE rdvts_oltp.activity_m " +
+                " SET work_id=:workId " +
+                " WHERE id=:activityId";
+        sqlParam.addValue("workId", workId);
+        sqlParam.addValue("activityId", activityId);
+        return namedJdbc.update(qry, sqlParam);
+    }
 }
 
 
