@@ -540,6 +540,27 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return result;
     }
 
+//    public Boolean deactivateDevice(Integer deviceId,Integer status) {
+//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+//        String qry = " ";
+//        if (status == 0) {
+//             qry = "UPDATE rdvts_oltp.device_m  " +
+//                    "SET is_active=false WHERE id=:deviceId";
+//            sqlParam.addValue("deviceId", deviceId);
+//        }else {
+//            qry = "UPDATE rdvts_oltp.device_m  " +
+//                    "SET is_active=true WHERE id=:deviceId";
+//            sqlParam.addValue("deviceId", deviceId);
+//        }
+//
+//        int update = namedJdbc.update(qry, sqlParam);
+//        boolean result = false;
+//        if (update > 0) {
+//            result = true;
+//        }
+//        return result;
+//    }
+
     public List<VehicleDeviceMappingDto> getAllVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
         List<VehicleDeviceMappingDto> vehicleDevice;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
