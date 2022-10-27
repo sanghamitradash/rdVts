@@ -114,13 +114,13 @@ public class WorkRepositoryImpl {
     public List<WorkDto> getWorkById(int id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select distinct  wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
-                "                 wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
-                "                 geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name, geo.contractor_id " +
-                "                 from rdvts_oltp.work_m as wm " +
-                "                 left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
-                "                 left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
-                "                 left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
-                "                 where wm.is_active = true ";
+                " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
+                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name " +
+                " from rdvts_oltp.work_m as wm " +
+                " left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
+                " left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
+                " left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
+                " where wm.is_active = true ";
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
         if (id > 0) {
             qry += " and wm.id = :id ";
@@ -139,7 +139,7 @@ public class WorkRepositoryImpl {
 //            }
 //        }
 
-        qry+=" order by geoWorkName";
+//        qry+=" order by geoWorkName";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
 
