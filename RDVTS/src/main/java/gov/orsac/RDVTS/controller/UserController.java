@@ -914,7 +914,7 @@ public class UserController {
         UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(userDtos.getId());
 
         if (!userDtos.toString().isEmpty()) {
-            if (param.get("otp")==null){
+            if (param.get("otp")!=null){
                 if (userDtos.getOtp() == Integer.parseInt(param.get("otp"))) {
 
                     boolean verifyuserpassword = encoder.matches(param.get("password"), userPasswordMasterDto.getPassword());
@@ -955,7 +955,7 @@ public class UserController {
             else {
                 rdvtsResponse.setStatus(0);
                 rdvtsResponse.setData(result);
-                rdvtsResponse.setMessage("Otp is not Correct Please Check Again !!!");
+                rdvtsResponse.setMessage("Otp is Empty Check Again !!!");
                 rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             }
 
