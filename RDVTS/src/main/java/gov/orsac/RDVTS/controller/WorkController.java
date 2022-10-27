@@ -113,14 +113,6 @@ public class WorkController {
             List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
             List<ContractorDto> contractorDtoList = contractorService.getContractorByWorkId(id);
 
-
-
-
-
-
-
-
-
             Date startDate = null;
             Date endDate = null;
             Date vehicleStartDate = null;
