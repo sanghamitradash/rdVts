@@ -179,6 +179,12 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleRepositoryimpl.getActivityListByVehicleId(vehicleId);
     }
 
+    @Override
+    public Integer getActiveVehicle(Integer vehicleId) {
+        return vehicleRepositoryimpl.getActiveVehicle(vehicleId);
+    }
+
+
 
     @Override
        public VehicleWorkMappingDto  getVehicleWorkMapping(Integer activityId) {

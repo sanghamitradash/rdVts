@@ -975,6 +975,7 @@ public class UserController {
         Map<String, Object> result = new HashMap<>();
         try {
             Boolean res = userService.activateAndDeactivateUser(id);
+
             if (res) {
                 response.setData(result);
                 response.setStatus(1);
