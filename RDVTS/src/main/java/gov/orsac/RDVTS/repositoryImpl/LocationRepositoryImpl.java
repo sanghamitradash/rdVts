@@ -153,7 +153,7 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += " and imei =:imei2  order by date_time desc ";
+            qry += " and imei =:imei2 and gps_fix::numeric =1  order by date_time desc ";
 
             //qry+=" and imei =:imei2  order by date_time desc ";
             sqlParam.addValue("imei2", imei2);
@@ -179,7 +179,7 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += " and imei =:imei1  order by date_time desc";
+            qry += " and imei =:imei1 and gps_fix::numeric =1 order by date_time desc";
             sqlParam.addValue("imei1", imei1);
 
 
@@ -224,7 +224,7 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += " and imei =:imei2  order by date_time desc LIMIT 1";
+            qry += " and imei =:imei2 and gps_fix::numeric =1  order by date_time desc LIMIT 1";
 
             //qry+=" and imei =:imei2  order by date_time desc ";
             sqlParam.addValue("imei2", imei2);
@@ -250,7 +250,7 @@ public class LocationRepositoryImpl {
 //                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
 //                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
 //            }
-            qry += " and imei =:imei1  order by date_time desc LIMIT 1";
+            qry += " and imei =:imei1 and gps_fix::numeric =1  order by date_time desc LIMIT 1";
             sqlParam.addValue("imei1", imei1);
 
 
@@ -293,7 +293,7 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "and imei=:imei2  order by date_time desc )";
+            qry += "and imei=:imei2 and gps_fix::numeric =1 order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
@@ -316,7 +316,7 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += "and imei=:imei1  order by date_time desc ) ";
+            qry += "and imei=:imei1 and gps_fix::numeric =1 order by date_time desc ) ";
             sqlParam.addValue("imei1", imei1);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
@@ -324,4 +324,104 @@ public class LocationRepositoryImpl {
 
 
     }
+    public Double getTodayDistance(Long imei1, Long imei2, Date startDate, Date endDate, Date deviceVehicleCreatedOn, Date deviceVehicleDeactivationDate) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        if (imei1 == null) {
+            String qry = "with c as " +
+                    "(select st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint " +
+                    "from rdvts_oltp.vtu_location where  is_active=true ";
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate == null) {
+                qry += "  OR date_time BETWEEN :createdOn AND now() ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+                qry += "  OR date_time BETWEEN :createdOn AND :deactivationDate ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
+            qry += "and imei=:imei2 and date(date_time)=date(now())  order by date_time desc )";
+            sqlParam.addValue("imei2", imei2);
+            qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
+            return namedJdbc.queryForObject(qry, sqlParam, Double.class);
+
+
+        } else {
+            String qry = "with c as " +
+                    "(select st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint " +
+                    "from rdvts_oltp.vtu_location where  is_active=true  ";
+
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate == null) {
+                qry += "  AND date_time BETWEEN :createdOn AND now() ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+                qry += "  AND date_time BETWEEN :createdOn AND :deactivationDate ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
+
+
+            qry += "and imei=:imei1 and date(date_time)=date(now()) order by date_time desc ) ";
+            sqlParam.addValue("imei1", imei1);
+            qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
+            return namedJdbc.queryForObject(qry, sqlParam, Double.class);
+        }
+
+
+    }
+
+    public Double getspeed(Long imei1, Long imei2, Date startDate, Date endDate, Date deviceVehicleCreatedOn, Date deviceVehicleDeactivationDate) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        if (imei1 == null) {
+            String qry = "with c as " +
+                    "(select st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint " +
+                    "from rdvts_oltp.vtu_location where  is_active=true ";
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate == null) {
+                qry += "  OR date_time BETWEEN :createdOn AND now() ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+                qry += "  OR date_time BETWEEN :createdOn AND :deactivationDate ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
+            qry += "and imei=:imei2 and date(date_time)=date(now()) and gps_fix::numeric =1 order by date_time desc )";
+            sqlParam.addValue("imei2", imei2);
+
+            return namedJdbc.queryForObject(qry, sqlParam, Double.class);
+
+
+        } else {
+            String qry = "with c as " +
+                    "(select st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint " +
+                    "from rdvts_oltp.vtu_location where  is_active=true  ";
+
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate == null) {
+                qry += "  AND date_time BETWEEN :createdOn AND now() ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+                qry += "  AND date_time BETWEEN :createdOn AND :deactivationDate ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
+
+
+            qry += "and imei=:imei1 and date(date_time)=date(now()) and gps_fix::numeric =1 order by date_time desc ) ";
+            sqlParam.addValue("imei1", imei1);
+            qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
+            return namedJdbc.queryForObject(qry, sqlParam, Double.class);
+        }
+
+
+    }
+
+
+
 }

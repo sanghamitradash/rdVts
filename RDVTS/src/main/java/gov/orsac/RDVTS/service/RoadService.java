@@ -33,7 +33,7 @@ public interface RoadService {
 
     List<RoadWorkMappingDto> getWorkDetailsByRoadId(Integer roadId);
 
-    List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds);
+    List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds);
 
     RoadStatusDropDownDto getRoadStatusDD();
 

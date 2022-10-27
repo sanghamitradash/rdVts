@@ -568,9 +568,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicle_type_name,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no,vm.is_active as active, " +
                 "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on  from rdvts_oltp.vehicle_m as vm " +
-                "join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id " +
-                "join rdvts_oltp.activity_m as act on vam.activity_id = act.id " +
-                "join rdvts_oltp.vehicle_type as vt on vt.id = vm.vehicle_type_id " +
+                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id " +
+                "left join rdvts_oltp.activity_m as act on vam.activity_id = act.id " +
+                "left join rdvts_oltp.vehicle_type as vt on vt.id = vm.vehicle_type_id " +
                 "where vm.is_active = true and vam.is_active = true and act.is_active = true and vt.is_active= true  " ;
         if (id > 0){
             qry +=" and act.work_id = :id " ;
@@ -604,7 +604,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public List<RoadMasterDto> getRoadDetailByVehicleId(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry ="SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, " +
-                "road.road_allignment, road.geom, road.road_width, road.g_road_id, road.is_active, road.created_by, " +
+                "road.road_allignment, ST_AsGeoJSON(road.geom) as geom, ST_AsGeoJSON(road.geom) as geoJSON, road.road_width, road.g_road_id, road.is_active, road.created_by, " +
                 "road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, road.road_status, " +
                 "road.approval_status, road.approved_by, gm.work_id as workIds, am.id as activityId, vm.id as vehicleId  " +
                 "FROM rdvts_oltp.geo_construction_m as road " +
