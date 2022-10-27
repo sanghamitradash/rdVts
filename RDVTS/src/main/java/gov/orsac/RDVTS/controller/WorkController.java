@@ -143,9 +143,12 @@ public class WorkController {
                                 totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                 todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                int i=1;
                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
+                                    i++;
                                     totalSpeed+= Double.parseDouble(vtuobj.getSpeed()) ;
                                 }
+                                totalSpeed=totalSpeed/i;
                             }
 
                         }
@@ -163,10 +166,15 @@ public class WorkController {
             location.setTotalVehicleCount(totalVehicleCount);
             location.setDistanceTravelledTotal(totalDistance);
             location.setAvgDistanceTravelled(avgDistance);
-            location.setDistanceTravelledTotal(todayDistance);
+            location.setDistanceTravelledToday(todayDistance);
             location.setAvgDistanceTravelled(todayAvgDistance);
             location.setSpeed(totalSpeed);
             location.setAvgSpeed(avgSpeed);
+            location.setTotalAlertToday(1);
+            location.setTotalAlertWork(1);
+            location.setTotalVehicleActive(1);
+            location.setTotalInactiveVehicle(1);
+            location.setPercentageOfActiveVehicle(1.0);
 
             //Static DAta
               // location.setDateTime(dateTime);
