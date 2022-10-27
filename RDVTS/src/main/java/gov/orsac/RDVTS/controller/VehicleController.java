@@ -4,16 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
-import gov.orsac.RDVTS.repository.VehicleDeviceMappingRepository;
-import gov.orsac.RDVTS.repository.VehicleMasterSaveRepository;
-import gov.orsac.RDVTS.repository.VehicleOwnerMappingRepository;
-import gov.orsac.RDVTS.repository.VehicleRepository;
+import gov.orsac.RDVTS.repository.*;
 import gov.orsac.RDVTS.repositoryImpl.DeviceRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.ActivityService;
-import gov.orsac.RDVTS.service.MasterService;
 import gov.orsac.RDVTS.service.VehicleService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -124,7 +119,7 @@ public class VehicleController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            List<VehicleWorkMappingDto> work=new ArrayList<>();
+            VehicleWorkMappingDto work=null;
             List<VehicleWorkMappingDto> workHistory=new ArrayList<>();
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
             VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
@@ -139,7 +134,8 @@ public class VehicleController {
             if(activityIds!=null && activityIds.size()>0) {
             workHistory = vehicleService.getVehicleWorkMappingList(activityIds);
             }
-            ActivityDto activity=vehicleService.getActivityListByVehicleId(vehicleId);
+            ActivityInfoDto activity=vehicleService.getLiveActivityByVehicleId(vehicleId);
+            List<ActivityInfoDto> activityList=vehicleService.getActivityListByVehicleId(vehicleId);
 
             result.put("vehicle", vehicle);
             result.put("device",device);
@@ -149,6 +145,7 @@ public class VehicleController {
             result.put("deviceHistoryList",deviceHistory);
             result.put("workHistoryList",workHistory);
             result.put("activity",activity);
+            result.put("activityList",activityList);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Vehicle By Id");
@@ -557,28 +554,6 @@ public class VehicleController {
         return response;
     }
 
-    @PostMapping("/addVehicleActivityMapping")
-    public RDVTSResponse saveVTUVendor(@RequestBody List<VehicleActivityMappingEntity> vehicleActivityMappingEntities) {
-        RDVTSResponse response = new RDVTSResponse();
-        Map<String, Object> result = new HashMap<>();
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            List<VehicleActivityMappingEntity> vehicleActivityEntity = activityService.saveVehicleActivity(vehicleActivityMappingEntities);
-
-            result.put("saveVendor", vehicleActivityEntity);
-            response.setData(result);
-            response.setStatus(1);
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
-            response.setMessage("Vehicle Activity Created Successfully!!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            response = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(),
-                    result);
-        }
-        return response;
-    }
 
     @PostMapping("/getVehicleByActivityId")
     public RDVTSResponse getVehicleByActivityId(@RequestParam(name = "activityId", required = false) Integer activityId, Integer userId) {

@@ -126,23 +126,6 @@ public class VehicleServiceImpl implements VehicleService {
        public List<VehicleMasterDto> getVehicleHistoryList(int id) {
            return vehicleRepository.getVehicleHistoryList(id);
 //                     List<VehicleMasterDto> vehicleMasterDtoList=new ArrayList<>();
-//
-//                     for(int i=0;i<2;i++){
-////                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-////                            Date dateTime = formatter.parse("2022-10-10 12:10:00");
-//                            VehicleMasterDto vehicle =new VehicleMasterDto();
-//                            vehicle.setVehicleNo("OD33o0209");
-//                            vehicle.setVehicleTypeId(12);
-//                            vehicle.setVehicleTypeName("2 wheeler");
-//                            vehicle.setModel("Glamour");
-//                            vehicle.setSpeedLimit(20.2);
-//                            vehicle.setChassisNo("abdh3543HHJJ");
-//                            vehicle.setEngineNo("ABCD123JHK");
-//
-//
-//                            vehicleMasterDtoList.add(vehicle);
-//                     }
-//                     return vehicleMasterDtoList;
               }
        @Override
        public VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId) {
@@ -187,13 +170,18 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public ActivityDto getActivityListByVehicleId(Integer vehicleId) {
+    public ActivityInfoDto getLiveActivityByVehicleId(Integer vehicleId) {
+        return vehicleRepositoryimpl.getLiveActivityByVehicleId(vehicleId);
+    }
+
+    @Override
+    public List<ActivityInfoDto> getActivityListByVehicleId(Integer vehicleId) {
         return vehicleRepositoryimpl.getActivityListByVehicleId(vehicleId);
     }
 
 
     @Override
-       public List<VehicleWorkMappingDto>  getVehicleWorkMapping(Integer activityId) {
+       public VehicleWorkMappingDto  getVehicleWorkMapping(Integer activityId) {
               return vehicleRepository.getVehicleWorkMapping(activityId);
        }
 
