@@ -350,13 +350,13 @@ public class DeviceController {
     //Delete Device
 
     @PostMapping("/deactivateDevice")
-    public RDVTSResponse deactivateDevice(@RequestParam Integer deviceId) {
+    public RDVTSResponse deactivateDevice(@RequestParam Integer deviceId,@RequestParam Integer status,@RequestParam (required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            Boolean res = deviceService.deactivateDevice(deviceId);
-            Boolean res1 = deviceService.deactivateDeviceArea(deviceId);
-            Boolean res2 = deviceService.deactivateDeviceVehicle(deviceId);
+            Boolean res = deviceService.deactivateDevice(deviceId,status);
+            Boolean res1 = deviceService.deactivateDeviceAreaMapping(deviceId,status);
+            Boolean res2 = deviceService.deactivateDeviceVehicleMapping(deviceId,status);
             if (res==true && res1==true && res2==true) {
                 response.setData(result);
                 response.setStatus(1);

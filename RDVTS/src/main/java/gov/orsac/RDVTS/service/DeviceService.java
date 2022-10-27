@@ -42,7 +42,11 @@ public interface DeviceService {
 
     Boolean deactivateDeviceVehicle(Integer id);
 
-    Boolean deactivateDevice(Integer deviceId);
+    Boolean deactivateDevice(Integer deviceId,Integer status);
 
     List<VehicleDeviceMappingDto> getAllVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId);
+
+    Boolean deactivateDeviceAreaMapping(Integer deviceId, Integer status);
+
+    Boolean deactivateDeviceVehicleMapping(Integer deviceId, Integer status);
 }

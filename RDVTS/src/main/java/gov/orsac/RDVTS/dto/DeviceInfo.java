@@ -26,7 +26,7 @@ public class DeviceInfo {
 
     private String vehicleNo;
 
-    //private Boolean isActive;
+    private Boolean isActive;
 
     private String vtuVendorName;
     private String vendorAddress;
