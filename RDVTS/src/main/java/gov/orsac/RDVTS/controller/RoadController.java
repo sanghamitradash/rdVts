@@ -216,7 +216,7 @@ public class RoadController {
                                           @RequestParam(name = "workIds", required = false) List<Integer> workIds,
                                           @RequestParam(name = "distIds", required = false) List<Integer> distIds,
                                           @RequestParam(name = "blockIds", required = false) List<Integer> blockIds,
-                                          @RequestParam(name = "blockIds", required = false) List<Integer> vehicleIds) {
+                                          @RequestParam(name = "vehicleIds", required = false) List<Integer> vehicleIds) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
