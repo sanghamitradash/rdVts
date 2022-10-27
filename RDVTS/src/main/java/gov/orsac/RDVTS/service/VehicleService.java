@@ -57,4 +57,7 @@ public interface VehicleService {
 
     ActivityInfoDto getLiveActivityByVehicleId(Integer vehicleId);
     List<ActivityInfoDto> getActivityListByVehicleId(Integer vehicleId);
+    Integer getActiveVehicle(Integer vehicleId);
+
+
 }

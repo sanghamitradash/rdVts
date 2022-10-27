@@ -120,12 +120,16 @@ public class WorkController {
             Double todayDistance=0.0;
             Double totalDistance = 0.0;
             Double totalSpeed=0.0;
+            Integer totalActiveVehicle=0;
+
+            //distance and speed API
             for (WorkDto workitem : workDto) {
                 List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
                 for (ActivityDto activityId : activityDtoList) {
+
                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-
+                        totalActiveVehicle+=vehicleService.getActiveVehicle(vehicleList.getVehicleId());
                         List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
                         for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
@@ -148,6 +152,11 @@ public class WorkController {
 
                 }
             }
+
+            //Active Inactive vehicle
+
+
+
             List<LocationDto> locationList=new ArrayList<>();
             int totalVehicleCount=vehicleService.getvehicleCountByWorkId(id);
             Double avgDistance=totalDistance/totalVehicleCount;
@@ -164,9 +173,9 @@ public class WorkController {
             location.setAvgSpeed(avgSpeed);
             location.setTotalAlertToday(1);
             location.setTotalAlertWork(1);
-            location.setTotalVehicleActive(1);
-            location.setTotalInactiveVehicle(1);
-            location.setPercentageOfActiveVehicle(1.0);
+            location.setTotalVehicleActive(totalActiveVehicle);
+            location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
+            location.setPercentageOfActiveVehicle((Double.valueOf(totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100));
 
             //Static DAta
               // location.setDateTime(dateTime);

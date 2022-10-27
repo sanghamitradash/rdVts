@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.entities.VehicleWorkMappingEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.serviceImpl.HelperServiceImpl;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -694,4 +695,13 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         sqlParam.addValue("vehicleId", vehicleId);
             return   namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityInfoDto.class));
     }
+
+    public Integer getActiveVehicle(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select count(id) from rdvts_oltp.vehicle_device_mapping where is_active=true and deactivation_date is null and vehicle_id=:vehicleId " ;
+        sqlParam.addValue("vehicleId", vehicleId);
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+    }
+
+
 }

@@ -259,7 +259,7 @@ public class UserRepositoryImpl {
 
     public boolean activateAndDeactivateUser(int id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "UPDATE rdvts_oltp.user_m SET is_active = false WHERE id= :id ";
+        String qry = "UPDATE rdvts_oltp.user_m SET is_active = CASE WHEN is_active = false THEN true WHEN is_active = true THEN false END WHERE id=:id";
         sqlParam.addValue("id", id);
         int update = namedJdbc.update(qry, sqlParam);
         return update > 0;
