@@ -275,16 +275,15 @@ public class RoadRepositoryImpl {
                 "left join rdvts_oltp.geo_construction_m as road on road.id=gm.road_id  " +
                 "where wm.is_active=true AND road.id =:id ";
         sqlParam.addValue("id", id);
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(Integer.class));
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
     public List<Integer> getDistIdsByRoadId(List<Integer> id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "   select gm.dist_id from rdvts_oltp.geo_master as gm   " +
                 "  left join rdvts_oltp.geo_construction_m as road on road.id = gm.road_id  " +
-                "  where road.id=:id  ";
-
+                "  where road.id=:id and gm.is_active=true ";
         sqlParam.addValue("id", id);
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(Integer.class));
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
     public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIdList,List<Integer> distIdList, List<Integer> blockIds, List<Integer> vehicleIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
@@ -301,7 +300,7 @@ public class RoadRepositoryImpl {
             qry += " AND road.id IN (:id)";
             sqlParam.addValue("id", id);
         }
-        if (workIdList != null && !workIdList.isEmpty()) {
+        if (!workIdList.isEmpty()  && workIdList != null) {
             qry += " AND geom.work_id IN (:workIdList)";
             sqlParam.addValue("workIdList", workIdList);
         }
