@@ -149,7 +149,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
 
         String qry = "select * from (SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2,   " +
-                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no,  " +
+                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no,dm.is_active as isActive,  " +
                 "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,     " +
                 "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber,   " +
                 "dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, block.district_name as distName,   " +
@@ -164,8 +164,8 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                 "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id     " +
                 "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id =  dam.g_dist_id   " +
                 "left join (select count(id) over (partition by device_id) as deviceCount,device_id from  rdvts_oltp.vehicle_device_mapping  " +
-                "where is_active=true and deactivation_date is null) as vdCount on vdCount.device_id=dm.id   " +
-                "WHERE dm.is_active = true ) as deviceList ";
+                "where is_active=true and deactivation_date is null) as vdCount on vdCount.device_id=dm.id ) as deviceList  " ;
+               // "WHERE dm.is_active = true ) as deviceList ";
 
         String subQuery = "";
         if(deviceDto.getVehicleAssigned()!=null){
@@ -527,32 +527,11 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return update > 0;
     }
 
-    public Boolean deactivateDevice(Integer deviceId) {
-        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "UPDATE rdvts_oltp.device_m  " +
-                "SET is_active=false WHERE id=:deviceId";
-        sqlParam.addValue("deviceId", deviceId);
-
-        int update = namedJdbc.update(qry, sqlParam);
-        boolean result = false;
-        if (update > 0) {
-            result = true;
-        }
-        return result;
-    }
-
-//    public Boolean deactivateDevice(Integer deviceId,Integer status) {
+//    public Boolean deactivateDevice(Integer deviceId) {
 //        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-//        String qry = " ";
-//        if (status == 0) {
-//             qry = "UPDATE rdvts_oltp.device_m  " +
-//                    "SET is_active=false WHERE id=:deviceId";
-//            sqlParam.addValue("deviceId", deviceId);
-//        }else {
-//            qry = "UPDATE rdvts_oltp.device_m  " +
-//                    "SET is_active=true WHERE id=:deviceId";
-//            sqlParam.addValue("deviceId", deviceId);
-//        }
+//        String qry = "UPDATE rdvts_oltp.device_m  " +
+//                "SET is_active=false WHERE id=:deviceId";
+//        sqlParam.addValue("deviceId", deviceId);
 //
 //        int update = namedJdbc.update(qry, sqlParam);
 //        boolean result = false;
@@ -561,6 +540,27 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 //        }
 //        return result;
 //    }
+
+    public Boolean deactivateDevice(Integer deviceId,Integer status) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " ";
+        if (status == 0) {
+             qry = "UPDATE rdvts_oltp.device_m  " +
+                    "SET is_active=false WHERE id=:deviceId";
+            sqlParam.addValue("deviceId", deviceId);
+        }else {
+            qry = "UPDATE rdvts_oltp.device_m  " +
+                    "SET is_active=true WHERE id=:deviceId";
+            sqlParam.addValue("deviceId", deviceId);
+        }
+
+        int update = namedJdbc.update(qry, sqlParam);
+        boolean result = false;
+        if (update > 0) {
+            result = true;
+        }
+        return result;
+    }
 
     public List<VehicleDeviceMappingDto> getAllVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
         List<VehicleDeviceMappingDto> vehicleDevice;
@@ -585,7 +585,48 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         }
         return vehicleDevice;
     }
+
+    public Boolean deactivateDeviceAreaMapping(Integer deviceId, Integer status) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " ";
+        if (status == 0) {
+            qry = "UPDATE rdvts_oltp.device_area_mapping SET is_active = false WHERE device_id=:deviceId";
+            sqlParam.addValue("deviceId", deviceId);
+        }else {
+            qry = "UPDATE rdvts_oltp.device_area_mapping SET is_active = true WHERE device_id=:deviceId";
+            sqlParam.addValue("deviceId", deviceId);
+        }
+
+        int update = namedJdbc.update(qry, sqlParam);
+        boolean result = false;
+        if (update > 0) {
+            result = true;
+        }
+        return result;
     }
+
+    public Boolean deactivateDeviceVehicleMapping(Integer deviceId, Integer status) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " ";
+        if (status == 0) {
+            qry = "UPDATE rdvts_oltp.vehicle_device_mapping SET is_active = false WHERE device_id=:deviceId";
+            sqlParam.addValue("deviceId", deviceId);
+        }else {
+            qry = "UPDATE rdvts_oltp.vehicle_device_mapping SET is_active = true WHERE device_id=:deviceId";
+            sqlParam.addValue("deviceId", deviceId);
+        }
+
+        int update = namedJdbc.update(qry, sqlParam);
+        boolean result = false;
+        if (update > 0) {
+            result = true;
+        }
+        return result;
+    }
+
+}
+
+
 
 
 
