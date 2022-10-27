@@ -666,10 +666,10 @@ public class LocationController {
 
             try {
                 //Get all Vehicles
-                if(deviceId != null && !deviceId.isEmpty() && vehicleId != null && !vehicleId.isEmpty()
-                && workId != null && !workId.isEmpty() && roadId != null && !roadId.isEmpty() &&
-                        contractorId != null && !contractorId.isEmpty() && districtId != null && !districtId.isEmpty()
-                && blockId != null && !blockId.isEmpty() && divisionId != null && !divisionId.isEmpty())
+//                if(deviceId != null && !deviceId.isEmpty() && vehicleId != null && !vehicleId.isEmpty()
+//                && workId != null && !workId.isEmpty() && roadId != null && !roadId.isEmpty() &&
+//                        contractorId != null && !contractorId.isEmpty() && districtId != null && !districtId.isEmpty()
+//                && blockId != null && !blockId.isEmpty() && divisionId != null && !divisionId.isEmpty())
 
                 if (deviceId != null && !deviceId.isEmpty()) {
                     for (Integer deviceid : deviceId) {
