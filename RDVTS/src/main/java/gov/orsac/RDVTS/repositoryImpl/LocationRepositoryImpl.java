@@ -319,7 +319,13 @@ public class LocationRepositoryImpl {
             qry += "and imei=:imei1 and gps_fix::numeric =1 order by date_time desc ) ";
             sqlParam.addValue("imei1", imei1);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
-            return namedJdbc.queryForObject(qry, sqlParam, Double.class);
+            if (namedJdbc.queryForObject(qry, sqlParam, Double.class) ==null){
+                return 0.0;
+            }
+            else {
+                return namedJdbc.queryForObject(qry, sqlParam, Double.class);
+            }
+
         }
 
 
@@ -367,7 +373,15 @@ public class LocationRepositoryImpl {
             qry += "and imei=:imei1 and date(date_time)=date(now()) order by date_time desc ) ";
             sqlParam.addValue("imei1", imei1);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
-            return namedJdbc.queryForObject(qry, sqlParam, Double.class);
+            Double result= namedJdbc.queryForObject(qry, sqlParam, Double.class);
+            if (result !=null){
+                return result;
+            }
+            else {
+                return  0.0;
+            }
+
+
         }
 
 
