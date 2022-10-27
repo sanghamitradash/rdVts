@@ -14,7 +14,7 @@ public class LocationDto {
     private Date dateTime;
     private Double latitude;
     private Double longitude;
-    private Integer speed;
+    private Double speed;
     private Double distanceTravelledToday;
     private Double distanceTravelledTotal;
     private Double avgDistanceTravelled;

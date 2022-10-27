@@ -38,7 +38,7 @@ public class HelperRepositoryImpl implements HelperRepository {
     @Override
     public List<Integer> getLowerUserByUserId(List<Integer> userLevelIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String query = "SELECT id FROM rdvts_oltp.user_m  where user_level_id in(:userLevelIds) ";
+        String query = "SELECT id FROM rdvts_oltp.user_m  where user_level_id in(:userLevelIds) OR user_level_id IN (5) ";
         sqlParam.addValue("userLevelIds",userLevelIds);
         return namedJdbc.queryForList(query, sqlParam, Integer.class);
     }

@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.repository.DeviceMasterRepository;
 import gov.orsac.RDVTS.service.HelperService;
+import gov.orsac.RDVTS.serviceImpl.HelperServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,15 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
     @Autowired
     private HelperService helperService;
+
+    @Autowired
+    private HelperServiceImpl helperServiceImpl;
+
+    @Autowired
+    private MasterRepositoryImpl masterRepositoryImpl;
+
+    @Autowired
+    private UserRepositoryImpl userRepositoryImpl;
 
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
@@ -361,6 +371,32 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 */
                 // qry += " ORDER BY dm.  " + order.getProperty() + " " + order.getDirection().name();
 
+//        UserInfoDto user=userRepositoryImpl.getUserByUserId(deviceDto.getUserId());
+//        if(user.getUserLevelId()==1){
+//            List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(deviceDto.getUserId());
+//            if(subQuery.length()<=0) {
+//                subQuery += " WHERE  owner.contractor_id=:contractorId ";
+//                sqlParam.addValue("contractorId",deviceDto.getUserId());
+//            }
+//            else{
+//                subQuery += " and owner.contractor_id=:contractorId  ";
+//                sqlParam.addValue("contractorId",deviceDto.getUserId());
+//            }
+//        }
+//        else if(user.getUserLevelId()==2){
+//            List<Integer> distId=userRepositoryImpl.getDistIdByUserId(deviceDto.getUserId());
+//            List<Integer> deviceIds  =masterRepositoryImpl.getDeviceIdsByDistIds(distId);
+//            if(subQuery.length()<=0) {
+//                subQuery += " WHERE  dm.id in(:deviceIds) ";
+//                sqlParam.addValue("deviceIds",deviceIds);;
+//            }
+//            else{
+//                subQuery += " and dm.id in(:deviceIds) ";
+//                sqlParam.addValue("deviceIds",deviceIds);;
+//            }
+//        }
+
+
 
         String finalQry=qry+" "+subQuery;
         resultCount =  count(finalQry, sqlParam);
@@ -453,9 +489,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     public List<DeviceDto> getImeiListByDeviceId(Integer deviceId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2, " +
+        String qry = "SELECT vdm.vehicle_id as vehicleId ,dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2, " +
                 " dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no as deviceNo ,  " +
-                " dm.created_by,dm.created_on,dm.updated_by,dm.updated_on   from rdvts_oltp.device_m as dm WHERE dm.is_active = true  ";
+                " dm.created_by,dm.created_on,dm.updated_by,dm.updated_on   from rdvts_oltp.device_m as dm  " +
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id WHERE dm.is_active = true  and vdm.is_active=true ";
         if (deviceId > 0) {
             qry += " and dm.id=:deviceId ";
             sqlParam.addValue("deviceId", deviceId);
@@ -503,6 +540,27 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         }
         return result;
     }
+
+//    public Boolean deactivateDevice(Integer deviceId,Integer status) {
+//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+//        String qry = " ";
+//        if (status == 0) {
+//             qry = "UPDATE rdvts_oltp.device_m  " +
+//                    "SET is_active=false WHERE id=:deviceId";
+//            sqlParam.addValue("deviceId", deviceId);
+//        }else {
+//            qry = "UPDATE rdvts_oltp.device_m  " +
+//                    "SET is_active=true WHERE id=:deviceId";
+//            sqlParam.addValue("deviceId", deviceId);
+//        }
+//
+//        int update = namedJdbc.update(qry, sqlParam);
+//        boolean result = false;
+//        if (update > 0) {
+//            result = true;
+//        }
+//        return result;
+//    }
 
     public List<VehicleDeviceMappingDto> getAllVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
         List<VehicleDeviceMappingDto> vehicleDevice;

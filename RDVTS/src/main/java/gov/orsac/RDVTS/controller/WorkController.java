@@ -21,6 +21,8 @@ public class WorkController {
     @Autowired
     private WorkService workService;
     @Autowired
+    private UserService userService;
+    @Autowired
     private VehicleService vehicleService;
     @Autowired
     private VehicleRepository vehicleRepository;
@@ -98,10 +100,12 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkById")
-    public RDVTSResponse getWorkById(@RequestParam int id, @RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse getWorkById(@RequestParam int id,
+                                     @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
+//            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
             List<WorkDto> workDto = workService.getWorkById(id);
             List<VehicleMasterDto> vehicle = vehicleService.getVehicleHistoryList(id);
           //  List<LocationDto> location = vehicleService.getLocationArray(id);
@@ -123,7 +127,7 @@ public class WorkController {
             Date vehicleendDate = null;
             Double todayDistance=0.0;
             Double totalDistance = 0.0;
-
+            Double totalSpeed=0.0;
             for (WorkDto workitem : workDto) {
                 List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
                 for (ActivityDto activityId : activityDtoList) {
@@ -135,10 +139,13 @@ public class WorkController {
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                             //int i = 0;
                             for (DeviceDto imei : getImeiList) {
-
+                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                 totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                todayDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-
+                                todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                               // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                for (VtuLocationDto vtuobj : vtuLocationDto) {
+                                    totalSpeed+= Double.parseDouble(vtuobj.getSpeed()) ;
+                                }
                             }
 
                         }
@@ -149,21 +156,26 @@ public class WorkController {
             List<LocationDto> locationList=new ArrayList<>();
             int totalVehicleCount=vehicleService.getvehicleCountByWorkId(id);
             Double avgDistance=totalDistance/totalVehicleCount;
+            Double todayAvgDistance=todayDistance/totalVehicleCount;
+            Double avgSpeed=totalSpeed/totalVehicleCount;
+
             LocationDto location=new LocationDto();
             location.setTotalVehicleCount(totalVehicleCount);
             location.setDistanceTravelledTotal(totalDistance);
             location.setAvgDistanceTravelled(avgDistance);
+            location.setDistanceTravelledTotal(todayDistance);
+            location.setAvgDistanceTravelled(todayAvgDistance);
+            location.setSpeed(totalSpeed);
+            location.setAvgSpeed(avgSpeed);
 
             //Static DAta
               // location.setDateTime(dateTime);
-                     location.setLatitude(21.7787878);
-                     location.setLongitude(80.676767);
-                     location.setSpeed(20);
-                     location.setDistanceTravelledToday(200.5);
-                     location.setDistanceTravelledTotal(5000.2);
-                     location.setAvgDistanceTravelled(300.0);
-                     location.setAvgSpeed(30.2);
-                     locationList.add(location);
+//                     location.setLatitude(21.7787878);
+//                     location.setLongitude(80.676767);
+//                     location.setSpeed(20);
+
+//                     location.setAvgSpeed(30.2);
+//                     locationList.add(location);
             locationList.add(location);
 
             result.put("contractorDto", contractorDtoList);
@@ -187,10 +199,12 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkDDById")
-    public RDVTSResponse getWorkDDById(@RequestParam int id) {
+    public RDVTSResponse getWorkDDById(@RequestParam int id,
+                                       @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
+//            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
             List<WorkDto> workDto = workService.getWorkById(id);
 
             result.put("workDto", workDto);
@@ -248,4 +262,24 @@ public class WorkController {
         }
         return response;
     }
+
+//    @PostMapping("/getUnAssignedWorkData")
+//    public RDVTSResponse getUnAssignedWorkData(@RequestParam Integer userId) {
+//        RDVTSResponse response = new RDVTSResponse();
+//        Map<String, Object> result = new HashMap<>();
+//        try {
+//            List<WorkDto> work = workService.getUnAssignedWorkData(userId);
+//            result.put("work", work);
+//            response.setData(result);
+//            response.setStatus(1);
+//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//            response.setMessage("Unassigned Work Data");
+//        } catch (Exception ex) {
+//            response = new RDVTSResponse(0,
+//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+//                    ex.getMessage(),
+//                    result);
+//        }
+//        return response;
+//    }
 }

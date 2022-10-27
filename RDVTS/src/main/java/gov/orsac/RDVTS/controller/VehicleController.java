@@ -119,13 +119,21 @@ public class VehicleController {
         Map<String, Object> result = new HashMap<>();
 
         try {
+            List<VehicleWorkMappingDto> work=new ArrayList<>();
+            List<VehicleWorkMappingDto> workHistory=new ArrayList<>();
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
             VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
-            List<VehicleWorkMappingDto> work=vehicleService.getVehicleWorkMapping(vehicleId);
+            Integer activityId=vehicleRepositoryImpl.getActivityByVehicleId(vehicleId);
+            if(activityId!=null && activityId>0) {
+               work= vehicleService.getVehicleWorkMapping(activityId);
+            }
             LocationDto location=vehicleService.getLocation(vehicleId);
             List<AlertDto> alertList=vehicleService.getAlert(vehicleId);
             List<VehicleDeviceInfo> deviceHistory=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
-            List<VehicleWorkMappingDto> workHistory=vehicleService.getVehicleWorkMappingList(vehicleId);
+            List<Integer> activityIds=vehicleRepositoryImpl.getActivityIdsByVehicleId(vehicleId);
+            if(activityIds!=null && activityIds.size()>0) {
+            workHistory = vehicleService.getVehicleWorkMappingList(activityIds);
+            }
             ActivityDto activity=vehicleService.getActivityListByVehicleId(vehicleId);
 
             result.put("vehicle", vehicle);

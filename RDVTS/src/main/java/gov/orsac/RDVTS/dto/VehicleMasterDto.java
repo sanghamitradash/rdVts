@@ -56,5 +56,6 @@ public class VehicleMasterDto {
     private String contractorName;
     private Integer userId;
     private Integer contractorId;
+    private Integer activityId;
 
 }

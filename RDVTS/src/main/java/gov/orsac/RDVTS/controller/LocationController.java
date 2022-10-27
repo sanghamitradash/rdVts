@@ -679,9 +679,10 @@ public class LocationController {
                     Date deactivationDate = null;
                     for (DeviceDto imei : getImeiList) {
                         List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, createdOn, deactivationDate);
-
+                        //Integer vehicleIdbydevice = deviceService.getvehicleIdbydevice(deviceid);
                         for (VtuLocationDto vtuobj : vtuLocationDto) {
                             vtuobj.setDeviceId(imei.getId());
+                            vtuobj.setVehicleId(imei.getVehicleId());
 
                         }
                         Map<String, Object> itemVal = new HashMap<>();
@@ -719,7 +720,6 @@ public class LocationController {
                     }
 
                 }
-//
 
 
             }
