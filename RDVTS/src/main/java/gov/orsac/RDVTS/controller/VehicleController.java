@@ -139,7 +139,8 @@ public class VehicleController {
             if(activityIds!=null && activityIds.size()>0) {
             workHistory = vehicleService.getVehicleWorkMappingList(activityIds);
             }
-            ActivityDto activity=vehicleService.getActivityListByVehicleId(vehicleId);
+            ActivityInfoDto activity=vehicleService.getLiveActivityByVehicleId(vehicleId);
+            List<ActivityInfoDto> activityList=vehicleService.getActivityListByVehicleId(vehicleId);
 
             result.put("vehicle", vehicle);
             result.put("device",device);
@@ -149,6 +150,7 @@ public class VehicleController {
             result.put("deviceHistoryList",deviceHistory);
             result.put("workHistoryList",workHistory);
             result.put("activity",activity);
+            result.put("activityList",activityList);
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Vehicle By Id");

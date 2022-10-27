@@ -187,7 +187,12 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public ActivityDto getActivityListByVehicleId(Integer vehicleId) {
+    public ActivityInfoDto getLiveActivityByVehicleId(Integer vehicleId) {
+        return vehicleRepositoryimpl.getLiveActivityByVehicleId(vehicleId);
+    }
+
+    @Override
+    public List<ActivityInfoDto> getActivityListByVehicleId(Integer vehicleId) {
         return vehicleRepositoryimpl.getActivityListByVehicleId(vehicleId);
     }
 

@@ -55,5 +55,6 @@ public interface VehicleService {
 
     List<RoadMasterDto> getRoadDetailByVehicleId(Integer vehicleId);
 
-    ActivityDto getActivityListByVehicleId(Integer vehicleId);
+    ActivityInfoDto getLiveActivityByVehicleId(Integer vehicleId);
+    List<ActivityInfoDto> getActivityListByVehicleId(Integer vehicleId);
 }
