@@ -28,6 +28,7 @@ public class ActivityDto {
     private Integer updatedBy;
     private Date updatedOn;
     private Integer activityStatus;
+    private String activityStatusName;
     private Integer slNo;
     private String roadName;
     private String status;
