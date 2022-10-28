@@ -64,7 +64,13 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId,Integer userId) {
+
         return deviceRepositoryImpl.getDeviceAreaByDeviceId(deviceId,userId);
+    }
+
+    @Override
+    public List<DeviceAreaMappingDto> getDeviceAreaByDeviceIdInActive(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getDeviceAreaByDeviceIdInActive(deviceId,userId);
     }
 
     @Override

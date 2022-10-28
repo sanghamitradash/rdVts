@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,9 +64,20 @@ public class DashboardController {
     public RDVTSResponse getDistrictWiseVehicleCount() {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
+        List<String> districtName=new ArrayList<>();
+        List<Integer> active=new ArrayList<>();
+        List<Integer> inActive=new ArrayList<>();
+
         try {
             List<DistrictWiseVehicleDto> vehicle = dashboardService.getDistrictWiseVehicleCount();
-            result.put("vehicle", vehicle);
+            for(DistrictWiseVehicleDto vehicle1:vehicle){
+                districtName.add(vehicle1.getDistrictName());
+                active.add(vehicle1.getActive());
+                inActive.add(vehicle1.getInActive());
+            }
+            result.put("districtName", districtName);
+            result.put("active", active);
+            result.put("inActive", inActive);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
