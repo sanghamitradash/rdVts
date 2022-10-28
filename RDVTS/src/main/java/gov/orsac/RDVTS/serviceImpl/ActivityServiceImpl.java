@@ -139,6 +139,11 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepositoryImpl.unassignVehicleByVehicleTypeId(activityId, vehicleTypeId, userId);
     }
 
+    @Override
+    public ActivityDto unassignedActivity() {
+        return activityRepositoryImpl.unassignedActivity();
+    }
+
 
 //    @Override
 //    public List<VehicleActivityMappingEntity> workActivityVehicleMap(VehicleActivityWorkMappingDto vehicleActivityWorkMappingDto) {
