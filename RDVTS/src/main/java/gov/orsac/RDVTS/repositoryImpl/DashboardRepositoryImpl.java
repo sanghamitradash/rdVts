@@ -24,7 +24,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Integer getTotalActive() {
             MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-            String qry = "select count(id) from rdvts_oltp.vehicle_device_mapping where is_active=true and deactivation_date is null" ;
+            String qry = " select count(distinct imei) from rdvts_oltp.vtu_location where date(date_time)=date(now()) " ;
             return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
     }
 
