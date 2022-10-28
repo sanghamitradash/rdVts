@@ -168,7 +168,20 @@ public class WorkController {
             }
 
             //Double todayAvgDistance=todayDistance/totalVehicleCount;
-            Double avgSpeed=totalSpeed/totalVehicleCount;
+            Double avgSpeed;
+            if(Double.isNaN(totalSpeed/totalVehicleCount)){
+                avgSpeed=null;
+            }
+            else {
+                avgSpeed=totalSpeed/totalVehicleCount;
+            }
+            Double percentageOfTotalActiveVehicle;
+            if(Double.isNaN((totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100)){
+                percentageOfTotalActiveVehicle=null;
+            }
+            else {
+                percentageOfTotalActiveVehicle = Double.valueOf(totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100 ;
+            }
 
             LocationDto location=new LocationDto();
             location.setTotalVehicleCount(totalVehicleCount);
@@ -182,7 +195,7 @@ public class WorkController {
             location.setTotalAlertWork(1);
             location.setTotalVehicleActive(totalActiveVehicle);
             location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
-            location.setPercentageOfActiveVehicle((Double.valueOf(totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100));
+            location.setPercentageOfActiveVehicle(percentageOfTotalActiveVehicle);
 
             //Static DAta
               // location.setDateTime(dateTime);
