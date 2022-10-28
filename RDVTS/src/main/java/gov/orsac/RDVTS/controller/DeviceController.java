@@ -136,10 +136,12 @@ public class DeviceController {
         try {
             List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
             List<DeviceAreaMappingDto> deviceArea = deviceService.getDeviceAreaByDeviceId(deviceId,userId);
+           // List<DeviceAreaMappingDto> deviceArea2 = deviceService.getDeviceAreaByDeviceIdInActive(deviceId,userId);
             List<VehicleDeviceMappingDto> vehicle  = deviceService.getVehicleDeviceMappingByDeviceId(deviceId,userId);
             List<VehicleDeviceMappingDto> vehicleDeviceMap = deviceService.getAllVehicleDeviceMappingByDeviceId(deviceId,userId);
             result.put("device", device);
             result.put("deviceArea",deviceArea);
+           // result.put("deviceAreaInActive",deviceArea2);
             result.put("vehicle",vehicle);
             result.put("vehicleDeviceMap",vehicleDeviceMap);
             response.setData(result);
@@ -147,6 +149,7 @@ public class DeviceController {
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Device By Id");
         } catch (Exception ex) {
+            ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),
