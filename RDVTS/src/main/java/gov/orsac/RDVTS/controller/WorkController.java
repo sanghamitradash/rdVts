@@ -159,8 +159,15 @@ public class WorkController {
 
             List<LocationDto> locationList=new ArrayList<>();
             int totalVehicleCount=vehicleService.getvehicleCountByWorkId(id);
-            Double avgDistance=totalDistance/totalVehicleCount;
-            Double todayAvgDistance=todayDistance/totalVehicleCount;
+            Double avgDistance;
+            if(Double.isNaN(totalDistance/totalVehicleCount)){
+                avgDistance=null;
+            }
+            else {
+                 avgDistance=totalDistance/totalVehicleCount;
+            }
+
+            //Double todayAvgDistance=todayDistance/totalVehicleCount;
             Double avgSpeed=totalSpeed/totalVehicleCount;
 
             LocationDto location=new LocationDto();
@@ -168,7 +175,7 @@ public class WorkController {
             location.setDistanceTravelledTotal(totalDistance);
             location.setAvgDistanceTravelled(avgDistance);
             location.setDistanceTravelledToday(todayDistance);
-            location.setAvgDistanceTravelled(todayAvgDistance);
+            //location.setAvgDistanceTravelled(todayAvgDistance);
             location.setSpeed(totalSpeed);
             location.setAvgSpeed(avgSpeed);
             location.setTotalAlertToday(1);
