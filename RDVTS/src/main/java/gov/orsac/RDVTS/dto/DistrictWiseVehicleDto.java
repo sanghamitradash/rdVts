@@ -4,14 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.function.ObjIntConsumer;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DistrictWiseVehicleDto {
     private Integer districtId;
     private String districtName;
-    private Integer vehicleCount;
+    //private Integer vehicleCount;
+    private Integer count;
+    private Integer active;
+    private Integer InActive;
+
 
 }

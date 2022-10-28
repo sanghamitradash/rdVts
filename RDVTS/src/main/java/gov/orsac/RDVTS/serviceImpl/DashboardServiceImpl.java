@@ -49,36 +49,58 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount() {
-        List<DistrictWiseVehicleDto> count=new ArrayList<>();
-        for(int i=0;i<5;i++){
-            DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();
-            if(i==0){
-              count1.setDistrictId(1);
-              count1.setDistrictName("Baleswar");
-              count1.setVehicleCount(5);
-            }
-            if(i==1){
-                count1.setDistrictId(1);
-                count1.setDistrictName("Bolangir");
-                count1.setVehicleCount(10);
-            }
-            if(i==2){
-                count1.setDistrictId(1);
-                count1.setDistrictName("Cuttack");
-                count1.setVehicleCount(4);
-            }
-            if(i==3){
-                count1.setDistrictId(1);
-                count1.setDistrictName("Dhenkanala");
-                count1.setVehicleCount(6);
-            }
-            if(i==4){
-                count1.setDistrictId(1);
-                count1.setDistrictName("Khurda");
-                count1.setVehicleCount(8);
-            }
-           count.add(count1);
+        List<DistrictWiseVehicleDto> count = new ArrayList<>();
+        List<DistrictWiseVehicleDto> finalCount=new ArrayList<>();
+
+        List<Integer> totalActiveIds = dashboardRepository.totalActiveIds();
+        List<Integer> totalInActiveIds = dashboardRepository.totalInactiveIds();
+        /* DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();*/
+         List<DistrictWiseVehicleDto> activeCount=dashboardRepository.getDistrictWiseVehicleCount(totalActiveIds);
+        List<DistrictWiseVehicleDto> inActiveCount=dashboardRepository.getDistrictWiseVehicleCount(totalInActiveIds);
+        for(int i=0;i<activeCount.size();i++){
+            DistrictWiseVehicleDto dw=new DistrictWiseVehicleDto();
+            dw.setActive(activeCount.get(i).getCount());
+            dw.setInActive(inActiveCount.get(i).getCount());
+            dw.setDistrictId(activeCount.get(i).getDistrictId());
+            dw.setDistrictName(activeCount.get(i).getDistrictName());
+            finalCount.add(dw);
         }
-        return count;
+
+//        district.setInActive(totalInActiveIds);
+        return finalCount;
     }
-}
+    }
+
+
+        //        for(int i=0;i<5;i++){
+//            DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();
+//            if(i==0){
+//              count1.setDistrictId(1);
+//              count1.setDistrictName("Baleswar");
+//              count1.setVehicleCount(5);
+//            }
+//            if(i==1){
+//                count1.setDistrictId(1);
+//                count1.setDistrictName("Bolangir");
+//                count1.setVehicleCount(10);
+//            }
+//            if(i==2){
+//                count1.setDistrictId(1);
+//                count1.setDistrictName("Cuttack");
+//                count1.setVehicleCount(4);
+//            }
+//            if(i==3){
+//                count1.setDistrictId(1);
+//                count1.setDistrictName("Dhenkanala");
+//                count1.setVehicleCount(6);
+//            }
+//            if(i==4){
+//                count1.setDistrictId(1);
+//                count1.setDistrictName("Khurda");
+//                count1.setVehicleCount(8);
+//            }
+//           count.add(count1);
+//        }
+        //return count;
+
+
