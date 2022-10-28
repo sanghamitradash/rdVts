@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.dto.ActivityDto;
 import gov.orsac.RDVTS.dto.VehicleActivityMappingDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
+import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.ActivityMasterRepository;
 import gov.orsac.RDVTS.repository.ActivityRepository;
@@ -115,6 +116,27 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Integer updateWorkId(Integer workId, Integer activityId) {
         return activityRepositoryImpl.updateWorkId(workId, activityId);
+    }
+    @Override
+    public Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId) {
+        return activityRepositoryImpl.updateWorkActivity(workId, activityId, userId);
+    }
+
+    @Override
+    public Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
+        Boolean res = activityRepositoryImpl.workActivityDeassign(activityId, workId, userId);
+        return res;
+    }
+
+    @Override
+    public Boolean vehicleActivityDeassign(Integer activityId) {
+        Boolean res = activityRepositoryImpl.vehicleActivityDeassign(activityId);
+        return res;
+    }
+
+    @Override
+    public List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId) {
+        return activityRepositoryImpl.unassignVehicleByVehicleTypeId(activityId, vehicleTypeId, userId);
     }
 
 
