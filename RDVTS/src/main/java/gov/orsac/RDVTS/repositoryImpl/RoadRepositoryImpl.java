@@ -290,17 +290,17 @@ public class RoadRepositoryImpl {
         List<RoadMasterDto> road;
         String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
                 " road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date as sanctionDate, road.road_code, " +
-                "road.road_status, road.approval_status, road.approved_by, geom.work_id as workIds, geom.g_dist_id as distIds, geom.g_block_id as blockIds " +
-                "FROM rdvts_oltp.geo_construction_m AS road " +
-                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id " +
-                "LEFT JOIN rdvts_oltp.work_m as work on work.id = geom.work_id  " +
-                "WHERE road.is_active=true ";
+                " road.road_status, road.approval_status, road.approved_by, geom.work_id as workIds, geom.g_dist_id as distIds, geom.g_block_id as blockIds " +
+                " FROM rdvts_oltp.geo_construction_m AS road " +
+                " LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id " +
+                " LEFT JOIN rdvts_oltp.work_m as work on work.id = geom.work_id  " +
+                " WHERE road.is_active=true ";
 
         if (id.get(0) > 0) {
             qry += " AND road.id IN (:id)";
             sqlParam.addValue("id", id);
         }
-        if (!workIdList.isEmpty()  && workIdList != null) {
+        if (workIdList != null && !workIdList.isEmpty()) {
             qry += " AND geom.work_id IN (:workIdList)";
             sqlParam.addValue("workIdList", workIdList);
         }
@@ -316,7 +316,6 @@ public class RoadRepositoryImpl {
             qry += " AND geom. IN (:vehicleIds)";
             sqlParam.addValue("vehicleIds", vehicleIds);
         }
-
         try {
             road = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
         } catch (EmptyResultDataAccessException e) {
