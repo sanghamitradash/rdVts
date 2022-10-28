@@ -39,7 +39,7 @@ public interface ActivityService {
 
     List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId);
 
-    ActivityDto unassignedActivity();
+    List<ActivityDto> unassignedActivity();
 }
 
 
