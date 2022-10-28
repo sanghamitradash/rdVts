@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.dto.ActivityDto;
 import gov.orsac.RDVTS.dto.VehicleActivityMappingDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
+import gov.orsac.RDVTS.entities.VehicleMaster;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public interface ActivityService {
 
     Boolean vehicleActivityDeassign(Integer activityId);
 
-    List<VehicleActivityMappingEntity> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId);
+    List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId);
 }
 
 
