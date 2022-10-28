@@ -116,6 +116,27 @@ public class ActivityServiceImpl implements ActivityService {
     public Integer updateWorkId(Integer workId, Integer activityId) {
         return activityRepositoryImpl.updateWorkId(workId, activityId);
     }
+    @Override
+    public Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId) {
+        return activityRepositoryImpl.updateWorkActivity(workId, activityId, userId);
+    }
+
+    @Override
+    public Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
+        Boolean res = activityRepositoryImpl.workActivityDeassign(activityId, workId, userId);
+        return res;
+    }
+
+    @Override
+    public Boolean vehicleActivityDeassign(Integer activityId) {
+        Boolean res = activityRepositoryImpl.vehicleActivityDeassign(activityId);
+        return res;
+    }
+
+    @Override
+    public List<VehicleActivityMappingEntity> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId) {
+        return activityRepositoryImpl.unassignVehicleByVehicleTypeId(activityId, vehicleTypeId, userId);
+    }
 
 
 //    @Override
