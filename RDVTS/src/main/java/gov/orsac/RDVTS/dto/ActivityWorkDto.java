@@ -20,4 +20,6 @@ public class ActivityWorkDto {
     private Integer userId;
 
     List<VehicleActivityMappingEntity> vehicle;
+
+    private Integer vehicleTypeId;
 }

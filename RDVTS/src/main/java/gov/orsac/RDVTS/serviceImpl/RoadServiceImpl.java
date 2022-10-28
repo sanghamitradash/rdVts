@@ -109,11 +109,18 @@ public class RoadServiceImpl implements RoadService {
 
     @Override
     public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds) {
+        List<Integer> roadIdList = new ArrayList<>();
         List<Integer> workIdList = new ArrayList<>();
         List<Integer> distIdList = new ArrayList<>();
-            workIdList = roadRepositoryImpl.getWorkIdsByRoadId(workIds);
+
+
+            if(workIds != null && !workIds.isEmpty() ){
+                roadIdList = roadRepositoryImpl.getRoadIdsByWorkId(workIds);
+//                roadIdList.addAll(workIdList);
+            }
+
             distIdList = roadRepositoryImpl.getDistIdsByRoadId(id);
-        return roadRepositoryImpl.getRoadByRoadIds(id, workIdList, distIdList, blockIds, vehicleIds);
+        return roadRepositoryImpl.getRoadByRoadIds(roadIdList, workIdList, distIdList, blockIds, vehicleIds);
     }
 
     @Override
