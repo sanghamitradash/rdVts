@@ -22,4 +22,5 @@ public class ActivityWorkDto {
     List<VehicleActivityMappingEntity> vehicle;
 
     private Integer vehicleTypeId;
+    private String vehicleNo;
 }
