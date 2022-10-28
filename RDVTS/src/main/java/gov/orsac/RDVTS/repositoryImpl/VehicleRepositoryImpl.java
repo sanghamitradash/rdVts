@@ -553,12 +553,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
     public Integer getvehicleCountByWorkId(Integer id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " SELECT  count(distinct vam.vehicle_id) FROM rdvts_oltp.vehicle_activity_mapping as vam " +
+        String qry = " SELECT  count( vam.vehicle_id) FROM rdvts_oltp.vehicle_activity_mapping as vam " +
                 " LEFT JOIN rdvts_oltp.vehicle_m as vm on vm.id=vam.vehicle_id " +
                 " left join rdvts_oltp.activity_m as am on am.id=vam.activity_id " +
-
-                " WHERE 1=1 and am.is_active=true and vm.is_active=true and vam.is_active=true and am.work_id=:workId ";
-        sqlParam.addValue("workId", id);
+                " WHERE 1=1 and am.is_active=true and vm.is_active=true and vam.is_active=true ";
+        if (id > 0) {
+            qry += " and am.work_id=:workId";
+            sqlParam.addValue("workId", id);
+        }
         return   namedJdbc.queryForObject(qry, sqlParam, Integer.class);
 
 
