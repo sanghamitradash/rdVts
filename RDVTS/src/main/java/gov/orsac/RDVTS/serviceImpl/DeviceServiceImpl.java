@@ -168,13 +168,23 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public Boolean deactivateDevice(Integer deviceId) {
-        return deviceRepositoryImpl.deactivateDevice(deviceId);
+    public Boolean deactivateDevice(Integer deviceId,Integer status) {
+        return deviceRepositoryImpl.deactivateDevice(deviceId,status);
     }
 
     @Override
     public List<VehicleDeviceMappingDto> getAllVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId) {
         return deviceRepositoryImpl.getAllVehicleDeviceMappingByDeviceId(deviceId,userId);
+    }
+
+    @Override
+    public Boolean deactivateDeviceAreaMapping(Integer deviceId, Integer status) {
+        return deviceRepositoryImpl.deactivateDeviceAreaMapping(deviceId,status);
+    }
+
+    @Override
+    public Boolean deactivateDeviceVehicleMapping(Integer deviceId, Integer status) {
+        return deviceRepositoryImpl.deactivateDeviceVehicleMapping(deviceId,status);
     }
 
 

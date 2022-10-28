@@ -113,14 +113,6 @@ public class WorkController {
             List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
             List<ContractorDto> contractorDtoList = contractorService.getContractorByWorkId(id);
 
-
-
-
-
-
-
-
-
             Date startDate = null;
             Date endDate = null;
             Date vehicleStartDate = null;
@@ -128,12 +120,16 @@ public class WorkController {
             Double todayDistance=0.0;
             Double totalDistance = 0.0;
             Double totalSpeed=0.0;
+            Integer totalActiveVehicle=0;
+
+            //distance and speed API
             for (WorkDto workitem : workDto) {
                 List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
                 for (ActivityDto activityId : activityDtoList) {
+
                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-
+                        totalActiveVehicle+=vehicleService.getActiveVehicle(vehicleList.getVehicleId());
                         List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
                         for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
@@ -143,9 +139,12 @@ public class WorkController {
                                 totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                 todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                int i=1;
                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
+                                    i++;
                                     totalSpeed+= Double.parseDouble(vtuobj.getSpeed()) ;
                                 }
+                                totalSpeed=totalSpeed/i;
                             }
 
                         }
@@ -153,6 +152,11 @@ public class WorkController {
 
                 }
             }
+
+            //Active Inactive vehicle
+
+
+
             List<LocationDto> locationList=new ArrayList<>();
             int totalVehicleCount=vehicleService.getvehicleCountByWorkId(id);
             Double avgDistance=totalDistance/totalVehicleCount;
@@ -167,6 +171,11 @@ public class WorkController {
             location.setAvgDistanceTravelled(todayAvgDistance);
             location.setSpeed(totalSpeed);
             location.setAvgSpeed(avgSpeed);
+            location.setTotalAlertToday(1);
+            location.setTotalAlertWork(1);
+            location.setTotalVehicleActive(totalActiveVehicle);
+            location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
+            location.setPercentageOfActiveVehicle((Double.valueOf(totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100));
 
             //Static DAta
               // location.setDateTime(dateTime);
