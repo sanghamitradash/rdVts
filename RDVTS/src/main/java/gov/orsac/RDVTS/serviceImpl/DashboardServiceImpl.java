@@ -49,7 +49,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount() {
-        List<DistrictWiseVehicleDto>  count=new ArrayList<>();
+        List<DistrictWiseVehicleDto> count=new ArrayList<>();
         for(int i=0;i<5;i++){
             DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();
             if(i==0){
