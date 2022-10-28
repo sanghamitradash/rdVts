@@ -140,7 +140,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityDto unassignedActivity() {
+    public List<ActivityDto> unassignedActivity() {
         return activityRepositoryImpl.unassignedActivity();
     }
 
