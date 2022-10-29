@@ -296,23 +296,23 @@ public class WorkController {
         return response;
     }
 
-//    @PostMapping("/getUnAssignedWorkData")
-//    public RDVTSResponse getUnAssignedWorkData(@RequestParam Integer userId) {
-//        RDVTSResponse response = new RDVTSResponse();
-//        Map<String, Object> result = new HashMap<>();
-//        try {
-//            List<WorkDto> work = workService.getUnAssignedWorkData(userId);
-//            result.put("work", work);
-//            response.setData(result);
-//            response.setStatus(1);
-//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-//            response.setMessage("Unassigned Work Data");
-//        } catch (Exception ex) {
-//            response = new RDVTSResponse(0,
-//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                    ex.getMessage(),
-//                    result);
-//        }
-//        return response;
-//    }
+    @PostMapping("/getUnAssignedWorkDD")
+    public RDVTSResponse getUnAssignedWorkData(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<UnassignedWorkDto> work = workService.getUnAssignedWorkData(userId);
+            result.put("work", work);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Unassigned Work Data");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 }

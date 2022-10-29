@@ -198,11 +198,10 @@ public class WorkRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
     }
 
-//    public List<WorkDto> getUnAssignedWorkData(List<Integer> userIdList, Integer userId) {
-//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-//        String qry = "select wm.id,wm.g_work_name as geoWorkName, from rdvts_oltp.work_m as wm where wm.id " +
-//                     "not in (select distinct work_id from rdvts_oltp.activity_m ) and wm.is_active = true ";
-//
-//        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
-//    }
+    public List<UnassignedWorkDto> getUnAssignedWorkData(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select id,g_work_name as geoWorkName from rdvts_oltp.work_m where id not in (select work_id from rdvts_oltp.geo_master where is_active = true) and is_active = true ";
+
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UnassignedWorkDto.class));
+    }
 }
