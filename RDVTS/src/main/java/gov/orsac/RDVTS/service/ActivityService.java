@@ -38,6 +38,10 @@ public interface ActivityService {
     Boolean vehicleActivityDeassign(Integer activityId);
 
     List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId);
+
+    List<ActivityDto> unassignedActivity();
+
+    Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId);
 }
 
 

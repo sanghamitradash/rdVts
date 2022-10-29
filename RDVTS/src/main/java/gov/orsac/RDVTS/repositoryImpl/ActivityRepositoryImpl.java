@@ -147,7 +147,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     public Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry= " UPDATE rdvts_oltp.activity_m " +
-                " SET  is_active=false " +
+                "SET  work_id=null " +
                 " WHERE id=:activityId and work_id=:workId";
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("workId", workId);
@@ -182,6 +182,28 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("vehicleTypeId", vehicleTypeId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMaster.class));
+    }
+
+
+    public List<ActivityDto> unassignedActivity() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " SELECT id, activity_name FROM rdvts_oltp.activity_m where work_id is null ";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+    }
+
+    public Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "update rdvts_oltp.vehicle_activity_mapping " +
+                "set is_active=false " +
+                "where activity_id=:activityId and vehicle_id=:vehicleId";
+        sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("vehicleId", vehicleId);
+        int update = namedJdbc.update(qry, sqlParam);
+        Boolean result = false;
+        if(update>0){
+            result=true;
+        }
+        return  result;
     }
 }
 
