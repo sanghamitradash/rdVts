@@ -86,7 +86,7 @@ public class WorkController {
             response.setMessage("List of Work.");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(Long.valueOf(workDtoPage.getNumberOfElements()));
+            response.setRecordsFiltered(workDtoPage.getTotalElements());
             response.setRecordsTotal(workDtoPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
@@ -166,7 +166,6 @@ public class WorkController {
             else {
                  avgDistance=totalDistance/totalVehicleCount;
             }
-
             //Double todayAvgDistance=todayDistance/totalVehicleCount;
             Double avgSpeed;
             if(Double.isNaN(totalSpeed/totalVehicleCount)){
@@ -194,7 +193,12 @@ public class WorkController {
             location.setTotalAlertToday(1);
             location.setTotalAlertWork(1);
             location.setTotalVehicleActive(totalActiveVehicle);
-            location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
+            if (totalVehicleCount > 0 ){
+                location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
+            }else {
+                location.setTotalInactiveVehicle(0);
+            }
+
             location.setPercentageOfActiveVehicle(percentageOfTotalActiveVehicle);
 
             //Static DAta
