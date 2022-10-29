@@ -311,7 +311,9 @@ public class ActivityController {
             Map<String, Object> result = new HashMap<>();
             try{
                List<ActivityDto> activityDto = activityService.unassignedActivity();
-                response.setData(activityDto);
+
+                result.put("unassignedActivity",activityDto);
+                response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                 response.setMessage("Unassigned Activity Dropdown");
