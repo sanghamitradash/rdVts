@@ -614,4 +614,31 @@ public class VehicleController {
         }
         return response;
     }
+
+    @PostMapping("/deactivateVehicle")
+    public RDVTSResponse deactivateVehicle(@RequestParam Integer vehicleId,@RequestParam Integer status,@RequestParam (required = false)Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Boolean res = vehicleService.deactivateVehicle(vehicleId,status);
+            Boolean res1 = vehicleService.deactivateDeviceVehicleMapping(vehicleId,status);
+            Boolean res2 = vehicleService.deactivateVehicleActivityMapping(vehicleId,status);
+            if (res==true && res1==true && res2==true) {
+                response.setData(result);
+                response.setStatus(1);
+                response.setMessage("vehicle Deactivated ");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            } else {
+                response.setStatus(0);
+                response.setMessage("Something went wrong");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(), result);
+        }
+        return response;
+    }
+
 }
