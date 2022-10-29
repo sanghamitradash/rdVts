@@ -78,12 +78,14 @@ public class DashboardController {
             result.put("districtName", districtName);
             result.put("active", active);
             result.put("inActive", inActive);
+            result.put("vehicle",vehicle);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("All DistrictWise Vehicle Count");
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),
