@@ -113,16 +113,31 @@ public class RoadServiceImpl implements RoadService {
         List<Integer> workIdList = new ArrayList<>();
         List<Integer> distIdList = new ArrayList<>();
 
-
-            if(workIds != null && !workIds.isEmpty() ){
+           /* if(workIds != null && !workIds.isEmpty()){
                 roadIdList = roadRepositoryImpl.getRoadIdsByWorkId(workIds);
-//                roadIdList.addAll(workIdList);
             }
+            if(distIds != null && !distIds.isEmpty()){
+                roadIdList = roadRepositoryImpl.getRoadIdsBydistIds(distIds);
+            }
+            if(blockIds != null && !blockIds.isEmpty()){
+                roadIdList = roadRepositoryImpl.getRoadIdsByblockIds(blockIds);
+            }
+            if(vehicleIds != null && !vehicleIds.isEmpty()){
+                roadIdList = roadRepositoryImpl.getRoadIdsByVehicleId(vehicleIds);
+            }*/
 
-            distIdList = roadRepositoryImpl.getDistIdsByRoadId(id);
-        return roadRepositoryImpl.getRoadByRoadIds(roadIdList, workIdList, distIdList, blockIds, vehicleIds);
+        if (vehicleIds!=null && vehicleIds.size()>0){
+            roadIdList=roadRepositoryImpl.getRoadIdsByVehicleIdsForFilter(vehicleIds);
+        }
+        if(id!=null && id.size()>0) {
+            roadIdList.addAll(id);
+        }
+        return roadRepositoryImpl.getRoadByRoadIds(roadIdList, workIds, distIds, blockIds, vehicleIds);
     }
-
+//    @Override
+//    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds) {
+//        return roadRepositoryImpl.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds, activityIds);
+//    }
     @Override
     public RoadStatusDropDownDto getRoadStatusDD() {
         return roadRepositoryImpl.getRoadStatusDD();

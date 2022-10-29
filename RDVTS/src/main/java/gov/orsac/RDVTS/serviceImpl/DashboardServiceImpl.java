@@ -63,6 +63,7 @@ public class DashboardServiceImpl implements DashboardService {
             dw.setInActive(inActiveCount.get(i).getCount());
             dw.setDistrictId(activeCount.get(i).getDistrictId());
             dw.setDistrictName(activeCount.get(i).getDistrictName());
+            dw.setCount(activeCount.get(i).getCount() + inActiveCount.get(i).getCount());
             finalCount.add(dw);
         }
 
