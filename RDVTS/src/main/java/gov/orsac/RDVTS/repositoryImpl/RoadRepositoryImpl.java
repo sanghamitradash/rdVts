@@ -278,8 +278,8 @@ public class RoadRepositoryImpl {
     }
     public List<Integer> getRoadIdsByWorkId(List<Integer> workIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select gm.road_id from rdvts_oltp.geo_master as gm  " +
-                " where gm.work_id=:workIds";
+        String qry = "select distinct gm.road_id from rdvts_oltp.geo_master as gm  " +
+                " where gm.work_id in (:workIds)";
 
 //                "SELECT road.id from rdvts_oltp.geo_construction_m as road " +
 //                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id " +
