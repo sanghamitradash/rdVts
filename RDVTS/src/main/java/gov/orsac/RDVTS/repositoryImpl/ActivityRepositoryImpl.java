@@ -147,7 +147,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     public Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry= " UPDATE rdvts_oltp.activity_m " +
-                " SET  is_active=false " +
+                "SET  work_id=null " +
                 " WHERE id=:activityId and work_id=:workId";
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("workId", workId);
