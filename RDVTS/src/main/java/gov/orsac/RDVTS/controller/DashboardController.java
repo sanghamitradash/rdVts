@@ -74,6 +74,7 @@ public class DashboardController {
                 districtName.add(vehicle1.getDistrictName());
                 active.add(vehicle1.getActive());
                 inActive.add(vehicle1.getInActive());
+
             }
             result.put("districtName", districtName);
             result.put("active", active);
