@@ -215,7 +215,7 @@ public class ActivityController {
         return response;
     }
 
-    @PostMapping("/updateWorkActivityMapping")
+    @PostMapping("/assignWorkActivityMapping")
     public RDVTSResponse updateWorkActivity(@RequestBody ActivityWorkDto activityWork) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
@@ -224,7 +224,7 @@ public class ActivityController {
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
-            response.setMessage("Work Id Updated Successfully!!");
+            response.setMessage("Activity Assigned Successfully!!");
         } catch (Exception e) {
             e.printStackTrace();
             response = new RDVTSResponse(0,
@@ -305,7 +305,6 @@ public class ActivityController {
         }
         return response;
         }
-
         @PostMapping("/unassignedActivityDD")
         public RDVTSResponse unassignedActivity(){
             RDVTSResponse response = new RDVTSResponse();
@@ -324,14 +323,13 @@ public class ActivityController {
             }
             return response;
         }
-
-
-
     @PostMapping("/activityVehicleDeassign")
     public RDVTSResponse activityVehicleDeassign(@RequestBody ActivityWorkDto activityWorkDto){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try{
+
+
 
         } catch (Exception e){
 

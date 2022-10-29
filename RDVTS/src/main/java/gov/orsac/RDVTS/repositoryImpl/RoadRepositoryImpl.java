@@ -268,27 +268,24 @@ public class RoadRepositoryImpl {
         return road;
 //        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadWorkMappingDto.class));
     }
-    public List<Integer> getRoadIdsByWorkId(List<Integer> workIds) {
-        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select wm.id from rdvts_oltp.work_m as wm\n" +
-                "left join rdvts_oltp.geo_master as gm on gm.work_id=wm.id\n" +
-                "left join rdvts_oltp.geo_construction_m as road on road.id=gm.road_id \n" +
-                "where road.id in (1,2)";
-
-
-//                "SELECT road.id from rdvts_oltp.geo_construction_m as road " +
-//                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id " +
-//                "LEFT JOIN rdvts_oltp.work_m as wm on wm.id = geom.work_id  " +
-//                "where road.is_active=true AND wm.id IN (:workIds) ";
-        sqlParam.addValue("workIds", workIds);
-        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
-    }
     public List<Integer> getDistIdsByRoadId(List<Integer> id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "   select gm.dist_id from rdvts_oltp.geo_master as gm   " +
                 "  left join rdvts_oltp.geo_construction_m as road on road.id = gm.road_id  " +
                 "  where road.id=:id and gm.is_active=true ";
         sqlParam.addValue("id", id);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+    public List<Integer> getRoadIdsByWorkId(List<Integer> workIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select gm.road_id from rdvts_oltp.geo_master as gm  " +
+                " where gm.work_id=:workIds";
+
+//                "SELECT road.id from rdvts_oltp.geo_construction_m as road " +
+//                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id " +
+//                "LEFT JOIN rdvts_oltp.work_m as wm on wm.id = geom.work_id  " +
+//                "where road.is_active=true AND wm.id IN (:workIds) ";
+        sqlParam.addValue("workIds", workIds);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
     public List<RoadMasterDto> getRoadByRoadIds(List<Integer> roadIdList, List<Integer> workIdList,List<Integer> distIdList, List<Integer> blockIds, List<Integer> vehicleIds) {
@@ -302,7 +299,7 @@ public class RoadRepositoryImpl {
                 " LEFT JOIN rdvts_oltp.work_m as work on work.id = geom.work_id  " +
                 " WHERE road.is_active=true ";
 
-        if (roadIdList.get(0) > 0) {
+        if (roadIdList!=null && roadIdList.size()>0 && !roadIdList.isEmpty()) {
             qry += " AND road.id IN (:roadIdList)";
             sqlParam.addValue("roadIdList", roadIdList);
         }
