@@ -298,11 +298,16 @@ public class MasterController {
             Page<DesignationDto> designationDtoPage = designationService.getDesignationList(designationDto);
             List<DesignationDto> designationDtoList = designationDtoPage.getContent();
 //            result.put("DesignationDtoList", designationDtoList);
+            Integer start1 = start;
+            for (int i = 0; i < designationDtoList.size(); i++) {
+                start1 = start1 + 1;
+                designationDtoList.get(i).setSlNo(start1);
+            }
             response.setData(designationDtoList);
             response.setMessage("List of Designation.");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(Long.valueOf(designationDtoPage.getNumberOfElements()));
+            response.setRecordsFiltered(designationDtoPage.getTotalElements());
             response.setRecordsTotal(designationDtoPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 

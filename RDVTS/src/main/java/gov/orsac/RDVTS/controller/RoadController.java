@@ -216,11 +216,13 @@ public class RoadController {
                                           @RequestParam(name = "workIds", required = false) List<Integer> workIds,
                                           @RequestParam(name = "distIds", required = false) List<Integer> distIds,
                                           @RequestParam(name = "blockIds", required = false) List<Integer> blockIds,
-                                          @RequestParam(name = "vehicleIds", required = false) List<Integer> vehicleIds) {
+                                          @RequestParam(name = "vehicleIds", required = false) List<Integer> vehicleIds,
+                                          @RequestParam(name = "activityIds", required = false) List<Integer> activityIds,
+                                          @RequestParam(name = "deviceIds", required = false) List<Integer> deviceIds) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds);
+            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds, activityIds, deviceIds);
 //            result.put("road", road);
             response.setData(road);
             response.setStatus(1);
@@ -270,6 +272,24 @@ public class RoadController {
             response.setMessage("Road Updated Successfully");
         } catch (Exception e) {
             e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+    @PostMapping("/unassignedRoadDD")
+    public RDVTSResponse unassignedActivity(@RequestParam(value = "userId", required = false) Integer userId){
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+            List<UnassignedRoadDDDto> roadDD = roadService.unassignedRoadDD(userId);
+            response.setData(roadDD);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Unassigned Road Dropdown");
+        } catch (Exception e){
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),

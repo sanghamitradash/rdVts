@@ -98,14 +98,14 @@ public class WorkServiceImpl implements WorkService {
         return vehicleRepository.deactivateVehicleWork(workIds, vehicleIds);
     }
 
-//    @Override
-//    public List<WorkDto> getUnAssignedWorkData(Integer userId) {
+    @Override
+    public List<UnassignedWorkDto> getUnAssignedWorkData(Integer userId) {
 //        List<Integer> userIdList=new ArrayList<>();
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
 //        if(user.getUserLevelId()!=5){
 //            userIdList=helperService.getLowerUserByUserId(userId);
 //        }
-//        return workRepositoryImpl.getUnAssignedWorkData(userIdList,userId);
-//    }
+        return workRepositoryImpl.getUnAssignedWorkData(userId);
+    }
 
 }

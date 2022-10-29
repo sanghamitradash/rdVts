@@ -136,10 +136,12 @@ public class DeviceController {
         try {
             List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
             List<DeviceAreaMappingDto> deviceArea = deviceService.getDeviceAreaByDeviceId(deviceId,userId);
+           // List<DeviceAreaMappingDto> deviceArea2 = deviceService.getDeviceAreaByDeviceIdInActive(deviceId,userId);
             List<VehicleDeviceMappingDto> vehicle  = deviceService.getVehicleDeviceMappingByDeviceId(deviceId,userId);
             List<VehicleDeviceMappingDto> vehicleDeviceMap = deviceService.getAllVehicleDeviceMappingByDeviceId(deviceId,userId);
             result.put("device", device);
             result.put("deviceArea",deviceArea);
+           // result.put("deviceAreaInActive",deviceArea2);
             result.put("vehicle",vehicle);
             result.put("vehicleDeviceMap",vehicleDeviceMap);
             response.setData(result);
@@ -147,6 +149,7 @@ public class DeviceController {
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Device By Id");
         } catch (Exception ex) {
+            ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),
@@ -371,6 +374,36 @@ public class DeviceController {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(), result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getAllDeviceDD")
+    public RDVTSResponse getAllDeviceDD(@RequestParam(name = "deviceId", required = false) Integer deviceId,
+                                       @RequestParam(name = "userId",required = false)Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<DeviceDto> device = deviceService.getAllDeviceDD(deviceId,userId);
+            List<DeviceAreaMappingDto> deviceArea = deviceService.getAllDeviceAreaByDeviceId(deviceId,userId);
+            // List<DeviceAreaMappingDto> deviceArea2 = deviceService.getDeviceAreaByDeviceIdInActive(deviceId,userId);
+            List<VehicleDeviceMappingDto> vehicle  = deviceService.getVehicleDeviceMappingDDByDeviceId(deviceId,userId);
+            List<VehicleDeviceMappingDto> vehicleDeviceMap = deviceService.getAllVehicleDeviceMappingByDeviceId(deviceId,userId);
+            result.put("device", device);
+            result.put("deviceArea",deviceArea);
+            // result.put("deviceAreaInActive",deviceArea2);
+            result.put("vehicle",vehicle);
+            result.put("vehicleDeviceMap",vehicleDeviceMap);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Device By Id");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
         }
         return response;
     }

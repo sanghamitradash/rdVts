@@ -19,6 +19,7 @@ public interface DeviceService {
     List<DeviceDto> getDeviceById(Integer deviceId, Integer userId);
 
     List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId, Integer userId);
+    List<DeviceAreaMappingDto> getDeviceAreaByDeviceIdInActive(Integer deviceId, Integer userId);
 
     DeviceEntity updateDeviceById(Integer id, DeviceDto deviceDto);
 
@@ -49,4 +50,10 @@ public interface DeviceService {
     Boolean deactivateDeviceAreaMapping(Integer deviceId, Integer status);
 
     Boolean deactivateDeviceVehicleMapping(Integer deviceId, Integer status);
+
+    List<DeviceDto> getAllDeviceDD(Integer deviceId, Integer userId);
+
+    List<DeviceAreaMappingDto> getAllDeviceAreaByDeviceId(Integer deviceId, Integer userId);
+
+    List<VehicleDeviceMappingDto> getVehicleDeviceMappingDDByDeviceId(Integer deviceId, Integer userId);
 }

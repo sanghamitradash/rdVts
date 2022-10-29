@@ -34,6 +34,9 @@ public class WorkDto {
     private Integer approvalStatus;
     private Integer approvedBy;
 
+    private String approvalStatusName;
+    private String workStatusName;
+
     private Integer piuId;
     private String piuName;
     private Integer packageId;

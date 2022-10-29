@@ -86,7 +86,7 @@ public class WorkController {
             response.setMessage("List of Work.");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(Long.valueOf(workDtoPage.getNumberOfElements()));
+            response.setRecordsFiltered(workDtoPage.getTotalElements());
             response.setRecordsTotal(workDtoPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
@@ -166,9 +166,21 @@ public class WorkController {
             else {
                  avgDistance=totalDistance/totalVehicleCount;
             }
-
             //Double todayAvgDistance=todayDistance/totalVehicleCount;
-            Double avgSpeed=totalSpeed/totalVehicleCount;
+            Double avgSpeed;
+            if(Double.isNaN(totalSpeed/totalVehicleCount)){
+                avgSpeed=null;
+            }
+            else {
+                avgSpeed=totalSpeed/totalVehicleCount;
+            }
+            Double percentageOfTotalActiveVehicle;
+            if(Double.isNaN((totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100)){
+                percentageOfTotalActiveVehicle=null;
+            }
+            else {
+                percentageOfTotalActiveVehicle = Double.valueOf(totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100 ;
+            }
 
             LocationDto location=new LocationDto();
             location.setTotalVehicleCount(totalVehicleCount);
@@ -181,8 +193,13 @@ public class WorkController {
             location.setTotalAlertToday(1);
             location.setTotalAlertWork(1);
             location.setTotalVehicleActive(totalActiveVehicle);
-            location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
-            location.setPercentageOfActiveVehicle((Double.valueOf(totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100));
+            if (totalVehicleCount > 0 ){
+                location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
+            }else {
+                location.setTotalInactiveVehicle(0);
+            }
+
+            location.setPercentageOfActiveVehicle(percentageOfTotalActiveVehicle);
 
             //Static DAta
               // location.setDateTime(dateTime);
@@ -279,23 +296,23 @@ public class WorkController {
         return response;
     }
 
-//    @PostMapping("/getUnAssignedWorkData")
-//    public RDVTSResponse getUnAssignedWorkData(@RequestParam Integer userId) {
-//        RDVTSResponse response = new RDVTSResponse();
-//        Map<String, Object> result = new HashMap<>();
-//        try {
-//            List<WorkDto> work = workService.getUnAssignedWorkData(userId);
-//            result.put("work", work);
-//            response.setData(result);
-//            response.setStatus(1);
-//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-//            response.setMessage("Unassigned Work Data");
-//        } catch (Exception ex) {
-//            response = new RDVTSResponse(0,
-//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                    ex.getMessage(),
-//                    result);
-//        }
-//        return response;
-//    }
+    @PostMapping("/getUnAssignedWorkDD")
+    public RDVTSResponse getUnAssignedWorkData(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<UnassignedWorkDto> work = workService.getUnAssignedWorkData(userId);
+            result.put("work", work);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Unassigned Work Data");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 }
