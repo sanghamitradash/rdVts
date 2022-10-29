@@ -35,6 +35,7 @@ public class DesignationDto {
     private Integer userLevelId;
 
     private String userLevelName;
+    private Integer slNo;
 
     private Integer offSet;
     private Integer limit;
