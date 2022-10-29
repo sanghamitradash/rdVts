@@ -70,6 +70,6 @@ public class RoadMasterDto {
     private Integer approvalStatus;
     private Integer approvedBy;
 
-    private Integer activityId;
-    private Integer vehicleId;
+    private Integer activityIds;
+    private Integer vehicleIds;
 }
