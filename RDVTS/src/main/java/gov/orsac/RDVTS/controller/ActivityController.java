@@ -324,15 +324,20 @@ public class ActivityController {
             return response;
         }
     @PostMapping("/activityVehicleDeassign")
-    public RDVTSResponse activityVehicleDeassign(@RequestBody ActivityWorkDto activityWorkDto){
+    public RDVTSResponse activityVehicleDeassign(@RequestBody VehicleActivityMappingDto vehicleActivityDto){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try{
-
-
-
+            Boolean res  = activityService.activityVehicleDeassign(vehicleActivityDto.getVehicleId(), vehicleActivityDto.getActivityId());
+            response.setData(res);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Activity Vehicle Deassigned");
         } catch (Exception e){
-
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
         }
         return response;
         }

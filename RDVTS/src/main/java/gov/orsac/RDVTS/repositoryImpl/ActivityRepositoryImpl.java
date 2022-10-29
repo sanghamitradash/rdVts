@@ -190,6 +190,21 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         String qry = " SELECT id, activity_name FROM rdvts_oltp.activity_m where work_id is null ";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
     }
+
+    public Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "update rdvts_oltp.vehicle_activity_mapping " +
+                "set is_active=false " +
+                "where activity_id=:activityId and vehicle_id=:vehicleId";
+        sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("vehicleId", vehicleId);
+        int update = namedJdbc.update(qry, sqlParam);
+        Boolean result = false;
+        if(update>0){
+            result=true;
+        }
+        return  result;
+    }
 }
 
 
