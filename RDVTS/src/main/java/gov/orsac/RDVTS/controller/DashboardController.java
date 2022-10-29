@@ -67,18 +67,20 @@ public class DashboardController {
         List<String> districtName=new ArrayList<>();
         List<Integer> active=new ArrayList<>();
         List<Integer> inActive=new ArrayList<>();
-
+        List<Integer> count=new ArrayList<>()
+;
         try {
             List<DistrictWiseVehicleDto> vehicle = dashboardService.getDistrictWiseVehicleCount();
             for(DistrictWiseVehicleDto vehicle1:vehicle){
                 districtName.add(vehicle1.getDistrictName());
                 active.add(vehicle1.getActive());
                 inActive.add(vehicle1.getInActive());
-
+                count.add(vehicle1.getActive()+vehicle1.getInActive());
             }
             result.put("districtName", districtName);
             result.put("active", active);
             result.put("inActive", inActive);
+            result.put("count",count);
             result.put("vehicle",vehicle);
             response.setData(result);
             response.setStatus(1);
