@@ -56,9 +56,9 @@ public class ActivityController {
         Map<String, Object> result = new HashMap<>();
         try {
             List<ActivityDto> activity = activityService.getActivityById(activityId,userId);
-
+            List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(activityId,userId);
             result.put("activity", activity);
-
+            result.put("vehicle", vehicle);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -311,7 +311,9 @@ public class ActivityController {
             Map<String, Object> result = new HashMap<>();
             try{
                List<ActivityDto> activityDto = activityService.unassignedActivity();
-                response.setData(activityDto);
+
+                result.put("unassignedActivity",activityDto);
+                response.setData(result);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                 response.setMessage("Unassigned Activity Dropdown");
@@ -342,4 +344,24 @@ public class ActivityController {
         return response;
         }
 
+    @PostMapping("/activityStatusDD")
+    public RDVTSResponse activityStatusDD() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<ActivityStatusDto> activityStatusDropdown = activityService.activityStatusDD();
+
+            result.put("activityStatusDropdown", activityStatusDropdown);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Activity Status Dropdown Dropdown");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
 }

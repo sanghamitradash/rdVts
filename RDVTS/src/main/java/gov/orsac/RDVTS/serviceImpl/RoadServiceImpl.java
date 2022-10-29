@@ -108,7 +108,7 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds) {
+    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds, List<Integer> deviceIds) {
         List<Integer> roadIdList = new ArrayList<>();
         List<Integer> workIdList = new ArrayList<>();
         List<Integer> distIdList = new ArrayList<>();
@@ -129,6 +129,12 @@ public class RoadServiceImpl implements RoadService {
         if (vehicleIds!=null && vehicleIds.size()>0){
             roadIdList=roadRepositoryImpl.getRoadIdsByVehicleIdsForFilter(vehicleIds);
         }
+        if (activityIds!=null && activityIds.size()>0){
+            roadIdList=roadRepositoryImpl.getRoadIdsByActivityIdsForFilter(activityIds);
+        }
+        if (deviceIds!=null && deviceIds.size()>0){
+            roadIdList=roadRepositoryImpl.getRoadIdsByDeviceIdsForFilter(deviceIds);
+        }
         if(id!=null && id.size()>0) {
             roadIdList.addAll(id);
         }
@@ -146,6 +152,11 @@ public class RoadServiceImpl implements RoadService {
     @Override
     public int updateGeom(Integer roadId, String geom) {
         return roadRepositoryImpl.updateGeom(roadId, geom);
+    }
+
+    @Override
+    public List<UnassignedRoadDDDto> unassignedRoadDD(Integer userId) {
+        return roadRepositoryImpl.unassignedRoadDD(userId);
     }
 
     @Override

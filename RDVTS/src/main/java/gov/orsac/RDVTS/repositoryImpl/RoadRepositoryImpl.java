@@ -312,10 +312,24 @@ public class RoadRepositoryImpl {
         sqlParam.addValue("vehicleIds", vehicleIds);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
+    public List<Integer> getRoadIdsByActivityIdsForFilter(List<Integer> activityIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct road_id from rdvts_oltp.geo_master where work_id in (select distinct work_id from rdvts_oltp.activity_m where id in (:activityIds)) ";
+        sqlParam.addValue("activityIds", activityIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+    public List<Integer> getRoadIdsByDeviceIdsForFilter(List<Integer> deviceIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct road_id from rdvts_oltp.geo_master where work_id in (select distinct work_id from rdvts_oltp.activity_m where is_active=true and id in " +
+                "(select distinct activity_id from rdvts_oltp.vehicle_activity_mapping where is_active=true and vehicle_id in " +
+                " (select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping where device_id in(:deviceIds)) and is_active=true)) ";
+        sqlParam.addValue("deviceIds", deviceIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
     public List<RoadMasterDto> getRoadByRoadIds(List<Integer> roadIdList, List<Integer> workIds,List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
-        String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
+        String qry = "SELECT distinct road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
                 " road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date as sanctionDate, road.road_code, " +
                 " road.road_status, road.approval_status, road.approved_by, geom.work_id as workIds, geom.g_dist_id as distIds, geom.g_block_id as blockIds " +
                 " FROM rdvts_oltp.geo_construction_m AS road " +
@@ -410,5 +424,13 @@ public class RoadRepositoryImpl {
                 "WHERE id=:roadId and is_active=true ;";
         sqlParam.addValue("roadId", roadId);
         return namedJdbc.update(qry, sqlParam);
+    }
+
+    public List<UnassignedRoadDDDto> unassignedRoadDD(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select id, road_name from rdvts_oltp.geo_construction_m  " +
+                "where id not in (select road_id from rdvts_oltp.geo_master where is_active=true) and  is_active=true ";
+        sqlParam.addValue("userId", userId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UnassignedRoadDDDto.class));
     }
 }

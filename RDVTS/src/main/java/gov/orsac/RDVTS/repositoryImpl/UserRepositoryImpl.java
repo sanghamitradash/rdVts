@@ -142,7 +142,7 @@ public class UserRepositoryImpl {
                 "\tleft join rdvts_oltp.designation_m as dm on dm.id=um.designation_id\n" +
                 "\tleft join rdvts_oltp.user_level_m as ulm on ulm.id=um.user_level_id\n" +
                 "\tleft join rdvts_oltp.role_m as rm on rm.id=um.role_id\n" +
-                "\tleft join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id where um.is_active=true and um.id=:userId; ";
+                "\tleft join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id where um.id=:userId; ";
 
         sqlParam.addValue("userId", userId);
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserInfoDto.class));

@@ -70,16 +70,34 @@ public class DeviceServiceImpl implements DeviceService {
 
     }
 
+       public List<DeviceDto> getAllDeviceDD(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getAllDeviceDD(deviceId, userId);
+    }
+
+    @Override
+    public List<DeviceAreaMappingDto> getAllDeviceAreaByDeviceId(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getAllDeviceAreaByDeviceId(deviceId, userId);
+    }
+
+    @Override
+    public List<VehicleDeviceMappingDto> getVehicleDeviceMappingDDByDeviceId(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getVehicleDeviceMappingDDByDeviceId(deviceId,userId);
+    }
+
     @Override
     public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId, Integer userId) {
-        DeviceAreaMappingDto device = new DeviceAreaMappingDto();
+        List<DeviceAreaMappingDto> device = new ArrayList<>();
         device = deviceRepositoryImpl.getDeviceArea(deviceId);
-        if (device.getIsActive() == true) {
-            return deviceRepositoryImpl.getDeviceAreaByDeviceId(deviceId, userId);
-        } else {
-            return deviceRepositoryImpl.getDeviceAreaByDeviceIdInActive(deviceId, userId);
+        for (int i = 0; i < device.size(); i++) {
+            if (device.get(i).getIsActive() == true) {
+                return deviceRepositoryImpl.getDeviceAreaByDeviceId(deviceId, userId);
+            } else {
+                return deviceRepositoryImpl.getDeviceAreaByDeviceIdInActive(deviceId, userId);
+            }
         }
+        return device;
     }
+
 
 
     @Override

@@ -149,6 +149,16 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepositoryImpl.activityVehicleDeassign(vehicleId, activityId);
     }
 
+    @Override
+    public List<ActivityStatusDto> activityStatusDD() {
+        return activityRepositoryImpl.activityStatusDD();
+    }
+
+    @Override
+    public List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId) {
+        return activityRepositoryImpl.getVehicleByActivityId(activityId,userId);
+    }
+
 
 //    @Override
 //    public List<VehicleActivityMappingEntity> workActivityVehicleMap(VehicleActivityWorkMappingDto vehicleActivityWorkMappingDto) {
