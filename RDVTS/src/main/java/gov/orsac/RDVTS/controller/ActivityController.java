@@ -310,7 +310,7 @@ public class ActivityController {
             RDVTSResponse response = new RDVTSResponse();
             Map<String, Object> result = new HashMap<>();
             try{
-                ActivityDto activityDto = activityService.unassignedActivity();
+               List<ActivityDto> activityDto = activityService.unassignedActivity();
                 response.setData(activityDto);
                 response.setStatus(1);
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
