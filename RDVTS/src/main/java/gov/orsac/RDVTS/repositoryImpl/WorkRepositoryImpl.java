@@ -63,11 +63,12 @@ public class WorkRepositoryImpl {
         int resultCount = 0;
         String qry = "select distinct  wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
                 " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
-                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name, geo.contractor_id " +
+                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name, geo.contractor_id,wsm.name as work_status_name " +
                 " from rdvts_oltp.work_m as wm " +
                 " left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
                 " left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
                 " left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
+                " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true" +
                 " where wm.is_active = true ";
         if (workDto.getId() > 0) {
             qry += " and wm.id = :id";
