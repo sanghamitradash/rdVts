@@ -19,6 +19,7 @@ public interface DeviceService {
     List<DeviceDto> getDeviceById(Integer deviceId, Integer userId);
 
     List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId, Integer userId);
+    List<DeviceAreaMappingDto> getDeviceAreaByDeviceIdInActive(Integer deviceId, Integer userId);
 
     DeviceEntity updateDeviceById(Integer id, DeviceDto deviceDto);
 

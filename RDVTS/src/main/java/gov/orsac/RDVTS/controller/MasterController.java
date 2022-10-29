@@ -302,7 +302,7 @@ public class MasterController {
             response.setMessage("List of Designation.");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(Long.valueOf(designationDtoPage.getNumberOfElements()));
+            response.setRecordsFiltered(designationDtoPage.getTotalElements());
             response.setRecordsTotal(designationDtoPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
