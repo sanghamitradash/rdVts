@@ -28,7 +28,7 @@ public class DeviceDto {
 
     private String userLevelName;
 
-    private Boolean isActive = true;
+    private Boolean isActive ;
     private Integer createdBy;
     private Date createdOn;
     private Integer updatedBy;
