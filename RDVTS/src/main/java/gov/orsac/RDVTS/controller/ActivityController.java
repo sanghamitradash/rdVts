@@ -306,7 +306,28 @@ public class ActivityController {
         return response;
         }
 
-        @PostMapping("/activityVehicleDeassign")
+        @PostMapping("/unassignedActivityDD")
+        public RDVTSResponse unassignedActivity(){
+            RDVTSResponse response = new RDVTSResponse();
+            Map<String, Object> result = new HashMap<>();
+            try{
+                ActivityDto activityDto = activityService.unassignedActivity();
+                response.setData(activityDto);
+                response.setStatus(1);
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                response.setMessage("Unassigned Activity Dropdown");
+            } catch (Exception e){
+                response = new RDVTSResponse(0,
+                        new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                        e.getMessage(),
+                        result);
+            }
+            return response;
+        }
+
+
+
+    @PostMapping("/activityVehicleDeassign")
     public RDVTSResponse activityVehicleDeassign(@RequestBody ActivityWorkDto activityWorkDto){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
