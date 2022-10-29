@@ -43,7 +43,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Integer getCompletedWork() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select count(id) from rdvts_oltp.work_m where is_active=true and work_status is null " ;
+        String qry = "select count(id) from rdvts_oltp.work_m where is_active=true and work_status=2 " ;
         return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
     }
 
