@@ -706,4 +706,68 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
 
 
-}
+    public Boolean deactivateVehicle(Integer vehicleId, Integer status) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " ";
+        if (status == 0) {
+            qry = "UPDATE rdvts_oltp.vehicle_m  " +
+                    "SET is_active=false WHERE id=:vehicleId  ";
+            sqlParam.addValue("vehicleId", vehicleId);
+        } else {
+            qry = "UPDATE rdvts_oltp.vehicle_m  " +
+                    "SET is_active=true WHERE id=:vehicleId  ";
+            sqlParam.addValue("vehicleId", vehicleId);
+        }
+
+        int update = namedJdbc.update(qry, sqlParam);
+        boolean result = false;
+        if (update > 0) {
+            result = true;
+        }
+        return result;
+    }
+
+
+    public Boolean deactivateDeviceVehicleMapping(Integer vehicleId, Integer status) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " ";
+        if (status == 0) {
+            qry = "UPDATE rdvts_oltp.vehicle_device_mapping SET is_active = false WHERE vehicle_id=:vehicleId";
+            sqlParam.addValue("vehicleId", vehicleId);
+        } else {
+            qry = "UPDATE rdvts_oltp.vehicle_device_mapping SET is_active = true   " +
+                    "WHERE id in(select id from rdvts_oltp.vehicle_device_mapping where vehicle_id=:vehicle_id order by id desc limit 1)   ";
+            sqlParam.addValue("vehicleId", vehicleId);
+        }
+
+        int update = namedJdbc.update(qry, sqlParam);
+        boolean result = false;
+        if (update > 0) {
+            result = true;
+        }
+        return result;
+    }
+
+
+
+    public Boolean deactivateVehicleActivityMapping(Integer vehicleId, Integer status) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " ";
+        if (status == 0) {
+            qry = "UPDATE rdvts_oltp.vehicle_activity_mapping SET is_active = false WHERE vehicle_id=:vehicleId  ";
+            sqlParam.addValue("vehicleId", vehicleId);
+        } else {
+            qry = "UPDATE rdvts_oltp.vehicle_activity_mapping SET is_active = true   " +
+                    "WHERE id in(select id from rdvts_oltp.vehicle_activity_mapping where vehicle_id=:vehicle_id order by id desc limit 1)   ";
+            sqlParam.addValue("vehicleId", vehicleId);
+        }
+
+        int update = namedJdbc.update(qry, sqlParam);
+        boolean result = false;
+        if (update > 0) {
+            result = true;
+        }
+        return result;
+    }
+    }
+

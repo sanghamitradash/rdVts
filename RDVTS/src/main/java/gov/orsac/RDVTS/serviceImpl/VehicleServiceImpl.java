@@ -184,6 +184,20 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleRepositoryimpl.getActiveVehicle(vehicleId);
     }
 
+    @Override
+    public Boolean deactivateVehicle(Integer vehicleId, Integer status) {
+        return vehicleRepositoryimpl.deactivateVehicle(vehicleId,status);
+    }
+
+    @Override
+    public Boolean deactivateDeviceVehicleMapping(Integer vehicleId, Integer status) {
+        return vehicleRepositoryimpl.deactivateDeviceVehicleMapping(vehicleId,status);
+    }
+
+    @Override
+    public Boolean deactivateVehicleActivityMapping(Integer vehicleId, Integer status) {
+        return vehicleRepositoryimpl.deactivateVehicleActivityMapping(vehicleId,status);
+    }
 
 
     @Override
