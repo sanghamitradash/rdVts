@@ -278,6 +278,24 @@ public class RoadController {
         }
         return response;
     }
+    @PostMapping("/unassignedRoadDD")
+    public RDVTSResponse unassignedActivity(@RequestParam(value = "userId", required = false) Integer userId){
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+            List<UnassignedRoadDDDto> roadDD = roadService.unassignedRoadDD(userId);
+            response.setData(roadDD);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Unassigned Road Dropdown");
+        } catch (Exception e){
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
 
 }

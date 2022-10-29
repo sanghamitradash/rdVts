@@ -39,5 +39,7 @@ public interface RoadService {
 
     int updateGeom(Integer roadId, String geom);
 
+    List<UnassignedRoadDDDto> unassignedRoadDD(Integer userId);
+
 //    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
 }

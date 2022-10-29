@@ -411,4 +411,12 @@ public class RoadRepositoryImpl {
         sqlParam.addValue("roadId", roadId);
         return namedJdbc.update(qry, sqlParam);
     }
+
+    public List<UnassignedRoadDDDto> unassignedRoadDD(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select id, road_name from rdvts_oltp.geo_construction_m  " +
+                "where id not in (select road_id from rdvts_oltp.geo_master where is_active=true) and  is_active=true ";
+        sqlParam.addValue("userId", userId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UnassignedRoadDDDto.class));
+    }
 }
