@@ -747,9 +747,6 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }
         return result;
     }
-
-
-
     public Boolean deactivateVehicleActivityMapping(Integer vehicleId, Integer status) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = " ";
@@ -769,5 +766,5 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }
         return result;
     }
-    }
+}
 
