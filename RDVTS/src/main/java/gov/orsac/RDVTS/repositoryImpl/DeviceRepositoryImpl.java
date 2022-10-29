@@ -490,6 +490,8 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));
     }
 
+
+
     public List<DeviceDto> getImeiListByDeviceId(Integer deviceId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
