@@ -584,7 +584,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             sqlParam.addValue("deviceId", deviceId);
         } else {
             qry = "UPDATE rdvts_oltp.device_area_mapping SET is_active = true  " +
-                  "WHERE device_id in(select device_id from rdvts_oltp.device_area_mapping where device_id=:deviceId order by id desc limit 1)   ";
+                    " WHERE id in(select id from rdvts_oltp.device_area_mapping where device_id=:deviceId order by id desc limit 1  ";
             sqlParam.addValue("deviceId", deviceId);
         }
 
@@ -604,7 +604,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             sqlParam.addValue("deviceId", deviceId);
         } else {
             qry = "UPDATE rdvts_oltp.vehicle_device_mapping SET is_active = true   " +
-                   "WHERE device_id in(select device_id from rdvts_oltp.vehicle_device_mapping where device_id=:deviceId order by id desc limit 1)   ";
+                   "WHERE id in(select id from rdvts_oltp.vehicle_device_mapping where device_id=:deviceId order by id desc limit 1)   ";
             sqlParam.addValue("deviceId", deviceId);
         }
 
