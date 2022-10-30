@@ -149,6 +149,11 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
+    public List<UnassignedRoadDDDto> unassignedRoadDD(Integer userId) {
+        return roadRepositoryImpl.unassignedRoadDD(userId);
+    }
+
+    @Override
     public List<GeoMasterDto> getVehicleListByRoadId(Integer roadId){
         return roadRepositoryImpl.getVehicleListByRoadId(roadId);
     }
