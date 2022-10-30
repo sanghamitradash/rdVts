@@ -620,9 +620,12 @@ public class VehicleController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            Boolean res = vehicleService.deactivateVehicle(vehicleId,status);
-            Boolean res1 = vehicleService.deactivateDeviceVehicleMapping(vehicleId,status);
+            Integer count = vehicleService.getTotalCount(vehicleId);
             Boolean res2 = vehicleService.deactivateVehicleActivityMapping(vehicleId,status);
+            Boolean res1 = vehicleService.deactivateDeviceVehicleMapping(vehicleId,status);
+
+
+            Boolean res = vehicleService.deactivateVehicle(vehicleId,status);
             if (res==true && res1==true && res2==true) {
                 response.setData(result);
                 response.setStatus(1);
