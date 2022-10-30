@@ -56,9 +56,9 @@ public class ActivityController {
         Map<String, Object> result = new HashMap<>();
         try {
             List<ActivityDto> activity = activityService.getActivityById(activityId,userId);
-
+            List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(activityId,userId);
             result.put("activity", activity);
-
+            result.put("vehicle", vehicle);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
