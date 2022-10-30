@@ -216,7 +216,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT distinct vm.id,vm.vehicle_no,vm.vehicle_type_id,type.name as vehicleTypeName,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no  " +
                 "from rdvts_oltp.vehicle_m as vm  " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id  " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id and vam.is_active = true " +
                 "left join rdvts_oltp.vehicle_type as type on type.id = vm.vehicle_type_id  " +
                 "WHERE vm.is_active = true AND  vam.activity_id=:activityId  " ;
         sqlParam.addValue("activityId",activityId);
