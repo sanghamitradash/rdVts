@@ -49,14 +49,14 @@ public class ActivityController {
         return response;
     }
 
-        @PostMapping("/getActivityById")
+    @PostMapping("/getActivityById")
     public RDVTSResponse getActivityById(@RequestParam(name = "activityId", required = false) Integer activityId,
-                                         @RequestParam(name = "userId",required = false)Integer userId) {
+                                         @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<ActivityDto> activity = activityService.getActivityById(activityId,userId);
-            List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(activityId,userId);
+            List<ActivityDto> activity = activityService.getActivityById(activityId, userId);
+            List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(activityId, userId);
             result.put("activity", activity);
             result.put("vehicle", vehicle);
             response.setData(result);
@@ -138,18 +138,18 @@ public class ActivityController {
 
     @PostMapping("/getActivityList")
     public RDVTSListResponse getActivityList(@RequestParam(name = "activityStatus", required = false) Integer activityStatus,
-                                            @RequestParam(name = "roadId", required = false) Integer roadId,
-                                            @RequestParam(name = "workId", required = false) Integer workId,
-                                            @RequestParam(name = "activityId", required = false)Integer activityId,
-                                             @RequestParam(name = "vehicleId", required = false)Integer vehicleId,
-                                            @RequestParam(name = "startDate", required = false) String startDate,
-                                            @RequestParam(name = "endDate", required = false) String endDate,
-                                            @RequestParam(name = "actualStartDate", required = false) String actualStartDate,
-                                            @RequestParam(name = "actualEndDate", required = false) String actualEndDate,
-                                            @RequestParam(name = "start", required = false) Integer start,
-                                            @RequestParam(name = "length", required = false) Integer length,
-                                            @RequestParam(name = "draw", required = false) Integer draw,
-                                            @RequestParam(name = "userId", required = false) Integer userId) {
+                                             @RequestParam(name = "roadId", required = false) Integer roadId,
+                                             @RequestParam(name = "workId", required = false) Integer workId,
+                                             @RequestParam(name = "activityId", required = false) Integer activityId,
+                                             @RequestParam(name = "vehicleId", required = false) Integer vehicleId,
+                                             @RequestParam(name = "startDate", required = false) String startDate,
+                                             @RequestParam(name = "endDate", required = false) String endDate,
+                                             @RequestParam(name = "actualStartDate", required = false) String actualStartDate,
+                                             @RequestParam(name = "actualEndDate", required = false) String actualEndDate,
+                                             @RequestParam(name = "start", required = false) Integer start,
+                                             @RequestParam(name = "length", required = false) Integer length,
+                                             @RequestParam(name = "draw", required = false) Integer draw,
+                                             @RequestParam(name = "userId", required = false) Integer userId) {
 
         ActivityListDto activity = new ActivityListDto();
         activity.setActivityId(activityId);
@@ -168,11 +168,11 @@ public class ActivityController {
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            Page<ActivityDto> activityListPage=activityService.getActivityList(activity);
+            Page<ActivityDto> activityListPage = activityService.getActivityList(activity);
             List<ActivityDto> activityList = activityListPage.getContent();
-            Integer start1=start;
-            for(int i=0;i<activityList.size();i++){
-                start1=start1+1;
+            Integer start1 = start;
+            for (int i = 0; i < activityList.size(); i++) {
+                start1 = start1 + 1;
                 activityList.get(i).setSlNo(start1);
             }
             response.setData(activityList);
@@ -184,12 +184,11 @@ public class ActivityController {
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
         } catch (Exception e) {
             e.printStackTrace();
-            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),e.getMessage(),result);
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
 
         return response;
     }
-
 
 
     @PostMapping("/addVehicleActivityWorkMapping")
@@ -199,7 +198,7 @@ public class ActivityController {
 
         try {
             Integer updateWorkId = activityService.updateWorkId(activityWork.getWorkId(), activityWork.getActivityId());
-            List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(),activityWork.getActivityId(),activityWork.getUserId());
+            List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(), activityWork.getActivityId(), activityWork.getUserId());
             result.put("VehicleActivityMapping", VehicleActivityMapping);
             response.setData(result);
             response.setStatus(1);
@@ -241,7 +240,7 @@ public class ActivityController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(),activityWork.getActivityId(),activityWork.getUserId());
+            List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(), activityWork.getActivityId(), activityWork.getUserId());
             result.put("VehicleActivityMapping", VehicleActivityMapping);
             response.setData(result);
             response.setStatus(1);
@@ -304,45 +303,47 @@ public class ActivityController {
                     result);
         }
         return response;
-        }
-        @PostMapping("/unassignedActivityDD")
-        public RDVTSResponse unassignedActivity(){
-            RDVTSResponse response = new RDVTSResponse();
-            Map<String, Object> result = new HashMap<>();
-            try{
-               List<ActivityDto> activityDto = activityService.unassignedActivity();
+    }
 
-                result.put("unassignedActivity",activityDto);
-                response.setData(result);
-                response.setStatus(1);
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                response.setMessage("Unassigned Activity Dropdown");
-            } catch (Exception e){
-                response = new RDVTSResponse(0,
-                        new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                        e.getMessage(),
-                        result);
-            }
-            return response;
-        }
-    @PostMapping("/activityVehicleDeassign")
-    public RDVTSResponse activityVehicleDeassign(@RequestBody VehicleActivityMappingDto vehicleActivityDto){
+    @PostMapping("/unassignedActivityDD")
+    public RDVTSResponse unassignedActivity() {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
-        try{
-            Boolean res  = activityService.activityVehicleDeassign(vehicleActivityDto.getVehicleId(), vehicleActivityDto.getActivityId());
-            response.setData(res);
+        try {
+            List<ActivityDto> activityDto = activityService.unassignedActivity();
+
+            result.put("unassignedActivity", activityDto);
+            response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("Activity Vehicle Deassigned");
-        } catch (Exception e){
+            response.setMessage("Unassigned Activity Dropdown");
+        } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
                     result);
         }
         return response;
+    }
+
+    @PostMapping("/activityVehicleDeassign")
+    public RDVTSResponse activityVehicleDeassign(@RequestBody VehicleActivityMappingDto vehicleActivityDto) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Boolean res = activityService.activityVehicleDeassign(vehicleActivityDto.getVehicleId(), vehicleActivityDto.getActivityId());
+            response.setData(res);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Activity Vehicle Deassigned");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
         }
+        return response;
+    }
 
     @PostMapping("/activityStatusDD")
     public RDVTSResponse activityStatusDD() {
@@ -364,4 +365,5 @@ public class ActivityController {
         }
         return response;
     }
+
 }
