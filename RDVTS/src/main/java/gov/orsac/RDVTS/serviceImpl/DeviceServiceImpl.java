@@ -70,6 +70,20 @@ public class DeviceServiceImpl implements DeviceService {
 
     }
 
+       public List<DeviceDto> getAllDeviceDD(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getAllDeviceDD(deviceId, userId);
+    }
+
+    @Override
+    public List<DeviceAreaMappingDto> getAllDeviceAreaByDeviceId(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getAllDeviceAreaByDeviceId(deviceId, userId);
+    }
+
+    @Override
+    public List<VehicleDeviceMappingDto> getVehicleDeviceMappingDDByDeviceId(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getVehicleDeviceMappingDDByDeviceId(deviceId,userId);
+    }
+
     @Override
     public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId, Integer userId) {
         DeviceAreaMappingDto device = new DeviceAreaMappingDto();

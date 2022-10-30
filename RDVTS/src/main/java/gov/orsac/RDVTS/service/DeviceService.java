@@ -50,4 +50,10 @@ public interface DeviceService {
     Boolean deactivateDeviceAreaMapping(Integer deviceId, Integer status);
 
     Boolean deactivateDeviceVehicleMapping(Integer deviceId, Integer status);
+
+    List<DeviceDto> getAllDeviceDD(Integer deviceId, Integer userId);
+
+    List<DeviceAreaMappingDto> getAllDeviceAreaByDeviceId(Integer deviceId, Integer userId);
+
+    List<VehicleDeviceMappingDto> getVehicleDeviceMappingDDByDeviceId(Integer deviceId, Integer userId);
 }

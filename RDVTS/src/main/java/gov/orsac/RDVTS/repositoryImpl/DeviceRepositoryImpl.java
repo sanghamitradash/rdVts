@@ -583,7 +583,8 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             qry = "UPDATE rdvts_oltp.device_area_mapping SET is_active = false WHERE device_id=:deviceId";
             sqlParam.addValue("deviceId", deviceId);
         } else {
-            qry = "UPDATE rdvts_oltp.device_area_mapping SET is_active = true WHERE device_id=:deviceId";
+            qry = "UPDATE rdvts_oltp.device_area_mapping SET is_active = true  " +
+                    " WHERE id in(select id from rdvts_oltp.device_area_mapping where device_id=:deviceId order by id desc limit 1  ";
             sqlParam.addValue("deviceId", deviceId);
         }
 
@@ -602,7 +603,8 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             qry = "UPDATE rdvts_oltp.vehicle_device_mapping SET is_active = false WHERE device_id=:deviceId";
             sqlParam.addValue("deviceId", deviceId);
         } else {
-            qry = "UPDATE rdvts_oltp.vehicle_device_mapping SET is_active = true WHERE device_id=:deviceId";
+            qry = "UPDATE rdvts_oltp.vehicle_device_mapping SET is_active = true   " +
+                   "WHERE id in(select id from rdvts_oltp.vehicle_device_mapping where device_id=:deviceId order by id desc limit 1)   ";
             sqlParam.addValue("deviceId", deviceId);
         }
 
@@ -688,7 +690,76 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     }
 
 
+    public List<DeviceDto> getAllDeviceDD(Integer deviceId, Integer userId) {
+        List<DeviceDto> device;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2,dm.is_active as isActive,  " +
+                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no as deviceNo,dm.user_level_id,um.name as userLevelName,     " +
+                "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,    " +
+                "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber,  " +
+                "dm.created_by,dm.created_on,dm.updated_by,dm.updated_on   " +
+                "from rdvts_oltp.device_m as dm  " +
+                "left join rdvts_oltp.vtu_vendor_m as vtu on vtu.id = dm.vtu_vendor_id  " +
+                "left join rdvts_oltp.user_level_m as um on um.id = dm.user_level_id  " +
+                "WHERE dm.is_active = true ";
+
+        if (deviceId > 0) {
+            qry += " AND dm.id=:deviceId";
+        }
+        sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("userId", userId);
+        try {
+            device = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        return device;
+    }
+
+    public List<DeviceAreaMappingDto> getAllDeviceAreaByDeviceId(Integer deviceId, Integer userId) {
+        List<DeviceAreaMappingDto> device = null;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "SELECT dam.id, dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, dist.district_name as distName,dam.state_id,state.state_name as stateName,  " +
+                "dam.division_id,div.division_name as divName,dam.is_active as isActive,dam.g_dist_id,geoDist.g_district_name as gdistName, dam.g_block_id,geoBlock.g_block_name as gblockName,   " +
+                "dam.created_by,dam.created_on,dam.updated_by,dam.updated_on   " +
+                "from rdvts_oltp.device_area_mapping as dam  " +
+                "left join rdvts_oltp.district_boundary as dist on dist.dist_id=dam.dist_id   " +
+                "left join rdvts_oltp.block_boundary as block on block.block_id = dam.block_id  " +
+                "left join rdvts_oltp.division_m as div on div.id =dam.division_id  " +
+                "left join rdvts_oltp.state_m as state on state.id = dam.state_id  " +
+                "left join rdvts_oltp.geo_block_m as geoBlock on geoBlock.id = dam.g_block_id   " +
+                "left join rdvts_oltp.geo_district_m as geoDist on geoDist.id =  dam.g_dist_id  " +
+                "WHERE dam.is_active = true ";
+
+        if (deviceId > 0) {
+            qry += " AND dam.device_id=:deviceId";
+        }
+        sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("userId", userId);
+        try {
+            device = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        return device;
+    }
+
+    public List<VehicleDeviceMappingDto> getVehicleDeviceMappingDDByDeviceId(Integer deviceId, Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String query = "SELECT dv.id, dv.device_id,dv.vehicle_id,vm.vehicle_no, installation_date as installationDate ,dv.installed_by,dv.is_active as active,dv.created_by,dv.created_on,  " +
+                "dv.updated_by,dv.updated_on from rdvts_oltp.vehicle_device_mapping as dv   " +
+                "left join rdvts_oltp.vehicle_m as vm on vm.id = dv.vehicle_id WHERE dv.device_id=:deviceId AND dv.is_active=true   ";
+        sqlParam.addValue("deviceId", deviceId);
+        sqlParam.addValue("userId", userId);
+        return namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
+    }
+
 }
+
+
+
 
 
 
