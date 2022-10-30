@@ -142,7 +142,7 @@ public class WorkRepositoryImpl {
 //            }
 //        }
 
-//        qry+=" order by geoWorkName";
+        qry+=" order by geoWorkName";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
 
