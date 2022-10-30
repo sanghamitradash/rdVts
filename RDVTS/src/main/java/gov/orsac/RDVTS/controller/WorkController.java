@@ -139,7 +139,7 @@ public class WorkController {
                                 totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                 todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                int i=1;
+                                int i=0;
                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
                                     i++;
                                     totalSpeed+= Double.parseDouble(vtuobj.getSpeed()) ;
