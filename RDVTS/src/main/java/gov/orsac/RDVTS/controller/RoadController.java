@@ -217,11 +217,12 @@ public class RoadController {
                                           @RequestParam(name = "distIds", required = false) List<Integer> distIds,
                                           @RequestParam(name = "blockIds", required = false) List<Integer> blockIds,
                                           @RequestParam(name = "vehicleIds", required = false) List<Integer> vehicleIds,
-                                          @RequestParam(name = "activityIds", required = false) List<Integer> activityIds) {
+                                          @RequestParam(name = "activityIds", required = false) List<Integer> activityIds,
+                                          @RequestParam(name = "deviceIds", required = false) List<Integer> deviceIds) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds);
+            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds, activityIds, deviceIds);
 //            result.put("road", road);
             response.setData(road);
             response.setStatus(1);
