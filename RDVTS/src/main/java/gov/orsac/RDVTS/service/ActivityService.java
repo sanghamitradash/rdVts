@@ -42,6 +42,8 @@ public interface ActivityService {
     List<ActivityDto> unassignedActivity();
 
     Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId);
+
+    List<ActivityStatusDto> activityStatusDD();
 }
 
 
