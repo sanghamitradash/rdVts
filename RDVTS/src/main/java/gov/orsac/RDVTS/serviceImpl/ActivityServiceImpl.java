@@ -54,15 +54,17 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public ActivityEntity updateActivity(Integer id, ActivityDto activityData) {
+        ActivityEntity activityEntity = new ActivityEntity();
         ActivityEntity existingDevice = activityMasterRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("id", "id", id));
-        existingDevice.setActivityName(activityData.getActivityName());
-        existingDevice.setActivityQuantity(activityData.getActivityQuantity());
-        existingDevice.setActivityStartDate(activityData.getActivityStartDate());
-        existingDevice.setActivityCompletionDate(activityData.getActivityCompletionDate());
+        BeanUtils.copyProperties(activityData, activityEntity);
+//        existingDevice.setActivityName(activityData.getActivityName());
+//        existingDevice.setActivityQuantity(activityData.getActivityQuantity());
+//        existingDevice.setActivityStartDate(activityData.getActivityStartDate());
+//        existingDevice.setActivityCompletionDate(activityData.getActivityCompletionDate());
         existingDevice.setActualActivityStartDate(activityData.getActualActivityStartDate());
         existingDevice.setActualActivityCompletionDate(activityData.getActualActivityCompletionDate());
-        existingDevice.setExecutedQuantity(activityData.getExecutedQuantity());
-        existingDevice.setWorkId(activityData.getWorkId());
+//        existingDevice.setExecutedQuantity(activityData.getExecutedQuantity());
+//        existingDevice.setWorkId(activityData.getWorkId());
         existingDevice.setActivityStatus(activityData.getActivityStatus());
         ActivityEntity save = activityMasterRepository.save(existingDevice);
         return save;
