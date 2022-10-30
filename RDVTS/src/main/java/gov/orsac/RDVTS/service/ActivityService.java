@@ -43,6 +43,8 @@ public interface ActivityService {
 
     Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId);
 
+    List<ActivityStatusDto> activityStatusDD();
+
     List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId);
 }
 

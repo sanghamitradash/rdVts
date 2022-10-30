@@ -146,17 +146,11 @@ public class WorkController {
                                 }
                                 totalSpeed=totalSpeed/i;
                             }
-
                         }
                     }
-
                 }
             }
-
             //Active Inactive vehicle
-
-
-
             List<LocationDto> locationList=new ArrayList<>();
             int totalVehicleCount=vehicleService.getvehicleCountByWorkId(id);
             Double avgDistance;
@@ -306,7 +300,7 @@ public class WorkController {
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("Unassigned Work Data");
+            response.setMessage("Unassigned Work List");
         } catch (Exception ex) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),

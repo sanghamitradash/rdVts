@@ -166,6 +166,13 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public List<RoadMasterDto> getRoadDetailByVehicleId(Integer vehicleId) {
+//           List<Integer> vehicleIdList = new ArrayList<>();
+//        if (vehicleId!=null && vehicleId > 0){
+//            vehicleIdList=vehicleRepositoryimpl.getRoadIdsByVehicleIdsForFilter(vehicleId);
+//        }
+//        if(vehicleIdList != null && vehicleId > 0){
+//            vehicleIdList.add(vehicleId);
+//        }
         return vehicleRepositoryimpl.getRoadDetailByVehicleId(vehicleId);
     }
 
