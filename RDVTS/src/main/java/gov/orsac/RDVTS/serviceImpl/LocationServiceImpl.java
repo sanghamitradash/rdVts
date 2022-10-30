@@ -57,6 +57,14 @@ public class LocationServiceImpl implements LocationService {
         return vtuLocationDtoList;
 
     }
+
+    @Override
+    public Integer getActiveVehicle(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate){
+
+        Integer activeVehicle=locationRepository.getActiveVehicle(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);
+        return activeVehicle;
+
+    }
     @Override
     public Double getDistance(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate){
         return locationRepository.getDistance(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);
