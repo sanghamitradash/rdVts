@@ -765,9 +765,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public Integer getTotalCount(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT count(id) from rdvts_oltp.activity_m WHERE id IN(select activity_id from rdvts_oltp.vehicle_activity_mapping where vehicle_id=:vehicleId  and is_active=true) AND activity_status != 2   " +
-                     "is_active=true  ";
-
-        return vehicleId;
+                     "AND is_active=true  ";
+       sqlParam.addValue("vehicleId",vehicleId);
+        return  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
     }
 }
 
