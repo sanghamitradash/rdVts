@@ -646,12 +646,12 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     }
 
 
-    public DeviceAreaMappingDto getDeviceArea(Integer deviceId) {
+    public List<DeviceAreaMappingDto> getDeviceArea(Integer deviceId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "Select id,is_active  from rdvts_oltp.device_area_mapping   " +
                 "WHERE device_id=:deviceId  ";
         sqlParam.addValue("deviceId", deviceId);
-        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));
     }
 
     public DeviceDto getDevice(Integer deviceId) {

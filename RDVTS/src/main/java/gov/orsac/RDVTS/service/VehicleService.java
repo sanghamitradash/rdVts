@@ -60,4 +60,9 @@ public interface VehicleService {
     Integer getActiveVehicle(Integer vehicleId);
 
 
+    Boolean deactivateVehicle(Integer vehicleId, Integer status);
+
+    Boolean deactivateDeviceVehicleMapping(Integer vehicleId, Integer status);
+
+    Boolean deactivateVehicleActivityMapping(Integer vehicleId, Integer status);
 }
