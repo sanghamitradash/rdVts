@@ -64,4 +64,6 @@ public interface VehicleService {
     Boolean deactivateDeviceVehicleMapping(Integer vehicleId, Integer status);
 
     Boolean deactivateVehicleActivityMapping(Integer vehicleId, Integer status);
+
+    Integer getTotalCount(Integer vehicleId);
 }

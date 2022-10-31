@@ -203,6 +203,11 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleRepositoryimpl.deactivateVehicleActivityMapping(vehicleId,status);
     }
 
+    @Override
+    public Integer getTotalCount(Integer vehicleId) {
+        return vehicleRepositoryimpl.getTotalCount(vehicleId);
+    }
+
 
     @Override
        public VehicleWorkMappingDto  getVehicleWorkMapping(Integer activityId) {

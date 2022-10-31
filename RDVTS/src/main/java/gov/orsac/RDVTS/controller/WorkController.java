@@ -62,6 +62,7 @@ public class WorkController {
     public RDVTSListResponse getWorkList(@RequestParam(name = "id", required = false) Integer id,
                                          @RequestParam(name = "userId", required = false) Integer userId,
                                          @RequestParam(name = "activityId", required = false) Integer activityId,
+                                         @RequestParam(name = "workStatus", required = false) Integer workStatus,
                                          @RequestParam(name = "start") Integer start,
                                          @RequestParam(name = "length") Integer length,
                                          @RequestParam(name = "draw") Integer draw) {
@@ -69,6 +70,7 @@ public class WorkController {
         workDto.setId(id);
         workDto.setUserId(userId);
         workDto.setActivityId(activityId);
+        workDto.setWorkStatus(workStatus);
         workDto.setOffSet(start);
         workDto.setLimit(length);
         RDVTSListResponse response = new RDVTSListResponse();

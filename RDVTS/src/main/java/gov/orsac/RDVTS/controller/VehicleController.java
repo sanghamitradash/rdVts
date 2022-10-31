@@ -616,19 +616,38 @@ public class VehicleController {
     }
 
     @PostMapping("/deactivateVehicle")
-    public RDVTSResponse deactivateVehicle(@RequestParam Integer vehicleId,@RequestParam Integer status,@RequestParam (required = false)Integer userId) {
+    public RDVTSResponse deactivateVehicle(@RequestParam Integer vehicleId, @RequestParam Integer status, @RequestParam (required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            Boolean res = vehicleService.deactivateVehicle(vehicleId,status);
-            Boolean res1 = vehicleService.deactivateDeviceVehicleMapping(vehicleId,status);
-            Boolean res2 = vehicleService.deactivateVehicleActivityMapping(vehicleId,status);
-            if (res==true && res1==true && res2==true) {
-                response.setData(result);
-                response.setStatus(1);
-                response.setMessage("vehicle Deactivated ");
-                response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            } else {
+            if (status == 0) {
+                Integer count = vehicleService.getTotalCount(vehicleId);
+                if (count == 0) {
+                    Boolean res2 = vehicleService.deactivateVehicleActivityMapping(vehicleId, status);
+                    Boolean res1 = vehicleService.deactivateDeviceVehicleMapping(vehicleId, status);
+                    Boolean res = vehicleService.deactivateVehicle(vehicleId, status);
+                    if (res == true && res1 == true && res2 == true) {
+                        response.setData(result);
+                        response.setStatus(1);
+                        response.setMessage("vehicle Deactivated ");
+                        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                    }
+                }
+            } else if (status == 1) {
+//                Integer count = vehicleService.getTotalCount(vehicleId);
+//                if (count == 0) {
+//                    Boolean res2 = vehicleService.deactivateVehicleActivityMapping(vehicleId, status);
+//                    Boolean res1 = vehicleService.deactivateDeviceVehicleMapping(vehicleId, status);
+                Boolean res = vehicleService.deactivateVehicle(vehicleId, status);
+                if (res == true) {
+                    response.setData(result);
+                    response.setStatus(1);
+                    response.setMessage("vehicle Activated ");
+                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                }
+            }
+
+     else {
                 response.setStatus(0);
                 response.setMessage("Something went wrong");
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
