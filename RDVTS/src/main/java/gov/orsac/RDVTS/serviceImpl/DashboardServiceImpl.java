@@ -47,6 +47,7 @@ public class DashboardServiceImpl implements DashboardService {
         return work;
     }
 
+
     @Override
     public List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount() {
         List<DistrictWiseVehicleDto> count = new ArrayList<>();
