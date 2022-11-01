@@ -58,5 +58,5 @@ public interface MasterService {
 
     List<DivisionDto> getListOfDivisionByListOfDistId(List<Integer> distId);
 
-    Boolean deactivateVendor(Integer vendorId);
+    Boolean deactivateVendor(Integer vendorId, Integer userId);
 }

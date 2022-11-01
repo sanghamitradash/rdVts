@@ -31,13 +31,13 @@ public interface RoadService {
 
     List<RoadMasterDto> getGeomByRoadId(Integer roadId, Integer userId);
 
-    List<RoadWorkMappingDto> getWorkDetailsByRoadId(Integer roadId);
+    List<RoadWorkMappingDto> getWorkDetailsByRoadId(Integer roadId, Integer userId);
 
-    List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds, List<Integer> deviceIds);
+    List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds, List<Integer> deviceIds, Integer userId);
 
-    RoadStatusDropDownDto getRoadStatusDD();
+    RoadStatusDropDownDto getRoadStatusDD(Integer userId);
 
-    int updateGeom(Integer roadId, String geom);
+    int updateGeom(Integer roadId, String geom, Integer userId);
 
     List<UnassignedRoadDDDto> unassignedRoadDD(Integer userId);
 

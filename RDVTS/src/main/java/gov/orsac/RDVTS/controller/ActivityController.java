@@ -306,11 +306,11 @@ public class ActivityController {
     }
 
     @PostMapping("/unassignedActivityDD")
-    public RDVTSResponse unassignedActivity() {
+    public RDVTSResponse unassignedActivity(@RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<ActivityDto> activityDto = activityService.unassignedActivity();
+            List<ActivityDto> activityDto = activityService.unassignedActivity(userId);
 
             result.put("unassignedActivity", activityDto);
             response.setData(result);
@@ -346,11 +346,11 @@ public class ActivityController {
     }
 
     @PostMapping("/activityStatusDD")
-    public RDVTSResponse activityStatusDD() {
+    public RDVTSResponse activityStatusDD(Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<ActivityStatusDto> activityStatusDropdown = activityService.activityStatusDD();
+            List<ActivityStatusDto> activityStatusDropdown = activityService.activityStatusDD(userId);
 
             result.put("activityStatusDropdown", activityStatusDropdown);
             response.setData(result);

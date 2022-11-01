@@ -289,6 +289,9 @@ public class MasterRepositoryImpl implements MasterRepository {
             queryString += " AND vtuM.vtu_vendor_name LIKE(:vtuVendorName) ";
             sqlParam.addValue("vtuVendorName", vtuVendorFilterDto.getVtuVendorName());
         }
+//        if(vtuVendorFilterDto.getUserId() != null && vtuVendorFilterDto.getUserId() > 0){
+//            sqlParam.addValue("userId", vtuVendorFilterDto.getUserId());
+//        }
 
         resultCount = count(queryString, sqlParam);
         if (vtuVendorFilterDto.getLimit() > 0){
@@ -395,11 +398,12 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 
-    public Boolean deactivateVendor(Integer vendorId) {
+    public Boolean deactivateVendor(Integer vendorId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "UPDATE rdvts_oltp.vtu_vendor_m  " +
                 "SET is_active=false WHERE id=:vendorId  ";
         sqlParam.addValue("vendorId", vendorId);
+        sqlParam.addValue("userId", userId);
 
         int update = namedJdbc.update(qry, sqlParam);
         boolean result = false;

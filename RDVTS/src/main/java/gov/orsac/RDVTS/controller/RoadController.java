@@ -192,11 +192,11 @@ public class RoadController {
     }
 
     @PostMapping("/getWorkDetailsByRoadId")
-    public RDVTSResponse getWorkDetailsByRoadId(@RequestParam(name = "roadId", required = false) Integer roadId) {
+    public RDVTSResponse getWorkDetailsByRoadId(@RequestParam(name = "roadId", required = false) Integer roadId, Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoadWorkMappingDto> road = roadService.getWorkDetailsByRoadId(roadId);
+            List<RoadWorkMappingDto> road = roadService.getWorkDetailsByRoadId(roadId, userId);
 //            result.put("road", road);
             response.setData(road);
             response.setStatus(1);
@@ -218,11 +218,12 @@ public class RoadController {
                                           @RequestParam(name = "blockIds", required = false) List<Integer> blockIds,
                                           @RequestParam(name = "vehicleIds", required = false) List<Integer> vehicleIds,
                                           @RequestParam(name = "activityIds", required = false) List<Integer> activityIds,
-                                          @RequestParam(name = "deviceIds", required = false) List<Integer> deviceIds) {
+                                          @RequestParam(name = "deviceIds", required = false) List<Integer> deviceIds,
+                                          @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds, activityIds, deviceIds);
+            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds, activityIds, deviceIds, userId);
 //            result.put("road", road);
             response.setData(road);
             response.setStatus(1);
@@ -239,11 +240,11 @@ public class RoadController {
     }
 
     @PostMapping("/getRoadStatusDD")
-    public RDVTSResponse getRoadStatusDD() {
+    public RDVTSResponse getRoadStatusDD(@RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            RoadStatusDropDownDto roadDD = roadService.getRoadStatusDD();
+            RoadStatusDropDownDto roadDD = roadService.getRoadStatusDD(userId);
 //            result.put("road", road);
             response.setData(roadDD);
             response.setStatus(1);
@@ -259,12 +260,12 @@ public class RoadController {
     }
 
     @PostMapping("/updateGeom")
-    public RDVTSResponse updateGeom(@RequestParam Integer roadId, @RequestParam String geom) {
+    public RDVTSResponse updateGeom(@RequestParam Integer roadId, @RequestParam String geom, Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
-            int updateGeom = roadService.updateGeom(roadId, (new JSONObject(geom)).get("geometry").toString());
+            int updateGeom = roadService.updateGeom(roadId, (new JSONObject(geom)).get("geometry").toString(), userId);
             result.put("updateGeom", updateGeom);
             response.setData(result);
             response.setStatus(1);
@@ -280,7 +281,7 @@ public class RoadController {
         return response;
     }
     @PostMapping("/unassignedRoadDD")
-    public RDVTSResponse unassignedActivity(@RequestParam(value = "userId", required = false) Integer userId){
+    public RDVTSResponse unassignedActivity(@RequestParam Integer userId){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try{

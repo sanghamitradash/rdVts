@@ -103,12 +103,12 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public List<RoadWorkMappingDto> getWorkDetailsByRoadId(Integer roadId) {
-        return roadRepositoryImpl.getWorkDetailsByRoadId(roadId);
+    public List<RoadWorkMappingDto> getWorkDetailsByRoadId(Integer roadId, Integer userId) {
+        return roadRepositoryImpl.getWorkDetailsByRoadId(roadId, userId);
     }
 
     @Override
-    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds, List<Integer> deviceIds) {
+    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds, List<Integer> deviceIds, Integer userId) {
         List<Integer> roadIdList = new ArrayList<>();
         List<Integer> workIdList = new ArrayList<>();
         List<Integer> distIdList = new ArrayList<>();
@@ -138,20 +138,20 @@ public class RoadServiceImpl implements RoadService {
         if(id!=null && id.size()>0) {
             roadIdList.addAll(id);
         }
-        return roadRepositoryImpl.getRoadByRoadIds(roadIdList, workIds, distIds, blockIds, vehicleIds);
+        return roadRepositoryImpl.getRoadByRoadIds(roadIdList, workIds, distIds, blockIds, vehicleIds, userId);
     }
 //    @Override
 //    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds) {
 //        return roadRepositoryImpl.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds, activityIds);
 //    }
     @Override
-    public RoadStatusDropDownDto getRoadStatusDD() {
-        return roadRepositoryImpl.getRoadStatusDD();
+    public RoadStatusDropDownDto getRoadStatusDD(Integer userId) {
+        return roadRepositoryImpl.getRoadStatusDD(userId);
     }
 
     @Override
-    public int updateGeom(Integer roadId, String geom) {
-        return roadRepositoryImpl.updateGeom(roadId, geom);
+    public int updateGeom(Integer roadId, String geom, Integer userId) {
+        return roadRepositoryImpl.updateGeom(roadId, geom, userId);
     }
 
     @Override

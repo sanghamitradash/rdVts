@@ -185,9 +185,10 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     }
 
 
-    public List<ActivityDto> unassignedActivity() {
+    public List<ActivityDto> unassignedActivity(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " SELECT id, activity_name FROM rdvts_oltp.activity_m where work_id is null ";
+        String qry = " SELECT id, activity_name FROM rdvts_oltp.activity_m where work_id is null order by activity_name";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
     }
 
@@ -206,9 +207,10 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return  result;
     }
 
-    public List<ActivityStatusDto> activityStatusDD() {
+    public List<ActivityStatusDto> activityStatusDD(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry =  "select * from rdvts_oltp.activity_status_m ";
+        String qry =  "select * from rdvts_oltp.activity_status_m order by name";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityStatusDto.class));
     }
 
