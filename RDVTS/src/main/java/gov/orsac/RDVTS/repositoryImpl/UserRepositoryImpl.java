@@ -151,7 +151,9 @@ public class UserRepositoryImpl {
 //    public Boolean saveLoginLog(Integer userId) {
 //        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 //
-//        String qry = "Insert Into  ";
+//        String qry = "INSERT INTO rdvts_oltp.login_log( " +
+//                " user_id, type, date_time, is_active, created_by, updated_by) " +
+//                " VALUES (:userId,'login',NOW(),'t',:userId,:userId); ";
 //
 //        sqlParam.addValue("userId", userId);
 //        return namedJdbc.queryForObject(qry, sqlParam, Boolean.class);

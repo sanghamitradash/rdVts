@@ -4,11 +4,13 @@ package gov.orsac.RDVTS.serviceImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.dto.UserAreaMappingDto;
 import gov.orsac.RDVTS.dto.UserDto;
+import gov.orsac.RDVTS.entities.LoginLogEntity;
 import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
 import gov.orsac.RDVTS.exception.RecordExistException;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
+import gov.orsac.RDVTS.repository.LoginLogRepository;
 import gov.orsac.RDVTS.repository.UserAreaMappingRepository;
 import gov.orsac.RDVTS.repository.UserPaswordMasterRepo;
 import gov.orsac.RDVTS.repository.UserRepository;
@@ -45,6 +47,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepositoryImpl userRepositoryImpl;
+
+    @Autowired
+    private LoginLogRepository loginLogRepository;
 
     @Autowired
     private UserAreaMappingRepository userAreaMappingRepository;
@@ -344,11 +349,16 @@ public class UserServiceImpl implements UserService {
             return userRepositoryImpl.getUserByUserId(userId);
 
     }
-//    public Boolean saveLoginLog(Integer userId){
-//
-//        return userRepositoryImpl.saveLoginLog(userId);
-//
-//    }
+    public LoginLogEntity saveLoginLog(Integer userId){
+        LoginLogEntity loginLogEntity=new LoginLogEntity();
+        loginLogEntity.setUserId(userId);
+        loginLogEntity.setActive(true);
+        loginLogEntity.setType("login");
+        loginLogEntity.setCreatedBy(userId);
+        loginLogEntity.setUpdatedBy(userId);
+        return loginLogRepository.save(loginLogEntity);
+
+    }
 
 
     public UserDto getUserBymobile(Long mobile){

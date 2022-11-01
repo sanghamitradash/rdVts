@@ -635,7 +635,7 @@ public class UserController {
                         UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(dbUser.getId());
                         boolean verifyuserpassword = encoder.matches(request.getPassword(), userPasswordMasterDto.getPassword());
                         if (verifyuserpassword) {
-//                            userService.saveLoginLog(dbUser.getId());
+                            userService.saveLoginLog(dbUser.getId());
                             UserInfoDto userInfoDto = userService.getUserByUserId(dbUser.getId());
                             if (dbUser.getRoleId() > 0) {
                                 roleMenuType = masterService.getMenuHierarchyByRole(dbUser.getId(), dbUser.getRoleId());
