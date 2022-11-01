@@ -14,11 +14,12 @@ public class LocationDto {
     private Date dateTime;
     private Double latitude;
     private Double longitude;
-    private Double speed;
+//    private Double speed;
     private Double distanceTravelledToday;
     private Double distanceTravelledTotal;
     private Double avgDistanceTravelled;
-    private Double avgSpeed;
+    private Double avgSpeedToday;
+    private Double avgSpeedWork;
     private Integer totalVehicleCount;
     private Integer totalVehicleActive;
     private Integer totalInactiveVehicle;
