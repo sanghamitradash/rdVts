@@ -163,7 +163,8 @@ public class LocationRepositoryImpl {
 
 
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
-        } else {
+        } else
+        {
             String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on " +
                     " FROM rdvts_oltp.vtu_location where is_active=true ";
             qry += " and imei =:imei1 and gps_fix::numeric =1 ";
@@ -366,6 +367,70 @@ public class LocationRepositoryImpl {
             }
 
 
+        }
+
+
+    }
+    public List<VtuLocationDto> getAvgSpeedToday(Long imei1, Long imei2, Date startDate, Date endDate, Date deviceVehicleCreatedOn, Date deviceVehicleDeactivationDate) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        if (imei1 == null) {
+            String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on " +
+                    "    FROM rdvts_oltp.vtu_location where is_active=true  ";
+            qry += " and imei =:imei2 and gps_fix::numeric =1  ";
+            sqlParam.addValue("imei2", imei2);
+
+            if (deviceVehicleDeactivationDate == null) {
+                deviceVehicleDeactivationDate = new Date();
+            }
+
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+                qry += " AND  date_time BETWEEN :createdOn AND :deactivationDate ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
+
+            if (startDate != null && endDate != null) {
+                qry += " and date_time BETWEEN :startDate AND :endDate ";
+                sqlParam.addValue("startDate", startDate);
+                sqlParam.addValue("endDate", endDate);
+            }
+
+
+            qry += " and date(date_time)=date(now()) order by date_time ASC";
+
+
+
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+        } else
+        {
+            String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on " +
+                    " FROM rdvts_oltp.vtu_location where is_active=true ";
+            qry += " and imei =:imei1 and gps_fix::numeric =1 ";
+            sqlParam.addValue("imei1", imei1);
+            if (deviceVehicleDeactivationDate == null) {
+                deviceVehicleDeactivationDate = new Date();
+            }
+
+            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+                qry += " AND  date_time BETWEEN :createdOn AND :deactivationDate ";
+                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+            }
+
+            if (startDate != null && endDate != null) {
+                qry += " and date_time BETWEEN :startDate AND :endDate ";
+                sqlParam.addValue("startDate", startDate);
+                sqlParam.addValue("endDate", endDate);
+            }
+
+
+            qry += " and date(date_time)=date(now()) order by date_time ASC";
+
+
+
+            //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
         }
 
 

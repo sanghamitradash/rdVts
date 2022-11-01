@@ -148,6 +148,18 @@ public class UserRepositoryImpl {
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserInfoDto.class));
     }
 
+//    public Boolean saveLoginLog(Integer userId) {
+//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+//
+//        String qry = "Insert Into  ";
+//
+//        sqlParam.addValue("userId", userId);
+//        return namedJdbc.queryForObject(qry, sqlParam, Boolean.class);
+//    }
+
+
+
+
     public UserDto getUserBymobile(Long mobile) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 

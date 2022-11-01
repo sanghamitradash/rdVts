@@ -39,6 +39,7 @@ public interface UserService {
     Integer sendOtpToUser(UserDto user);
 
     UserInfoDto getUserByUserId(Integer userId);
+//    Boolean saveLoginLog(Integer userId);
     UserDto getUserBymobile(Long mobile);
 
 

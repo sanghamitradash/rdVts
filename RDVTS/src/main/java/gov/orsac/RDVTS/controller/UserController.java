@@ -634,7 +634,8 @@ public class UserController {
                     if (dbUser != null && !dbUser.getEmail().isEmpty()) {
                         UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(dbUser.getId());
                         boolean verifyuserpassword = encoder.matches(request.getPassword(), userPasswordMasterDto.getPassword());
-                        if (verifyuserpassword == true) {
+                        if (verifyuserpassword) {
+//                            userService.saveLoginLog(dbUser.getId());
                             UserInfoDto userInfoDto = userService.getUserByUserId(dbUser.getId());
                             if (dbUser.getRoleId() > 0) {
                                 roleMenuType = masterService.getMenuHierarchyByRole(dbUser.getId(), dbUser.getRoleId());

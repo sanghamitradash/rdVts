@@ -344,6 +344,12 @@ public class UserServiceImpl implements UserService {
             return userRepositoryImpl.getUserByUserId(userId);
 
     }
+//    public Boolean saveLoginLog(Integer userId){
+//
+//        return userRepositoryImpl.saveLoginLog(userId);
+//
+//    }
+
 
     public UserDto getUserBymobile(Long mobile){
 
