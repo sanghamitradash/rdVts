@@ -44,6 +44,8 @@ public interface RoadService {
 
     List<RoadLocationEntity> addRoadLocation(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId);
 
+    Integer saveGeom(Integer roadId, String geom, Integer userId);
+
 
 //    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
 }

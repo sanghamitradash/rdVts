@@ -301,18 +301,20 @@ public class RoadController {
         return response;
     }
     @PostMapping("/addRoadLocation")
-    public RDVTSResponse addRoadLocation(@RequestParam RoadLocationDto roadLocationDto){
+    public RDVTSResponse addRoadLocation(@RequestBody RoadLocationDto roadLocationDto){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try{
             ObjectMapper mapper = new ObjectMapper();
             List<RoadLocationEntity> roadLocationEntities = roadService.addRoadLocation(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(), roadLocationDto.getUserId());
+            Integer saveGeom = roadService.saveGeom(roadLocationDto.getRoadId(), roadLocationDto.getGeom(), roadLocationDto.getUserId());
             result.put("saveRoadLocation", roadLocationEntities);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Road Location Saved Successfully!");
         } catch(Exception e){
+            e.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),

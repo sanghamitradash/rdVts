@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.dto;
 
+import gov.orsac.RDVTS.entities.RoadEntity;
 import gov.orsac.RDVTS.entities.RoadLocationEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,4 +30,6 @@ public class RoadLocationDto {
     private Integer updatedBy;
     private Date updatedOn;
     private List<RoadLocationEntity> roadLocation;
+    private List<RoadEntity> roadMaster;
+    private String geom;
 }

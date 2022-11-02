@@ -436,6 +436,16 @@ public class RoadRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UnassignedRoadDDDto.class));
     }
 
+    public Integer saveGeom(Integer roadId, String geom, Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " UPDATE rdvts_oltp.geo_construction_m " +
+                "  SET geom=st_setsrid(ST_GeomFromText('"+geom+"'),4326)  " +
+                "  WHERE id=:roadId and is_active=true";
+        sqlParam.addValue("roadId", roadId);
+        sqlParam.addValue("userId", userId);
+        return namedJdbc.update(qry, sqlParam);
+    }
+
 //    public int addRoadLocation(Integer roadId, List<Integer> roadLocation, Integer userId) {
 //        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 //        String qry = " UPDATE rdvts_oltp.geo_construction_m " +

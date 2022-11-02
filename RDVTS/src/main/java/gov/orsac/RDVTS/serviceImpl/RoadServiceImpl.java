@@ -167,6 +167,7 @@ public class RoadServiceImpl implements RoadService {
     @Override
     public List<RoadLocationEntity> addRoadLocation(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
         List<RoadLocationEntity> roadLocationArray = new ArrayList<>();
+
         for (int j = 0; j < roadLocation.size(); j++) {
             RoadLocationEntity roadLocationEntity = new RoadLocationEntity();
             roadLocationEntity.setRoadId(roadId);
@@ -177,6 +178,11 @@ public class RoadServiceImpl implements RoadService {
             roadLocationArray.add(roadLocationEntity);
         }
         return roadLocationRepository.saveAll(roadLocationArray);
+    }
+
+    @Override
+    public Integer saveGeom(Integer roadId, String geom, Integer userId) {
+        return roadRepositoryImpl.saveGeom(roadId, geom, userId);
     }
 
     @Override
