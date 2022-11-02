@@ -152,7 +152,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
 
         String qry = "select * from (SELECT dm.id,dm.imei_no_1 as imeiNo1,dm.sim_icc_id_1 as simIccId1,dm.mobile_number_1 as mobileNumber1,dm.imei_no_2 as imeiNo2,dm.sim_icc_id_2 as simIccId2,   " +
-                "dm.mobile_number_2 as mobileNumber2,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no,dm.is_active as isActive,  " +
+                "dm.mobile_number_2 as mobileNumber2,dm.user_level_id,dm.model_name as modelName,dm.vtu_vendor_id as vtuVendorId,dm.device_no,dm.is_active as isActive,  " +
                 "vtu.vtu_vendor_name as vtuVendorName,vtu.vtu_vendor_address as vendorAddress,     " +
                 "vtu.vtu_vendor_phone as vendorPhone, vtu.customer_care_number as customerCareNumber,   " +
                 "dam.device_id,dam.block_id,block.block_name as blockName, dam.dist_id, block.district_name as distName,   " +
@@ -170,9 +170,9 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
                 "where is_active=true and deactivation_date is null) as vdCount on vdCount.device_id=dm.id ) as deviceList  ";
         // "WHERE dm.is_active = true ) as deviceList ";
 
-        String subQuery = "";
+        String subQuery ="";
         if (deviceDto.getVehicleAssigned() != null) {
-            if (subQuery.length() <= 0) {
+            if (subQuery!= " " && subQuery.length() <= 0) {
                 subQuery += " WHERE vehicleAssigned=:vehicleAssigned ";
                 sqlParam.addValue("vehicleAssigned", deviceDto.getVehicleAssigned());
             } else {
@@ -363,30 +363,56 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 */
         // qry += " ORDER BY dm.  " + order.getProperty() + " " + order.getDirection().name();
 
-//        UserInfoDto user=userRepositoryImpl.getUserByUserId(deviceDto.getUserId());
-//        if(user.getUserLevelId()==1){
-//            List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(deviceDto.getUserId());
-//            if(subQuery.length()<=0) {
-//                subQuery += " WHERE  owner.contractor_id=:contractorId ";
-//                sqlParam.addValue("contractorId",deviceDto.getUserId());
-//            }
-//            else{
-//                subQuery += " and owner.contractor_id=:contractorId  ";
-//                sqlParam.addValue("contractorId",deviceDto.getUserId());
-//            }
-//        }
-//        else if(user.getUserLevelId()==2){
-//            List<Integer> distId=userRepositoryImpl.getDistIdByUserId(deviceDto.getUserId());
-//            List<Integer> deviceIds  =masterRepositoryImpl.getDeviceIdsByDistIds(distId);
-//            if(subQuery.length()<=0) {
-//                subQuery += " WHERE  dm.id in(:deviceIds) ";
-//                sqlParam.addValue("deviceIds",deviceIds);;
-//            }
-//            else{
-//                subQuery += " and dm.id in(:deviceIds) ";
-//                sqlParam.addValue("deviceIds",deviceIds);;
-//            }
-//        }
+        UserInfoDto user=userRepositoryImpl.getUserByUserId(deviceDto.getUserId());
+          if(user.getUserLevelId()==5){
+             if(subQuery.length()<=0) {
+                 subQuery += " WHERE deviceList.user_level_id=:userLevelId ";
+                 sqlParam.addValue("userLevelId",user.getUserLevelId());
+             }
+             else{
+                 subQuery += " and deviceList.user_level_id=:userLevelId ";
+                 sqlParam.addValue("userLevelId",user.getUserLevelId());
+             }
+         }
+        else if(user.getUserLevelId()==2){
+            List<Integer> distIds=userRepositoryImpl.getDistIdByUserId(deviceDto.getUserId());
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
+            List<Integer> deviceIds  = masterRepositoryImpl.getDeviceIdsByBlockAndDivision(blockIds,divisionIds,distIds);
+            if(subQuery!= " " && subQuery.length()<=0) {
+                subQuery += " WHERE  deviceList.id in(:deviceIds) ";
+                sqlParam.addValue("deviceIds",deviceIds);;
+            }
+            else{
+                subQuery += " and deviceList.id in(:deviceIds) ";
+                sqlParam.addValue("deviceIds",deviceIds);;
+            }
+        }
+        else if(user.getUserLevelId()==3){
+            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(deviceDto.getUserId());
+            List<Integer> deviceIds  = masterRepositoryImpl.getDeviceIdsByBlockIds(blockIds);
+            if(subQuery!= " " && subQuery.length()<=0) {
+                subQuery += " WHERE  deviceList.id in(:deviceIds) ";
+                sqlParam.addValue("deviceIds",deviceIds);;
+            }
+            else{
+                subQuery += " and deviceList.id in(:deviceIds) ";
+                sqlParam.addValue("deviceIds",deviceIds);;
+            }
+        }
+
+        else if(user.getUserLevelId()==4){
+//            List<Integer> divisionIds= userRepositoryImpl.getDivisionByUserId(deviceDto.getUserId());
+//            List<Integer> deviceIds  = masterRepositoryImpl.getDeviceIdsByDivisionIds(divisionIds);
+              if(subQuery.length()<=0) {
+                  subQuery += " WHERE deviceList.user_level_id=:userLevelId ";
+                  sqlParam.addValue("userLevelId",user.getUserLevelId());
+              }
+              else{
+                  subQuery += " and deviceList.user_level_id=:userLevelId ";
+                  sqlParam.addValue("userLevelId",user.getUserLevelId());
+              }
+          }
 
 
         String finalQry = qry + " " + subQuery;

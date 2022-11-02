@@ -16,7 +16,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired
     private DashboardRepository dashboardRepository;
     @Override
-    public ActiveAndInactiveVehicleDto getActiveAndInactiveVehicle() {
+    public ActiveAndInactiveVehicleDto getActiveAndInactiveVehicle(Integer userId) {
         Integer totalVehicle=dashboardRepository.getTotalVehicle();
         Integer totalActive=dashboardRepository.getTotalActive();
         Integer totalInactive=totalVehicle-totalActive;
@@ -32,7 +32,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public CompletedAndNotCompletedWorkDto getStatusWiseWorkCount() {
+    public CompletedAndNotCompletedWorkDto getStatusWiseWorkCount(Integer userId) {
         Integer totalWork=dashboardRepository.getTotalWork();
         Integer totalCompleted=dashboardRepository.getCompletedWork();
         Integer totalIncomplete=totalWork-totalCompleted;
@@ -48,7 +48,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount() {
+    public List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount(Integer userId) {
         List<DistrictWiseVehicleDto> count = new ArrayList<>();
         List<DistrictWiseVehicleDto> finalCount=new ArrayList<>();
 
@@ -64,6 +64,7 @@ public class DashboardServiceImpl implements DashboardService {
             dw.setDistrictId(activeCount.get(i).getDistrictId());
             dw.setDistrictName(activeCount.get(i).getDistrictName());
             dw.setCount(activeCount.get(i).getCount() + inActiveCount.get(i).getCount());
+            dw.setGeom(activeCount.get(i).getGeom());
             finalCount.add(dw);
         }
 

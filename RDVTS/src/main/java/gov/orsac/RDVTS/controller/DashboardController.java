@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.controller;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.service.DashboardService;
+import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,11 @@ public class DashboardController {
     @Autowired
     DashboardService dashboardService;
     @PostMapping("/getActiveAndInactiveVehicle")
-    public RDVTSResponse getActiveAndInactiveVehicle() {
+    public RDVTSResponse getActiveAndInactiveVehicle(@RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            ActiveAndInactiveVehicleDto vehicle = dashboardService.getActiveAndInactiveVehicle();
+            ActiveAndInactiveVehicleDto vehicle = dashboardService.getActiveAndInactiveVehicle(userId);
 
                 result.put("vehicle", vehicle);
                 response.setData(result);
@@ -40,11 +41,11 @@ public class DashboardController {
         return response;
     }
     @PostMapping("/getStatusWiseWorkCount")
-    public RDVTSResponse getStatusWiseWorkCount() {
+    public RDVTSResponse getStatusWiseWorkCount(@RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            CompletedAndNotCompletedWorkDto work = dashboardService.getStatusWiseWorkCount();
+            CompletedAndNotCompletedWorkDto work = dashboardService.getStatusWiseWorkCount(userId);
             result.put("work", work);
             response.setData(result);
             response.setStatus(1);
@@ -61,23 +62,26 @@ public class DashboardController {
     }
 
     @PostMapping("/getDistrictWiseVehicleCount")
-    public RDVTSResponse getDistrictWiseVehicleCount() {
+    public RDVTSResponse getDistrictWiseVehicleCount(@RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<String> districtName=new ArrayList<>();
         List<Integer> active=new ArrayList<>();
         List<Integer> inActive=new ArrayList<>();
-        List<Integer> count=new ArrayList<>()
+        List<Integer> count=new ArrayList<>();
+        List<String>geom = new ArrayList<>();
 ;
         try {
-            List<DistrictWiseVehicleDto> vehicle = dashboardService.getDistrictWiseVehicleCount();
+            List<DistrictWiseVehicleDto> vehicle = dashboardService.getDistrictWiseVehicleCount(userId);
             for(DistrictWiseVehicleDto vehicle1:vehicle){
                 districtName.add(vehicle1.getDistrictName());
                 active.add(vehicle1.getActive());
                 inActive.add(vehicle1.getInActive());
                 count.add(vehicle1.getActive()+vehicle1.getInActive());
+                geom.add(vehicle1.getGeom());
             }
             result.put("districtName", districtName);
+            result.put("geom",geom);
             result.put("active", active);
             result.put("inActive", inActive);
             result.put("count",count);
