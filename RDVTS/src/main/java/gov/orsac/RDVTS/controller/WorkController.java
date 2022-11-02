@@ -121,7 +121,8 @@ public class WorkController {
             Date vehicleendDate = null;
             Double todayDistance=0.0;
             Double totalDistance = 0.0;
-            Double totalSpeed=0.0;
+            Double totalSpeedWork=0.0;
+            Double avgSpeedToday=0.0;
             Integer totalActiveVehicle=0;
 
             //distance and speed API
@@ -142,12 +143,20 @@ public class WorkController {
                                 totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                 todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                 int i=0;
                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
                                     i++;
-                                    totalSpeed+= Double.parseDouble(vtuobj.getSpeed()) ;
+                                    totalSpeedWork+= Double.parseDouble(vtuobj.getSpeed()) ;
                                 }
-                                totalSpeed=totalSpeed/i;
+                                totalSpeedWork=totalSpeedWork/i;
+                                int j=0;
+                                for (VtuLocationDto vtuTodaySpeedObj:vtuAvgSpeedToday) {
+                                    j++;
+                                    avgSpeedToday+=Double.parseDouble(vtuTodaySpeedObj.getSpeed()) ;
+                                }
+                                avgSpeedToday=avgSpeedToday/j;
+
                             }
                         }
                     }
@@ -158,22 +167,22 @@ public class WorkController {
             int totalVehicleCount=vehicleService.getvehicleCountByWorkId(id);
             Double avgDistance;
             if(Double.isNaN(totalDistance/totalVehicleCount)){
-                avgDistance=null;
+                avgDistance=0.0;
             }
             else {
                  avgDistance=totalDistance/totalVehicleCount;
             }
-            //Double todayAvgDistance=todayDistance/totalVehicleCount;
-            Double avgSpeed;
-            if(Double.isNaN(totalSpeed/totalVehicleCount)){
-                avgSpeed=null;
+            Double todayAvgDistance=todayDistance/totalVehicleCount;
+            Double avgSpeedWork;
+            if(Double.isNaN(totalSpeedWork/totalVehicleCount)){
+                avgSpeedWork=0.0;
             }
             else {
-                avgSpeed=totalSpeed/totalVehicleCount;
+                avgSpeedWork=totalSpeedWork/totalVehicleCount;
             }
             Double percentageOfTotalActiveVehicle;
             if(Double.isNaN((totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100)){
-                percentageOfTotalActiveVehicle=null;
+                percentageOfTotalActiveVehicle=0.0;
             }
             else {
                 percentageOfTotalActiveVehicle = Double.valueOf(totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100 ;
@@ -185,8 +194,9 @@ public class WorkController {
             location.setAvgDistanceTravelled(avgDistance);
             location.setDistanceTravelledToday(todayDistance);
             //location.setAvgDistanceTravelled(todayAvgDistance);
-            location.setSpeed(totalSpeed);
-            location.setAvgSpeed(avgSpeed);
+            //location.setSpeed(totalSpeed);
+            location.setAvgSpeedToday(avgSpeedToday);//Toady
+            location.setAvgSpeedWork(avgSpeedWork);
             location.setTotalAlertToday(1);
             location.setTotalAlertWork(1);
             location.setTotalVehicleActive(totalActiveVehicle);
