@@ -1,9 +1,11 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.DeviceDto;
+import gov.orsac.RDVTS.dto.LocationDto;
 import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.VtuLocationDto;
 import gov.orsac.RDVTS.repositoryImpl.LocationRepositoryImpl;
+import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ public class LocationServiceImpl implements LocationService {
 
     @Autowired
     LocationRepositoryImpl locationRepository;
+
+    @Autowired
+    VehicleRepositoryImpl vehicleRepositoryimpl;
     @Override
     public List<VtuLocationDto> getLatestRecordByImeiNumber(List<Long> imei2,List<Long> imei1){
         List<VtuLocationDto> vtuLocationDto = new ArrayList<>();
@@ -82,6 +87,11 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public Double getspeed(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate){
         return locationRepository.getspeed(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);
+    }
+
+    @Override
+    public LocationDto  getLastLocationByImei(Long imei1){
+        return vehicleRepositoryimpl.getLatestLocationByDeviceId(imei1);
     }
 
 
