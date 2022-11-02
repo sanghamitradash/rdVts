@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.RoadEntity;
+import gov.orsac.RDVTS.entities.RoadLocationEntity;
 import gov.orsac.RDVTS.service.RoadService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.spring.web.json.Json;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +51,7 @@ public class RoadController {
     }
 
     @PostMapping("/getRoadById")
-    public RDVTSResponse getRoadById(@RequestParam(name = "roadId", required = false) Integer roadId, Integer userId) {
+    public RDVTSResponse getRoadById(@RequestParam(name = "roadId", required = false) Integer roadId, @RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -298,6 +300,25 @@ public class RoadController {
         }
         return response;
     }
-
+    @PostMapping("/addRoadLocation")
+    public RDVTSResponse addRoadLocation(@RequestParam RoadLocationDto roadLocationDto){
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            List<RoadLocationEntity> roadLocationEntities = roadService.addRoadLocation(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(), roadLocationDto.getUserId());
+            result.put("saveRoadLocation", roadLocationEntities);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Road Location Saved Successfully!");
+        } catch(Exception e){
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
 }

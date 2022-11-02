@@ -2,8 +2,10 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.RoadEntity;
+import gov.orsac.RDVTS.entities.RoadLocationEntity;
 import gov.orsac.RDVTS.entities.VTUVendorMasterEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
+import gov.orsac.RDVTS.repository.RoadLocationRepository;
 import gov.orsac.RDVTS.repository.RoadRepository;
 import gov.orsac.RDVTS.repositoryImpl.RoadRepositoryImpl;
 import gov.orsac.RDVTS.service.RoadService;
@@ -25,6 +27,9 @@ public class RoadServiceImpl implements RoadService {
 
     @Autowired
     private RoadRepositoryImpl roadRepositoryImpl;
+
+    @Autowired
+    private RoadLocationRepository roadLocationRepository;
 
     @Override
     public RoadEntity saveRoad(RoadMasterDto roadMasterDto){
@@ -157,6 +162,21 @@ public class RoadServiceImpl implements RoadService {
     @Override
     public List<UnassignedRoadDDDto> unassignedRoadDD(Integer userId) {
         return roadRepositoryImpl.unassignedRoadDD(userId);
+    }
+
+    @Override
+    public List<RoadLocationEntity> addRoadLocation(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
+        List<RoadLocationEntity> roadLocationArray = new ArrayList<>();
+        for (int j = 0; j < roadLocation.size(); j++) {
+            RoadLocationEntity roadLocationEntity = new RoadLocationEntity();
+            roadLocationEntity.setRoadId(roadId);
+            roadLocationEntity.setLatitude(roadLocation.get(0).getLatitude());
+            roadLocationEntity.setLongitude(roadLocation.get(0).getLongitude());
+            roadLocationEntity.setAltitude(roadLocation.get(0).getAltitude());
+            roadLocationEntity.setAccuracy(roadLocation.get(0).getAccuracy());
+            roadLocationArray.add(roadLocationEntity);
+        }
+        return roadLocationRepository.saveAll(roadLocationArray);
     }
 
     @Override

@@ -435,4 +435,14 @@ public class RoadRepositoryImpl {
         sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UnassignedRoadDDDto.class));
     }
+
+//    public int addRoadLocation(Integer roadId, List<Integer> roadLocation, Integer userId) {
+//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+//        String qry = " UPDATE rdvts_oltp.geo_construction_m " +
+//                "SET road_location as roadLocation=st_setsrid(ST_GeomFromGeoJSON('"+roadLocation+"'),4326)  " +
+//                "WHERE id=:roadId and is_active=true  ";
+//        sqlParam.addValue("roadId", roadId);
+//        sqlParam.addValue("userId", userId);
+//        return namedJdbc.update(qry, sqlParam);
+//    }
 }

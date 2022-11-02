@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.service;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.RoadEntity;
+import gov.orsac.RDVTS.entities.RoadLocationEntity;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -40,6 +41,9 @@ public interface RoadService {
     int updateGeom(Integer roadId, String geom, Integer userId);
 
     List<UnassignedRoadDDDto> unassignedRoadDD(Integer userId);
+
+    List<RoadLocationEntity> addRoadLocation(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId);
+
 
 //    RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
 }

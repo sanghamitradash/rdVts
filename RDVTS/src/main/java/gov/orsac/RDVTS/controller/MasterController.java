@@ -881,7 +881,7 @@ public class MasterController {
 
 
     @PostMapping("/deactivateVendor")
-    public RDVTSResponse deactivateVendor(@RequestParam Integer vendorId, Integer userId) {
+    public RDVTSResponse deactivateVendor(@RequestParam Integer vendorId, @RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
