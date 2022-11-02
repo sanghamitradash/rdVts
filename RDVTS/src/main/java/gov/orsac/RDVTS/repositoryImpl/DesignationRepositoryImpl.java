@@ -101,17 +101,17 @@ public class DesignationRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "";
         if (id == -1) {
-            qry += "select ac.*,b.name as parent_name,ul.name as user_level_name from \n" +
-                    "rdvts_oltp.designation_m ac \n" +
-                    "left join rdvts_oltp.designation_m b on ac.parent_id=b.id \n" +
-                    "left join rdvts_oltp.user_level_m as ul on ul.id=ac.user_level_id \n" +
+            qry += "select ac.*,b.name as parent_name,ul.name as user_level_name from " +
+                    "rdvts_oltp.designation_m ac " +
+                    "left join rdvts_oltp.designation_m b on ac.parent_id=b.id " +
+                    "left join rdvts_oltp.user_level_m as ul on ul.id=ac.user_level_id " +
                     "where ac.is_active='t' order by id ";
             /* " WHERE true AND id>1 Order BY id";*/
         } else {
-            qry += "select ac.*,b.name as parent_name,ul.name as user_level_name from \n" +
-                    "rdvts_oltp.designation_m ac \n" +
-                    "left join rdvts_oltp.designation_m b on ac.parent_id=b.id \n" +
-                    "left join rdvts_oltp.user_level_m as ul on ul.id=ac.user_level_id \n" +
+            qry += "select ac.*,b.name as parent_name,ul.name as user_level_name from " +
+                    "rdvts_oltp.designation_m ac " +
+                    "left join rdvts_oltp.designation_m b on ac.parent_id=b.id " +
+                    "left join rdvts_oltp.user_level_m as ul on ul.id=ac.user_level_id " +
                     "where ac.is_active='t' and ac.id=:id order by id ";
             /*   "AND id>1 ORDER BY id";*/
             sqlParam.addValue("id", id);

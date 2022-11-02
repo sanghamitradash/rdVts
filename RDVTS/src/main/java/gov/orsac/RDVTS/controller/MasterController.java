@@ -350,7 +350,8 @@ public class MasterController {
     }
 
     @PostMapping("/getDesignationById")
-    public RDVTSResponse getDesignationById(@RequestParam int id) {
+    public RDVTSResponse getDesignationById(@RequestParam int id,
+                                            @RequestParam (defaultValue = "0", required = false) int userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {

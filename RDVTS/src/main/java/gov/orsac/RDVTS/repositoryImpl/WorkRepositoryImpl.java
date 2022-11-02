@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.service.HelperService;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,8 @@ public class WorkRepositoryImpl {
     private UserRepositoryImpl userRepositoryImpl;
     @Autowired
     private GeoMasterRepositoryImpl geoMasterRepositoryImpl;
+    @Autowired
+    private HelperService helperService;
 
 
 
@@ -89,7 +92,8 @@ public class WorkRepositoryImpl {
 //            qry+=" and gm.contractor_id=:contractorId ";
 //            sqlParam.addValue("contractorId",workDto.getUserId());
 //        }
-//        else if(user.getUserLevelId()==2){
+//        else if(user.getUserLevelId() == 2){
+//            List<Integer> userIdList = helperService.getLowerUserByUserId(workDto.getUserId());
 //            List<Integer> distIdList=userRepositoryImpl.getDistIdByUserId(workDto.getUserId());
 //            qry+=" and gm.dist_id in (:distIdList)";
 //            sqlParam.addValue("distIdList",distIdList);
