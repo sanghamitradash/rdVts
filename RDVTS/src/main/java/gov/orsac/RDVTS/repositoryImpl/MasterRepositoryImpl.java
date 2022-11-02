@@ -409,9 +409,36 @@ public class MasterRepositoryImpl implements MasterRepository {
         return result;
     }
 
-    public List<Integer> getDeviceIdsByDistIds(List<Integer> distId) {
-        return null;
+    public List<Integer> getDeviceIdsByDistIds(List<Integer> distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct device_id from rdvts_oltp.device_area_mapping where dist_id in(:distIds) ";
+        sqlParam.addValue("distIds", distIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getDeviceIdsByBlockIds(List<Integer> blockIds) {
+       MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+       String qry = "select distinct device_id from rdvts_oltp.device_area_mapping where block_id in (:blockIds)           ";
+       sqlParam.addValue("blockIds", blockIds);
+       return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getDeviceIdsByDivisionIds(List<Integer> divisionIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct device_id from rdvts_oltp.device_area_mapping where division_id  in(:divisionIds)           ";
+        sqlParam.addValue("divisionIds",divisionIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+
+    public List<Integer> getDeviceIdsByBlockAndDivision(List<Integer> blockIds, List<Integer> divisionIds,List<Integer>distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct device_id from rdvts_oltp.device_area_mapping where block_id in (:blockIds) OR division_id in (:divisionIds) OR dist_id in (:distIds) ";
+        sqlParam.addValue("blockIds",blockIds);
+        sqlParam.addValue("divisionIds",divisionIds);
+        sqlParam.addValue("distIds",distIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 }
+
 
 
