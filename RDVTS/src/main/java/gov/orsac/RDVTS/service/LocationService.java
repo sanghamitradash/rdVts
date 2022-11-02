@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.service;
 import gov.orsac.RDVTS.dto.DeviceDto;
+import gov.orsac.RDVTS.dto.LocationDto;
 import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.VtuLocationDto;
 
@@ -22,6 +23,8 @@ public interface LocationService {
     List<VtuLocationDto> getAvgSpeedToday(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
 
     Double getspeed(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
+
+    LocationDto getLastLocationByImei(Long imei1);
 
 
 

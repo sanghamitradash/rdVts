@@ -710,10 +710,12 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         if (deviceId > 0) {
             qry += " AND dm.id=:deviceId";
         }
+        qry += " order by dm.id asc";
         sqlParam.addValue("deviceId", deviceId);
         sqlParam.addValue("userId", userId);
         try {
             device = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
+
         } catch (EmptyResultDataAccessException e) {
             return null;
         }

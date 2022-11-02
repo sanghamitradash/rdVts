@@ -310,7 +310,7 @@ public class LocationController {
                     for (Integer vehicleitem : vehicleId) {
                         List<RoadMasterDto> veActMapDto = vehicleService.getRoadDetailByVehicleId(vehicleitem);
 
-                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate);
+                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate,userId);
 
                         for (VehicleDeviceMappingDto deviceObj : getdeviceList) {
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceObj.getDeviceId());
@@ -343,7 +343,7 @@ public class LocationController {
                     for (Integer activityItem : activityIds) {
                         List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityItem, userId);
                         for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                            List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                            List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                             List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
                             for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                 List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
@@ -379,7 +379,7 @@ public class LocationController {
                                 //road Details By vehicle
                                 List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
 
-                                List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                 for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                     List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                     //int i = 0;
@@ -416,7 +416,7 @@ public class LocationController {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
-                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                     for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                         List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                         //int i = 0;
@@ -454,7 +454,7 @@ public class LocationController {
                                 for (ActivityDto activityId : activityDtoList) {
                                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                         for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                             //int i = 0;
@@ -493,7 +493,7 @@ public class LocationController {
                             for (ActivityDto activityId : activityDtoList) {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                     for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                         List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                         //int i = 0;
@@ -531,7 +531,7 @@ public class LocationController {
                             for (ActivityDto activityId : activityDtoList) {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                     for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                         List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                         //int i = 0;
@@ -567,7 +567,7 @@ public class LocationController {
                             for (ActivityDto activityId : activityDtoList) {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                     for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                         List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                         //int i = 0;
@@ -692,7 +692,7 @@ public class LocationController {
                 }
                 else if (vehicleId != null && !vehicleId.isEmpty()) {
                     for (Integer vehicleitem : vehicleId) {
-                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate);
+                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate,userId);
 
                         for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
@@ -719,7 +719,7 @@ public class LocationController {
                     for (Integer activityItem : activityIds) {
                         List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityItem, userId);
                         for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                            List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                            List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                             for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                 List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                 //int i = 0;
@@ -750,7 +750,7 @@ public class LocationController {
                         for (ActivityDto activityId : activityDtoList) {
                             List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                             for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                 for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                     List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                     //int i = 0;
@@ -792,7 +792,7 @@ public class LocationController {
                             for (ActivityDto activityId : activityDtoList) {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                     for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                         List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                         //int i = 0;
@@ -838,7 +838,7 @@ public class LocationController {
                                 for (ActivityDto activityId : activityDtoList) {
                                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                         for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                             //int i = 0;
@@ -879,7 +879,7 @@ public class LocationController {
                             for (ActivityDto activityId : activityDtoList) {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                     for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                         List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                         //int i = 0;
@@ -916,7 +916,7 @@ public class LocationController {
                             for (ActivityDto activityId : activityDtoList) {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                     for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                         List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                         //int i = 0;
@@ -951,7 +951,7 @@ public class LocationController {
                             for (ActivityDto activityId : activityDtoList) {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
+                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
                                     for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                         List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                         //int i = 0;

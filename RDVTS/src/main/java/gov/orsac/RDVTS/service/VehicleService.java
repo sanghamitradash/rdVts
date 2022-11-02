@@ -42,7 +42,7 @@ public interface VehicleService {
 
     List<VehicleMasterDto> getVehicleById(Integer id, Integer userId);
 
-    List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate,Date vehicleWorkEndDate) throws ParseException;
+    List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate,Date vehicleWorkEndDate,Integer userId) throws ParseException;
 
 
     VehicleDeviceMappingEntity assignVehicleDevice(VehicleDeviceMappingEntity vehicleDeviceMapping, Integer id);
