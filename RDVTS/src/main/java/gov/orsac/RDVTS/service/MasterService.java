@@ -59,4 +59,8 @@ public interface MasterService {
     List<DivisionDto> getListOfDivisionByListOfDistId(List<Integer> distId);
 
     Boolean deactivateVendor(Integer vendorId);
+
+    List<DivisionDto> getDivisionByCircleId(Integer circleId);
+
+    List<CircleMasterDto> getAllCircleDD();
 }

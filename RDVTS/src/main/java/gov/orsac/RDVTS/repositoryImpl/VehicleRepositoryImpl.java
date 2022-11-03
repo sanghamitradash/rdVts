@@ -500,6 +500,21 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return namedJdbc.update(qry, sqlParam);
     }
 
+    @Override
+    public Integer deactivateVehicleActivity(List<Integer> activityIds, List<Integer> vehicleIds) throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+        String currentDateTime = dateFormat.format(new Date());
+        Date date = dateFormat.parse(currentDateTime);
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        int resultCount = 0;
+
+        String qry = "UPDATE rdvts_oltp.vehicle_activity_mapping  " +
+                "SET is_active=false,deactivation_date=now()  WHERE activity_id IN (:activityIds) or vehicle_id IN (:vehicleIds) " ;
+        sqlParam.addValue("activityIds", activityIds);
+        sqlParam.addValue("vehicleIds", vehicleIds);
+        return namedJdbc.update(qry,sqlParam);
+    }
+
     public LocationDto getLatestLocationByDeviceId(Long imeiNo) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         LocationDto locationDto = null;
