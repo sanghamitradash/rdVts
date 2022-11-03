@@ -22,6 +22,8 @@ public class RoadRepositoryImpl {
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
+    @Autowired
+    private UserRepositoryImpl userRepositoryImpl;
 
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
         String sqlStr = "SELECT COUNT(*) from (" + qryStr + ") as t";
