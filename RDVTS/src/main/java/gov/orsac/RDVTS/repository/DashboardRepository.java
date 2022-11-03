@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.repository;
 
 import gov.orsac.RDVTS.dto.ActiveAndInactiveVehicleDto;
 import gov.orsac.RDVTS.dto.DistrictWiseVehicleDto;
+import gov.orsac.RDVTS.dto.DivisionWiseVehicleDto;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface DashboardRepository {
 
 
     List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount(List<Integer> ids);
+
+    List<DivisionWiseVehicleDto> getDivisionWiseVehicleCount(List<Integer> totalActiveIds);
 }
