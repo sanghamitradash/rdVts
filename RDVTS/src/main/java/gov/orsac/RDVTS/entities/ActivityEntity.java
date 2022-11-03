@@ -71,6 +71,11 @@ public class ActivityEntity {
     @Column(name = "g_activity_id")
     private Integer gActivityId;
 
+    @Column(name = "issue_reason")
+    private String issueReason;
+
+    @Column(name = "resolved_status")
+    private Integer resolvedStatus;
 
 
 
