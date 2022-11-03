@@ -307,7 +307,7 @@ public class RoadController {
         try{
             ObjectMapper mapper = new ObjectMapper();
             List<RoadLocationEntity> roadLocationEntities = roadService.addRoadLocation(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(), roadLocationDto.getUserId());
-            Integer saveGeom = roadService.saveGeom(roadLocationDto.getRoadId(), roadLocationDto.getGeom(), roadLocationDto.getUserId());
+            Integer saveGeom = roadService.saveGeom(roadLocationDto.getRoadId(), roadLocationDto.getLatitude(), roadLocationDto.getLongitude(), roadLocationDto.getAltitude(), roadLocationDto.getAccuracy(), roadLocationDto.getUserId());
             result.put("saveRoadLocation", roadLocationEntities);
             response.setData(result);
             response.setStatus(1);

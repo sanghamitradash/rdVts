@@ -23,6 +23,9 @@ public class RoadRepositoryImpl {
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
 
+    @Autowired
+    private UserRepositoryImpl userRepositoryImpl;
+
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
         String sqlStr = "SELECT COUNT(*) from (" + qryStr + ") as t";
         Integer intRes = namedJdbc.queryForObject(sqlStr, sqlParam, Integer.class);
@@ -97,6 +100,16 @@ public class RoadRepositoryImpl {
                 "LEFT JOIN rdvts_oltp.work_m as wm on wm.id=geom.work_id and wm.is_active = true " +
                 "WHERE road.is_active = true    ";
 
+        String subQuery ="";
+//        if (roadFilterDto.getId() != null) {
+//            if (subQuery!= " " && subQuery.length() <= 0) {
+//                subQuery += " and road.id=:id ";
+//                sqlParam.addValue("id", roadFilterDto.getId());
+//            } else {
+//                subQuery += " and road.id=:id ";
+//                sqlParam.addValue("id", roadFilterDto.getId());
+//            }
+//        }
         if (roadFilterDto.getId() != null && roadFilterDto.getId() > 0) {
             queryString += " AND road.id=:id ";
             sqlParam.addValue("id", roadFilterDto.getId());
@@ -130,6 +143,17 @@ public class RoadRepositoryImpl {
         if (roadFilterDto.getActivityIds() != null && !roadFilterDto.getActivityIds().isEmpty()) {
             queryString += " AND am.id IN (:activityids)";
             sqlParam.addValue("activityids", roadFilterDto.getActivityIds());
+        }
+        UserInfoDto user = userRepositoryImpl.getUserByUserId(roadFilterDto.getUserId());
+        if(user.getUserLevelId()==5){
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE um.user_level_id=:userLevelId ";
+                sqlParam.addValue("userLevelId",user.getUserLevelId());
+            }
+            else{
+                subQuery += " and um.user_level_id=:userLevelId ";
+                sqlParam.addValue("userLevelId",user.getUserLevelId());
+            }
         }
 
         resultCount = count(queryString, sqlParam);
@@ -436,15 +460,29 @@ public class RoadRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UnassignedRoadDDDto.class));
     }
 
-    public Integer saveGeom(Integer roadId, String geom, Integer userId) {
+    public Integer saveGeom(Integer roadId, Double latitude, Double longitude, Double altitude, Double accuracy, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = " UPDATE rdvts_oltp.geo_construction_m " +
-                "  SET geom=st_setsrid(ST_GeomFromText('"+geom+"'),4326)  " +
+                "  SET geom=st_setsrid(ST_GeomFromText('"+latitude+"'),4326)  " +
                 "  WHERE id=:roadId and is_active=true";
         sqlParam.addValue("roadId", roadId);
+        sqlParam.addValue("latitude", latitude);
+        sqlParam.addValue("longitude", longitude);
+        sqlParam.addValue("altitude", altitude);
+        sqlParam.addValue("accuracy", accuracy);
         sqlParam.addValue("userId", userId);
         return namedJdbc.update(qry, sqlParam);
     }
+
+//    public Integer saveGeom(Integer roadId, String geom, Integer userId) {
+//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+//        String qry = " UPDATE rdvts_oltp.geo_construction_m " +
+//                "  SET geom=st_setsrid(ST_GeomFromText('"+geom+"'),4326)  " +
+//                "  WHERE id=:roadId and is_active=true";
+//        sqlParam.addValue("roadId", roadId);
+//        sqlParam.addValue("userId", userId);
+//        return namedJdbc.update(qry, sqlParam);
+//    }
 
 //    public int addRoadLocation(Integer roadId, List<Integer> roadLocation, Integer userId) {
 //        MapSqlParameterSource sqlParam = new MapSqlParameterSource();

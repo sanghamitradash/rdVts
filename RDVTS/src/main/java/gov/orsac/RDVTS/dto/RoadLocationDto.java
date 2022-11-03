@@ -20,10 +20,10 @@ import java.util.List;
 public class RoadLocationDto {
     private Integer roadId;
     private Integer userId;
-//    private Double longitude;
-//    private Double latitude;
-//    private Double altitude;
-//    private Double accuracy;
+    private Double longitude;
+    private Double latitude;
+    private Double altitude;
+    private Double accuracy;
     private Boolean isActive;
     private Integer createdBy;
     private Date createdOn;
