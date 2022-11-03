@@ -13,16 +13,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/v1/activity")
 public class ActivityController {
+
+
 
 
     @Autowired
@@ -94,13 +95,36 @@ public class ActivityController {
     }
 
     @PostMapping("/updateActivity")
-    public RDVTSResponse updateActivity(@RequestParam Integer id, @RequestParam(name = "data") String data) {
+    public RDVTSResponse updateActivity(@RequestParam Integer id, @RequestParam(name = "data") String data,
+                                        @RequestParam(name = "image",required = false) MultipartFile[] issueImages) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
             ActivityDto activityData = mapper.readValue(data, ActivityDto.class);
+
+//            String filename = null;
+//            if(issueImages!=null) {
+//                for (MultipartFile multipart : issueImages) {
+//                    //invoice.setInvoiceDocument(multipart.getOriginalFilename());
+//                    String name = multipart.getOriginalFilename().split("\\.")[1];
+//                    String name2 = multipart.getOriginalFilename().split("\\.")[0];
+//                    Date date = new Date();
+//                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HHmmss");
+//                    String formattedDate = sdf.format(date);
+//                    filename = name2 + formattedDate + "." + name;
+//                    activityData.setIssueImage(filename);
+//                }
+//            }
             ActivityEntity activity1 = activityService.updateActivity(id, activityData);
+//
+//            if (issueImages!=null && issueImages.length > 0) {
+//               // List<IssueTrackImages> issueTrackImageObj = issueService.saveIssueImage(issueTracker.getIssueTrackImages(),issueMObj.getId(),issueImages );
+//                for (MultipartFile mult : issueImages) {
+//                    boolean saveDocument = awss3StorageService.uploadIssueTrackerImages(mult, String.valueOf(issueMObj.getId()), mult.getOriginalFilename());
+//                }
+//            }
+
             result.put("activity1", activity1);
             response.setData(result);
             response.setStatus(1);

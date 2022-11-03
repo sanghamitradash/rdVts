@@ -213,7 +213,7 @@ public class VehicleServiceImpl implements VehicleService {
 
 
     @Override
-    public List<VehicleActivityMappingEntity> assignVehicleActivity(List<VehicleActivityMappingDto> activity) throws ParseException {
+    public List<VehicleActivityMappingEntity> assignVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
 //              formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
@@ -221,14 +221,18 @@ public class VehicleServiceImpl implements VehicleService {
         Integer count = workServiceImpl.deactivateVehicleActivity(activity);
 
         List<VehicleActivityMappingEntity> vehicleActivity=new ArrayList<>();
-        for(VehicleActivityMappingDto vehicleActivity1:activity){
+        for(VehicleActivityDto vehicleActivity1:activity){
             VehicleActivityMappingEntity vehicle1=new VehicleActivityMappingEntity();
-            Date startTime = formatter.parse(vehicleActivity1.getStart());
-            Date endTime = formatter.parse(vehicleActivity1.getEnd());
-
             BeanUtils.copyProperties(vehicleActivity1,vehicle1);
-            vehicle1.setStartTime(startTime);
-            vehicle1.setEndTime(endTime);
+            if(vehicleActivity1.getStartTime()!=null) {
+                Date startTime = formatter.parse(vehicleActivity1.getStartTime());
+                vehicle1.setStartTime(startTime);
+            }
+            if(vehicleActivity1.getEndTime()!=null) {
+                Date endTime = formatter.parse(vehicleActivity1.getEndTime());
+                vehicle1.setEndTime(endTime);
+            }
+
             vehicleActivity.add(vehicle1);
         }
         return vehicleActivityMappingRepository.saveAll(vehicleActivity);
