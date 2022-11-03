@@ -102,4 +102,45 @@ public class DashboardController {
     }
 
 
+    @PostMapping("/getDivisionWiseVehicleCount")
+    public RDVTSResponse getDivisionWiseVehicleCount(@RequestParam(name = "userId",required = false)Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        List<String> divName=new ArrayList<>();
+        List<Integer> active=new ArrayList<>();
+        List<Integer> inActive=new ArrayList<>();
+        List<Integer> count=new ArrayList<>();
+        // List<String>geom = new ArrayList<>();
+        ;
+        try {
+            List<DivisionWiseVehicleDto> vehicle = dashboardService.getDivisionWiseVehicleCount(userId);
+            for(DivisionWiseVehicleDto vehicle1:vehicle){
+                divName.add(vehicle1.getDivName());
+                active.add(vehicle1.getActive());
+                inActive.add(vehicle1.getInActive());
+                count.add(vehicle1.getActive()+vehicle1.getInActive());
+                // geom.add(vehicle1.getGeom());
+            }
+            result.put("divName", divName);
+            //result.put("geom",geom);
+            result.put("active", active);
+            result.put("inActive", inActive);
+            result.put("count",count);
+            result.put("vehicle",vehicle);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("All DistrictWise Vehicle Count");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 }
