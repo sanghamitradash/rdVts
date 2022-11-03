@@ -333,5 +333,15 @@ public class MasterServiceImpl implements MasterService {
         return masterRepositoryImpl.deactivateVendor(vendorId);
     }
 
+    @Override
+    public List<DivisionDto> getDivisionByCircleId(Integer circleId) {
+        return masterRepositoryImpl.getDivisionByCircleId(circleId);
+    }
+
+    @Override
+    public List<CircleMasterDto> getAllCircleDD() {
+        return masterRepositoryImpl.getAllCircleDD();
+    }
+
 
 }

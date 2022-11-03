@@ -42,8 +42,8 @@ public class VehicleController {
 
     @PostMapping("/addVehicle")
     public RDVTSResponse saveVehicle(@RequestParam(name = "vehicle") String vehicleData,
-                                     @RequestParam(name = "vehicleDeviceMapping", required = false) String vehicleDeviceMappingData,
-                                     @RequestParam(name = "vehicleWorkMapping", required = false) String vehicleWorkMappingData,
+                                         @RequestParam(name = "vehicleDeviceMapping", required = false) String vehicleDeviceMappingData,
+                                     @RequestParam(name = "VehicleActivityMapping", required = false) String VehicleActivityMappingData,
                                      @RequestParam(name = "vehicleOwnerMapping", required = false) String vehicleOwnerMappingData) throws JsonProcessingException {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
@@ -51,12 +51,13 @@ public class VehicleController {
         VehicleDeviceMappingEntity vehicleDeviceMapping = null;
         VehicleOwnerMappingDto vehicleOwnerMapping = null;
         List<VehicleWorkMappingDto> vehicleWorkMapping = new ArrayList<>();
+        List<VehicleActivityMappingDto> vehicleActivityMapping = new ArrayList<>();
         VehicleMaster vehicle = mapper.readValue(vehicleData, VehicleMaster.class);
         if (vehicleDeviceMappingData != null) {
             vehicleDeviceMapping = mapper.readValue(vehicleDeviceMappingData, VehicleDeviceMappingEntity.class);
         }
-        if (vehicleWorkMappingData != null) {
-            vehicleWorkMapping = mapper.readValue(vehicleWorkMappingData, mapper.getTypeFactory().constructCollectionType(List.class, VehicleWorkMappingDto.class));
+        if (VehicleActivityMappingData != null) {
+            vehicleActivityMapping = mapper.readValue(VehicleActivityMappingData, mapper.getTypeFactory().constructCollectionType(List.class, VehicleActivityMappingDto.class));
         }
         if (vehicleOwnerMappingData != null) {
             vehicleOwnerMapping = mapper.readValue(vehicleOwnerMappingData, VehicleOwnerMappingDto.class);
@@ -78,14 +79,14 @@ public class VehicleController {
                         VehicleOwnerMappingEntity assignVehicleOwner = vehicleService.assignVehicleOwner(vehicleOwnerMapping);
                         result.put("assignVehicleOwner", assignVehicleOwner);
                     }
-                    if (vehicleWorkMapping != null && vehicleWorkMapping.size() > 0) {
-                        List<VehicleWorkMappingDto> work = new ArrayList<>();
-                        for (VehicleWorkMappingDto work1 : vehicleWorkMapping) {
-                            work1.setVehicleId(saveVehicle.getId());
-                            work.add(work1);
+                    if (vehicleActivityMapping != null && vehicleActivityMapping.size() > 0) {
+                        List<VehicleActivityMappingDto> activity = new ArrayList<>();
+                        for (VehicleActivityMappingDto activity1 : vehicleActivityMapping) {
+                            activity1.setVehicleId(saveVehicle.getId());
+                            activity.add(activity1);
                         }
-                        List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(work);
-                        result.put("assignVehicleWorkMapping", saveVehicleWorkMapping);
+                        List<VehicleActivityMappingEntity> saveVehicleActivityMapping = vehicleService.assignVehicleActivity(activity);
+                        result.put("assignVehicleActivityMapping", saveVehicleActivityMapping);
                     }
                     response.setData(result);
                     response.setStatus(1);

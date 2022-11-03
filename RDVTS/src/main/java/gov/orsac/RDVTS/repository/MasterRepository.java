@@ -1,9 +1,6 @@
 package gov.orsac.RDVTS.repository;
 
-import gov.orsac.RDVTS.dto.MenuDto;
-import gov.orsac.RDVTS.dto.RoleDto;
-import gov.orsac.RDVTS.dto.VTUVendorFilterDto;
-import gov.orsac.RDVTS.dto.VTUVendorMasterDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.UserLevelMaster;
 import org.springframework.data.domain.Page;
 
@@ -20,4 +17,6 @@ public interface MasterRepository {
     Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto);
 
     List<Integer> getDeviceByVendorId(Integer deviceId);
+
+    List<DivisionDto> getDivisionByCircleId(Integer circleId);
 }

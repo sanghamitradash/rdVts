@@ -16,7 +16,7 @@ public class VehicleActivityMappingDto {
     private Integer vehicleId;
     private Integer activityId;
     private Date startTime;
-    private Date endTime;
+    private  Date endTime;
     private Date startDate;
     private Date endDate;
     private Boolean isActive;
@@ -33,6 +33,9 @@ public class VehicleActivityMappingDto {
     private Double speedLimit;
     private String chassisNo;
     private String engineNo;
+
+    private String start;
+    private String end;
 
     List<ActivityEntity> activityEntityList;
 }
