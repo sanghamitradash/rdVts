@@ -130,7 +130,7 @@ public class DashboardController {
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("All DistrictWise Vehicle Count");
+            response.setMessage("All Division Vehicle Count");
 
         } catch (Exception ex) {
             ex.printStackTrace();
