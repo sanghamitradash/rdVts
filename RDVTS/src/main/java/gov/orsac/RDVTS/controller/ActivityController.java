@@ -197,7 +197,7 @@ public class ActivityController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            Integer updateWorkId = activityService.updateWorkId(activityWork.getWorkId(), activityWork.getActivityId());
+            Integer updateWorkId = activityService.updateWorkId(activityWork.getWorkId(), activityWork.getActivityId(), activityWork.getUserId());
             List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(), activityWork.getActivityId(), activityWork.getUserId());
             result.put("VehicleActivityMapping", VehicleActivityMapping);
             response.setData(result);

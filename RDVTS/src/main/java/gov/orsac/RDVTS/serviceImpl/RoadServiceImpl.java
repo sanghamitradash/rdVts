@@ -181,8 +181,8 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public Integer saveGeom(Integer roadId, Double latitude, Double longitude, Double altitude, Double accuracy, Integer userId) {
-        return roadRepositoryImpl.saveGeom(roadId, latitude, longitude, altitude, accuracy, userId);
+    public Integer saveGeom(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
+        return roadRepositoryImpl.saveGeom(roadId, roadLocation, userId);
     }
 
 

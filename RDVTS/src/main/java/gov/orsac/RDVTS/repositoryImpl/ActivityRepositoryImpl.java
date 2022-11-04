@@ -123,21 +123,20 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return new PageImpl<>(list, pageable, resultCount);
     }
 
-    public Integer updateWorkId(Integer workId, Integer activityId) {
+    public Integer updateWorkId(Integer workId, Integer activityId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry="UPDATE rdvts_oltp.activity_m " +
-                " SET work_id=:workId " +
-                " WHERE id=:activityId";
+        String qry="INSERT INTO rdvts_oltp.activity_work_mapping(activity_id, work_id, is_active, created_by, created_on) " +
+                "             VALUES (:activityId, :workId, true, :userId, now()) ";
         sqlParam.addValue("workId", workId);
         sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("userId", userId);
         return namedJdbc.update(qry, sqlParam);
     }
 
     public Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry="UPDATE rdvts_oltp.activity_m " +
-                " SET work_id=:workId " +
-                " WHERE id=:activityId";
+        String qry="INSERT INTO rdvts_oltp.activity_work_mapping(activity_id, work_id, is_active, created_by, created_on)\n" +
+                " VALUES (:activityId, :workId, true, :userId, now()) ";
         sqlParam.addValue("workId", workId);
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("userId", userId);
@@ -146,9 +145,9 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     public Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry= " UPDATE rdvts_oltp.activity_m " +
-                "SET  work_id=null " +
-                " WHERE id=:activityId and work_id=:workId";
+        String qry= " UPDATE rdvts_oltp.activity_work_mapping" +
+                "SET is_active=false,updated_by=:userId " +
+                " WHERE activity_id=:activityId and work_id=:workId";
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("workId", workId);
         sqlParam.addValue("userId", userId);

@@ -29,7 +29,7 @@ public interface ActivityService {
 
     List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer activityId, Integer userId);
 
-    Integer updateWorkId(Integer workId, Integer activityId);
+    Integer updateWorkId(Integer workId, Integer activityId, Integer userId);
 
     Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId);
 
