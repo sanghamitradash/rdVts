@@ -6,6 +6,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityEntity;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
+import gov.orsac.RDVTS.service.AWSS3StorageService;
 import gov.orsac.RDVTS.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,8 @@ import java.util.*;
 public class ActivityController {
 
 
-
+    @Autowired
+    private AWSS3StorageService awss3StorageService;
 
     @Autowired
     private ActivityService activityService;
@@ -100,14 +102,14 @@ public class ActivityController {
         try {
             ObjectMapper mapper = new ObjectMapper();
             ActivityDto activityData = mapper.readValue(data, ActivityDto.class);
-            ActivityEntity activity1 = activityService.updateActivity(id, activityData);
-//            if (issueImages!=null && issueImages.length > 0) {
-//                for (MultipartFile mult : issueImages) {
-//                    boolean saveDocument = awss3StorageService.uploadIssueImages(mult, String.valueOf(activity1.getId()), mult.getOriginalFilename());
-//                }
-//            }
 
-            result.put("activity1", activity1);
+            if (issueImages!=null && issueImages.length > 0) {
+                ActivityEntity activity1 = activityService.updateActivity(id, activityData, issueImages);
+                for (MultipartFile files : issueImages) {
+                    boolean saveDocument = awss3StorageService.uploadIssueImages(files, String.valueOf(activity1.getId()), files.getOriginalFilename());
+                }
+                result.put("activity1", activity1);
+            }
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

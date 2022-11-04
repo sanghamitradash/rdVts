@@ -38,12 +38,15 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     public List<ActivityDto> getActivityById(Integer activityId, Integer userId) {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT am.id,am.activity_name,am.activity_quantity,am.activity_start_date,am.activity_completion_date,am.actual_activity_start_date, " +
-                "am.actual_activity_completion_date,am.executed_quantity,am.work_id,am.activity_status,status.name as activityStatusName,work.g_work_name,work.work_status,am.g_activity_id  " +
-                "from rdvts_oltp.activity_m as am  " +
-                "left join rdvts_oltp.activity_status_m as status on status.id = am.activity_status  " +
-                "left join rdvts_oltp.work_m as work on work.id =am.work_id   " +
-                "WHERE am.is_active = true   " ;
+        String qry = "SELECT am.id,am.activity_name,am.activity_quantity as activityQuantity,am.activity_start_date as activityStartDate,am.activity_completion_date as activityCompletionDate,am.actual_activity_start_date as actualActivityStartDate ,  " +
+                "am.actual_activity_completion_date as actualActivityCompletionDate,am.executed_quantity as executedQuantity,am.work_id,am.activity_status,status.name as activityStatusName,  " +
+                "am.issue_reason,am.resolved_status,res.name as resolvedStatusName,am.resolved_date,am.resolved_by,am.issue_image,  " +
+                "work.g_work_name,work.work_status,am.g_activity_id   " +
+                "from rdvts_oltp.activity_m as am    " +
+                "left join rdvts_oltp.activity_status_m as status on status.id = am.activity_status   " +
+                "left join rdvts_oltp.work_m as work on work.id =am.work_id    " +
+                "left join rdvts_oltp.resolved_status_m res on res.id = am.resolved_status  " +
+                "WHERE am.is_active = true " ;
 
         if(activityId>0){
             qry+=" AND am.id=:activityId";

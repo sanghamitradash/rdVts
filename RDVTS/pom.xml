@@ -19,6 +19,7 @@
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+
 			<dependency>
 				<groupId>com.amazonaws</groupId>
 				<artifactId>aws-java-sdk-bom</artifactId>

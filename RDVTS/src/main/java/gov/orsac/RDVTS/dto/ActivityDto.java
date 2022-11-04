@@ -39,6 +39,7 @@ public class ActivityDto {
 
     private String issueReason;
     private Integer resolvedStatus;
+    private String resolvedStatusName;
     private Date resolvedDate;
     private Integer resolvedBy;
     private String issueImage;
