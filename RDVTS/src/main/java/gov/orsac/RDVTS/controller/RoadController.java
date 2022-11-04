@@ -51,7 +51,7 @@ public class RoadController {
     }
 
     @PostMapping("/getRoadById")
-    public RDVTSResponse getRoadById(@RequestParam(name = "roadId", required = false) Integer roadId, @RequestParam Integer userId) {
+    public RDVTSResponse getRoadById(@RequestParam(name = "roadId", required = false) Integer roadId, @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -194,7 +194,8 @@ public class RoadController {
     }
 
     @PostMapping("/getWorkDetailsByRoadId")
-    public RDVTSResponse getWorkDetailsByRoadId(@RequestParam(name = "roadId", required = false) Integer roadId, Integer userId) {
+    public RDVTSResponse getWorkDetailsByRoadId(@RequestParam(name = "roadId", required = false) Integer roadId,
+                                                @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -242,7 +243,7 @@ public class RoadController {
     }
 
     @PostMapping("/getRoadStatusDD")
-    public RDVTSResponse getRoadStatusDD(@RequestParam Integer userId) {
+    public RDVTSResponse getRoadStatusDD(@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -262,7 +263,7 @@ public class RoadController {
     }
 
     @PostMapping("/updateGeom")
-    public RDVTSResponse updateGeom(@RequestParam Integer roadId, @RequestParam String geom, Integer userId) {
+    public RDVTSResponse updateGeom(@RequestParam Integer roadId, @RequestParam String geom, @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -283,7 +284,7 @@ public class RoadController {
         return response;
     }
     @PostMapping("/unassignedRoadDD")
-    public RDVTSResponse unassignedActivity(@RequestParam Integer userId){
+    public RDVTSResponse unassignedActivity(@RequestParam(name = "userId", required = false) Integer userId){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try{

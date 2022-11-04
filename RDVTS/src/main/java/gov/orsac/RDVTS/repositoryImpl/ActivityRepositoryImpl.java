@@ -126,7 +126,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     public Integer updateWorkId(Integer workId, Integer activityId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry="INSERT INTO rdvts_oltp.activity_work_mapping(activity_id, work_id, is_active, created_by, created_on) " +
-                "             VALUES (:activityId, :workId, true, :userId, now()) ";
+                 "  VALUES (:activityId, :workId, true, :userId, now()) ";
         sqlParam.addValue("workId", workId);
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("userId", userId);

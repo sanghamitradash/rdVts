@@ -306,7 +306,7 @@ public class ActivityController {
     }
 
     @PostMapping("/unassignedActivityDD")
-    public RDVTSResponse unassignedActivity(@RequestParam Integer userId) {
+    public RDVTSResponse unassignedActivity(@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -346,7 +346,7 @@ public class ActivityController {
     }
 
     @PostMapping("/activityStatusDD")
-    public RDVTSResponse activityStatusDD(Integer userId) {
+    public RDVTSResponse activityStatusDD(@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
