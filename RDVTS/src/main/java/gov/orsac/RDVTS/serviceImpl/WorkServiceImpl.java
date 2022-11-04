@@ -109,10 +109,10 @@ public class WorkServiceImpl implements WorkService {
         return workRepositoryImpl.getUnAssignedWorkData(userId);
     }
 
-    public Integer deactivateVehicleActivity(List<VehicleActivityMappingDto> activity) throws ParseException {
+    public Integer deactivateVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {
         List<Integer> activityIds = new ArrayList<>();
         List<Integer> vehicleIds = new ArrayList<>();
-        for(VehicleActivityMappingDto vehicle :activity ){
+        for(VehicleActivityDto vehicle :activity ){
             vehicleIds.add(vehicle.getVehicleId());
             activityIds.add(vehicle.getActivityId());
         }
