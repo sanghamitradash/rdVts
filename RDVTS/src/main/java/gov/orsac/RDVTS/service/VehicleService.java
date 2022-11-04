@@ -66,4 +66,6 @@ public interface VehicleService {
     Boolean deactivateVehicleActivityMapping(Integer vehicleId, Integer status);
 
     Integer getTotalCount(Integer vehicleId);
+
+    List<VehicleActivityMappingEntity> assignVehicleActivity(List<VehicleActivityMappingDto> activity) throws ParseException;
 }

@@ -27,4 +27,6 @@ public interface VehicleRepository {
 
 
     Integer deactivateVehicleWork(List<Integer> workIds, List<Integer> vehicleIds) throws ParseException;
+
+    Integer deactivateVehicleActivity(List<Integer> activityIds, List<Integer> vehicleIds) throws ParseException;
 }

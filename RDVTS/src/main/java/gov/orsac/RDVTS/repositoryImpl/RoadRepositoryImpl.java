@@ -23,6 +23,8 @@ public class RoadRepositoryImpl {
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
+    @Autowired
+    private UserRepositoryImpl userRepositoryImpl;
 
     @Autowired
     private UserRepositoryImpl userRepositoryImpl;

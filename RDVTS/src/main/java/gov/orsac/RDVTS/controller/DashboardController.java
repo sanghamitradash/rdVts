@@ -69,7 +69,7 @@ public class DashboardController {
         List<Integer> active=new ArrayList<>();
         List<Integer> inActive=new ArrayList<>();
         List<Integer> count=new ArrayList<>();
-        List<String>geom = new ArrayList<>();
+       // List<String>geom = new ArrayList<>();
 ;
         try {
             List<DistrictWiseVehicleDto> vehicle = dashboardService.getDistrictWiseVehicleCount(userId);
@@ -78,10 +78,10 @@ public class DashboardController {
                 active.add(vehicle1.getActive());
                 inActive.add(vehicle1.getInActive());
                 count.add(vehicle1.getActive()+vehicle1.getInActive());
-                geom.add(vehicle1.getGeom());
+               // geom.add(vehicle1.getGeom());
             }
             result.put("districtName", districtName);
-            result.put("geom",geom);
+            //result.put("geom",geom);
             result.put("active", active);
             result.put("inActive", inActive);
             result.put("count",count);

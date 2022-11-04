@@ -312,6 +312,17 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 
+    @Override
+    public List<DivisionDto> getDivisionByCircleId(Integer circleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry  = "SELECT div.id,div.division_name,div.dist_id,div.acrnym,div.is_active,div.division_id,div.circle_id from rdvts_oltp.division_m as div  " +
+                "left join rdvts_oltp.circle_m as circle on circle.id = div.circle_id  " +
+                "WHERE div.circle_id =:circleId ";
+
+        sqlParam.addValue("circleId", circleId);
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
+    }
+
     public List<DistrictBoundaryDto> getAllDistrict() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry ="SELECT dist.gid, dist.district_name as districtName,dist.district_code as districtCode,dist.state_name as stateName,  " +
@@ -457,6 +468,12 @@ public class MasterRepositoryImpl implements MasterRepository {
         String qry = " select distinct road_id from rdvts_oltp.geo_master where block_id in (:blockIds)";
         sqlParam.addValue("blockIds", blockIds);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<CircleMasterDto> getAllCircleDD() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT id,name from rdvts_oltp.circle_m  ";
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(CircleMasterDto.class));
     }
 }
 

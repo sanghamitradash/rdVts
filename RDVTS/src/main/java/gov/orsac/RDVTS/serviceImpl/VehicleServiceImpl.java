@@ -38,6 +38,9 @@ public class VehicleServiceImpl implements VehicleService {
        private VehicleServiceImpl vehicleServiceImpl;*/
        @Autowired
        private VehicleWorkMappingRepository vehicleWorkMappingRepository;
+
+       @Autowired
+       private VehicleActivityMappingRepository vehicleActivityMappingRepository;
        @Autowired
        private VehicleOwnerMappingRepository vehicleOwnerMappingRepository;
        @Autowired
@@ -207,6 +210,30 @@ public class VehicleServiceImpl implements VehicleService {
     public Integer getTotalCount(Integer vehicleId) {
         return vehicleRepositoryimpl.getTotalCount(vehicleId);
     }
+
+
+    @Override
+    public List<VehicleActivityMappingEntity> assignVehicleActivity(List<VehicleActivityMappingDto> activity) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+//              formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+
+
+        Integer count = workServiceImpl.deactivateVehicleActivity(activity);
+
+        List<VehicleActivityMappingEntity> vehicleActivity=new ArrayList<>();
+        for(VehicleActivityMappingDto vehicleActivity1:activity){
+            VehicleActivityMappingEntity vehicle1=new VehicleActivityMappingEntity();
+            Date startTime = formatter.parse(vehicleActivity1.getStart());
+            Date endTime = formatter.parse(vehicleActivity1.getEnd());
+
+            BeanUtils.copyProperties(vehicleActivity1,vehicle1);
+            vehicle1.setStartTime(startTime);
+            vehicle1.setEndTime(endTime);
+            vehicleActivity.add(vehicle1);
+        }
+        return vehicleActivityMappingRepository.saveAll(vehicleActivity);
+    }
+
 
 
     @Override
