@@ -4,10 +4,7 @@ package gov.orsac.RDVTS.serviceImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.dto.UserAreaMappingDto;
 import gov.orsac.RDVTS.dto.UserDto;
-import gov.orsac.RDVTS.entities.LoginLogEntity;
-import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
-import gov.orsac.RDVTS.entities.UserEntity;
-import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
+import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.exception.RecordExistException;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.LoginLogRepository;
@@ -414,7 +411,16 @@ public class UserServiceImpl implements UserService {
         return userRepositoryImpl.activateAndDeactivateUser(id);
     }
 
-
-
+    @Override
+    public UserEntity updateProfileByUserId(Integer userId, UserDto userDto) {
+        UserEntity existingUser = userRepository.findById(userId).orElseThrow(() -> new RecordNotFoundException("userId", "id", userId));
+        existingUser.setFirstName(userDto.getFirstName());
+        existingUser.setMiddleName(userDto.getMiddleName());
+        existingUser.setLastName(userDto.getLastName());
+        existingUser.setMobile2(userDto.getMobile2());
+        existingUser.setIsactive(true);
+        UserEntity save = userRepository.save(existingUser);
+        return save;
+    }
 
 }
