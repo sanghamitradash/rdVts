@@ -4,7 +4,6 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityEntity;
-import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.service.ActivityService;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -102,26 +100,10 @@ public class ActivityController {
         try {
             ObjectMapper mapper = new ObjectMapper();
             ActivityDto activityData = mapper.readValue(data, ActivityDto.class);
-
-//            String filename = null;
-//            if(issueImages!=null) {
-//                for (MultipartFile multipart : issueImages) {
-//                    //invoice.setInvoiceDocument(multipart.getOriginalFilename());
-//                    String name = multipart.getOriginalFilename().split("\\.")[1];
-//                    String name2 = multipart.getOriginalFilename().split("\\.")[0];
-//                    Date date = new Date();
-//                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HHmmss");
-//                    String formattedDate = sdf.format(date);
-//                    filename = name2 + formattedDate + "." + name;
-//                    activityData.setIssueImage(filename);
-//                }
-//            }
             ActivityEntity activity1 = activityService.updateActivity(id, activityData);
-//
 //            if (issueImages!=null && issueImages.length > 0) {
-//               // List<IssueTrackImages> issueTrackImageObj = issueService.saveIssueImage(issueTracker.getIssueTrackImages(),issueMObj.getId(),issueImages );
 //                for (MultipartFile mult : issueImages) {
-//                    boolean saveDocument = awss3StorageService.uploadIssueTrackerImages(mult, String.valueOf(issueMObj.getId()), mult.getOriginalFilename());
+//                    boolean saveDocument = awss3StorageService.uploadIssueImages(mult, String.valueOf(activity1.getId()), mult.getOriginalFilename());
 //                }
 //            }
 

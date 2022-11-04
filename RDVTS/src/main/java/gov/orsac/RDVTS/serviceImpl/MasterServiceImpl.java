@@ -343,5 +343,15 @@ public class MasterServiceImpl implements MasterService {
         return masterRepositoryImpl.getAllCircleDD();
     }
 
+    @Override
+    public List<DivisionDto> getAllDivisionDD() {
+        return masterRepositoryImpl.getAllDivisionDD();
+    }
+
+    @Override
+    public List<DistrictBoundaryDto> getAllDistrictDD() {
+        return masterRepositoryImpl.getAllDistrict();
+    }
+
 
 }

@@ -42,8 +42,8 @@ public class VehicleController {
 
     @PostMapping("/addVehicle")
     public RDVTSResponse saveVehicle(@RequestParam(name = "vehicle") String vehicleData,
-                                         @RequestParam(name = "vehicleDeviceMapping", required = false) String vehicleDeviceMappingData,
-                                     @RequestParam(name = "VehicleActivityMapping", required = false) String VehicleActivityMappingData,
+                                     @RequestParam(name = "vehicleDeviceMapping", required = false) String vehicleDeviceMappingData,
+                                     @RequestParam(name = "vehicleActivityMapping", required = false) String VehicleActivityMappingData,
                                      @RequestParam(name = "vehicleOwnerMapping", required = false) String vehicleOwnerMappingData) throws JsonProcessingException {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();

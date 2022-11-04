@@ -1185,5 +1185,26 @@ public class MasterController {
         return response;
     }
 
+    @PostMapping("/getAllDivisionDD")
+    public RDVTSResponse getAllDivisionDD() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<DivisionDto> div = masterService.getAllDivisionDD();
+            result.put("div", div);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Get All Division");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 
 }
