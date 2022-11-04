@@ -145,22 +145,28 @@ public class RoadRepositoryImpl {
         if (user.getUserLevelId() == 5) {
                 queryString += " AND geom.contractor_id=:contractorId ";
                 sqlParam.addValue("contractorId", user.getUserLevelId());
-        } else if (user.getUserLevelId() == 2) {
+        }
+
+        else if (user.getUserLevelId() == 2) {
             List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(roadFilterDto.getUserId());
             List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
             List<Integer> roadIds = masterRepositoryImpl.getRoadIdsByBlockAndDivision(blockIds, divisionIds, distIds);
             queryString += " AND  road.id in(:roadIds) ";
-            sqlParam.addValue("roadIds", roadIds);}
-//        } else if(user.getUserLevelId()==3){
-//            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(roadFilterDto.getUserId());
-//            List<Integer> roadIds  = masterRepositoryImpl.getRoadIdsByBlockIds(blockIds);
-//                queryString += " AND  road.id in(:roadIds) ";
-//                sqlParam.addValue("roadIds",roadIds);
-//        } else if(user.getUserLevelId()==4){
-//                queryString += " AND geom.division_id=:divisionId ";
-//                sqlParam.addValue("divisionId",user.getUserLevelId());
-//        }
+            sqlParam.addValue("roadIds", roadIds);
+        }
+
+        else if(user.getUserLevelId()==3){
+            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(roadFilterDto.getUserId());
+            List<Integer> roadIds  = masterRepositoryImpl.getRoadIdsByBlockIds(blockIds);
+                queryString += " AND  road.id in(:roadIds) ";
+                sqlParam.addValue("roadIds",roadIds);
+        }
+
+        else if(user.getUserLevelId()==4){
+                queryString += " AND geom.division_id=:divisionId ";
+                sqlParam.addValue("divisionId",user.getUserLevelId());
+        }
 
         resultCount = count(queryString, sqlParam);
         if (roadFilterDto.getLimit() > 0) {
