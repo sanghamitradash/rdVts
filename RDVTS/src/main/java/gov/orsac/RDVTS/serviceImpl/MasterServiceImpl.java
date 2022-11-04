@@ -329,9 +329,11 @@ public class MasterServiceImpl implements MasterService {
     }
 
     @Override
-    public Boolean deactivateVendor(Integer vendorId) {
-        return masterRepositoryImpl.deactivateVendor(vendorId);
+    public Boolean deactivateVendor(Integer vendorId, Integer userId) {
+        return masterRepositoryImpl.deactivateVendor(vendorId, userId);
     }
+
+
 
     @Override
     public List<DivisionDto> getDivisionByCircleId(Integer circleId) {

@@ -116,8 +116,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Integer updateWorkId(Integer workId, Integer activityId) {
-        return activityRepositoryImpl.updateWorkId(workId, activityId);
+    public Integer updateWorkId(Integer workId, Integer activityId, Integer userId) {
+        return activityRepositoryImpl.updateWorkId(workId, activityId, userId);
     }
     @Override
     public Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId) {
@@ -142,8 +142,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityDto> unassignedActivity() {
-        return activityRepositoryImpl.unassignedActivity();
+    public List<ActivityDto> unassignedActivity(Integer userId) {
+        return activityRepositoryImpl.unassignedActivity(userId);
     }
 
     @Override
@@ -152,8 +152,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityStatusDto> activityStatusDD() {
-        return activityRepositoryImpl.activityStatusDD();
+    public List<ActivityStatusDto> activityStatusDD(Integer userId) {
+        return activityRepositoryImpl.activityStatusDD(userId);
     }
 
     @Override

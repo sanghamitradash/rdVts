@@ -29,7 +29,7 @@ public interface ActivityService {
 
     List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer activityId, Integer userId);
 
-    Integer updateWorkId(Integer workId, Integer activityId);
+    Integer updateWorkId(Integer workId, Integer activityId, Integer userId);
 
     Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId);
 
@@ -39,11 +39,11 @@ public interface ActivityService {
 
     List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId);
 
-    List<ActivityDto> unassignedActivity();
+    List<ActivityDto> unassignedActivity(Integer userId);
 
     Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId);
 
-    List<ActivityStatusDto> activityStatusDD();
+    List<ActivityStatusDto> activityStatusDD(Integer userId);
 
     List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId);
 }

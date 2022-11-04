@@ -776,7 +776,7 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorById")
-    public RDVTSResponse getVTUVendorById(@RequestParam Integer id,@RequestParam(value = "userId", required = false) Integer userId) {
+    public RDVTSResponse getVTUVendorById(@RequestParam Integer id, @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -882,11 +882,11 @@ public class MasterController {
 
 
     @PostMapping("/deactivateVendor")
-    public RDVTSResponse deactivateVendor(@RequestParam Integer vendorId) {
+    public RDVTSResponse deactivateVendor(@RequestParam Integer vendorId, @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            Boolean res = masterService.deactivateVendor(vendorId);
+            Boolean res = masterService.deactivateVendor(vendorId, userId);
 
             if (res==true) {
                 response.setData(result);
