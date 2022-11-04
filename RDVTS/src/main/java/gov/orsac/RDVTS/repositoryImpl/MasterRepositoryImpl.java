@@ -475,6 +475,12 @@ public class MasterRepositoryImpl implements MasterRepository {
         String qry = "SELECT id,name from rdvts_oltp.circle_m  ";
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(CircleMasterDto.class));
     }
+
+    public List<DivisionDto> getAllDivisionDD() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT div.division_id, div.division_name from rdvts_oltp.division_m as div  ";
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
+    }
 }
 
 
