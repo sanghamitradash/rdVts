@@ -26,8 +26,7 @@ public class RoadRepositoryImpl {
     @Autowired
     private UserRepositoryImpl userRepositoryImpl;
 
-    @Autowired
-    private UserRepositoryImpl userRepositoryImpl;
+
 
     @Autowired
     private MasterRepositoryImpl masterRepositoryImpl;
