@@ -2,8 +2,10 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.entities.ContractorEntity;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.service.HelperService;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -292,5 +294,7 @@ public class UserRepositoryImpl {
         sqlParam.addValue("distIds", distIds);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
+
+
 }
 

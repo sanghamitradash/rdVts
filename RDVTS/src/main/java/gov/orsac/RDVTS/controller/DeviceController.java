@@ -178,7 +178,7 @@ public class DeviceController {
                                            @RequestParam(name = "userId",required = false)Integer userId,
                                            @RequestParam(name = "vehicleAssigned", required = false)Boolean vehicleAssigned,
                                            @RequestParam(name = "start") Integer start,
-                                           @RequestParam(name = "length") Integer length,
+                                           @RequestParam(name = "length")Integer length,
                                            @RequestParam(name = "draw") Integer draw) {
         DeviceListDto device = new DeviceListDto();
         device.setImeiNo1(imeiNo1);

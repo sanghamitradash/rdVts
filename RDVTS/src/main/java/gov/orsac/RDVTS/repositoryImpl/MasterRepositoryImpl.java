@@ -314,14 +314,26 @@ public class MasterRepositoryImpl implements MasterRepository {
 
     @Override
     public List<DivisionDto> getDivisionByCircleId(Integer circleId) {
+        List<DivisionDto> division;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry  = "SELECT div.id,div.division_name,div.dist_id,div.acrnym,div.is_active,div.division_id,div.circle_id from rdvts_oltp.division_m as div  " +
-                "left join rdvts_oltp.circle_m as circle on circle.id = div.circle_id  " +
-                "WHERE div.circle_id =:circleId ";
+                "left join rdvts_oltp.circle_m as circle on circle.id = div.circle_id  " ;
+                //"WHERE div.circle_id =:circleId ";
 
+        if(circleId>0){
+            qry+=" WHERE div.circle_id =:circleId";
+        }
         sqlParam.addValue("circleId", circleId);
-        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
+        //sqlParam.addValue("userId",userId);
+        try {
+            division = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DivisionDto.class));
+        }
+        catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return division;
     }
+
 
     public List<DistrictBoundaryDto> getAllDistrict() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();

@@ -53,4 +53,6 @@ public interface UserService {
 
 
     Boolean activateAndDeactivateUser(Integer id);
+
+    UserEntity updateProfileByUserId(Integer userId, UserDto userDto);
 }

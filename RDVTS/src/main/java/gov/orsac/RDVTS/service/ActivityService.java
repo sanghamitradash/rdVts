@@ -7,6 +7,7 @@ import gov.orsac.RDVTS.entities.ActivityEntity;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface ActivityService {
 
     List<ActivityDto> getActivityById(Integer activityId, Integer userId);
 
-    ActivityEntity updateActivity(Integer id, ActivityDto activityData);
+    ActivityEntity updateActivity(Integer id, ActivityDto activityData, MultipartFile[] issueImages);
 
     List<ActivityEntity> getAllActivity();
 
