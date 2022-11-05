@@ -34,7 +34,7 @@ public class UserListRequest {
     private boolean isactive;
 
 
-
+    private Integer circleId;
     private Integer distId;
     private Integer blockId;
     private Integer gpId;

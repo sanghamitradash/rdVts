@@ -86,6 +86,10 @@ public class UserRepositoryImpl {
             queryString += " and um.id in (select user_id from rdvts_oltp.user_area_mapping where division_id=:divisionId)";
             sqlParam.addValue("divisionId", userListRequest.getDivisionId());
         }
+        if (userListRequest.getCircleId() != null && userListRequest.getCircleId() > 0) {
+            queryString += " and um.id in (select user_id from rdvts_oltp.user_area_mapping where circle_id=:circleId)";
+            sqlParam.addValue("circleId", userListRequest.getCircleId());
+        }
 
         if (userListRequest.getDesignationId() != null && userListRequest.getDesignationId() > 0) {
             queryString += " AND   um.designation_id=:getDesignationId ";
@@ -266,6 +270,13 @@ public class UserRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select dist_id from rdvts_oltp.division_m where id in(:divisionId) ";
         sqlParam.addValue("divisionId", divisionId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getContractorByUserId(Integer userId){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct contractor_id from rdvts_oltp.user_m where id=:userId ";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 

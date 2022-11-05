@@ -271,6 +271,7 @@ public class UserController {
                                          @RequestParam(name = "userLevelId", required = false) Integer userLevelId,
                                          @RequestParam(name = "email", required = false) String email,
                                          @RequestParam(name = "mobile1", required = false) Long mobile1,
+                                         @RequestParam(name = "circleId", required = false) Integer circleId,
                                          @RequestParam(name = "start") Integer start,
                                          @RequestParam(name = "length") Integer length,
                                          @RequestParam(name = "draw") Integer draw) {
@@ -291,6 +292,7 @@ public class UserController {
             userListDto.setOffSet(start);
             userListDto.setDraw(draw);
             userListDto.setUserLevelId(userLevelId);
+            userListDto.setCircleId(circleId);
 
 
 
