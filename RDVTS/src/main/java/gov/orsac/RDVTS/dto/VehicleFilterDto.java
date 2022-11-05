@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VehicleFilterDto {
+
+
     private Integer userId;
     private Integer vehicleTypeId;
     private Integer  deviceId;
@@ -20,4 +22,7 @@ public class VehicleFilterDto {
     private Boolean deviceAssign;
     private Boolean trackingAssign;
     private Boolean activityAssign;
+
+    private Integer distId;
+    private Integer divisionId;
 }

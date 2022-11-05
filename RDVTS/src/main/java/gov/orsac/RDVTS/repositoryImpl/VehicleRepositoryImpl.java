@@ -1,11 +1,8 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.VehicleMaster;
-import gov.orsac.RDVTS.entities.VehicleWorkMappingEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.serviceImpl.HelperServiceImpl;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -23,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 @Repository
 public class VehicleRepositoryImpl implements VehicleRepository {
@@ -185,7 +181,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
 
     @Override
-    public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
+    public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle, List<Integer> distIds, List<Integer> divisionIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 //        PageRequest pageable = null;
 //        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
@@ -197,7 +193,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
         int resultCount = 0;
         String qry = "select * from (SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,vm.model, vm.chassis_no," +
-                "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ," +
+                "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,dam.dist_id, dam.division_id,   " +
                 "owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id as contractorId," +
                 "contractor.name as contractorName,am.id  as activityId," +
                 "case when vdCount.vehicleCount>0 then true else false end as deviceAssigned," +
@@ -206,6 +202,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "FROM rdvts_oltp.vehicle_m as vm " +
                 "left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id  " +
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true " +
+                "left join rdvts_oltp.device_area_mapping as dam on dam.device_id = device.device_id and dam.is_active =true  "  +
                 "left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true " +
                 "left join rdvts_oltp.activity_m as am on am.id = activity.activity_id  " +
                 "left join rdvts_oltp.work_m as work on work.id = am.work_id  " +
@@ -295,6 +292,29 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             else{
                 subQuery += " and activityId=:activityId ";
                 sqlParam.addValue("activityId", vehicle.getActivityId());
+            }
+        }
+
+
+        if (vehicle.getDistId() > 0) {
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE vehicleList.dist_Id IN (:distIds) ";
+                sqlParam.addValue("distIds", vehicle.getDistId());
+            }
+            else{
+                subQuery += " and vehicleList.dist_Id IN (:distIds)";
+                sqlParam.addValue("distIds", vehicle.getDistId());
+            }
+        }
+
+        if (vehicle.getDivisionId() > 0) {
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE vehicleList.division_id IN (:divisionIds) ";
+                sqlParam.addValue("divisionIds", vehicle.getDivisionId());
+            }
+            else{
+                subQuery += " and vehicleList.division_id IN (:divisionIds)";
+                sqlParam.addValue("divisionIds", vehicle.getDivisionId());
             }
         }
 
@@ -783,6 +803,25 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                      "AND is_active=true  ";
        sqlParam.addValue("vehicleId",vehicleId);
         return  namedJdbc.queryForObject(qry, sqlParam,Integer.class);
+    }
+
+    public List<Integer> getDistIdByDeviceId(List<Integer> deviceIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT distinct dist_id from rdvts_oltp.device_area_mapping  " +
+                     "WHERE is_active = true and device_id=:deviceIds ";
+        sqlParam.addValue("deviceIds",deviceIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+    public List<Integer> getDistIds() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT dist_id from rdvts_oltp.device_area_mapping where is_active = true ";
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getDivisionIds() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT division_id from rdvts_oltp.device_area_mapping where is_active = true  ";
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 }
 

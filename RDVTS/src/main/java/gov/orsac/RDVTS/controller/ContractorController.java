@@ -4,6 +4,8 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ContractorEntity;
+import gov.orsac.RDVTS.exception.RecordExistException;
+import gov.orsac.RDVTS.repository.ContractorMasterRepository;
 import gov.orsac.RDVTS.service.ContractorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,8 @@ public class ContractorController {
     @Autowired
     private ContractorService contractorService;
 
+    @Autowired
+    private ContractorMasterRepository contractorMasterRepository;
 
     //Save Contractor
 
@@ -32,7 +36,11 @@ public class ContractorController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
+            if (checkMobileExists(contractorEntity.getMobile())) {
+                throw new RecordExistException("Contractor", "mobile", contractorEntity.getMobile());
+            }
             ContractorEntity contractor = contractorService.createContractor(contractorEntity);
+
             result.put("contractor", contractor);
             response.setData(result);
             response.setStatus(1);
@@ -46,6 +54,10 @@ public class ContractorController {
                     result);
         }
         return response;
+    }
+
+    private boolean checkMobileExists(Long mobile) {
+      return contractorMasterRepository.existsByMobile(mobile);
     }
 
     @PostMapping("/getContractById")
