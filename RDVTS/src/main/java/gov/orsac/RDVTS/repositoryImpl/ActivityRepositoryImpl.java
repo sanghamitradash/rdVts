@@ -38,15 +38,15 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     public List<ActivityDto> getActivityById(Integer activityId, Integer userId) {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT am.id,am.activity_name,am.activity_quantity as activityQuantity,am.activity_start_date as activityStartDate,am.activity_completion_date as activityCompletionDate,am.actual_activity_start_date as actualActivityStartDate ,  " +
-                "am.actual_activity_completion_date as actualActivityCompletionDate,am.executed_quantity as executedQuantity,am.work_id,am.activity_status,status.name as activityStatusName,  " +
-                "am.issue_reason,am.resolved_status,res.name as resolvedStatusName,am.resolved_date,am.resolved_by,am.issue_image,  " +
-                "work.g_work_name,work.work_status,am.g_activity_id   " +
-                "from rdvts_oltp.activity_m as am    " +
-                "left join rdvts_oltp.activity_status_m as status on status.id = am.activity_status   " +
-                "left join rdvts_oltp.work_m as work on work.id =am.work_id    " +
-                "left join rdvts_oltp.resolved_status_m res on res.id = am.resolved_status  " +
-                "WHERE am.is_active = true " ;
+        String qry = "SELECT am.id,am.activity_name,awm.work_id,awm.activity_quantity,awm.activity_start_date,awm.activity_completion_date,  " +
+                "awm.actual_activity_start_date,awm.actual_activity_completion_date,awm.executed_quantity,awm.activity_status,sm.name as activityStatusName,   " +
+                "awm.g_activity_id,   " +
+                "awm.g_work_id,awm.issue_reason,awm.resolved_status,rsm.name as resolvedStatusName,awm.resolved_date,awm.resolved_by,awm.issue_image from   " +
+                "rdvts_oltp.activity_m as am   " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id = am.id   " +
+                "left join rdvts_oltp.activity_status_m as sm on sm.id = awm.activity_status   " +
+                "left join rdvts_oltp.resolved_status_m as rsm on rsm.id = awm.resolved_status   " +
+                "WHERE am.is_active = true AND awm.is_active = true    " ;
 
         if(activityId>0){
             qry+=" AND am.id=:activityId";

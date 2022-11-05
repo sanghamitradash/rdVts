@@ -1,8 +1,6 @@
 package gov.orsac.RDVTS.repository;
 
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.VehicleMaster;
-import gov.orsac.RDVTS.entities.VehicleWorkMappingEntity;
 import org.springframework.data.domain.Page;
 
 import java.text.ParseException;
@@ -19,7 +17,7 @@ public interface VehicleRepository {
 
 
     VehicleWorkMappingDto getVehicleWorkMapping(Integer activityId);
-    Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle);
+    Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle, List<Integer> distIds,List<Integer>divisionIds);
     List<VehicleTypeDto> getVehicleTypeList();
     List<VehicleMasterDto> getUnAssignedVehicleData(List<Integer> userIdList,Integer userId);
 
