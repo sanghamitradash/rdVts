@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.serviceImpl;
 import gov.orsac.RDVTS.dto.ActiveAndInactiveVehicleDto;
 import gov.orsac.RDVTS.dto.CompletedAndNotCompletedWorkDto;
 import gov.orsac.RDVTS.dto.DistrictWiseVehicleDto;
+import gov.orsac.RDVTS.dto.DivisionWiseVehicleDto;
 import gov.orsac.RDVTS.repository.DashboardRepository;
 import gov.orsac.RDVTS.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ public class DashboardServiceImpl implements DashboardService {
         return work;
     }
 
+
     @Override
     public List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount(Integer userId) {
         List<DistrictWiseVehicleDto> count = new ArrayList<>();
@@ -64,7 +66,32 @@ public class DashboardServiceImpl implements DashboardService {
             dw.setDistrictId(activeCount.get(i).getDistrictId());
             dw.setDistrictName(activeCount.get(i).getDistrictName());
             dw.setCount(activeCount.get(i).getCount() + inActiveCount.get(i).getCount());
-            dw.setGeom(activeCount.get(i).getGeom());
+           // dw.setGeom(activeCount.get(i).getGeom());
+            finalCount.add(dw);
+        }
+
+//        district.setInActive(totalInActiveIds);
+        return finalCount;
+    }
+
+    @Override
+    public List<DivisionWiseVehicleDto> getDivisionWiseVehicleCount(Integer userId) {
+        List<DivisionWiseVehicleDto> count = new ArrayList<>();
+        List<DivisionWiseVehicleDto> finalCount=new ArrayList<>();
+
+        List<Integer> totalActiveIds = dashboardRepository.totalActiveIds();
+        List<Integer> totalInActiveIds = dashboardRepository.totalInactiveIds();
+        /* DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();*/
+        List<DivisionWiseVehicleDto> activeCount=dashboardRepository.getDivisionWiseVehicleCount(totalActiveIds);
+        List<DivisionWiseVehicleDto> inActiveCount=dashboardRepository.getDivisionWiseVehicleCount(totalInActiveIds);
+        for(int i=0;i<activeCount.size();i++){
+            DivisionWiseVehicleDto dw=new DivisionWiseVehicleDto();
+            dw.setActive(activeCount.get(i).getCount());
+            dw.setInActive(inActiveCount.get(i).getCount());
+            dw.setDivId(activeCount.get(i).getDivId());
+            dw.setDivName(activeCount.get(i).getDivName());
+            dw.setCount(activeCount.get(i).getCount() + inActiveCount.get(i).getCount());
+            // dw.setGeom(activeCount.get(i).getGeom());
             finalCount.add(dw);
         }
 
@@ -72,6 +99,7 @@ public class DashboardServiceImpl implements DashboardService {
         return finalCount;
     }
     }
+
 
 
         //        for(int i=0;i<5;i++){

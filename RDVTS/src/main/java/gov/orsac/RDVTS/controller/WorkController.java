@@ -195,7 +195,11 @@ public class WorkController {
             location.setDistanceTravelledToday(todayDistance);
             //location.setAvgDistanceTravelled(todayAvgDistance);
             //location.setSpeed(totalSpeed);
-            location.setAvgSpeedToday(avgSpeedToday);//Toady
+            if (Double.isNaN(avgSpeedToday)){
+                location.setAvgSpeedToday(0.0);
+            } else {
+                location.setAvgSpeedToday(avgSpeedToday);
+            }
             location.setAvgSpeedWork(avgSpeedWork);
             location.setTotalAlertToday(1);
             location.setTotalAlertWork(1);

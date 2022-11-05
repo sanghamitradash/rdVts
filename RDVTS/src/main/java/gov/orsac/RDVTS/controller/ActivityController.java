@@ -4,26 +4,27 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityEntity;
-import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
+import gov.orsac.RDVTS.service.AWSS3StorageService;
 import gov.orsac.RDVTS.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/v1/activity")
 public class ActivityController {
 
+
+    @Autowired
+    private AWSS3StorageService awss3StorageService;
 
     @Autowired
     private ActivityService activityService;
@@ -94,14 +95,21 @@ public class ActivityController {
     }
 
     @PostMapping("/updateActivity")
-    public RDVTSResponse updateActivity(@RequestParam Integer id, @RequestParam(name = "data") String data) {
+    public RDVTSResponse updateActivity(@RequestParam Integer id, @RequestParam(name = "data") String data,
+                                        @RequestParam(name = "image",required = false) MultipartFile[] issueImages) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
             ActivityDto activityData = mapper.readValue(data, ActivityDto.class);
-            ActivityEntity activity1 = activityService.updateActivity(id, activityData);
-            result.put("activity1", activity1);
+
+            if (issueImages!=null && issueImages.length > 0) {
+                ActivityEntity activity1 = activityService.updateActivity(id, activityData, issueImages);
+                for (MultipartFile files : issueImages) {
+                    boolean saveDocument = awss3StorageService.uploadIssueImages(files, String.valueOf(activity1.getId()), files.getOriginalFilename());
+                }
+                result.put("activity1", activity1);
+            }
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -197,7 +205,7 @@ public class ActivityController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            Integer updateWorkId = activityService.updateWorkId(activityWork.getWorkId(), activityWork.getActivityId());
+            Integer updateWorkId = activityService.updateWorkId(activityWork.getWorkId(), activityWork.getActivityId(), activityWork.getUserId());
             List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(), activityWork.getActivityId(), activityWork.getUserId());
             result.put("VehicleActivityMapping", VehicleActivityMapping);
             response.setData(result);
@@ -306,11 +314,11 @@ public class ActivityController {
     }
 
     @PostMapping("/unassignedActivityDD")
-    public RDVTSResponse unassignedActivity() {
+    public RDVTSResponse unassignedActivity(@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<ActivityDto> activityDto = activityService.unassignedActivity();
+            List<ActivityDto> activityDto = activityService.unassignedActivity(userId);
 
             result.put("unassignedActivity", activityDto);
             response.setData(result);
@@ -346,11 +354,11 @@ public class ActivityController {
     }
 
     @PostMapping("/activityStatusDD")
-    public RDVTSResponse activityStatusDD() {
+    public RDVTSResponse activityStatusDD(@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<ActivityStatusDto> activityStatusDropdown = activityService.activityStatusDD();
+            List<ActivityStatusDto> activityStatusDropdown = activityService.activityStatusDD(userId);
 
             result.put("activityStatusDropdown", activityStatusDropdown);
             response.setData(result);

@@ -86,16 +86,18 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId, Integer userId) {
+        List<DeviceAreaMappingDto> deviceMapping=new ArrayList<>();
         List<DeviceAreaMappingDto> device = new ArrayList<>();
-        device = deviceRepositoryImpl.getDeviceArea(deviceId);
+                device =deviceRepositoryImpl.getDeviceArea(deviceId);
         for (int i = 0; i < device.size(); i++) {
+           // Boolean checkTrueOrFalse = deviceRepositoryImpl.getDeviceAreaTrue(deviceId);
             if (device.get(i).getIsActive() == true) {
-                return deviceRepositoryImpl.getDeviceAreaByDeviceId(deviceId, userId);
+                deviceMapping= deviceRepositoryImpl.getDeviceAreaByDeviceId(deviceId, userId);
             } else {
-                return deviceRepositoryImpl.getDeviceAreaByDeviceIdInActive(deviceId, userId);
+                deviceMapping= deviceRepositoryImpl.getDeviceAreaByDeviceIdInActive(deviceId, userId);
             }
         }
-        return device;
+        return deviceMapping;
     }
 
 

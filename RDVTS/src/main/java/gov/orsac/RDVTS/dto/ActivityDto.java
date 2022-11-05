@@ -36,5 +36,14 @@ public class ActivityDto {
     private String startDate;
     private  String endDate;
     private Integer gActivityId;
+
+    private String issueReason;
+    private Integer resolvedStatus;
+    private String resolvedStatusName;
+    private Date resolvedDate;
+    private Integer resolvedBy;
+    private String issueImage;
+
+
     List<VehicleActivityMappingEntity> vehicleActivity;
 }

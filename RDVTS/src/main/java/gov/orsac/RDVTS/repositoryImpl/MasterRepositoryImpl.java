@@ -229,7 +229,7 @@ public class MasterRepositoryImpl implements MasterRepository {
                 "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on  " +
                 "FROM rdvts_oltp.vtu_vendor_m AS vtuM " +
 //                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id " +
-                "WHERE vtuM.is_active = true ";
+                "WHERE vtuM.is_active = true  ";
 
         if(id>0){
             qry+=" AND vtuM.id=:id";
@@ -242,6 +242,21 @@ public class MasterRepositoryImpl implements MasterRepository {
             return null;
         }
         return vendor;
+    }
+
+
+    public List<Integer> getVendorIdsByDistIdsForFilter(Integer distId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct vtu_vendor_id from rdvts_oltp.device_m where id in (select distinct device_id from rdvts_oltp.device_area_mapping where dist_id=:distId) ";
+        sqlParam.addValue("distId", distId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getVendorIdsBydivisionIdsForFilter(Integer divisionId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct vtu_vendor_id from rdvts_oltp.device_m where id in (select distinct device_id from rdvts_oltp.device_area_mapping where division_id =:divisionId) ";
+        sqlParam.addValue("divisionId", divisionId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 
     public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto){
@@ -278,8 +293,6 @@ public class MasterRepositoryImpl implements MasterRepository {
 //            queryString += " AND dev.id IN (:deviceIds)";
 //            sqlParam.addValue("deviceIds", deviceIds);
 //        }
-
-
 //        if(vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0){
 //            queryString += " AND dev.id=:deviceId ";
 //            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDeviceId());
@@ -289,6 +302,14 @@ public class MasterRepositoryImpl implements MasterRepository {
             queryString += " AND vtuM.vtu_vendor_name LIKE(:vtuVendorName) ";
             sqlParam.addValue("vtuVendorName", vtuVendorFilterDto.getVtuVendorName());
         }
+
+        if(vtuVendorFilterDto.getDivisionId() != null && vtuVendorFilterDto.getDivisionId() > 0){
+            queryString += " AND dev.id=:deviceId ";
+            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDivisionId());
+        }
+//        if(vtuVendorFilterDto.getUserId() != null && vtuVendorFilterDto.getUserId() > 0){
+//            sqlParam.addValue("userId", vtuVendorFilterDto.getUserId());
+//        }
 
         resultCount = count(queryString, sqlParam);
         if (vtuVendorFilterDto.getLimit() > 0){
@@ -308,6 +329,29 @@ public class MasterRepositoryImpl implements MasterRepository {
         sqlParam.addValue("deviceId", deviceId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
+
+    @Override
+    public List<DivisionDto> getDivisionByCircleId(Integer circleId) {
+        List<DivisionDto> division;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry  = "SELECT div.id,div.division_name,div.dist_id,div.acrnym,div.is_active,div.division_id,div.circle_id from rdvts_oltp.division_m as div  " +
+                "left join rdvts_oltp.circle_m as circle on circle.id = div.circle_id  " ;
+                //"WHERE div.circle_id =:circleId ";
+
+        if(circleId>0){
+            qry+=" WHERE div.circle_id =:circleId";
+        }
+        sqlParam.addValue("circleId", circleId);
+        //sqlParam.addValue("userId",userId);
+        try {
+            division = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DivisionDto.class));
+        }
+        catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return division;
+    }
+
 
     public List<DistrictBoundaryDto> getAllDistrict() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
@@ -395,11 +439,12 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 
-    public Boolean deactivateVendor(Integer vendorId) {
+    public Boolean deactivateVendor(Integer vendorId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "UPDATE rdvts_oltp.vtu_vendor_m  " +
                 "SET is_active=false WHERE id=:vendorId  ";
         sqlParam.addValue("vendorId", vendorId);
+        sqlParam.addValue("userId", userId);
 
         int update = namedJdbc.update(qry, sqlParam);
         boolean result = false;
@@ -437,6 +482,34 @@ public class MasterRepositoryImpl implements MasterRepository {
         sqlParam.addValue("divisionIds",divisionIds);
         sqlParam.addValue("distIds",distIds);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+
+    public List<Integer> getRoadIdsByBlockAndDivision(List<Integer> blockIds, List<Integer> divisionIds, List<Integer> distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select DISTINCT road_id from rdvts_oltp.geo_master where block_id in (:blockIds) and division_id in (:divisionIds) and dist_id in (:distIds)";
+        sqlParam.addValue("blockIds",blockIds);
+        sqlParam.addValue("divisionIds",divisionIds);
+        sqlParam.addValue("distIds",distIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+
+    public List<Integer> getRoadIdsByBlockIds(List<Integer> blockIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct road_id from rdvts_oltp.geo_master where block_id in (:blockIds)";
+        sqlParam.addValue("blockIds", blockIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<CircleMasterDto> getAllCircleDD() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT id,name from rdvts_oltp.circle_m ORDER BY name  ";
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(CircleMasterDto.class));
+    }
+
+    public List<DivisionDto> getAllDivisionDD() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT div.division_id, div.division_name from rdvts_oltp.division_m as div  ";
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
     }
 }
 

@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,22 +54,21 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityEntity updateActivity(Integer id, ActivityDto activityData) {
-        ActivityEntity activityEntity = new ActivityEntity();
-        ActivityEntity existingDevice = activityMasterRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("id", "id", id));
-        BeanUtils.copyProperties(activityData, activityEntity);
-//        existingDevice.setActivityName(activityData.getActivityName());
-//        existingDevice.setActivityQuantity(activityData.getActivityQuantity());
-//        existingDevice.setActivityStartDate(activityData.getActivityStartDate());
-//        existingDevice.setActivityCompletionDate(activityData.getActivityCompletionDate());
-        existingDevice.setActualActivityStartDate(activityData.getActualActivityStartDate());
-        existingDevice.setActualActivityCompletionDate(activityData.getActualActivityCompletionDate());
-//        existingDevice.setExecutedQuantity(activityData.getExecutedQuantity());
-//        existingDevice.setWorkId(activityData.getWorkId());
-        existingDevice.setActivityStatus(activityData.getActivityStatus());
-        ActivityEntity save = activityMasterRepository.save(existingDevice);
+    public ActivityEntity updateActivity(Integer id, ActivityDto activityData, MultipartFile[] issueImages) {
+        ActivityEntity save = null;
+        for (MultipartFile multipartFile : issueImages) {
+            ActivityEntity activityEntity = new ActivityEntity();
+            ActivityEntity existingActivity = activityMasterRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("id", "id", id));
+            BeanUtils.copyProperties(activityData, activityEntity);
+            existingActivity.setActualActivityStartDate(activityData.getActualActivityStartDate());
+            existingActivity.setActualActivityCompletionDate(activityData.getActualActivityCompletionDate());
+            existingActivity.setIssueImage(multipartFile.getOriginalFilename());
+            existingActivity.setActivityStatus(activityData.getActivityStatus());
+            save = activityMasterRepository.save(existingActivity);
+        }
         return save;
     }
+
 
     @Override
     public List<ActivityEntity> getAllActivity() {
@@ -116,8 +116,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Integer updateWorkId(Integer workId, Integer activityId) {
-        return activityRepositoryImpl.updateWorkId(workId, activityId);
+    public Integer updateWorkId(Integer workId, Integer activityId, Integer userId) {
+        return activityRepositoryImpl.updateWorkId(workId, activityId, userId);
     }
     @Override
     public Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId) {
@@ -142,8 +142,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityDto> unassignedActivity() {
-        return activityRepositoryImpl.unassignedActivity();
+    public List<ActivityDto> unassignedActivity(Integer userId) {
+        return activityRepositoryImpl.unassignedActivity(userId);
     }
 
     @Override
@@ -152,8 +152,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityStatusDto> activityStatusDD() {
-        return activityRepositoryImpl.activityStatusDD();
+    public List<ActivityStatusDto> activityStatusDD(Integer userId) {
+        return activityRepositoryImpl.activityStatusDD(userId);
     }
 
     @Override

@@ -38,6 +38,9 @@ public class VehicleServiceImpl implements VehicleService {
        private VehicleServiceImpl vehicleServiceImpl;*/
        @Autowired
        private VehicleWorkMappingRepository vehicleWorkMappingRepository;
+
+       @Autowired
+       private VehicleActivityMappingRepository vehicleActivityMappingRepository;
        @Autowired
        private VehicleOwnerMappingRepository vehicleOwnerMappingRepository;
        @Autowired
@@ -210,6 +213,34 @@ public class VehicleServiceImpl implements VehicleService {
 
 
     @Override
+    public List<VehicleActivityMappingEntity> assignVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+//              formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+
+
+        Integer count = workServiceImpl.deactivateVehicleActivity(activity);
+
+        List<VehicleActivityMappingEntity> vehicleActivity=new ArrayList<>();
+        for(VehicleActivityDto vehicleActivity1:activity){
+            VehicleActivityMappingEntity vehicle1=new VehicleActivityMappingEntity();
+            BeanUtils.copyProperties(vehicleActivity1,vehicle1);
+            if(vehicleActivity1.getStartTime()!=null) {
+                Date startTime = formatter.parse(vehicleActivity1.getStartTime());
+                vehicle1.setStartTime(startTime);
+            }
+            if(vehicleActivity1.getEndTime()!=null) {
+                Date endTime = formatter.parse(vehicleActivity1.getEndTime());
+                vehicle1.setEndTime(endTime);
+            }
+
+            vehicleActivity.add(vehicle1);
+        }
+        return vehicleActivityMappingRepository.saveAll(vehicleActivity);
+    }
+
+
+
+    @Override
        public VehicleWorkMappingDto  getVehicleWorkMapping(Integer activityId) {
               return vehicleRepository.getVehicleWorkMapping(activityId);
        }
@@ -324,8 +355,10 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
-              return vehicleRepository.getVehicleList(vehicle);
+           public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
+            List<Integer>distIds = vehicleRepositoryimpl.getDistIds();
+            List<Integer>divisionIds = vehicleRepositoryimpl.getDivisionIds();
+            return vehicleRepository.getVehicleList(vehicle,distIds,divisionIds);
        }
 
        @Override

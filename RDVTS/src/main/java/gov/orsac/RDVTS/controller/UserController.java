@@ -271,6 +271,7 @@ public class UserController {
                                          @RequestParam(name = "userLevelId", required = false) Integer userLevelId,
                                          @RequestParam(name = "email", required = false) String email,
                                          @RequestParam(name = "mobile1", required = false) Long mobile1,
+                                         @RequestParam(name = "circleId", required = false) Integer circleId,
                                          @RequestParam(name = "start") Integer start,
                                          @RequestParam(name = "length") Integer length,
                                          @RequestParam(name = "draw") Integer draw) {
@@ -291,6 +292,7 @@ public class UserController {
             userListDto.setOffSet(start);
             userListDto.setDraw(draw);
             userListDto.setUserLevelId(userLevelId);
+            userListDto.setCircleId(circleId);
 
 
 
@@ -339,7 +341,7 @@ public class UserController {
     @PostMapping("/updateUser")
     public RDVTSResponse updateUser(@RequestParam(name = "userData") String data,
                                     @RequestParam(name = "userArea", required = false) String userAreaData,
-    @RequestParam(name = "userId",required = false)Integer userId) {
+                                    @RequestParam(name = "userId",required = false)Integer userId) {
 //        RDVTSResponse rdvtsResponse = new RDVTSResponse();
 //        Map<String, Object> result = new HashMap<>();
 //        try {
@@ -369,6 +371,8 @@ public class UserController {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 UserDto userDto = mapper.readValue(data, UserDto.class);
+
+
 
                 List<UserAreaMappingRequestDTO> userArea = mapper.readValue(userAreaData, mapper.getTypeFactory().constructCollectionType(List.class, UserAreaMappingRequestDTO.class));
 
@@ -994,6 +998,31 @@ public class UserController {
         }
         return response;
     }
+
+    @PostMapping("/updateProfileByUserId")
+    public RDVTSResponse updateProfileByUserId(@RequestParam Integer userId, @RequestParam(name = "data") String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            UserDto userDto = objectMapper.readValue(data, UserDto.class);
+            UserEntity userEntity = userService.updateProfileByUserId(userId, userDto);
+            result.put("userEntity", userEntity);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("User Profile Updated successfully.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 
 
 }

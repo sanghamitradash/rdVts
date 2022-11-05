@@ -282,6 +282,17 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
         }
 
+        if (deviceDto.getDivisionId() != null && deviceDto.getDivisionId() > 0) {
+            if (subQuery.length() <= 0) {
+                subQuery += " WHERE division_id =:divisionId   ";
+                sqlParam.addValue("divisionId", deviceDto.getDivisionId());
+            } else {
+                subQuery += " AND division_id =:divisionId ";
+                sqlParam.addValue("divisionId", deviceDto.getDivisionId());
+            }
+
+        }
+
         if (deviceDto.getGBlockId() != null && deviceDto.getGBlockId() > 0) {
             if (subQuery.length() <= 0) {
                 subQuery += " WHERE gBlockId=:gBlockId  ";
@@ -678,7 +689,7 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     public List<DeviceAreaMappingDto> getDeviceArea(Integer deviceId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "Select id,is_active  from rdvts_oltp.device_area_mapping   " +
-                "WHERE device_id=:deviceId  ";
+                "WHERE device_id=:deviceId   ";
         sqlParam.addValue("deviceId", deviceId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceAreaMappingDto.class));
     }
@@ -787,6 +798,13 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
     }
 
+    public Boolean getDeviceAreaTrue(Integer deviceId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "Select id,is_active  from rdvts_oltp.device_area_mapping   " +
+                "WHERE is_active = true and device_id=:deviceId   ";
+        sqlParam.addValue("deviceId", deviceId);
+        return namedJdbc.queryForObject(qry, sqlParam, Boolean.class);
+    }
 }
 
 

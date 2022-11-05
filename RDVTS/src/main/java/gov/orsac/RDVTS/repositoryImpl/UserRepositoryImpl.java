@@ -2,8 +2,10 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.entities.ContractorEntity;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.service.HelperService;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +85,10 @@ public class UserRepositoryImpl {
         if (userListRequest.getDivisionId() != null && userListRequest.getDivisionId() > 0) {
             queryString += " and um.id in (select user_id from rdvts_oltp.user_area_mapping where division_id=:divisionId)";
             sqlParam.addValue("divisionId", userListRequest.getDivisionId());
+        }
+        if (userListRequest.getCircleId() != null && userListRequest.getCircleId() > 0) {
+            queryString += " and um.id in (select user_id from rdvts_oltp.user_area_mapping where circle_id=:circleId)";
+            sqlParam.addValue("circleId", userListRequest.getCircleId());
         }
 
         if (userListRequest.getDesignationId() != null && userListRequest.getDesignationId() > 0) {
@@ -267,6 +273,13 @@ public class UserRepositoryImpl {
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 
+    public List<Integer> getContractorByUserId(Integer userId){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct contractor_id from rdvts_oltp.user_m where id=:userId ";
+        sqlParam.addValue("userId", userId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
 
 
 
@@ -292,5 +305,7 @@ public class UserRepositoryImpl {
         sqlParam.addValue("distIds", distIds);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
+
+
 }
 
