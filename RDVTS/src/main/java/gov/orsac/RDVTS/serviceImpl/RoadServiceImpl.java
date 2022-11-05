@@ -2,8 +2,10 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.RoadEntity;
+import gov.orsac.RDVTS.entities.RoadLocationEntity;
 import gov.orsac.RDVTS.entities.VTUVendorMasterEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
+import gov.orsac.RDVTS.repository.RoadLocationRepository;
 import gov.orsac.RDVTS.repository.RoadRepository;
 import gov.orsac.RDVTS.repositoryImpl.RoadRepositoryImpl;
 import gov.orsac.RDVTS.service.RoadService;
@@ -25,6 +27,9 @@ public class RoadServiceImpl implements RoadService {
 
     @Autowired
     private RoadRepositoryImpl roadRepositoryImpl;
+
+    @Autowired
+    private RoadLocationRepository roadLocationRepository;
 
     @Override
     public RoadEntity saveRoad(RoadMasterDto roadMasterDto){
@@ -103,28 +108,83 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public List<RoadWorkMappingDto> getWorkDetailsByRoadId(Integer roadId) {
-        return roadRepositoryImpl.getWorkDetailsByRoadId(roadId);
+    public List<RoadWorkMappingDto> getWorkDetailsByRoadId(Integer roadId, Integer userId) {
+        return roadRepositoryImpl.getWorkDetailsByRoadId(roadId, userId);
     }
 
     @Override
-    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds) {
+    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds, List<Integer> deviceIds, Integer userId) {
+        List<Integer> roadIdList = new ArrayList<>();
         List<Integer> workIdList = new ArrayList<>();
         List<Integer> distIdList = new ArrayList<>();
-        workIdList = roadRepositoryImpl.getWorkIdsByRoadId(id);
-        distIdList = roadRepositoryImpl.getDistIdsByRoadId(id);
-        return roadRepositoryImpl.getRoadByRoadIds(id, workIdList, distIdList, blockIds, vehicleIds);
+
+           /* if(workIds != null && !workIds.isEmpty()){
+                roadIdList = roadRepositoryImpl.getRoadIdsByWorkId(workIds);
+            }
+            if(distIds != null && !distIds.isEmpty()){
+                roadIdList = roadRepositoryImpl.getRoadIdsBydistIds(distIds);
+            }
+            if(blockIds != null && !blockIds.isEmpty()){
+                roadIdList = roadRepositoryImpl.getRoadIdsByblockIds(blockIds);
+            }
+            if(vehicleIds != null && !vehicleIds.isEmpty()){
+                roadIdList = roadRepositoryImpl.getRoadIdsByVehicleId(vehicleIds);
+            }*/
+
+        if (vehicleIds!=null && vehicleIds.size()>0){
+            roadIdList=roadRepositoryImpl.getRoadIdsByVehicleIdsForFilter(vehicleIds);
+        }
+        if (activityIds!=null && activityIds.size()>0){
+            roadIdList=roadRepositoryImpl.getRoadIdsByActivityIdsForFilter(activityIds);
+        }
+        if (deviceIds!=null && deviceIds.size()>0){
+            roadIdList=roadRepositoryImpl.getRoadIdsByDeviceIdsForFilter(deviceIds);
+        }
+        if(id!=null && id.size()>0) {
+            roadIdList.addAll(id);
+        }
+        return roadRepositoryImpl.getRoadByRoadIds(roadIdList, workIds, distIds, blockIds, vehicleIds, userId);
+    }
+//    @Override
+//    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds) {
+//        return roadRepositoryImpl.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds, activityIds);
+//    }
+    @Override
+    public RoadStatusDropDownDto getRoadStatusDD(Integer userId) {
+        return roadRepositoryImpl.getRoadStatusDD(userId);
     }
 
     @Override
-    public RoadStatusDropDownDto getRoadStatusDD() {
-        return roadRepositoryImpl.getRoadStatusDD();
+    public int updateGeom(Integer roadId, String geom, Integer userId) {
+        return roadRepositoryImpl.updateGeom(roadId, geom, userId);
     }
 
     @Override
-    public int updateGeom(Integer roadId, String geom) {
-        return roadRepositoryImpl.updateGeom(roadId, geom);
+    public List<UnassignedRoadDDDto> unassignedRoadDD(Integer userId) {
+        return roadRepositoryImpl.unassignedRoadDD(userId);
     }
+
+    @Override
+    public List<RoadLocationEntity> addRoadLocation(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
+        List<RoadLocationEntity> roadLocationArray = new ArrayList<>();
+
+        for (int j = 0; j < roadLocation.size(); j++) {
+            RoadLocationEntity roadLocationEntity = new RoadLocationEntity();
+            roadLocationEntity.setRoadId(roadId);
+            roadLocationEntity.setLatitude(roadLocation.get(0).getLatitude());
+            roadLocationEntity.setLongitude(roadLocation.get(0).getLongitude());
+            roadLocationEntity.setAltitude(roadLocation.get(0).getAltitude());
+            roadLocationEntity.setAccuracy(roadLocation.get(0).getAccuracy());
+            roadLocationArray.add(roadLocationEntity);
+        }
+        return roadLocationRepository.saveAll(roadLocationArray);
+    }
+
+    @Override
+    public Integer saveGeom(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
+        return roadRepositoryImpl.saveGeom(roadId, roadLocation, userId);
+    }
+
 
     @Override
     public List<GeoMasterDto> getVehicleListByRoadId(Integer roadId){

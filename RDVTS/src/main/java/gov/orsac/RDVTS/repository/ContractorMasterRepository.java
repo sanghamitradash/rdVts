@@ -5,4 +5,5 @@ import io.swagger.models.auth.In;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ContractorMasterRepository extends JpaRepository<ContractorEntity,Integer> {
+    boolean existsByMobile(Long mobile);
 }

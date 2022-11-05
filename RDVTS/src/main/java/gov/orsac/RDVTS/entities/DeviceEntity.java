@@ -74,4 +74,6 @@ public class DeviceEntity {
     private Integer deviceNo;
 
 
+
+
 }

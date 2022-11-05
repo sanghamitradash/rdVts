@@ -62,6 +62,7 @@ public class WorkController {
     public RDVTSListResponse getWorkList(@RequestParam(name = "id", required = false) Integer id,
                                          @RequestParam(name = "userId", required = false) Integer userId,
                                          @RequestParam(name = "activityId", required = false) Integer activityId,
+                                         @RequestParam(name = "workStatus", required = false) Integer workStatus,
                                          @RequestParam(name = "start") Integer start,
                                          @RequestParam(name = "length") Integer length,
                                          @RequestParam(name = "draw") Integer draw) {
@@ -69,6 +70,7 @@ public class WorkController {
         workDto.setId(id);
         workDto.setUserId(userId);
         workDto.setActivityId(activityId);
+        workDto.setWorkStatus(workStatus);
         workDto.setOffSet(start);
         workDto.setLimit(length);
         RDVTSListResponse response = new RDVTSListResponse();
@@ -86,7 +88,7 @@ public class WorkController {
             response.setMessage("List of Work.");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(Long.valueOf(workDtoPage.getNumberOfElements()));
+            response.setRecordsFiltered(workDtoPage.getTotalElements());
             response.setRecordsTotal(workDtoPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
@@ -119,7 +121,8 @@ public class WorkController {
             Date vehicleendDate = null;
             Double todayDistance=0.0;
             Double totalDistance = 0.0;
-            Double totalSpeed=0.0;
+            Double totalSpeedWork=0.0;
+            Double avgSpeedToday=0.0;
             Integer totalActiveVehicle=0;
 
             //distance and speed API
@@ -129,53 +132,85 @@ public class WorkController {
 
                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                        totalActiveVehicle+=vehicleService.getActiveVehicle(vehicleList.getVehicleId());
+
                         List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime());
                         for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                             //int i = 0;
                             for (DeviceDto imei : getImeiList) {
                                 List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                 totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                 todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                int i=1;
+                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                int i=0;
                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
                                     i++;
-                                    totalSpeed+= Double.parseDouble(vtuobj.getSpeed()) ;
+                                    totalSpeedWork+= Double.parseDouble(vtuobj.getSpeed()) ;
                                 }
-                                totalSpeed=totalSpeed/i;
-                            }
+                                totalSpeedWork=totalSpeedWork/i;
+                                int j=0;
+                                for (VtuLocationDto vtuTodaySpeedObj:vtuAvgSpeedToday) {
+                                    j++;
+                                    avgSpeedToday+=Double.parseDouble(vtuTodaySpeedObj.getSpeed()) ;
+                                }
+                                avgSpeedToday=avgSpeedToday/j;
 
+                            }
                         }
                     }
-
                 }
             }
-
             //Active Inactive vehicle
-
-
-
             List<LocationDto> locationList=new ArrayList<>();
             int totalVehicleCount=vehicleService.getvehicleCountByWorkId(id);
-            Double avgDistance=totalDistance/totalVehicleCount;
+            Double avgDistance;
+            if(Double.isNaN(totalDistance/totalVehicleCount)){
+                avgDistance=0.0;
+            }
+            else {
+                 avgDistance=totalDistance/totalVehicleCount;
+            }
             Double todayAvgDistance=todayDistance/totalVehicleCount;
-            Double avgSpeed=totalSpeed/totalVehicleCount;
+            Double avgSpeedWork;
+            if(Double.isNaN(totalSpeedWork/totalVehicleCount)){
+                avgSpeedWork=0.0;
+            }
+            else {
+                avgSpeedWork=totalSpeedWork/totalVehicleCount;
+            }
+            Double percentageOfTotalActiveVehicle;
+            if(Double.isNaN((totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100)){
+                percentageOfTotalActiveVehicle=0.0;
+            }
+            else {
+                percentageOfTotalActiveVehicle = Double.valueOf(totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100 ;
+            }
 
             LocationDto location=new LocationDto();
             location.setTotalVehicleCount(totalVehicleCount);
             location.setDistanceTravelledTotal(totalDistance);
             location.setAvgDistanceTravelled(avgDistance);
             location.setDistanceTravelledToday(todayDistance);
-            location.setAvgDistanceTravelled(todayAvgDistance);
-            location.setSpeed(totalSpeed);
-            location.setAvgSpeed(avgSpeed);
+            //location.setAvgDistanceTravelled(todayAvgDistance);
+            //location.setSpeed(totalSpeed);
+            if (Double.isNaN(avgSpeedToday)){
+                location.setAvgSpeedToday(0.0);
+            } else {
+                location.setAvgSpeedToday(avgSpeedToday);
+            }
+            location.setAvgSpeedWork(avgSpeedWork);
             location.setTotalAlertToday(1);
             location.setTotalAlertWork(1);
             location.setTotalVehicleActive(totalActiveVehicle);
-            location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
-            location.setPercentageOfActiveVehicle((Double.valueOf(totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100));
+            if (totalVehicleCount > 0 ){
+                location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
+            }else {
+                location.setTotalInactiveVehicle(0);
+            }
+
+            location.setPercentageOfActiveVehicle(percentageOfTotalActiveVehicle);
 
             //Static DAta
               // location.setDateTime(dateTime);
@@ -272,23 +307,23 @@ public class WorkController {
         return response;
     }
 
-//    @PostMapping("/getUnAssignedWorkData")
-//    public RDVTSResponse getUnAssignedWorkData(@RequestParam Integer userId) {
-//        RDVTSResponse response = new RDVTSResponse();
-//        Map<String, Object> result = new HashMap<>();
-//        try {
-//            List<WorkDto> work = workService.getUnAssignedWorkData(userId);
-//            result.put("work", work);
-//            response.setData(result);
-//            response.setStatus(1);
-//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-//            response.setMessage("Unassigned Work Data");
-//        } catch (Exception ex) {
-//            response = new RDVTSResponse(0,
-//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                    ex.getMessage(),
-//                    result);
-//        }
-//        return response;
-//    }
+    @PostMapping("/getUnAssignedWorkDD")
+    public RDVTSResponse getUnAssignedWorkData(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<UnassignedWorkDto> work = workService.getUnAssignedWorkData(userId);
+            result.put("work", work);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Unassigned Work List");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 }

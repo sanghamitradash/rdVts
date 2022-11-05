@@ -19,4 +19,6 @@ public interface DeviceMasterRepository {
     DeviceAreaMappingDto getStateDistByBlockId(Integer blockId);
 
     DeviceAreaMappingDto getStateDistByDivisionId(Integer divisionId);
+
+    List<DeviceAreaMappingDto> getDeviceAreaByDeviceIdInActive(Integer deviceId, Integer userId);
 }

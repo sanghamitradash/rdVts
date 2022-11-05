@@ -1,6 +1,8 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
+import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.repository.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,12 +38,15 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     public List<ActivityDto> getActivityById(Integer activityId, Integer userId) {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT am.id,am.activity_name,am.activity_quantity,am.activity_start_date,am.activity_completion_date,am.actual_activity_start_date, " +
-                "am.actual_activity_completion_date,am.executed_quantity,am.work_id,am.activity_status,status.name,work.g_work_name,work.work_status,am.g_activity_id  " +
-                "from rdvts_oltp.activity_m as am  " +
-                "left join rdvts_oltp.activity_status_m as status on status.id = am.activity_status  " +
-                "left join rdvts_oltp.work_m as work on work.id =am.work_id   " +
-                "WHERE am.is_active = true   " ;
+        String qry = "SELECT am.id,am.activity_name,awm.work_id,awm.activity_quantity,awm.activity_start_date,awm.activity_completion_date,  " +
+                "awm.actual_activity_start_date,awm.actual_activity_completion_date,awm.executed_quantity,awm.activity_status,sm.name as activityStatusName,   " +
+                "awm.g_activity_id,   " +
+                "awm.g_work_id,awm.issue_reason,awm.resolved_status,rsm.name as resolvedStatusName,awm.resolved_date,awm.resolved_by,awm.issue_image from   " +
+                "rdvts_oltp.activity_m as am   " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id = am.id   " +
+                "left join rdvts_oltp.activity_status_m as sm on sm.id = awm.activity_status   " +
+                "left join rdvts_oltp.resolved_status_m as rsm on rsm.id = awm.resolved_status   " +
+                "WHERE am.is_active = true AND awm.is_active = true    " ;
 
         if(activityId>0){
             qry+=" AND am.id=:activityId";
@@ -121,14 +126,106 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return new PageImpl<>(list, pageable, resultCount);
     }
 
-    public Integer updateWorkId(Integer workId, Integer activityId) {
+    public Integer updateWorkId(Integer workId, Integer activityId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry="UPDATE rdvts_oltp.activity_m " +
-                " SET work_id=:workId " +
-                " WHERE id=:activityId";
+        String qry="INSERT INTO rdvts_oltp.activity_work_mapping(activity_id, work_id, is_active, created_by, created_on) " +
+                 "  VALUES (:activityId, :workId, true, :userId, now()) ";
         sqlParam.addValue("workId", workId);
         sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("userId", userId);
         return namedJdbc.update(qry, sqlParam);
+    }
+
+    public Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry="INSERT INTO rdvts_oltp.activity_work_mapping(activity_id, work_id, is_active, created_by, created_on)\n" +
+                " VALUES (:activityId, :workId, true, :userId, now()) ";
+        sqlParam.addValue("workId", workId);
+        sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("userId", userId);
+        return namedJdbc.update(qry, sqlParam);
+    }
+
+    public Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry= " UPDATE rdvts_oltp.activity_work_mapping " +
+                "SET is_active=false,updated_by=:userId " +
+                " WHERE activity_id=:activityId and work_id=:workId";
+        sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("workId", workId);
+        sqlParam.addValue("userId", userId);
+        int update = namedJdbc.update(qry, sqlParam);
+        boolean result = false;
+        if (update > 0) {
+            result = true;
+        }
+        return result;
+    }
+
+    public Boolean vehicleActivityDeassign(Integer activityId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry= " UPDATE rdvts_oltp.vehicle_activity_mapping " +
+                " SET  is_active=false " +
+                " WHERE activity_id=:activityId ; ";
+        sqlParam.addValue("activityId", activityId);
+        int update = namedJdbc.update(qry, sqlParam);
+        boolean result = false;
+        if (update >= 0) {
+            result = true;
+        }
+        return result;
+    }
+
+    public List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select id, vehicle_no from rdvts_oltp.vehicle_m " +
+                "where id not in (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id=:activityId) " +
+                "and vehicle_type_id=:vehicleTypeId";
+        sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("vehicleTypeId", vehicleTypeId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMaster.class));
+    }
+
+
+    public List<ActivityDto> unassignedActivity(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "  SELECT id, activity_name FROM rdvts_oltp.activity_m where id not in (select activity_id from rdvts_oltp.activity_work_mapping where work_id is null) order by activity_name";
+        sqlParam.addValue("userId", userId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+    }
+
+    public Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "update rdvts_oltp.vehicle_activity_mapping " +
+                "set is_active=false " +
+                "where activity_id=:activityId and vehicle_id=:vehicleId";
+        sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("vehicleId", vehicleId);
+        int update = namedJdbc.update(qry, sqlParam);
+        Boolean result = false;
+        if(update>0){
+            result=true;
+        }
+        return  result;
+    }
+
+    public List<ActivityStatusDto> activityStatusDD(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry =  "select * from rdvts_oltp.activity_status_m order by name";
+        sqlParam.addValue("userId", userId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityStatusDto.class));
+    }
+
+    public List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT distinct vm.id,vm.vehicle_no,vm.vehicle_type_id,type.name as vehicleTypeName,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no  " +
+                "from rdvts_oltp.vehicle_m as vm  " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id and vam.is_active = true " +
+                "left join rdvts_oltp.vehicle_type as type on type.id = vm.vehicle_type_id  " +
+                "WHERE vm.is_active = true AND  vam.activity_id=:activityId  " ;
+        sqlParam.addValue("activityId",activityId);
+        sqlParam.addValue("userId",userId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
     }
 }
 

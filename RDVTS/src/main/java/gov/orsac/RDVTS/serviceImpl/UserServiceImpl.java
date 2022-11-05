@@ -4,11 +4,10 @@ package gov.orsac.RDVTS.serviceImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.dto.UserAreaMappingDto;
 import gov.orsac.RDVTS.dto.UserDto;
-import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
-import gov.orsac.RDVTS.entities.UserEntity;
-import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
+import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.exception.RecordExistException;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
+import gov.orsac.RDVTS.repository.LoginLogRepository;
 import gov.orsac.RDVTS.repository.UserAreaMappingRepository;
 import gov.orsac.RDVTS.repository.UserPaswordMasterRepo;
 import gov.orsac.RDVTS.repository.UserRepository;
@@ -45,6 +44,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepositoryImpl userRepositoryImpl;
+
+    @Autowired
+    private LoginLogRepository loginLogRepository;
 
     @Autowired
     private UserAreaMappingRepository userAreaMappingRepository;
@@ -344,6 +346,17 @@ public class UserServiceImpl implements UserService {
             return userRepositoryImpl.getUserByUserId(userId);
 
     }
+    public LoginLogEntity saveLoginLog(Integer userId){
+        LoginLogEntity loginLogEntity=new LoginLogEntity();
+        loginLogEntity.setUserId(userId);
+        loginLogEntity.setActive(true);
+        loginLogEntity.setType("login");
+        loginLogEntity.setCreatedBy(userId);
+        loginLogEntity.setUpdatedBy(userId);
+        return loginLogRepository.save(loginLogEntity);
+
+    }
+
 
     public UserDto getUserBymobile(Long mobile){
 
@@ -398,7 +411,16 @@ public class UserServiceImpl implements UserService {
         return userRepositoryImpl.activateAndDeactivateUser(id);
     }
 
-
-
+    @Override
+    public UserEntity updateProfileByUserId(Integer userId, UserDto userDto) {
+        UserEntity existingUser = userRepository.findById(userId).orElseThrow(() -> new RecordNotFoundException("userId", "id", userId));
+        existingUser.setFirstName(userDto.getFirstName());
+        existingUser.setMiddleName(userDto.getMiddleName());
+        existingUser.setLastName(userDto.getLastName());
+        existingUser.setMobile2(userDto.getMobile2());
+        existingUser.setIsactive(true);
+        UserEntity save = userRepository.save(existingUser);
+        return save;
+    }
 
 }

@@ -38,6 +38,9 @@ public class VehicleServiceImpl implements VehicleService {
        private VehicleServiceImpl vehicleServiceImpl;*/
        @Autowired
        private VehicleWorkMappingRepository vehicleWorkMappingRepository;
+
+       @Autowired
+       private VehicleActivityMappingRepository vehicleActivityMappingRepository;
        @Autowired
        private VehicleOwnerMappingRepository vehicleOwnerMappingRepository;
        @Autowired
@@ -166,6 +169,13 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public List<RoadMasterDto> getRoadDetailByVehicleId(Integer vehicleId) {
+//           List<Integer> vehicleIdList = new ArrayList<>();
+//        if (vehicleId!=null && vehicleId > 0){
+//            vehicleIdList=vehicleRepositoryimpl.getRoadIdsByVehicleIdsForFilter(vehicleId);
+//        }
+//        if(vehicleIdList != null && vehicleId > 0){
+//            vehicleIdList.add(vehicleId);
+//        }
         return vehicleRepositoryimpl.getRoadDetailByVehicleId(vehicleId);
     }
 
@@ -179,9 +189,53 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleRepositoryimpl.getActivityListByVehicleId(vehicleId);
     }
 
+
+
     @Override
-    public Integer getActiveVehicle(Integer vehicleId) {
-        return vehicleRepositoryimpl.getActiveVehicle(vehicleId);
+    public Boolean deactivateVehicle(Integer vehicleId, Integer status) {
+        return vehicleRepositoryimpl.deactivateVehicle(vehicleId,status);
+    }
+
+    @Override
+    public Boolean deactivateDeviceVehicleMapping(Integer vehicleId, Integer status) {
+        return vehicleRepositoryimpl.deactivateDeviceVehicleMapping(vehicleId,status);
+    }
+
+    @Override
+    public Boolean deactivateVehicleActivityMapping(Integer vehicleId, Integer status) {
+        return vehicleRepositoryimpl.deactivateVehicleActivityMapping(vehicleId,status);
+    }
+
+    @Override
+    public Integer getTotalCount(Integer vehicleId) {
+        return vehicleRepositoryimpl.getTotalCount(vehicleId);
+    }
+
+
+    @Override
+    public List<VehicleActivityMappingEntity> assignVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
+//              formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+
+
+        Integer count = workServiceImpl.deactivateVehicleActivity(activity);
+
+        List<VehicleActivityMappingEntity> vehicleActivity=new ArrayList<>();
+        for(VehicleActivityDto vehicleActivity1:activity){
+            VehicleActivityMappingEntity vehicle1=new VehicleActivityMappingEntity();
+            BeanUtils.copyProperties(vehicleActivity1,vehicle1);
+            if(vehicleActivity1.getStartTime()!=null) {
+                Date startTime = formatter.parse(vehicleActivity1.getStartTime());
+                vehicle1.setStartTime(startTime);
+            }
+            if(vehicleActivity1.getEndTime()!=null) {
+                Date endTime = formatter.parse(vehicleActivity1.getEndTime());
+                vehicle1.setEndTime(endTime);
+            }
+
+            vehicleActivity.add(vehicle1);
+        }
+        return vehicleActivityMappingRepository.saveAll(vehicleActivity);
     }
 
 
@@ -301,8 +355,10 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
-              return vehicleRepository.getVehicleList(vehicle);
+           public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {
+            List<Integer>distIds = vehicleRepositoryimpl.getDistIds();
+            List<Integer>divisionIds = vehicleRepositoryimpl.getDivisionIds();
+            return vehicleRepository.getVehicleList(vehicle,distIds,divisionIds);
        }
 
        @Override

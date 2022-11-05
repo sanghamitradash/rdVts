@@ -57,6 +57,14 @@ public class LocationServiceImpl implements LocationService {
         return vtuLocationDtoList;
 
     }
+
+    @Override
+    public Integer getActiveVehicle(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate){
+
+        Integer activeVehicle=locationRepository.getActiveVehicle(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);
+        return activeVehicle;
+
+    }
     @Override
     public Double getDistance(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate){
         return locationRepository.getDistance(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);
@@ -65,6 +73,12 @@ public class LocationServiceImpl implements LocationService {
     public Double getTodayDistance(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate){
         return locationRepository.getTodayDistance(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);
     }
+    @Override
+    public List<VtuLocationDto> getAvgSpeedToday(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate){
+        return locationRepository.getAvgSpeedToday(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);
+    }
+
+
     @Override
     public Double getspeed(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate){
         return locationRepository.getspeed(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);

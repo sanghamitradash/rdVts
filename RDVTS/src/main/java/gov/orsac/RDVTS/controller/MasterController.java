@@ -298,11 +298,16 @@ public class MasterController {
             Page<DesignationDto> designationDtoPage = designationService.getDesignationList(designationDto);
             List<DesignationDto> designationDtoList = designationDtoPage.getContent();
 //            result.put("DesignationDtoList", designationDtoList);
+            Integer start1 = start;
+            for (int i = 0; i < designationDtoList.size(); i++) {
+                start1 = start1 + 1;
+                designationDtoList.get(i).setSlNo(start1);
+            }
             response.setData(designationDtoList);
             response.setMessage("List of Designation.");
             response.setStatus(1);
             response.setDraw(draw);
-            response.setRecordsFiltered(Long.valueOf(designationDtoPage.getNumberOfElements()));
+            response.setRecordsFiltered(designationDtoPage.getTotalElements());
             response.setRecordsTotal(designationDtoPage.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
@@ -345,7 +350,8 @@ public class MasterController {
     }
 
     @PostMapping("/getDesignationById")
-    public RDVTSResponse getDesignationById(@RequestParam int id) {
+    public RDVTSResponse getDesignationById(@RequestParam int id,
+                                            @RequestParam (defaultValue = "0", required = false) int userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -770,7 +776,7 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorById")
-    public RDVTSResponse getVTUVendorById(@RequestParam Integer id,@RequestParam(value = "userId", required = false) Integer userId) {
+    public RDVTSResponse getVTUVendorById(@RequestParam Integer id, @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -797,6 +803,8 @@ public class MasterController {
                                               @RequestParam(name = "userId", required = false) Integer userId,
                                               @RequestParam(name = "deviceId", required = false) Integer deviceId,
                                               @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
+                                              @RequestParam(name = "distId", required = false) Integer distId,
+                                              @RequestParam(name = "divisionId", required = false) Integer divisionId,
                                               @RequestParam(name = "start") Integer start,
                                               @RequestParam(name = "length") Integer length,
                                               @RequestParam(name = "draw") Integer draw) {
@@ -806,13 +814,15 @@ public class MasterController {
         vtuVendorFilterDto.setUserId(userId);
         vtuVendorFilterDto.setDeviceId(deviceId);
         vtuVendorFilterDto.setVtuVendorName(vtuVendorName);
+//        vtuVendorFilterDto.setDistId(vtuVendorFilterDto.getDistId());
+//        vtuVendorFilterDto.setDivisionId(divisionId);
         vtuVendorFilterDto.setOffSet(start);
         vtuVendorFilterDto.setLimit(length);
         vtuVendorFilterDto.setDraw(draw);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try{
-            Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto);
+            Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto, distId, divisionId);
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
             List<VTUVendorMasterDto> finalVendorList=new ArrayList<>();
             Integer start1=start;
@@ -876,11 +886,11 @@ public class MasterController {
 
 
     @PostMapping("/deactivateVendor")
-    public RDVTSResponse deactivateVendor(@RequestParam Integer vendorId) {
+    public RDVTSResponse deactivateVendor(@RequestParam Integer vendorId, @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            Boolean res = masterService.deactivateVendor(vendorId);
+            Boolean res = masterService.deactivateVendor(vendorId, userId);
 
             if (res==true) {
                 response.setData(result);
@@ -1138,6 +1148,67 @@ public class MasterController {
         }
         return response;
     }
+
+    @PostMapping("/getDivisionByCircleId")
+    public RDVTSResponse getDivisionByCircleId(@RequestParam(name = "circleId", required = false) Integer circleId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<DivisionDto> div = masterService.getDivisionByCircleId(circleId);
+            result.put("div", div);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Division  By CircleId");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getAllCircleDD")
+    public RDVTSResponse getAllCircleDD() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<CircleMasterDto> circle = masterService.getAllCircleDD();
+            result.put("circle", circle);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Get All Circle");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getAllDivisionDD")
+    public RDVTSResponse getAllDivisionDD() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<DivisionDto> div = masterService.getAllDivisionDD();
+            result.put("div", div);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Get All Division");
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 
 }

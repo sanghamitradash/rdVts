@@ -64,4 +64,9 @@ public class DeviceMappingEntity {
     @UpdateTimestamp
     private Date updatedOn;
 
+    @Column(name = "g_division_id")
+    private Integer gDivisionId ;
+
+
+
 }

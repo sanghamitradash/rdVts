@@ -54,17 +54,57 @@ public class DeviceServiceImpl implements DeviceService {
     }*/
 
     @Override
-    public List<DeviceDto> getDeviceByIds(List<Integer> deviceId,Integer userId) {
-        return deviceRepositoryImpl.getDeviceByIds(deviceId,userId);
-    }
-    @Override
-    public List<DeviceDto> getDeviceById(Integer deviceId,Integer userId) {
-        return deviceRepositoryImpl.getDeviceById(deviceId,userId);
+    public List<DeviceDto> getDeviceByIds(List<Integer> deviceId, Integer userId) {
+        return deviceRepositoryImpl.getDeviceByIds(deviceId, userId);
     }
 
     @Override
-    public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId,Integer userId) {
-        return deviceRepositoryImpl.getDeviceAreaByDeviceId(deviceId,userId);
+    public List<DeviceDto> getDeviceById(Integer deviceId, Integer userId) {
+        DeviceDto device = new DeviceDto();
+        device = deviceRepositoryImpl.getDevice(deviceId);
+        if (device.getIsActive() == true) {
+            return deviceRepositoryImpl.getDeviceById(deviceId, userId);
+        } else {
+            return deviceRepositoryImpl.getInActiveDeviceById(deviceId, userId);
+        }
+
+    }
+
+       public List<DeviceDto> getAllDeviceDD(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getAllDeviceDD(deviceId, userId);
+    }
+
+    @Override
+    public List<DeviceAreaMappingDto> getAllDeviceAreaByDeviceId(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getAllDeviceAreaByDeviceId(deviceId, userId);
+    }
+
+    @Override
+    public List<VehicleDeviceMappingDto> getVehicleDeviceMappingDDByDeviceId(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getVehicleDeviceMappingDDByDeviceId(deviceId,userId);
+    }
+
+    @Override
+    public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId, Integer userId) {
+        List<DeviceAreaMappingDto> deviceMapping=new ArrayList<>();
+        List<DeviceAreaMappingDto> device = new ArrayList<>();
+                device =deviceRepositoryImpl.getDeviceArea(deviceId);
+        for (int i = 0; i < device.size(); i++) {
+           // Boolean checkTrueOrFalse = deviceRepositoryImpl.getDeviceAreaTrue(deviceId);
+            if (device.get(i).getIsActive() == true) {
+                deviceMapping= deviceRepositoryImpl.getDeviceAreaByDeviceId(deviceId, userId);
+            } else {
+                deviceMapping= deviceRepositoryImpl.getDeviceAreaByDeviceIdInActive(deviceId, userId);
+            }
+        }
+        return deviceMapping;
+    }
+
+
+
+    @Override
+    public List<DeviceAreaMappingDto> getDeviceAreaByDeviceIdInActive(Integer deviceId, Integer userId) {
+        return deviceRepositoryImpl.getDeviceAreaByDeviceIdInActive(deviceId,userId);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.service.HelperService;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,8 @@ public class WorkRepositoryImpl {
     private UserRepositoryImpl userRepositoryImpl;
     @Autowired
     private GeoMasterRepositoryImpl geoMasterRepositoryImpl;
+    @Autowired
+    private HelperService helperService;
 
 
 
@@ -42,8 +45,20 @@ public class WorkRepositoryImpl {
     }
     public List<Integer> getWorkIdByBlockId(List<Integer> blockId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct work_id from rdvts_oltp.geo_master where block_id in(:blockId)";
+        String qry = "select distinct work_id from rdvts_oltp.geo_master where block_id in (:blockId)";
         sqlParam.addValue("blockId",blockId);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+    public List<Integer> getWorkIdByDivisionId(List<Integer> divisionId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct work_id from rdvts_oltp.geo_master where division_id in (:divisionId)";
+        sqlParam.addValue("divisionId",divisionId);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+    public List<Integer> getWorkIdByContractorId(List<Integer> contractorId){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct work_id from rdvts_oltp.geo_master where contractor_id in (:contractorId)";
+        sqlParam.addValue("contractorId",contractorId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 
@@ -63,15 +78,20 @@ public class WorkRepositoryImpl {
         int resultCount = 0;
         String qry = "select distinct  wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
                 " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
-                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name, geo.contractor_id " +
+                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name, geo.contractor_id,wsm.name as work_status_name " +
                 " from rdvts_oltp.work_m as wm " +
                 " left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
                 " left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
                 " left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
+                " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true " +
                 " where wm.is_active = true ";
         if (workDto.getId() > 0) {
             qry += " and wm.id = :id";
             sqlParam.addValue("id", workDto.getId());
+        }
+        if (workDto.getWorkStatus() != null && workDto.getWorkStatus() > 0) {
+            qry += " and wm.work_status = :work_status";
+            sqlParam.addValue("work_status", workDto.getWorkStatus());
         }
 //        if (workDto.getActivityId() > 0) {
 //            qry += " and act.id = :activityId";
@@ -81,23 +101,28 @@ public class WorkRepositoryImpl {
 
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(workDto.getUserId());
 //        if(user.getUserLevelId()==5){
-//            qry+=" and gm.contractor_id=:contractorId ";
-//            sqlParam.addValue("contractorId",workDto.getUserId());
+//            List<Integer> contractorIds = userRepositoryImpl.getContractorByUserId(workDto.getUserId());
+//            List<Integer> workIds = getWorkIdByContractorId(contractorIds);
+//            qry+=" and wm.id=:workIds ";
+//            sqlParam.addValue("workIds",workIds);
 //        }
-//        else if(user.getUserLevelId()==2){
+//        else if(user.getUserLevelId() == 2){
 //            List<Integer> distIdList=userRepositoryImpl.getDistIdByUserId(workDto.getUserId());
-//            qry+=" and gm.dist_id in (:distIdList)";
-//            sqlParam.addValue("distIdList",distIdList);
+//            List<Integer> workIds = getWorkIdByDistId(distIdList);
+//            qry+=" and wm.id in (:workIds)";
+//            sqlParam.addValue("workIds",workIds);
 //        }
 //        else if(user.getUserLevelId()==3){
 //            List<Integer> blockIdList=userRepositoryImpl.getBlockIdByUserId(workDto.getUserId());
-//            qry+=" and gm.block_id in (:blockIdList)";
-//            sqlParam.addValue("blockIdList",blockIdList);
+//            List<Integer> workIds = getWorkIdByBlockId(blockIdList);
+//            qry+=" and wm.id in (:workIds)";
+//            sqlParam.addValue("workIds",workIds);
 //        }
 //        else if(user.getUserLevelId() == 4){
-//            List<Integer> divisionId=userRepositoryImpl.getDivisionByUserId(workDto.getUserId());
-//            List<Integer> districtId=userRepositoryImpl.getDistrictByDivisionId(divisionId);
-//            qry+= "";
+//            List<Integer> divisionIds=userRepositoryImpl.getDivisionByUserId(workDto.getUserId());
+//            List<Integer> workIds = getWorkIdByDivisionId(divisionIds);
+//            qry+=" and wm.id in (:workIds)";
+//            sqlParam.addValue("workIds",workIds);
 //        }
 
 
@@ -115,11 +140,13 @@ public class WorkRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select distinct  wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
                 " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
-                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name " +
+                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name,asm.name as approval_status_name,wsm.name as work_status_name " +
                 " from rdvts_oltp.work_m as wm " +
                 " left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
                 " left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
                 " left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
+                " left join rdvts_oltp.approval_status_m as asm on asm.id=wm.approval_status and asm.is_active = true " +
+                " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true " +
                 " where wm.is_active = true ";
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
         if (id > 0) {
@@ -139,15 +166,17 @@ public class WorkRepositoryImpl {
 //            }
 //        }
 
-//        qry+=" order by geoWorkName";
+        qry+=" order by geoWorkName";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
 
     public List<ActivityDto> getActivityByWorkId(int id){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select * from rdvts_oltp.activity_m where is_active = true " ;
+        String qry = "select am.*,asm.name as activity_status_name from rdvts_oltp.activity_m as am " +
+                "left join rdvts_oltp.activity_status_m as asm on asm.id = am.activity_status and asm.is_active = true " +
+                "where am.is_active = true " ;
         if (id > 0){
-            qry +=" and work_id= :id " ;
+            qry +=" and am.work_id= :id " ;
             sqlParam.addValue("id", id);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
@@ -194,11 +223,10 @@ public class WorkRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
     }
 
-//    public List<WorkDto> getUnAssignedWorkData(List<Integer> userIdList, Integer userId) {
-//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-//        String qry = "select wm.id,wm.g_work_name as geoWorkName, from rdvts_oltp.work_m as wm where wm.id " +
-//                     "not in (select distinct work_id from rdvts_oltp.activity_m ) and wm.is_active = true ";
-//
-//        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
-//    }
+    public List<UnassignedWorkDto> getUnAssignedWorkData(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select id,g_work_name as geoWorkName from rdvts_oltp.work_m where id not in (select work_id from rdvts_oltp.geo_master where is_active = true) and is_active = true ";
+
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UnassignedWorkDto.class));
+    }
 }

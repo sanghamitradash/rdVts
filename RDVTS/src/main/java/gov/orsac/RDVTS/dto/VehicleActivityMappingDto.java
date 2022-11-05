@@ -34,5 +34,8 @@ public class VehicleActivityMappingDto {
     private String chassisNo;
     private String engineNo;
 
+    private String start;
+    private String end;
+
     List<ActivityEntity> activityEntityList;
 }

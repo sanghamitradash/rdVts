@@ -57,7 +57,15 @@ public interface VehicleService {
 
     ActivityInfoDto getLiveActivityByVehicleId(Integer vehicleId);
     List<ActivityInfoDto> getActivityListByVehicleId(Integer vehicleId);
-    Integer getActiveVehicle(Integer vehicleId);
 
 
+    Boolean deactivateVehicle(Integer vehicleId, Integer status);
+
+    Boolean deactivateDeviceVehicleMapping(Integer vehicleId, Integer status);
+
+    Boolean deactivateVehicleActivityMapping(Integer vehicleId, Integer status);
+
+    Integer getTotalCount(Integer vehicleId);
+
+    List<VehicleActivityMappingEntity> assignVehicleActivity(List<VehicleActivityDto> activity) throws ParseException;
 }

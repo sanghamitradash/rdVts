@@ -12,6 +12,7 @@ import gov.orsac.RDVTS.service.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -98,14 +99,23 @@ public class WorkServiceImpl implements WorkService {
         return vehicleRepository.deactivateVehicleWork(workIds, vehicleIds);
     }
 
-//    @Override
-//    public List<WorkDto> getUnAssignedWorkData(Integer userId) {
+    @Override
+    public List<UnassignedWorkDto> getUnAssignedWorkData(Integer userId) {
 //        List<Integer> userIdList=new ArrayList<>();
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
 //        if(user.getUserLevelId()!=5){
 //            userIdList=helperService.getLowerUserByUserId(userId);
 //        }
-//        return workRepositoryImpl.getUnAssignedWorkData(userIdList,userId);
-//    }
+        return workRepositoryImpl.getUnAssignedWorkData(userId);
+    }
 
+    public Integer deactivateVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {
+        List<Integer> activityIds = new ArrayList<>();
+        List<Integer> vehicleIds = new ArrayList<>();
+        for(VehicleActivityDto vehicle :activity ){
+            vehicleIds.add(vehicle.getVehicleId());
+            activityIds.add(vehicle.getActivityId());
+        }
+        return vehicleRepository.deactivateVehicleActivity(activityIds,vehicleIds);
+    }
 }

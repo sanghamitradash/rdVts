@@ -41,7 +41,7 @@ public interface MasterService {
 
     List<VTUVendorMasterDto> getVTUVendorById(Integer id, Integer userId);
 
-    Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto);
+    Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto, Integer distId, Integer divisionId);
 
     VTUVendorMasterEntity updateVTUVendor(Integer id, VTUVendorMasterDto vtuVendorMasterDto);
 
@@ -58,5 +58,14 @@ public interface MasterService {
 
     List<DivisionDto> getListOfDivisionByListOfDistId(List<Integer> distId);
 
-    Boolean deactivateVendor(Integer vendorId);
+    Boolean deactivateVendor(Integer vendorId, Integer userId);
+ //   Boolean deactivateVendor(Integer vendorId);
+
+    List<DivisionDto> getDivisionByCircleId(Integer circleId);
+
+    List<CircleMasterDto> getAllCircleDD();
+
+    List<DivisionDto> getAllDivisionDD();
+
+    List<DistrictBoundaryDto> getAllDistrictDD();
 }

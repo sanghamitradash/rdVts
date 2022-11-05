@@ -2,8 +2,10 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.UserDto;
 import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.entities.ContractorEntity;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.service.HelperService;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +86,10 @@ public class UserRepositoryImpl {
             queryString += " and um.id in (select user_id from rdvts_oltp.user_area_mapping where division_id=:divisionId)";
             sqlParam.addValue("divisionId", userListRequest.getDivisionId());
         }
+        if (userListRequest.getCircleId() != null && userListRequest.getCircleId() > 0) {
+            queryString += " and um.id in (select user_id from rdvts_oltp.user_area_mapping where circle_id=:circleId)";
+            sqlParam.addValue("circleId", userListRequest.getCircleId());
+        }
 
         if (userListRequest.getDesignationId() != null && userListRequest.getDesignationId() > 0) {
             queryString += " AND   um.designation_id=:getDesignationId ";
@@ -142,11 +148,25 @@ public class UserRepositoryImpl {
                 "\tleft join rdvts_oltp.designation_m as dm on dm.id=um.designation_id\n" +
                 "\tleft join rdvts_oltp.user_level_m as ulm on ulm.id=um.user_level_id\n" +
                 "\tleft join rdvts_oltp.role_m as rm on rm.id=um.role_id\n" +
-                "\tleft join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id where um.is_active=true and um.id=:userId; ";
+                "\tleft join rdvts_oltp.contractor_m cm on cm.id=um.contractor_id where um.id=:userId ; ";
 
         sqlParam.addValue("userId", userId);
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(UserInfoDto.class));
     }
+
+//    public Boolean saveLoginLog(Integer userId) {
+//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+//
+//        String qry = "INSERT INTO rdvts_oltp.login_log( " +
+//                " user_id, type, date_time, is_active, created_by, updated_by) " +
+//                " VALUES (:userId,'login',NOW(),'t',:userId,:userId); ";
+//
+//        sqlParam.addValue("userId", userId);
+//        return namedJdbc.queryForObject(qry, sqlParam, Boolean.class);
+//    }
+
+
+
 
     public UserDto getUserBymobile(Long mobile) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
@@ -241,7 +261,7 @@ public class UserRepositoryImpl {
 
     public List<Integer> getDivisionByUserId(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct division_id from rdvts_oltp.user_area_mapping where user_id=:userId";
+        String qry = "select distinct division_id from rdvts_oltp.user_area_mapping where user_id=:userId ";
         sqlParam.addValue("userId", userId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
@@ -250,6 +270,13 @@ public class UserRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select dist_id from rdvts_oltp.division_m where id in(:divisionId) ";
         sqlParam.addValue("divisionId", divisionId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getContractorByUserId(Integer userId){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct contractor_id from rdvts_oltp.user_m where id=:userId ";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 
@@ -264,6 +291,21 @@ public class UserRepositoryImpl {
         int update = namedJdbc.update(qry, sqlParam);
         return update > 0;
     }
+
+    public List<Integer> getBlockIdByDistId(List<Integer> distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select block_id FROM rdvts_oltp.block_boundary  where dist_id in(:distIds) ";
+        sqlParam.addValue("distIds", distIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getDivisionByDistId(List<Integer> distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select id FROM  rdvts_oltp.division_m where dist_id in(:distIds) ";
+        sqlParam.addValue("distIds", distIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+
 
 }
 

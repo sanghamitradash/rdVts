@@ -271,9 +271,19 @@ public class MasterServiceImpl implements MasterService {
     }
 
     @Override
-    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto) {
+    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto, Integer distId, Integer divisionId) {
+        List<Integer> vendorIdList = new ArrayList<>();
+        if (distId!=null && distId > 0){
+            vendorIdList=masterRepositoryImpl.getVendorIdsByDistIdsForFilter(distId);
+        }
+        if (divisionId!=null && divisionId > 0){
+            vendorIdList=masterRepositoryImpl.getVendorIdsBydivisionIdsForFilter(divisionId);
+        }
+        if(vtuVendorFilterDto.getVendorId()!=null && vtuVendorFilterDto.getVendorId() > 0) {
+            vendorIdList.add(vtuVendorFilterDto.getVendorId());
+        }
 
-        List<Integer> deviceIds = new ArrayList<>();
+//        List<Integer> deviceIds = new ArrayList<>();
 //        if (vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0) {
 //            deviceIds = masterRepository.getDeviceByVendorId(vtuVendorFilterDto.getDeviceId());
 //        }
@@ -329,8 +339,30 @@ public class MasterServiceImpl implements MasterService {
     }
 
     @Override
-    public Boolean deactivateVendor(Integer vendorId) {
-        return masterRepositoryImpl.deactivateVendor(vendorId);
+    public Boolean deactivateVendor(Integer vendorId, Integer userId) {
+        return masterRepositoryImpl.deactivateVendor(vendorId, userId);
+    }
+
+
+
+    @Override
+    public List<DivisionDto> getDivisionByCircleId(Integer circleId) {
+        return masterRepositoryImpl.getDivisionByCircleId(circleId);
+    }
+
+    @Override
+    public List<CircleMasterDto> getAllCircleDD() {
+        return masterRepositoryImpl.getAllCircleDD();
+    }
+
+    @Override
+    public List<DivisionDto> getAllDivisionDD() {
+        return masterRepositoryImpl.getAllDivisionDD();
+    }
+
+    @Override
+    public List<DistrictBoundaryDto> getAllDistrictDD() {
+        return masterRepositoryImpl.getAllDistrict();
     }
 
 
