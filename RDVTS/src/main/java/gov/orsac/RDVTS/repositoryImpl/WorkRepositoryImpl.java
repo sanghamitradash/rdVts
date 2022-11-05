@@ -45,8 +45,20 @@ public class WorkRepositoryImpl {
     }
     public List<Integer> getWorkIdByBlockId(List<Integer> blockId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct work_id from rdvts_oltp.geo_master where block_id in(:blockId)";
+        String qry = "select distinct work_id from rdvts_oltp.geo_master where block_id in (:blockId)";
         sqlParam.addValue("blockId",blockId);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+    public List<Integer> getWorkIdByDivisionId(List<Integer> divisionId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct work_id from rdvts_oltp.geo_master where division_id in (:divisionId)";
+        sqlParam.addValue("divisionId",divisionId);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+    public List<Integer> getWorkIdByContractorId(List<Integer> contractorId){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct work_id from rdvts_oltp.geo_master where contractor_id in (:contractorId)";
+        sqlParam.addValue("contractorId",contractorId);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 
@@ -71,7 +83,7 @@ public class WorkRepositoryImpl {
                 " left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
                 " left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
                 " left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
-                " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true" +
+                " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true " +
                 " where wm.is_active = true ";
         if (workDto.getId() > 0) {
             qry += " and wm.id = :id";
@@ -89,24 +101,28 @@ public class WorkRepositoryImpl {
 
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(workDto.getUserId());
 //        if(user.getUserLevelId()==5){
-//            qry+=" and gm.contractor_id=:contractorId ";
-//            sqlParam.addValue("contractorId",workDto.getUserId());
+//            List<Integer> contractorIds = userRepositoryImpl.getContractorByUserId(workDto.getUserId());
+//            List<Integer> workIds = getWorkIdByContractorId(contractorIds);
+//            qry+=" and wm.id=:workIds ";
+//            sqlParam.addValue("workIds",workIds);
 //        }
 //        else if(user.getUserLevelId() == 2){
-//            List<Integer> userIdList = helperService.getLowerUserByUserId(workDto.getUserId());
 //            List<Integer> distIdList=userRepositoryImpl.getDistIdByUserId(workDto.getUserId());
-//            qry+=" and gm.dist_id in (:distIdList)";
-//            sqlParam.addValue("distIdList",distIdList);
+//            List<Integer> workIds = getWorkIdByDistId(distIdList);
+//            qry+=" and wm.id in (:workIds)";
+//            sqlParam.addValue("workIds",workIds);
 //        }
 //        else if(user.getUserLevelId()==3){
 //            List<Integer> blockIdList=userRepositoryImpl.getBlockIdByUserId(workDto.getUserId());
-//            qry+=" and gm.block_id in (:blockIdList)";
-//            sqlParam.addValue("blockIdList",blockIdList);
+//            List<Integer> workIds = getWorkIdByBlockId(blockIdList);
+//            qry+=" and wm.id in (:workIds)";
+//            sqlParam.addValue("workIds",workIds);
 //        }
 //        else if(user.getUserLevelId() == 4){
-//            List<Integer> divisionId=userRepositoryImpl.getDivisionByUserId(workDto.getUserId());
-//            List<Integer> districtId=userRepositoryImpl.getDistrictByDivisionId(divisionId);
-//            qry+= "";
+//            List<Integer> divisionIds=userRepositoryImpl.getDivisionByUserId(workDto.getUserId());
+//            List<Integer> workIds = getWorkIdByDivisionId(divisionIds);
+//            qry+=" and wm.id in (:workIds)";
+//            sqlParam.addValue("workIds",workIds);
 //        }
 
 
