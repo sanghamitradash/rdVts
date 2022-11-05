@@ -133,8 +133,9 @@ public class ContractorRepositoryImpl implements ContractorRepository {
         int resultCount = 0;
 
 
-        String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on, cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
-                //"left join rdvts_oltp.user_m as um on um.contractor_id = cm.id  " +
+        String qry = "SELECT distinct cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on, cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
+//                "left join rdvts_oltp.user_m as um on um.contractor_id = cm.id  " +
+//                "left join rdvts_oltp.user_area_mapping as uam on uam.user_id = um.id " +
                 "where cm.is_active = true  ";
 
 
