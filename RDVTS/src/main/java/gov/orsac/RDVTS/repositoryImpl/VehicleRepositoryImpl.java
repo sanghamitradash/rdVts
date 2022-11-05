@@ -164,7 +164,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "left join rdvts_oltp.activity_m as activity on activity.work_id=work.id " +
                 "left join rdvts_oltp.work_status_m as status on status.id=work.work_status " +
                 "left join rdvts_oltp.approval_status_m as approvalStatus on approvalStatus.id=work.approval_status " +
-                "where activity.id=1 and activity.is_active=true ";
+                "where activity.id=:activityId and activity.is_active=true ";
 
         sqlParam.addValue("activityId", activityId);
 
