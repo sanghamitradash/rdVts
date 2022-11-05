@@ -803,6 +803,8 @@ public class MasterController {
                                               @RequestParam(name = "userId", required = false) Integer userId,
                                               @RequestParam(name = "deviceId", required = false) Integer deviceId,
                                               @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
+                                              @RequestParam(name = "distId", required = false) Integer distId,
+                                              @RequestParam(name = "divisionId", required = false) Integer divisionId,
                                               @RequestParam(name = "start") Integer start,
                                               @RequestParam(name = "length") Integer length,
                                               @RequestParam(name = "draw") Integer draw) {
@@ -812,13 +814,15 @@ public class MasterController {
         vtuVendorFilterDto.setUserId(userId);
         vtuVendorFilterDto.setDeviceId(deviceId);
         vtuVendorFilterDto.setVtuVendorName(vtuVendorName);
+//        vtuVendorFilterDto.setDistId(vtuVendorFilterDto.getDistId());
+//        vtuVendorFilterDto.setDivisionId(divisionId);
         vtuVendorFilterDto.setOffSet(start);
         vtuVendorFilterDto.setLimit(length);
         vtuVendorFilterDto.setDraw(draw);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try{
-            Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto);
+            Page<VTUVendorMasterDto> vendorListPage = masterService.getVTUVendorList(vtuVendorFilterDto, distId, divisionId);
             List<VTUVendorMasterDto> vendorList = vendorListPage.getContent();
             List<VTUVendorMasterDto> finalVendorList=new ArrayList<>();
             Integer start1=start;

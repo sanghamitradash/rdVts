@@ -13,6 +13,8 @@ public class VTUVendorFilterDto {
     private Integer userId;
     private Integer deviceId;
     private String vtuVendorName;
+    private Integer distId;
+    private Integer divisionId;
 
     private Integer offSet;
     private Integer limit;

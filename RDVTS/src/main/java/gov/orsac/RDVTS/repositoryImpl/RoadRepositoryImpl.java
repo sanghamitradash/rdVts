@@ -105,7 +105,7 @@ public class RoadRepositoryImpl {
                 "LEFT JOIN rdvts_oltp.work_m as wm on wm.id=geom.work_id and wm.is_active = true " +
                 "WHERE road.is_active = true    ";
 
-        String subQuery = "";
+//        String subQuery = "";
 
         if (roadFilterDto.getId() != null && roadFilterDto.getId() > 0) {
             queryString += " AND road.id=:id ";
@@ -140,6 +140,16 @@ public class RoadRepositoryImpl {
         if (roadFilterDto.getActivityIds() != null && !roadFilterDto.getActivityIds().isEmpty()) {
             queryString += " AND am.id IN (:activityids)";
             sqlParam.addValue("activityids", roadFilterDto.getActivityIds());
+        }
+
+        if (roadFilterDto.getDistIds() != null && !roadFilterDto.getDistIds().isEmpty()) {
+            queryString += " AND geom.dist_id IN (:distIds)";
+            sqlParam.addValue("distIds", roadFilterDto.getDistIds());
+        }
+
+        if (roadFilterDto.getDivisionIds() != null && !roadFilterDto.getDivisionIds().isEmpty()) {
+            queryString += " AND geom.division_id IN (:divisionIds)";
+            sqlParam.addValue("divisionIds", roadFilterDto.getDivisionIds());
         }
 
         UserInfoDto user = userRepositoryImpl.getUserByUserId(roadFilterDto.getUserId());

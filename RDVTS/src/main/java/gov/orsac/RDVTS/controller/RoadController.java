@@ -126,6 +126,8 @@ public class RoadController {
                                            @RequestParam(name = "workIds", required = false) List<Integer> workIds,
                                            @RequestParam(name = "contractIds", required = false) List<Integer> contractIds,
                                            @RequestParam(name = "activityids", required = false) List<Integer> activityids,
+                                           @RequestParam(name = "divisionIds", required = false) List<Integer> divisionIds,
+                                           @RequestParam(name = "distIds", required = false) List<Integer> distIds,
                                            @RequestParam(name = "start") Integer start,
                                            @RequestParam(name = "length") Integer length,
                                            @RequestParam(name = "draw") Integer draw) {
@@ -138,6 +140,8 @@ public class RoadController {
         roadFilterDto.setWorkIds(workIds);
         roadFilterDto.setContractIds(contractIds);
         roadFilterDto.setActivityIds(activityids);
+        roadFilterDto.setDistIds(distIds);
+        roadFilterDto.setDivisionIds(divisionIds);
         roadFilterDto.setLimit(length);
         roadFilterDto.setOffSet(start);
         roadFilterDto.setDraw(draw);

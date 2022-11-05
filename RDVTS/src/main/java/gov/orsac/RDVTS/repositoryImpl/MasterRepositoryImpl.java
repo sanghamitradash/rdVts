@@ -244,6 +244,21 @@ public class MasterRepositoryImpl implements MasterRepository {
         return vendor;
     }
 
+
+    public List<Integer> getVendorIdsByDistIdsForFilter(Integer distId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct vtu_vendor_id from rdvts_oltp.device_m where id in (select distinct device_id from rdvts_oltp.device_area_mapping where dist_id=:distId) ";
+        sqlParam.addValue("distId", distId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getVendorIdsBydivisionIdsForFilter(Integer divisionId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct vtu_vendor_id from rdvts_oltp.device_m where id in (select distinct device_id from rdvts_oltp.device_area_mapping where division_id =:divisionId) ";
+        sqlParam.addValue("divisionId", divisionId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
     public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto){
 //        UserDto userDto = new UserDto();
 //        userDto.setId(vtuVendorMasterDto.getUserId());
@@ -278,8 +293,6 @@ public class MasterRepositoryImpl implements MasterRepository {
 //            queryString += " AND dev.id IN (:deviceIds)";
 //            sqlParam.addValue("deviceIds", deviceIds);
 //        }
-
-
 //        if(vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0){
 //            queryString += " AND dev.id=:deviceId ";
 //            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDeviceId());
@@ -288,6 +301,11 @@ public class MasterRepositoryImpl implements MasterRepository {
         if(vtuVendorFilterDto.getVtuVendorName() != null){
             queryString += " AND vtuM.vtu_vendor_name LIKE(:vtuVendorName) ";
             sqlParam.addValue("vtuVendorName", vtuVendorFilterDto.getVtuVendorName());
+        }
+
+        if(vtuVendorFilterDto.getDivisionId() != null && vtuVendorFilterDto.getDivisionId() > 0){
+            queryString += " AND dev.id=:deviceId ";
+            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDivisionId());
         }
 //        if(vtuVendorFilterDto.getUserId() != null && vtuVendorFilterDto.getUserId() > 0){
 //            sqlParam.addValue("userId", vtuVendorFilterDto.getUserId());
