@@ -8,6 +8,8 @@ import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.service.AWSS3StorageService;
 import gov.orsac.RDVTS.service.ActivityService;
+import gov.orsac.RDVTS.serviceImpl.AWSS3StorageServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
+@Slf4j
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/v1/activity")
@@ -25,6 +28,9 @@ public class ActivityController {
 
     @Autowired
     private AWSS3StorageService awss3StorageService;
+
+    @Autowired
+    private AWSS3StorageServiceImpl awsS3StorageServiceImpl;
 
     @Autowired
     private ActivityService activityService;
@@ -102,19 +108,22 @@ public class ActivityController {
         try {
             ObjectMapper mapper = new ObjectMapper();
             ActivityDto activityData = mapper.readValue(data, ActivityDto.class);
-
+            ActivityEntity activity1 = activityService.updateActivity(id, activityData, issueImages);
             if (issueImages!=null && issueImages.length > 0) {
-                ActivityEntity activity1 = activityService.updateActivity(id, activityData, issueImages);
+
                 for (MultipartFile files : issueImages) {
-                    boolean saveDocument = awss3StorageService.uploadIssueImages(files, String.valueOf(activity1.getId()), files.getOriginalFilename());
+                    boolean saveDocument = awsS3StorageServiceImpl.uploadIssueImages(files, String.valueOf(activity1.getId()), files.getOriginalFilename());
                 }
-                result.put("activity1", activity1);
             }
-            response.setData(result);
-            response.setStatus(1);
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("Activity Updated successfully.");
+                    result.put("activity1", activity1);
+                    response.setData(result);
+                    response.setStatus(1);
+                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                    response.setMessage("Activity Updated successfully.");
+
+
         } catch (Exception ex) {
+            ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),
