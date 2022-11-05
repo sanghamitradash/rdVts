@@ -145,7 +145,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     public Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry= " UPDATE rdvts_oltp.activity_work_mapping" +
+        String qry= " UPDATE rdvts_oltp.activity_work_mapping " +
                 "SET is_active=false,updated_by=:userId " +
                 " WHERE activity_id=:activityId and work_id=:workId";
         sqlParam.addValue("activityId", activityId);
@@ -186,7 +186,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     public List<ActivityDto> unassignedActivity(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " SELECT id, activity_name FROM rdvts_oltp.activity_m where work_id is null order by activity_name";
+        String qry = "  SELECT id, activity_name FROM rdvts_oltp.activity_m where id not in (select activity_id from rdvts_oltp.activity_work_mapping where work_id is null) order by activity_name";
         sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
     }

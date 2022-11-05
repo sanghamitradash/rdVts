@@ -271,9 +271,19 @@ public class MasterServiceImpl implements MasterService {
     }
 
     @Override
-    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto) {
+    public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto, Integer distId, Integer divisionId) {
+        List<Integer> vendorIdList = new ArrayList<>();
+        if (distId!=null && distId > 0){
+            vendorIdList=masterRepositoryImpl.getVendorIdsByDistIdsForFilter(distId);
+        }
+        if (divisionId!=null && divisionId > 0){
+            vendorIdList=masterRepositoryImpl.getVendorIdsBydivisionIdsForFilter(divisionId);
+        }
+        if(vtuVendorFilterDto.getVendorId()!=null && vtuVendorFilterDto.getVendorId() > 0) {
+            vendorIdList.add(vtuVendorFilterDto.getVendorId());
+        }
 
-        List<Integer> deviceIds = new ArrayList<>();
+//        List<Integer> deviceIds = new ArrayList<>();
 //        if (vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0) {
 //            deviceIds = masterRepository.getDeviceByVendorId(vtuVendorFilterDto.getDeviceId());
 //        }
