@@ -1,9 +1,25 @@
 package gov.orsac.RDVTS.service;
 
 import gov.orsac.RDVTS.dto.AlertDto;
-import org.springframework.stereotype.Service;
+import gov.orsac.RDVTS.dto.BufferDto;
+import gov.orsac.RDVTS.dto.VtuLocationDto;
+import gov.orsac.RDVTS.entities.AlertEntity;
+
+import java.util.List;
 
 
 public interface AlertService  {
     AlertDto checkAlertExists(Long imei, Integer noDataAlertId);
+    AlertEntity saveAlert(AlertEntity alertEntity);
+    Boolean updateResolve(Long imei1, Integer noDataAlertId);
+
+    List<Long> getImeiForNoMovement();
+
+    List<VtuLocationDto> getLocationRecordByFrequency(Long imei1, Integer recordLimit);
+
+    List<BufferDto> getBuffer(Long item);
+
+    Boolean checkIntersected(String longitude, String latitude, String vtuItemLongitude, String vtuItemLatitude);
+
+    Boolean bufferQuery(String BufferPointLongitude, String BufferPointLatitude, String longitude, String latitude);
 }

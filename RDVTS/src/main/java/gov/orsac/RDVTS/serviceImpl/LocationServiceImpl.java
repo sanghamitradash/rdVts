@@ -90,8 +90,9 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public LocationDto  getLastLocationByImei(Long imei1){
-        return vehicleRepositoryimpl.getLatestLocationByDeviceId(imei1);
+    public VtuLocationDto  getLastLocationByImei(Long imei1){
+        return locationRepository.getLastLocationByImei(imei1);
+
     }
 
 
