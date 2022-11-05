@@ -502,7 +502,7 @@ public class MasterRepositoryImpl implements MasterRepository {
 
     public List<CircleMasterDto> getAllCircleDD() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT id,name from rdvts_oltp.circle_m  ";
+        String qry = "SELECT id,name from rdvts_oltp.circle_m ORDER BY name  ";
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(CircleMasterDto.class));
     }
 

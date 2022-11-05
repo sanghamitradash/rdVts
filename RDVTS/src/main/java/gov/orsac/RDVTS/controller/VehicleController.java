@@ -193,6 +193,8 @@ public class VehicleController {
                                             @RequestParam(name = "length", required = false) Integer length,
                                             @RequestParam(name = "draw", required = false) Integer draw,
                                             @RequestParam(name = "userId", required = false) Integer userId,
+                                            @RequestParam(name = "distId",required = false) Integer distId,
+                                            @RequestParam(name = "divisionId",required = false) Integer divisionId,
                                             @RequestParam(name = "deviceAssign", required = false) Boolean deviceAssign,
                                             @RequestParam(name = "trackingActive", required = false) Boolean trackingActive,
                                             @RequestParam(name = "activityAssign", required = false) Boolean activityAssign) {
@@ -205,6 +207,8 @@ public class VehicleController {
         vehicle.setLimit(length);
         vehicle.setOffSet(start);
         vehicle.setUserId(userId);
+        vehicle.setDistId(distId);
+        vehicle.setDivisionId(divisionId);
         vehicle.setDraw(draw);
 
         //Check and Assign Filter
