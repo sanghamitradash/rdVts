@@ -3,6 +3,7 @@ import gov.orsac.RDVTS.dto.DeviceDto;
 import gov.orsac.RDVTS.dto.LocationDto;
 import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.VtuLocationDto;
+import gov.orsac.RDVTS.entities.AlertEntity;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -24,7 +25,9 @@ public interface LocationService {
 
     Double getspeed(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
 
-    LocationDto getLastLocationByImei(Long imei1);
+    VtuLocationDto getLastLocationByImei(Long imei1);
+
+
 
 
 

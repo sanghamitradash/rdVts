@@ -1,17 +1,17 @@
 package gov.orsac.RDVTS.controller;
 
 
-import gov.orsac.RDVTS.dto.AlertDto;
-import gov.orsac.RDVTS.dto.DeviceDto;
-import gov.orsac.RDVTS.dto.LocationDto;
-import gov.orsac.RDVTS.dto.RDVTSResponse;
+import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.AlertEntity;
 import gov.orsac.RDVTS.service.AlertService;
 import gov.orsac.RDVTS.service.DeviceService;
 import gov.orsac.RDVTS.service.LocationService;
+import io.swagger.models.auth.In;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,82 +38,80 @@ public class AlertController {
     public AlertService alertService;
 
     @RequestMapping("/generateNoDataAlert")
+
     public RDVTSResponse generateNoDataAlert(@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
-        final Integer noDataAlertTimeSpan = 60; //in minutes
-        final Integer NO_DATA_ALERT_ID=3;//NO_DATA_ALERT_ID
+        final Integer noDataAlertTimeSpan = 60; //in minutes Alert Time Span
+        final Integer NO_DATA_ALERT_ID = 3;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
 
         try {
-            Integer deviceId = -1;
+            Integer deviceId = -1; //fro getting all device
+            //get all device
             List<DeviceDto> device = deviceService.getAllDeviceDD(deviceId, userId);
-            Map<String,Integer> map =new HashMap<>();
+            Map<String, Integer> map = new HashMap<>();
             for (DeviceDto item : device) {
-
-
-                LocationDto locationDto = locationService.getLastLocationByImei(item.getImeiNo1());
-                if (locationDto !=null){
+                //get Last location of the Current Date
+                VtuLocationDto locationDto = locationService.getLastLocationByImei(item.getImeiNo1());
+                if (locationDto != null) {
                     Integer noDataAlertStatus = 0;
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date();
-
-                    String currDtTime = dateFormat.format(date);
-
-
+                    String currDtTime = dateFormat.format(date);//Date to String Convert
                     if (locationDto.getDateTime() != null && !locationDto.getDateTime().toString().isEmpty()) {
                         String lastLocTime = dateFormat.format(locationDto.getDateTime());
 
-                        Date d1 = null;
-                        Date d2 = null;
+                        Date currDtTimeParsed = null;
+                        Date lastLocTimeParsed = null;
                         try {
-                            d1 = dateFormat.parse(currDtTime);
-                            d2 = dateFormat.parse(lastLocTime);
+                            currDtTimeParsed = dateFormat.parse(currDtTime);//String To date Convert
+                            lastLocTimeParsed = dateFormat.parse(lastLocTime);//String To date Convert
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-                        long diff =  d1.getTime()-d2.getTime();
-                        long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diff);
+                        long diff = currDtTimeParsed.getTime() - lastLocTimeParsed.getTime();//get difference of last Location and current Location
+                        long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diff);//Convert the Difference in minutes
                         //long diffMinutes = diff / (60 * 1000) % 60;
                         if (diffInMinutes > noDataAlertTimeSpan) {
                             noDataAlertStatus = 1;
                         }
-                      // System.out.println(noDataAlertStatus);
-                        if(noDataAlertStatus==1){
-                            AlertDto alertExists=alertService.checkAlertExists(item.getImeiNo1(),NO_DATA_ALERT_ID);
-                            if (alertExists==null){
-                                System.out.println("hi");
+                        System.out.println(noDataAlertStatus);
+                        if (noDataAlertStatus == 1) {
+                            AlertDto alertExists = alertService.checkAlertExists(item.getImeiNo1(), NO_DATA_ALERT_ID); //Check If alert Exist Or Not
+                            if (alertExists == null) {
+
+                                AlertEntity alertEntity = new AlertEntity();
+                                alertEntity.setImei(locationDto.getImei());
+                                alertEntity.setAlertTypeId(NO_DATA_ALERT_ID);
+                                if (locationDto.getLatitude() != null) {
+                                    alertEntity.setLatitude(Double.parseDouble(locationDto.getLatitude()));
+                                }
+                                if (locationDto.getLongitude() != null) {
+                                    alertEntity.setLongitude(Double.parseDouble(locationDto.getLongitude()));
+                                }
+                                if (locationDto.getAltitude() != null) {
+                                    alertEntity.setAltitude(Double.parseDouble(locationDto.getAltitude()));
+                                }
+                                if (locationDto.getAccuracy() != null) {
+                                    alertEntity.setAccuracy(Double.parseDouble(locationDto.getAccuracy()));
+                                }
+
+                                alertEntity.setSpeed(Double.parseDouble(locationDto.getSpeed()));
+                                alertEntity.setGpsDtm(currDtTimeParsed);
+
+                                AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+                                Map<String, Object> itemVal = new HashMap<>();
+                                List<AlertEntity> alertEntityList = new ArrayList<>();
+                                alertEntityList.add(alertEntity1);
+                                itemVal.put("key", alertEntityList);
+
+                                resultabc.add(itemVal);
 
                             }
-
-//                            $alertExists = $this->checkAlertExists($vmmId, CronMaster::NO_DATA_ALERT_ID);
-//                            if($alertExists == ''){
-//                                //Generate NoDataAlert and store in db
-//                                $alertId    = CronMaster::NO_DATA_ALERT_ID;
-//                                $alertSql   = "INSERT INTO  ".CronMaster::DBSCHEMA.".alert_data (vmm_id, alert_id, gps_dtm, longitude, latitude, altitude, accuracy, speed)
-//                                Values ('".$vmmId."', '".$alertId."', '".$curr_dateTime."', '".$locRes->longitude."','".$locRes->latitude."','".$locRes->altitude."','".$locRes->accuracy."','".$locRes->speed."') ";
-//                                $alertStmt  = $this->db->prepare($alertSql);
-//                                $alertStmt->execute();
-//                                $lastAlertId  = $this->db->lastInsertId();
-//                                error_log("\n ".date('Y-m-d H:i:s').":NODATA: Alert Inserted Id :".$lastAlertId,3,"../error.log");
-//                                //return true;
-//                            }else{
-//                                error_log("\n ".date('Y-m-d H:i:s').":NODATA:alert found",3,"../error.log");
-//                            }
+                        } else {
+                            alertService.updateResolve(item.getImeiNo1(), NO_DATA_ALERT_ID);//set is_resolve True
                         }
-
-                        else{
-//                            $query  = "UPDATE ".CronMaster::DBSCHEMA.".alert_data SET is_resolve = true
-//                            WHERE alert_id = ".CronMaster::NO_DATA_ALERT_ID." AND vmm_id = ".$vmmId. " AND is_resolve = false";
-//                            $stmt   = $this->db->prepare($query);
-//                            $status = $stmt->execute();
-//                            if($status){
-//                                error_log("\n ".date('Y-m-d H:i:s').":NODATA: No-data alert for VMMID:".$vmmId." is resolved.",3,"../error.log");
-//                            }
-                            //return true;
-                        }
-
-
 
                     }
 
@@ -122,14 +120,301 @@ public class AlertController {
             }
 
             result.put("device", device);
-            result.put("hh",resultabc);
+            result.put("model", resultabc);
             response.setData(result);
         } catch (Exception ex) {
             ex.printStackTrace();
-            response = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    ex.getMessage(),
-                    result);
+            response = new RDVTSResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), ex.getMessage(), result);
+        }
+
+
+        return response;
+
+    }
+
+    @RequestMapping("/generateNoMovementAlert")
+    public RDVTSResponse generateNoMovementAlert(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String, Object>> resultabc = new ArrayList<>();
+
+        final Integer NO_MOVEMENT_ALERT_ID = 2;
+        final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
+        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
+        final Integer SEEDING_GAP = 3; //taking point by 3 record gap
+        final Integer OUTSIDE_POINT_COUNT = 5;
+
+        try {
+            //Get Imei
+            List<Long> imei = alertService.getImeiForNoMovement();
+            if (imei.size() > 0) {
+                for (Long item : imei) {
+                    Integer recordLimit = NO_MOVEMENT_TIME_GAP * LOCATION_DATA_FREQUENCY;
+                    List<VtuLocationDto> vtuLocationDto = alertService.getLocationRecordByFrequency(item, recordLimit);
+                    //Create buffer of First First Point
+                    Integer outsideCount = 0;
+                    for (VtuLocationDto vtuItem : vtuLocationDto) {
+                        Boolean b = alertService.checkIntersected(vtuLocationDto.get(0).getLongitude(), vtuLocationDto.get(0).getLatitude(), vtuItem.getLongitude(), vtuItem.getLatitude());
+                        if (b == false) {
+                            outsideCount++;
+                        }
+
+
+                    }
+
+                    if (outsideCount >= OUTSIDE_POINT_COUNT) {
+                        //resolve if there is any unresolve no-movement alert present
+
+                        Boolean updateResolve = alertService.updateResolve(item, NO_MOVEMENT_ALERT_ID);
+                        //break;
+//                        if (!updateResolve) {
+//                            break;
+////                            return true;
+//                        }
+
+                    }
+
+                    if (outsideCount < OUTSIDE_POINT_COUNT) {
+                        AlertDto alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
+                        if (alertExists == null) {
+                            AlertEntity alertEntity = new AlertEntity();
+                            alertEntity.setImei(item);
+                            alertEntity.setAlertTypeId(NO_MOVEMENT_ALERT_ID);
+                            if (vtuLocationDto.get(0).getLatitude() != null) {
+                                alertEntity.setLatitude(Double.parseDouble(vtuLocationDto.get(0).getLatitude()));
+                            }
+                            if (vtuLocationDto.get(0).getLongitude() != null) {
+                                alertEntity.setLongitude(Double.parseDouble(vtuLocationDto.get(0).getLongitude()));
+                            }
+                            if (vtuLocationDto.get(0).getAltitude() != null) {
+                                alertEntity.setAltitude(Double.parseDouble(vtuLocationDto.get(0).getAltitude()));
+                            }
+                            if (vtuLocationDto.get(0).getAccuracy() != null) {
+                                alertEntity.setAccuracy(Double.parseDouble(vtuLocationDto.get(0).getAccuracy()));
+                            }
+
+                            alertEntity.setSpeed(Double.parseDouble(vtuLocationDto.get(0).getSpeed()));
+                            alertEntity.setGpsDtm(new Date());
+
+                            AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+
+                        }
+
+                    }
+//                    List<BufferDto> bufferDto = alertService.getBuffer(item);
+
+//                    for (BufferDto bfd : bufferDto) {
+//                        //Check if the last location of imei comes under any road
+//                        if (bfd.getRoadBuffer() != null) {
+//                            Boolean b = alertService.checkIntersected(bfd.getRoadBuffer(), vtuLocationDto.get(0).getLatitude(), vtuLocationDto.get(0).getLongitude());
+//                            if (b) break;
+//                        }
+//                    }
+                    //creating the a 100mt buffer of the 90th point backward and check the points
+//                    Integer bufferPointIndex = recordLimit - 1;
+//                    String longitude = vtuLocationDto.get(bufferPointIndex).getLongitude();
+//                    String latitude = vtuLocationDto.get(bufferPointIndex).getLatitude();
+//
+//                    Integer outsideCount = 0;
+//                    for (int i = bufferPointIndex; i >= 0; i -= SEEDING_GAP) {
+//                        Boolean bufferQuery = alertService.bufferQuery(longitude, latitude, vtuLocationDto.get(i).getLongitude(), vtuLocationDto.get(i).getLatitude());
+//                        if (!bufferQuery) {
+//                            outsideCount++;
+//                        }
+//                    }
+
+//                    if (outsideCount >= OUTSIDE_POINT_COUNT) {
+//                        //resolve if there is any unresolve no-movement alert present
+//
+//                        Boolean updateResolve=  alertService.updateResolve(item, NO_MOVEMENT_ALERT_ID);
+//
+//                        if (!updateResolve) {
+//                            break;
+////                            return true;
+//                        }
+//
+//                    }
+//
+//                    if(outsideCount < OUTSIDE_POINT_COUNT){
+//                        AlertDto alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
+//                        if (alertExists == null) {
+//                            AlertEntity alertEntity = new AlertEntity();
+//                            alertEntity.setImei(item);
+//                            alertEntity.setAlertTypeId(NO_MOVEMENT_ALERT_ID);
+//                            if (vtuLocationDto.get(0).getLatitude() != null) {
+//                                alertEntity.setLatitude(Double.parseDouble(vtuLocationDto.get(0).getLatitude()));
+//                            }
+//                            if (vtuLocationDto.get(0).getLongitude() != null) {
+//                                alertEntity.setLongitude(Double.parseDouble(vtuLocationDto.get(0).getLongitude()));
+//                            }
+//                            if (vtuLocationDto.get(0).getAltitude() != null) {
+//                                alertEntity.setAltitude(Double.parseDouble(vtuLocationDto.get(0).getAltitude()));
+//                            }
+//                            if (vtuLocationDto.get(0).getAccuracy() != null) {
+//                                alertEntity.setAccuracy(Double.parseDouble(vtuLocationDto.get(0).getAccuracy()));
+//                            }
+//
+//                            alertEntity.setSpeed(Double.parseDouble(vtuLocationDto.get(0).getSpeed()));
+//                            alertEntity.setGpsDtm(new Date());
+//
+//                            AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+//
+//                        }
+//
+//                    }
+
+                }
+
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), ex.getMessage(), result);
+        }
+
+
+        return response;
+
+    }
+
+    @RequestMapping("/generateGeoForceAlert")
+    public RDVTSResponse generateGeoForceAlert(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String, Object>> resultabc = new ArrayList<>();
+
+        final Integer NO_MOVEMENT_ALERT_ID = 2;
+        final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
+        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
+        final Integer SEEDING_GAP = 3; //taking point by 3 record gap
+        final Integer OUTSIDE_POINT_COUNT = 5;
+
+        try {
+            //Get Imei
+            List<Long> imei = alertService.getImeiForNoMovement();
+            if (imei.size() > 0) {
+                for (Long item : imei) {
+                    Integer recordLimit = NO_MOVEMENT_TIME_GAP * LOCATION_DATA_FREQUENCY;
+                    List<VtuLocationDto> vtuLocationDto = alertService.getLocationRecordByFrequency(item, recordLimit);
+                    //Create buffer of First First Point
+                    Integer outsideCount = 0;
+                    for (VtuLocationDto vtuItem : vtuLocationDto) {
+                        Boolean b = alertService.checkIntersected(vtuLocationDto.get(0).getLongitude(), vtuLocationDto.get(0).getLatitude(), vtuItem.getLongitude(), vtuItem.getLatitude());
+                        if (b == false) {
+                            outsideCount++;
+                        }
+
+
+                    }
+
+                    if (outsideCount >= OUTSIDE_POINT_COUNT) {
+                        //resolve if there is any unresolve no-movement alert present
+
+                        Boolean updateResolve = alertService.updateResolve(item, NO_MOVEMENT_ALERT_ID);
+                        //break;
+//                        if (!updateResolve) {
+//                            break;
+////                            return true;
+//                        }
+
+                    }
+
+                    if (outsideCount < OUTSIDE_POINT_COUNT) {
+                        AlertDto alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
+                        if (alertExists == null) {
+                            AlertEntity alertEntity = new AlertEntity();
+                            alertEntity.setImei(item);
+                            alertEntity.setAlertTypeId(NO_MOVEMENT_ALERT_ID);
+                            if (vtuLocationDto.get(0).getLatitude() != null) {
+                                alertEntity.setLatitude(Double.parseDouble(vtuLocationDto.get(0).getLatitude()));
+                            }
+                            if (vtuLocationDto.get(0).getLongitude() != null) {
+                                alertEntity.setLongitude(Double.parseDouble(vtuLocationDto.get(0).getLongitude()));
+                            }
+                            if (vtuLocationDto.get(0).getAltitude() != null) {
+                                alertEntity.setAltitude(Double.parseDouble(vtuLocationDto.get(0).getAltitude()));
+                            }
+                            if (vtuLocationDto.get(0).getAccuracy() != null) {
+                                alertEntity.setAccuracy(Double.parseDouble(vtuLocationDto.get(0).getAccuracy()));
+                            }
+
+                            alertEntity.setSpeed(Double.parseDouble(vtuLocationDto.get(0).getSpeed()));
+                            alertEntity.setGpsDtm(new Date());
+
+                            AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+
+                        }
+
+                    }
+//                    List<BufferDto> bufferDto = alertService.getBuffer(item);
+
+//                    for (BufferDto bfd : bufferDto) {
+//                        //Check if the last location of imei comes under any road
+//                        if (bfd.getRoadBuffer() != null) {
+//                            Boolean b = alertService.checkIntersected(bfd.getRoadBuffer(), vtuLocationDto.get(0).getLatitude(), vtuLocationDto.get(0).getLongitude());
+//                            if (b) break;
+//                        }
+//                    }
+                    //creating the a 100mt buffer of the 90th point backward and check the points
+//                    Integer bufferPointIndex = recordLimit - 1;
+//                    String longitude = vtuLocationDto.get(bufferPointIndex).getLongitude();
+//                    String latitude = vtuLocationDto.get(bufferPointIndex).getLatitude();
+//
+//                    Integer outsideCount = 0;
+//                    for (int i = bufferPointIndex; i >= 0; i -= SEEDING_GAP) {
+//                        Boolean bufferQuery = alertService.bufferQuery(longitude, latitude, vtuLocationDto.get(i).getLongitude(), vtuLocationDto.get(i).getLatitude());
+//                        if (!bufferQuery) {
+//                            outsideCount++;
+//                        }
+//                    }
+
+//                    if (outsideCount >= OUTSIDE_POINT_COUNT) {
+//                        //resolve if there is any unresolve no-movement alert present
+//
+//                        Boolean updateResolve=  alertService.updateResolve(item, NO_MOVEMENT_ALERT_ID);
+//
+//                        if (!updateResolve) {
+//                            break;
+////                            return true;
+//                        }
+//
+//                    }
+//
+//                    if(outsideCount < OUTSIDE_POINT_COUNT){
+//                        AlertDto alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
+//                        if (alertExists == null) {
+//                            AlertEntity alertEntity = new AlertEntity();
+//                            alertEntity.setImei(item);
+//                            alertEntity.setAlertTypeId(NO_MOVEMENT_ALERT_ID);
+//                            if (vtuLocationDto.get(0).getLatitude() != null) {
+//                                alertEntity.setLatitude(Double.parseDouble(vtuLocationDto.get(0).getLatitude()));
+//                            }
+//                            if (vtuLocationDto.get(0).getLongitude() != null) {
+//                                alertEntity.setLongitude(Double.parseDouble(vtuLocationDto.get(0).getLongitude()));
+//                            }
+//                            if (vtuLocationDto.get(0).getAltitude() != null) {
+//                                alertEntity.setAltitude(Double.parseDouble(vtuLocationDto.get(0).getAltitude()));
+//                            }
+//                            if (vtuLocationDto.get(0).getAccuracy() != null) {
+//                                alertEntity.setAccuracy(Double.parseDouble(vtuLocationDto.get(0).getAccuracy()));
+//                            }
+//
+//                            alertEntity.setSpeed(Double.parseDouble(vtuLocationDto.get(0).getSpeed()));
+//                            alertEntity.setGpsDtm(new Date());
+//
+//                            AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+//
+//                        }
+//
+//                    }
+
+                }
+
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), ex.getMessage(), result);
         }
 
 
