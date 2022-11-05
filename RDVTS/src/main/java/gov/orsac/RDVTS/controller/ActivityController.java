@@ -4,26 +4,27 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityEntity;
-import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
+import gov.orsac.RDVTS.service.AWSS3StorageService;
 import gov.orsac.RDVTS.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/v1/activity")
 public class ActivityController {
 
+
+    @Autowired
+    private AWSS3StorageService awss3StorageService;
 
     @Autowired
     private ActivityService activityService;
@@ -94,14 +95,21 @@ public class ActivityController {
     }
 
     @PostMapping("/updateActivity")
-    public RDVTSResponse updateActivity(@RequestParam Integer id, @RequestParam(name = "data") String data) {
+    public RDVTSResponse updateActivity(@RequestParam Integer id, @RequestParam(name = "data") String data,
+                                        @RequestParam(name = "image",required = false) MultipartFile[] issueImages) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
             ActivityDto activityData = mapper.readValue(data, ActivityDto.class);
-            ActivityEntity activity1 = activityService.updateActivity(id, activityData);
-            result.put("activity1", activity1);
+
+            if (issueImages!=null && issueImages.length > 0) {
+                ActivityEntity activity1 = activityService.updateActivity(id, activityData, issueImages);
+                for (MultipartFile files : issueImages) {
+                    boolean saveDocument = awss3StorageService.uploadIssueImages(files, String.valueOf(activity1.getId()), files.getOriginalFilename());
+                }
+                result.put("activity1", activity1);
+            }
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

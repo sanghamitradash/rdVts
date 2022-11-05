@@ -64,4 +64,8 @@ public interface MasterService {
     List<DivisionDto> getDivisionByCircleId(Integer circleId);
 
     List<CircleMasterDto> getAllCircleDD();
+
+    List<DivisionDto> getAllDivisionDD();
+
+    List<DistrictBoundaryDto> getAllDistrictDD();
 }

@@ -282,6 +282,17 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
         }
 
+        if (deviceDto.getDivisionId() != null && deviceDto.getDivisionId() > 0) {
+            if (subQuery.length() <= 0) {
+                subQuery += " WHERE division_id =:divisionId   ";
+                sqlParam.addValue("divisionId", deviceDto.getDivisionId());
+            } else {
+                subQuery += " AND division_id =:divisionId ";
+                sqlParam.addValue("divisionId", deviceDto.getDivisionId());
+            }
+
+        }
+
         if (deviceDto.getGBlockId() != null && deviceDto.getGBlockId() > 0) {
             if (subQuery.length() <= 0) {
                 subQuery += " WHERE gBlockId=:gBlockId  ";
