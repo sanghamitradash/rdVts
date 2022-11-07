@@ -2,13 +2,14 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.dto.ActivityDto;
-import gov.orsac.RDVTS.dto.VehicleActivityMappingDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.ActivityMasterRepository;
 import gov.orsac.RDVTS.repository.ActivityRepository;
+import gov.orsac.RDVTS.repository.ActivityWorkMappingRepository;
 import gov.orsac.RDVTS.repository.VehicleActivityMappingRepository;
 import gov.orsac.RDVTS.repositoryImpl.ActivityRepositoryImpl;
 import gov.orsac.RDVTS.service.ActivityService;
@@ -27,6 +28,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     ActivityMasterRepository activityMasterRepository;
+
+    @Autowired
+    ActivityWorkMappingRepository activityWorkMappingRepository;
 
     @Autowired
     ActivityRepository activityRepository;
@@ -54,17 +58,22 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityEntity updateActivity(Integer id, ActivityDto activityData, MultipartFile[] issueImages) {
-        ActivityEntity save = null;
+    public ActivityWorkMapping updateActivity(Integer id, ActivityWorkMappingDto activityData, MultipartFile[] issueImages) {
+        ActivityWorkMapping save = null;
         for (MultipartFile multipartFile : issueImages) {
-            ActivityEntity activityEntity = new ActivityEntity();
-            ActivityEntity existingActivity = activityMasterRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("id", "id", id));
+            ActivityWorkMapping activityEntity = new ActivityWorkMapping();
+            ActivityWorkMapping existingActivity = activityWorkMappingRepository.findByActivityId(id);
             BeanUtils.copyProperties(activityData, activityEntity);
+            existingActivity.setActivityId(id);
+            existingActivity.setIssueReason(activityData.getIssueReason());
+            existingActivity.setResolvedStatus(activityData.getResolvedStatus());
+            existingActivity.setResolvedDate(activityData.getResolvedDate());
+            existingActivity.setResolvedBy(activityData.getResolvedBy());
             existingActivity.setActualActivityStartDate(activityData.getActualActivityStartDate());
             existingActivity.setActualActivityCompletionDate(activityData.getActualActivityCompletionDate());
             existingActivity.setIssueImage(multipartFile.getOriginalFilename());
             existingActivity.setActivityStatus(activityData.getActivityStatus());
-            save = activityMasterRepository.save(existingActivity);
+            save = activityWorkMappingRepository.save(existingActivity);
         }
         return save;
     }
@@ -159,6 +168,11 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId) {
         return activityRepositoryImpl.getVehicleByActivityId(activityId,userId);
+    }
+
+    @Override
+    public List<ResolvedStatusDto> resolvedStatusDD(Integer userId) {
+        return activityRepositoryImpl.resolvedStatusDD(userId);
     }
 
 
