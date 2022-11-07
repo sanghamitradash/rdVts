@@ -4,6 +4,7 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityEntity;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.service.AWSS3StorageService;
@@ -101,18 +102,18 @@ public class ActivityController {
     }
 
     @PostMapping("/updateActivity")
-    public RDVTSResponse updateActivity(@RequestParam Integer id, @RequestParam(name = "data") String data,
+    public RDVTSResponse updateActivity(@RequestParam Integer activityId, @RequestParam(name = "data") String data,
                                         @RequestParam(name = "image",required = false) MultipartFile[] issueImages) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
-            ActivityDto activityData = mapper.readValue(data, ActivityDto.class);
-            ActivityEntity activity1 = activityService.updateActivity(id, activityData, issueImages);
+            ActivityWorkMappingDto activityData = mapper.readValue(data, ActivityWorkMappingDto.class);
+            ActivityWorkMapping activity1 = activityService.updateActivity(activityId, activityData, issueImages);
             if (issueImages!=null && issueImages.length > 0) {
 
                 for (MultipartFile files : issueImages) {
-                    boolean saveDocument = awsS3StorageServiceImpl.uploadIssueImages(files, String.valueOf(activity1.getId()), files.getOriginalFilename());
+                    boolean saveDocument = awsS3StorageServiceImpl.uploadIssueImages(files, String.valueOf(activity1.getActivityId()), files.getOriginalFilename());
                 }
             }
                     result.put("activity1", activity1);
@@ -382,5 +383,28 @@ public class ActivityController {
         }
         return response;
     }
+
+
+    @PostMapping("/resolvedStatusDD")
+    public RDVTSResponse resolvedStatusDD(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<ResolvedStatusDto> resolvedStatus = activityService.resolvedStatusDD(userId);
+
+            result.put("resolvedStatus", resolvedStatus);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Resolved Status Dropdown Dropdown");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 }

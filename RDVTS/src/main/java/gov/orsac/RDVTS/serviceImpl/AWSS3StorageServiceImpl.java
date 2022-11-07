@@ -26,9 +26,9 @@ public class AWSS3StorageServiceImpl implements AWSS3StorageService {
     public boolean uploadIssueImages(MultipartFile files, String activityId, String keyName) {
 
            boolean result = false;
-            String bucketDestination = "https://ofarisbucket.s3.ap-south-1.amazonaws.com/rdvts ";
+            String bucketDestination = bucketName;
             if (!activityId.equals("")){
-                bucketDestination = "https://ofarisbucket.s3.ap-south-1.amazonaws.com/rdvts ";
+                bucketDestination = bucketName+ "/"+"rdvts/" + activityId;
             }
             String fileName = files.getOriginalFilename();
             if (!keyName.isEmpty() && !fileName.equals(keyName)){

@@ -4,6 +4,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.dto.ActivityDto;
 import gov.orsac.RDVTS.dto.VehicleActivityMappingDto;
 import gov.orsac.RDVTS.entities.ActivityEntity;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ public interface ActivityService {
 
     List<ActivityDto> getActivityById(Integer activityId, Integer userId);
 
-    ActivityEntity updateActivity(Integer id, ActivityDto activityData, MultipartFile[] issueImages);
+    ActivityWorkMapping updateActivity(Integer id, ActivityWorkMappingDto activityData, MultipartFile[] issueImages);
 
     List<ActivityEntity> getAllActivity();
 
@@ -47,6 +48,8 @@ public interface ActivityService {
     List<ActivityStatusDto> activityStatusDD(Integer userId);
 
     List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId);
+
+    List<ResolvedStatusDto> resolvedStatusDD(Integer userId);
 }
 
 
