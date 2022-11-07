@@ -4,10 +4,13 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityEntity;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.service.AWSS3StorageService;
 import gov.orsac.RDVTS.service.ActivityService;
+import gov.orsac.RDVTS.serviceImpl.AWSS3StorageServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
+@Slf4j
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/v1/activity")
@@ -25,6 +29,9 @@ public class ActivityController {
 
     @Autowired
     private AWSS3StorageService awss3StorageService;
+
+    @Autowired
+    private AWSS3StorageServiceImpl awsS3StorageServiceImpl;
 
     @Autowired
     private ActivityService activityService;
@@ -95,26 +102,29 @@ public class ActivityController {
     }
 
     @PostMapping("/updateActivity")
-    public RDVTSResponse updateActivity(@RequestParam Integer id, @RequestParam(name = "data") String data,
+    public RDVTSResponse updateActivity(@RequestParam Integer activityId, @RequestParam(name = "data") String data,
                                         @RequestParam(name = "image",required = false) MultipartFile[] issueImages) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
-            ActivityDto activityData = mapper.readValue(data, ActivityDto.class);
-
+            ActivityWorkMappingDto activityData = mapper.readValue(data, ActivityWorkMappingDto.class);
+            ActivityWorkMapping activity1 = activityService.updateActivity(activityId, activityData, issueImages);
             if (issueImages!=null && issueImages.length > 0) {
-                ActivityEntity activity1 = activityService.updateActivity(id, activityData, issueImages);
+
                 for (MultipartFile files : issueImages) {
-                    boolean saveDocument = awss3StorageService.uploadIssueImages(files, String.valueOf(activity1.getId()), files.getOriginalFilename());
+                    boolean saveDocument = awsS3StorageServiceImpl.uploadIssueImages(files, String.valueOf(activity1.getActivityId()), files.getOriginalFilename());
                 }
-                result.put("activity1", activity1);
             }
-            response.setData(result);
-            response.setStatus(1);
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("Activity Updated successfully.");
+                    result.put("activity1", activity1);
+                    response.setData(result);
+                    response.setStatus(1);
+                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                    response.setMessage("Activity Updated successfully.");
+
+
         } catch (Exception ex) {
+            ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),
@@ -373,5 +383,28 @@ public class ActivityController {
         }
         return response;
     }
+
+
+    @PostMapping("/resolvedStatusDD")
+    public RDVTSResponse resolvedStatusDD(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<ResolvedStatusDto> resolvedStatus = activityService.resolvedStatusDD(userId);
+
+            result.put("resolvedStatus", resolvedStatus);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Resolved Status Dropdown Dropdown");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 }

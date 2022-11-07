@@ -227,6 +227,13 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         sqlParam.addValue("userId",userId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
     }
+
+    public List<ResolvedStatusDto> resolvedStatusDD(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select id,name from rdvts_oltp.resolved_status_m   ";
+        sqlParam.addValue("userId",userId);
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ResolvedStatusDto.class));
+    }
 }
 
 
