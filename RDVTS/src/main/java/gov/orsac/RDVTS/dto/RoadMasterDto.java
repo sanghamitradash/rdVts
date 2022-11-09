@@ -72,4 +72,5 @@ public class RoadMasterDto {
 
     private Integer activityIds;
     private Integer vehicleIds;
+    private String piuName;
 }
