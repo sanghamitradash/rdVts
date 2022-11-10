@@ -325,5 +325,22 @@ public class UserRepositoryImpl {
         sqlParam.addValue("activityIds",activityIds);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
+
+    public List<Integer> getVendorIdsByBlockAndDivision(List<Integer> blockIds, List<Integer> divisionIds, List<Integer> distIds) {
+            MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+            String qry = " select id from rdvts_oltp.vtu_vendor_m where id in (select vtu_vendor_id from rdvts_oltp.device_m where id in " +
+                    " (select device_id from rdvts_oltp.device_area_mapping where division_id in (:divisionIds) or block_id in (:blockIds) or dist_id in (:distIds))) ";
+            sqlParam.addValue("blockIds", blockIds);
+            sqlParam.addValue("divisionIds", divisionIds);
+            sqlParam.addValue("distIds", distIds);
+            return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getVendorIdsByBlockIds(List<Integer> blockIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "  select distinct vtu_vendor_id from rdvts_oltp.device_m where id in (select device_id from rdvts_oltp.device_area_mapping where block_id in (:blockIds)) ";
+        sqlParam.addValue("blockIds", blockIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
 }
 

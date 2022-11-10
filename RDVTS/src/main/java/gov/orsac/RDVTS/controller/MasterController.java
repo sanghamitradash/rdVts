@@ -853,6 +853,7 @@ public class MasterController {
 //                response.setMessage("Record not found.");
 //            }
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),e.getMessage(),result);
         }
         return response;
