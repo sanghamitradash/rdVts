@@ -86,19 +86,18 @@ public class WorkRepositoryImpl {
                 " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true " +
                 " where wm.is_active = true ";
         if (workDto.getId() > 0) {
-            qry += " and wm.id = :id ";
+            qry += " and wm.id = :id";
             sqlParam.addValue("id", workDto.getId());
         }
         if (workDto.getWorkStatus() != null && workDto.getWorkStatus() > 0) {
-            qry += " and wm.work_status = :work_status ";
+            qry += " and wm.work_status = :work_status";
             sqlParam.addValue("work_status", workDto.getWorkStatus());
         }
-        qry+= " order by wm.id DESC ";
 //        if (workDto.getActivityId() > 0) {
 //            qry += " and act.id = :activityId";
 //            sqlParam.addValue("activityId", workDto.getActivityId());
 //        }
-//
+//        qry+= "order by geoWorkName DESC ";
 
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(workDto.getUserId());
 //        if(user.getUserLevelId()==5){

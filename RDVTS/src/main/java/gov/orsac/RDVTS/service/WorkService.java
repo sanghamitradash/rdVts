@@ -22,4 +22,5 @@ public interface WorkService {
 
     List<ActivityWorkMapping> getActivityDetailsByWorkId(Integer workId);
     List<WorkStatusDto> getWorkStatusDD(Integer userId);
+
 }
