@@ -71,7 +71,7 @@ public class ActivityServiceImpl implements ActivityService {
             existingActivity.setResolvedBy(activityData.getResolvedBy());
             existingActivity.setActualActivityStartDate(activityData.getActualActivityStartDate());
             existingActivity.setActualActivityCompletionDate(activityData.getActualActivityCompletionDate());
-            existingActivity.setIssueImage(multipartFile.getOriginalFilename());
+            existingActivity.setIssueImage("https://ofarisbucket.s3.ap-south-1.amazonaws.com/rdvts/" + multipartFile.getOriginalFilename());
             existingActivity.setActivityStatus(activityData.getActivityStatus());
             save = activityWorkMappingRepository.save(existingActivity);
         }
