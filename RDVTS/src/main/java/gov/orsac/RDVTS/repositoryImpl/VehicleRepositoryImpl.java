@@ -426,7 +426,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String finalQry=qry+" "+subQuery;
         resultCount = count(finalQry, sqlParam);
         if (vehicle.getLimit() > 0) {
-            finalQry += " LIMIT " + vehicle.getLimit() + " OFFSET " + vehicle.getOffSet();
+            finalQry += " Order by id desc LIMIT " + vehicle.getLimit() + " OFFSET " + vehicle.getOffSet();
         }
 //        resultCount = count(qry, sqlParam);
         List<VehicleMasterDto> list = namedJdbc.query(finalQry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
