@@ -157,7 +157,7 @@ public class ContractorRepositoryImpl implements ContractorRepository {
         if (contractor.getName() != null && contractor.getName().length() > 0) {
 //            qry += " AND cm.name=:name ";
 //            if (contractor.getName() != null) {
-                qry += " AND cm.name LIKE(:name) ";
+                qry += " AND upper(cm.name) LIKE upper(:name) ";
                 sqlParam.addValue("name",String.valueOf("%" + contractor.getName() + "%"));
             }
 
