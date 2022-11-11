@@ -51,6 +51,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         if(activityId>0){
             qry+=" AND am.id=:activityId";
         }
+
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("userId",userId);
 
