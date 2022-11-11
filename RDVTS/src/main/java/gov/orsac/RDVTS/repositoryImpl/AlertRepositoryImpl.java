@@ -111,4 +111,13 @@ public class AlertRepositoryImpl  {
 
         return namedJdbc.queryForObject(qry, sqlParam,(Boolean.class));
     }
+
+    public Boolean checkGeoFenceIntersected(String geom, String longitude, String latitude) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        String geomText ="'"+geom+"'";
+        String qry = "  select ST_Intersects(st_setsrid(st_geomfromtext(  st_astext(ST_BUFFER("+geomText+"::geography,50)::geometry)  " +
+                " ),4326),  'SRID=4326;POINT("+longitude+" "+latitude+" )'::geometry) as inFlag" ;
+
+        return namedJdbc.queryForObject(qry, sqlParam,(Boolean.class));
+    }
 }

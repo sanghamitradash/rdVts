@@ -1,8 +1,8 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.service.HelperService;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -228,5 +228,17 @@ public class WorkRepositoryImpl {
         String qry = "select id,g_work_name as geoWorkName from rdvts_oltp.work_m where id not in (select work_id from rdvts_oltp.geo_master where is_active = true) and is_active = true ";
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UnassignedWorkDto.class));
+    }
+
+    public List<ActivityWorkMapping> getActivityDetailsByWorkId(Integer workId) {
+
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT id, activity_id, work_id, activity_quantity, activity_start_date, activity_completion_date, actual_activity_start_date, actual_activity_completion_date, executed_quantity, activity_status, g_activity_id, g_work_id, issue_reason, resolved_status, resolved_date, resolved_by, issue_image, is_active, created_by, created_on, updated_by, updated_on " +
+                " FROM rdvts_oltp.activity_work_mapping where is_active=true  " ;
+        if (workId > 0){
+            qry +=" and work_id= :workId " ;
+            sqlParam.addValue("workId", workId);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityWorkMapping.class));
     }
 }

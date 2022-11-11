@@ -56,5 +56,10 @@ public class AlertServiceImpl implements AlertService {
         return alertRepositoryImpl.bufferQuery(BufferPointLongitude,BufferPointLatitude,longitude,latitude);
     }
 
+    @Override
+    public Boolean checkGeoFenceIntersected(String geom, String longitude, String latitude) {
+        return alertRepositoryImpl.checkGeoFenceIntersected(geom,longitude,latitude);
+    }
+
 
 }

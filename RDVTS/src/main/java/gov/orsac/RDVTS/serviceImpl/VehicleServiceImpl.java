@@ -238,6 +238,10 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleActivityMappingRepository.saveAll(vehicleActivity);
     }
 
+    @Override
+    public List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId, Date actualActivityStartDate, Date actualActivityCompletionDate) {
+        return vehicleRepositoryimpl.getVehicleByActivityId(activityId, userId,actualActivityStartDate,actualActivityCompletionDate);
+    }
 
 
     @Override

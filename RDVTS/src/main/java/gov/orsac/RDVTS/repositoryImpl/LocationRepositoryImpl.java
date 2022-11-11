@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 import gov.orsac.RDVTS.dto.*;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -557,5 +558,37 @@ public class LocationRepositoryImpl {
     }
 
 
+    public List<VtuLocationDto> getLocationrecordList(Long imeiNo1, Long imeiNo2, Date startDate, Date endDate, Date createdOn, Date deactivationDate, Integer recordLimit) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on " +
+                " FROM rdvts_oltp.vtu_location where is_active=true ";
+        qry += " and imei =:imei1 and gps_fix::numeric =1 ";
 
+        Date currentDateMinus = new Date(System.currentTimeMillis() - 300 * 1000); //5 minute in millisecond 60*5
+//        DateTime dateTime = new DateTime();
+//        dateTime = dateTime.minusMinutes(5);
+//        Date modifiedDate = dateTime.toDate();
+        Date currentDate=new Date();
+
+        if (deactivationDate == null) {
+            deactivationDate = new Date();
+        }
+
+        if (createdOn != null && deactivationDate != null) {
+            qry += " AND  date_time BETWEEN :createdOn AND :deactivationDate ";
+
+        }
+
+        qry += "   AND date(date_time)=date(now()) AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC  limit :recordLimit ";
+        sqlParam.addValue("imei1", imeiNo1);
+        sqlParam.addValue("createdOn", createdOn);
+        sqlParam.addValue("deactivationDate", deactivationDate);
+        sqlParam.addValue("recordLimit", recordLimit);
+        sqlParam.addValue("currentDateMinus", currentDateMinus);
+        sqlParam.addValue("currentDate", currentDate);
+
+
+        //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+    }
 }

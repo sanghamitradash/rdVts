@@ -68,4 +68,6 @@ public interface VehicleService {
     Integer getTotalCount(Integer vehicleId);
 
     List<VehicleActivityMappingEntity> assignVehicleActivity(List<VehicleActivityDto> activity) throws ParseException;
+
+    List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId, Date actualActivityStartDate, Date actualActivityCompletionDate);
 }

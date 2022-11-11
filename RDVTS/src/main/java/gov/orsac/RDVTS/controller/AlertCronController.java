@@ -1,14 +1,10 @@
 package gov.orsac.RDVTS.controller;
 
 
-import gov.orsac.RDVTS.dto.AlertDto;
-import gov.orsac.RDVTS.dto.DeviceDto;
-import gov.orsac.RDVTS.dto.RDVTSResponse;
-import gov.orsac.RDVTS.dto.VtuLocationDto;
+import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.AlertEntity;
-import gov.orsac.RDVTS.service.AlertService;
-import gov.orsac.RDVTS.service.DeviceService;
-import gov.orsac.RDVTS.service.LocationService;
+import gov.orsac.RDVTS.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +31,15 @@ public class AlertCronController {
 
     @Autowired
     public AlertService alertService;
+
+    @Autowired
+    public WorkService workService;
+
+    @Autowired
+    public VehicleService vehicleService;
+    @Autowired
+    public RoadService roadService;
+
 
     @Scheduled(cron = "0 */5 * * * *")
     public void generateNoDataAlert() {
@@ -246,6 +251,105 @@ public class AlertCronController {
 
         }
 
+
+    }
+
+    @Scheduled(cron = "0 */5 * * * *")
+    public void generateGeofenceAlert() throws ParseException {
+        System.out.println("hii");
+
+
+        final Integer GEO_FENCE_ALERT_ID = 4;
+        final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
+        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
+        final Integer SEEDING_GAP = 3; //taking point by 3 record gap
+        final Integer OUTSIDE_POINT_COUNT = 5;
+        //Get All Work
+        Integer userId=1;
+        List<WorkDto> workDto = workService.getWorkById(-1);
+
+
+        //Foreach Work Get Vehicle
+        //Foreach Vechicle get Device
+        //Foreach device get Imei
+        //Foreach Imei Get location Record list
+
+        for (WorkDto Work : workDto) {
+            //Foreach work get Road Geom
+            List<RoadMasterDto> road = roadService.getRoadByWorkId(Work.getId());
+            //Foreach Work Get Vehicle
+            //Foreach Vechicle get Device
+            //Foreach device get Imei
+            //Foreach Imei Get location Record list
+            List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
+            for (ActivityWorkMapping activityId : activityDtoList) {
+                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
+                for (VehicleActivityMappingDto vehicleList : veActMapDto) {
+                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(), userId);
+                    if (getdeviceList.size() > 0) {
+
+
+                        for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
+                            List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
+                            //int i = 0;
+                            for (DeviceDto imei : getImeiList) {
+                                Date startDate = null;
+                                Date endDate = null;
+                                Integer recordLimit = NO_MOVEMENT_TIME_GAP * LOCATION_DATA_FREQUENCY;
+
+                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate(), recordLimit);
+                                // Integer outsideCount=0;
+                                for (VtuLocationDto vtuItem : vtuLocationDto) {
+                                    if (road.get(0).getGeom() != null) {
+                                        Boolean b = alertService.checkGeoFenceIntersected(road.get(0).getGeom(), vtuItem.getLongitude(), vtuItem.getLatitude());
+                                        if (b == false) {
+                                            AlertDto alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
+                                            if (alertExists == null) {
+                                                AlertEntity alertEntity = new AlertEntity();
+                                                alertEntity.setImei(vtuItem.getImei());
+                                                alertEntity.setAlertTypeId(GEO_FENCE_ALERT_ID);
+                                                if (vtuLocationDto.get(0).getLatitude() != null) {
+                                                    alertEntity.setLatitude(Double.parseDouble(vtuLocationDto.get(0).getLatitude()));
+                                                }
+                                                if (vtuLocationDto.get(0).getLongitude() != null) {
+                                                    alertEntity.setLongitude(Double.parseDouble(vtuLocationDto.get(0).getLongitude()));
+                                                }
+                                                if (vtuLocationDto.get(0).getAltitude() != null) {
+                                                    alertEntity.setAltitude(Double.parseDouble(vtuLocationDto.get(0).getAltitude()));
+                                                }
+                                                if (vtuLocationDto.get(0).getAccuracy() != null) {
+                                                    alertEntity.setAccuracy(Double.parseDouble(vtuLocationDto.get(0).getAccuracy()));
+                                                }
+
+                                                alertEntity.setSpeed(Double.parseDouble(vtuLocationDto.get(0).getSpeed()));
+                                                alertEntity.setGpsDtm(new Date());
+
+                                                AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+
+                                            }
+                                            //  outsideCount++;
+
+                                        } else {
+                                            Boolean updateResolve = alertService.updateResolve(vtuItem.getImei(), GEO_FENCE_ALERT_ID);
+
+                                        }
+
+
+                                    }
+
+
+                                }
+
+
+                            }
+
+
+                        }
+                    }
+                }
+
+            }
+        }
 
     }
 }
