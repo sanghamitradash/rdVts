@@ -151,7 +151,7 @@ public class ContractorRepositoryImpl implements ContractorRepository {
 
         if (contractor.getMobile() != null && contractor.getMobile() > 0) {
             qry += " AND cm.mobile::varchar LIKE :mobile " ;
-            sqlParam.addValue("mobile",  String.valueOf(contractor.getMobile()+"%"));
+            sqlParam.addValue("mobile",  String.valueOf("%" + contractor.getMobile()+"%"));
         }
 
         if (contractor.getName() != null && contractor.getName().length() > 0) {
