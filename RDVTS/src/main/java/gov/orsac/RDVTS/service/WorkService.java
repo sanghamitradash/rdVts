@@ -19,4 +19,5 @@ public interface WorkService {
 
     List<UnassignedWorkDto> getUnAssignedWorkData(Integer userId);
 
+    List<WorkStatusDto> getWorkStatusDD(Integer userId);
 }

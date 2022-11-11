@@ -86,18 +86,19 @@ public class WorkRepositoryImpl {
                 " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true " +
                 " where wm.is_active = true ";
         if (workDto.getId() > 0) {
-            qry += " and wm.id = :id";
+            qry += " and wm.id = :id ";
             sqlParam.addValue("id", workDto.getId());
         }
         if (workDto.getWorkStatus() != null && workDto.getWorkStatus() > 0) {
-            qry += " and wm.work_status = :work_status";
+            qry += " and wm.work_status = :work_status ";
             sqlParam.addValue("work_status", workDto.getWorkStatus());
         }
+        qry+= " order by wm.id DESC ";
 //        if (workDto.getActivityId() > 0) {
 //            qry += " and act.id = :activityId";
 //            sqlParam.addValue("activityId", workDto.getActivityId());
 //        }
-//        qry+= "order by geoWorkName DESC ";
+//
 
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(workDto.getUserId());
 //        if(user.getUserLevelId()==5){
@@ -228,5 +229,11 @@ public class WorkRepositoryImpl {
         String qry = "select id,g_work_name as geoWorkName from rdvts_oltp.work_m where id not in (select work_id from rdvts_oltp.geo_master where is_active = true) and is_active = true ";
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(UnassignedWorkDto.class));
+    }
+
+    public List<WorkStatusDto> getWorkStatusDD(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select id, name from rdvts_oltp.work_status_m where is_active = true ";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkStatusDto.class));
     }
 }
