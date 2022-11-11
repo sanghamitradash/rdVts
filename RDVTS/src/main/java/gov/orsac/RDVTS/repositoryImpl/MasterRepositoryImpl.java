@@ -277,10 +277,9 @@ public class MasterRepositoryImpl implements MasterRepository {
         int resultCount=0;
         String queryString = " ";
         queryString = "SELECT DISTINCT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
-                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on, dam.block_id " +
+                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on  " +
                 "FROM rdvts_oltp.vtu_vendor_m as vtuM " +
                 "Left join rdvts_oltp.device_m as dev on dev.vtu_vendor_id=vtuM.id and dev.is_active=true " +
-                "left join rdvts_oltp.device_area_mapping as dam on dam.device_id=dev.id " +
                 "where vtuM.is_active=true ";
 
         if(vtuVendorFilterDto.getVendorId() != null && vtuVendorFilterDto.getVendorId() > 0){
