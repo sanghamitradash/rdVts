@@ -266,6 +266,29 @@ public class WorkController {
 
     }
 
+    @PostMapping("/getWorkStatusDD")
+    public RDVTSResponse getWorkStatusDD(@RequestParam(name = "userId") Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+//            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
+            List<WorkStatusDto> workStatusDto = workService.getWorkStatusDD(userId);
+
+            result.put("workStatusDto", workStatusDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+
+    }
+
     @PostMapping("/updateWork")
     public RDVTSResponse updateDesignation(@RequestParam int id,
                                            @RequestParam(name = "data") String data) {

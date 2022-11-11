@@ -109,6 +109,11 @@ public class WorkServiceImpl implements WorkService {
         return workRepositoryImpl.getUnAssignedWorkData(userId);
     }
 
+    @Override
+    public List<WorkStatusDto> getWorkStatusDD(Integer userId) {
+        return workRepositoryImpl.getWorkStatusDD(userId);
+    }
+
     public Integer deactivateVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {
         List<Integer> activityIds = new ArrayList<>();
         List<Integer> vehicleIds = new ArrayList<>();

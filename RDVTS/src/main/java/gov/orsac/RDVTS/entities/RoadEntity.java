@@ -50,8 +50,8 @@ public class RoadEntity {
     @Column(name = "g_road_id")
     private Integer groadId;
 
-    @Column(name = "geo_master_id")
-    private Integer geoMasterId;
+//    @Column(name = "geo_master_id")
+//    private Integer geoMasterId;
 
     @Column(name="is_active",nullable = false)
     private Boolean isActive=true;
