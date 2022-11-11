@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.service;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import org.springframework.data.domain.Page;
 
@@ -19,5 +20,6 @@ public interface WorkService {
 
     List<UnassignedWorkDto> getUnAssignedWorkData(Integer userId);
 
+    List<ActivityWorkMapping> getActivityDetailsByWorkId(Integer workId);
     List<WorkStatusDto> getWorkStatusDD(Integer userId);
 }

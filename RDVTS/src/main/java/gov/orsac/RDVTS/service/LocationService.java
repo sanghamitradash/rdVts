@@ -28,8 +28,5 @@ public interface LocationService {
     VtuLocationDto getLastLocationByImei(Long imei1);
 
 
-
-
-
-
+    List<VtuLocationDto> getLocationrecordList(Long imeiNo1, Long imeiNo2, Date startDate, Date endDate, Date createdOn, Date deactivationDate, Integer recordLimit);
 }

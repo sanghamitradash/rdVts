@@ -299,14 +299,8 @@ public class UserController {
             try {
                 Page<UserInfoDto> userInfoDtos = userService.getUserList(userListDto);
                 List<UserInfoDto> userList = userInfoDtos.getContent();
-                List<UserInfoDto> finalUserList=new ArrayList<>();
-//                Integer start1=start;
-//                for(UserInfoDto user:userList){
-//
-//                    start1=start1+1;
-//                    user.setSlNo(start1);
-//                    finalUserList.add(user);
-//                }
+
+
                 Integer start1 = start;
                 for (int i = 0; i < userList.size(); i++) {
                     start1 = start1 + 1;

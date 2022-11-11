@@ -22,4 +22,6 @@ public interface AlertService  {
     Boolean checkIntersected(String longitude, String latitude, String vtuItemLongitude, String vtuItemLatitude);
 
     Boolean bufferQuery(String BufferPointLongitude, String BufferPointLatitude, String longitude, String latitude);
+
+    Boolean checkGeoFenceIntersected(String geom, String longitude, String latitude);
 }
