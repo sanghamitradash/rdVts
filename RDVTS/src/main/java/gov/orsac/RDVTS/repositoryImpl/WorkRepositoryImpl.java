@@ -93,39 +93,40 @@ public class WorkRepositoryImpl {
             qry += " and wm.work_status = :work_status ";
             sqlParam.addValue("work_status", workDto.getWorkStatus());
         }
-        qry+= " order by wm.id DESC ";
 //        if (workDto.getActivityId() > 0) {
 //            qry += " and act.id = :activityId";
 //            sqlParam.addValue("activityId", workDto.getActivityId());
 //        }
 //
 
-//        UserInfoDto user=userRepositoryImpl.getUserByUserId(workDto.getUserId());
-//        if(user.getUserLevelId()==5){
-//            List<Integer> contractorIds = userRepositoryImpl.getContractorByUserId(workDto.getUserId());
-//            List<Integer> workIds = getWorkIdByContractorId(contractorIds);
-//            qry+=" and wm.id=:workIds ";
-//            sqlParam.addValue("workIds",workIds);
-//        }
-//        else if(user.getUserLevelId() == 2){
-//            List<Integer> distIdList=userRepositoryImpl.getDistIdByUserId(workDto.getUserId());
-//            List<Integer> workIds = getWorkIdByDistId(distIdList);
-//            qry+=" and wm.id in (:workIds)";
-//            sqlParam.addValue("workIds",workIds);
-//        }
-//        else if(user.getUserLevelId()==3){
-//            List<Integer> blockIdList=userRepositoryImpl.getBlockIdByUserId(workDto.getUserId());
-//            List<Integer> workIds = getWorkIdByBlockId(blockIdList);
-//            qry+=" and wm.id in (:workIds)";
-//            sqlParam.addValue("workIds",workIds);
-//        }
-//        else if(user.getUserLevelId() == 4){
-//            List<Integer> divisionIds=userRepositoryImpl.getDivisionByUserId(workDto.getUserId());
-//            List<Integer> workIds = getWorkIdByDivisionId(divisionIds);
-//            qry+=" and wm.id in (:workIds)";
-//            sqlParam.addValue("workIds",workIds);
-//        }
+        UserInfoDto user=userRepositoryImpl.getUserByUserId(workDto.getUserId());
 
+         if(user.getUserLevelId() == 2){
+            List<Integer> distIdList=userRepositoryImpl.getDistIdByUserId(workDto.getUserId());
+            List<Integer> workIds = getWorkIdByDistId(distIdList);
+            qry+=" and wm.id in (:workIds) ";
+            sqlParam.addValue("workIds",workIds);
+        }
+        else if(user.getUserLevelId()==3){
+            List<Integer> blockIdList=userRepositoryImpl.getBlockIdByUserId(workDto.getUserId());
+            List<Integer> workIds = getWorkIdByBlockId(blockIdList);
+            qry+=" and wm.id in (:workIds) ";
+            sqlParam.addValue("workIds",workIds);
+        }
+        else if(user.getUserLevelId() == 4){
+            List<Integer> divisionIds=userRepositoryImpl.getDivisionByUserId(workDto.getUserId());
+            List<Integer> workIds = getWorkIdByDivisionId(divisionIds);
+            qry+=" and wm.id in (:workIds) ";
+            sqlParam.addValue("workIds",workIds);
+        }
+        else if(user.getUserLevelId()==5){
+            List<Integer> contractorIds = userRepositoryImpl.getContractorByUserId(workDto.getUserId());
+            List<Integer> workIds = getWorkIdByContractorId(contractorIds);
+            qry+=" and wm.id=:workIds ";
+            sqlParam.addValue("workIds",workIds);
+        }
+
+        qry+= " order by wm.id DESC ";
 
         resultCount = count(qry, sqlParam);
         if (workDto.getLimit() > 0) {

@@ -290,7 +290,7 @@ public class WorkController {
     }
 
     @PostMapping("/updateWork")
-    public RDVTSResponse updateDesignation(@RequestParam int id,
+    public RDVTSResponse updateWork(@RequestParam int id,
                                            @RequestParam(name = "data") String data) {
         RDVTSResponse rdvtsResponse = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
