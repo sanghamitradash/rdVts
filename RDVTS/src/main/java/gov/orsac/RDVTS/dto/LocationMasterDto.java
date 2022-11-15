@@ -1,22 +1,17 @@
 package gov.orsac.RDVTS.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import gov.orsac.RDVTS.entities.DeviceMappingEntity;
+import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VehicleDeviceMappingDto {
+public class LocationMasterDto {
     private Integer id;
 
     private Integer vehicleId;
@@ -44,8 +39,26 @@ public class VehicleDeviceMappingDto {
     private String instalDate;
 
     private Long imeiNo1;
-
+    private String simIccId1;
+    private Long mobileNumber1;
     private Long imeiNo2;
+    private String simIccId2;
+    private Long mobileNumber2;
+    private String modelName;
+    private Integer vtuVendorId;
+    private Integer deviceNo;
+    private Integer userLevelId;
+
+    private String userLevelName;
+
+
+
+    private String vtuVendorName;
+    private String vendorAddress;
+    private Long vendorPhone;
+    private Long customerCareNumber;
+
+
 
 
 }

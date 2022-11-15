@@ -11,6 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LocationDto {
+
     private Date dateTime;
     private Double latitude;
     private Double longitude;
