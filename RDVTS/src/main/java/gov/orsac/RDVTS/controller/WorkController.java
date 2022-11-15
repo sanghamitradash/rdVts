@@ -207,7 +207,7 @@ public class WorkController {
 
 //            --------------------------
             List<AlertCountDto> alertDto = new ArrayList<>();
-            location.setTotalAlertToday(alertService.getTotalAlertToday());
+            location.setTotalAlertToday(1);
 
             location.setTotalAlertWork(1);
 //            --------------------------
