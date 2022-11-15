@@ -1,5 +1,7 @@
 package gov.orsac.RDVTS.service;
 
+import java.util.List;
+
 import gov.orsac.RDVTS.dto.AlertDto;
 import gov.orsac.RDVTS.dto.BufferDto;
 import gov.orsac.RDVTS.dto.VtuLocationDto;
@@ -9,6 +11,8 @@ import java.util.List;
 
 
 public interface AlertService  {
+    Integer getTotalAlertToday();
+    Integer getTotalAlertWork();
     AlertDto checkAlertExists(Long imei, Integer noDataAlertId);
     AlertEntity saveAlert(AlertEntity alertEntity);
     Boolean updateResolve(Long imei1, Integer noDataAlertId);
