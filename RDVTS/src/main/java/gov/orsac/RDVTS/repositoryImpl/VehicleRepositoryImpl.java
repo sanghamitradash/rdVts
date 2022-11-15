@@ -124,28 +124,92 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return vehicleDevice;
     }
 
-    public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate, Date vehicleWorkEndDate) throws ParseException {
+    public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate, Date vehicleWorkEndDate,Integer userId) throws ParseException {
         List<VehicleDeviceMappingDto> vehicleDevice = new ArrayList<>();
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select id, vehicle_id, device_id, installation_date, installed_by, is_active, created_by, created_on, updated_by, updated_on, deactivation_date " +
-                "FROM rdvts_oltp.vehicle_device_mapping where is_active=true ";
+        String qry = "select vdm.*,dm.imei_no_1 as imeiNo1 ,dm.imei_no_2 as imeiNo2 " +
+                "FROM rdvts_oltp.vehicle_device_mapping vdm " +
+                "left join rdvts_oltp.device_m dm on vdm.device_id=dm.id  " +
+                "where vdm.is_active=true and dm.is_active='t' ";
 
 
         if (vehicleId!=null && vehicleId > 0) {
-            qry += " and vehicle_id =:vehicleId ";
+            qry += " and vdm.vehicle_id =:vehicleId ";
             sqlParam.addValue("vehicleId", vehicleId);
         }
 
         if (vehicleWorkStartDate != null && vehicleWorkEndDate == null) {
-            qry += "  and created_on BETWEEN :vehicleWorkStartDate AND now() or deactivation_date BETWEEN :vehicleWorkStartDate AND now() ";
+            qry += "  and vdm.created_on BETWEEN :vehicleWorkStartDate AND now() or vdm.deactivation_date BETWEEN :vehicleWorkStartDate AND now() ";
             sqlParam.addValue("vehicleWorkStartDate", vehicleWorkStartDate);
 
         }
         if(vehicleWorkStartDate != null && vehicleWorkEndDate != null){
-            qry += "  and created_on BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate or deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
+            qry += "  and vdm.created_on BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate or vdm.deactivation_date BETWEEN :vehicleWorkStartDate AND :vehicleWorkEndDate ";
             sqlParam.addValue("vehicleWorkStartDate", vehicleWorkStartDate);
             sqlParam.addValue("vehicleWorkEndDate", vehicleWorkEndDate);
         }
+
+//
+//        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
+//        if(user.getUserLevelId()==5){
+//            if(qry.length()<=0) {
+//                qry += " WHERE  owner.contractor_id=:contractorId ";
+//                sqlParam.addValue("contractorId",userId);
+//            }
+//            else{
+//                qry += " and owner.contractor_id=:contractorId  ";
+//                sqlParam.addValue("contractorId",userId);
+//            }
+//        }
+//      else if(user.getUserLevelId()==1){
+//        List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(userId);
+//        qry+=" ";
+//    }
+//            else if(user.getUserLevelId()==2){
+//        List<Integer> distId=userRepositoryImpl.getDistIdByUserId(userId);
+//        List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(distId);
+//        List<Integer> vehicleIds  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
+//        if(qry.length()<=0) {
+//            qry += " WHERE  vm.id in(:vehicleIds) ";
+//            sqlParam.addValue("vehicleIds",vehicleIds);;
+//        }
+//        else{
+//            qry += " and vm.id in(:vehicleIds)  ";
+//            sqlParam.addValue("vehicleIds",vehicleIds);;
+//        }
+//    }
+//        else if(user.getUserLevelId()==3){
+//        List<Integer> blockId=userRepositoryImpl.getBlockIdByUserId(userId);
+//        List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByBlockList(blockId);
+//        List<Integer> vehicleIds  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
+//        if(qry.length()<=0) {
+//            qry += " WHERE  vm.id in(:vehicleIds) ";
+//            sqlParam.addValue("vehicleIds",vehicleIds);;
+//        }
+//        else{
+//            qry += " and vm.id in(:vehicleIds) ";
+//            sqlParam.addValue("vehicleIds",vehicleIds);;
+//        }
+//    }
+//        else if(user.getUserLevelId()==4){
+//        List<Integer> divisionId=userRepositoryImpl.getDivisionByUserId(userId);
+//        List<Integer> districtId=userRepositoryImpl.getDistrictByDivisionId(divisionId);
+//        List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(districtId);
+//        List<Integer> vehicleIds  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
+//        if(qry.length()<=0) {
+//            qry += " WHERE  vm.id in(:vehicleIds) ";
+//            sqlParam.addValue("vehicleIds",vehicleIds);;
+//        }
+//        else{
+//            qry += " and vm.id in(:vehicleIds) ";
+//            sqlParam.addValue("vehicleIds",vehicleIds);;
+//        }
+//    }
+
+
+
+
+
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleDeviceMappingDto.class));
     }
@@ -871,6 +935,27 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT division_id from rdvts_oltp.device_area_mapping where is_active = true  ";
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId, Date actualActivityStartDate, Date actualActivityCompletionDate) {
+
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " SELECT id, vehicle_id, activity_id, start_time, end_time, start_date, end_date, is_active, created_by, created_on, updated_by, updated_on, deactivation_date, g_activity_id " +
+                " FROM rdvts_oltp.vehicle_activity_mapping where is_active=true  ";
+        if (actualActivityCompletionDate == null) {
+            actualActivityCompletionDate = new Date();
+        }
+
+        if (actualActivityStartDate != null && actualActivityCompletionDate != null) {
+            qry += " AND  created_on BETWEEN :activityStartDate AND :activityCompletionDate ";
+            sqlParam.addValue("activityStartDate", actualActivityStartDate);
+            sqlParam.addValue("activityCompletionDate", actualActivityCompletionDate);
+        }
+        if (activityId > 0 && activityId != null) {
+            qry += " AND activity_id=:activityId ";
+            sqlParam.addValue("activityId", activityId);
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleActivityMappingDto.class));
     }
 }
 

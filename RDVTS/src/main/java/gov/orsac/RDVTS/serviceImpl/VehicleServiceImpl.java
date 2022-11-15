@@ -141,8 +141,8 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate,Date vehicleWorkEndDate) throws ParseException {
-              return vehicleRepositoryimpl.getdeviceListByVehicleId(vehicleId,vehicleWorkStartDate,vehicleWorkEndDate);
+       public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate,Date vehicleWorkEndDate,Integer userId) throws ParseException {
+              return vehicleRepositoryimpl.getdeviceListByVehicleId(vehicleId,vehicleWorkStartDate,vehicleWorkEndDate,userId);
        }
 
        @Override
@@ -238,6 +238,10 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleActivityMappingRepository.saveAll(vehicleActivity);
     }
 
+    @Override
+    public List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId, Date actualActivityStartDate, Date actualActivityCompletionDate) {
+        return vehicleRepositoryimpl.getVehicleByActivityId(activityId, userId,actualActivityStartDate,actualActivityCompletionDate);
+    }
 
 
     @Override
