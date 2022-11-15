@@ -1,14 +1,11 @@
 package gov.orsac.RDVTS.serviceImpl;
 
-<<<<<<< HEAD
 import gov.orsac.RDVTS.dto.AlertCountDto;
-=======
 import gov.orsac.RDVTS.dto.AlertDto;
 import gov.orsac.RDVTS.dto.BufferDto;
 import gov.orsac.RDVTS.dto.VtuLocationDto;
 import gov.orsac.RDVTS.entities.AlertEntity;
 import gov.orsac.RDVTS.repository.AlertRepository;
->>>>>>> 136a0c6ccbbfcddf370d80514c668454447f10b4
 import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
 import gov.orsac.RDVTS.service.AlertService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +17,6 @@ import java.util.List;
 public class AlertServiceImpl implements AlertService {
 
     @Autowired
-<<<<<<< HEAD
     private AlertRepositoryImpl alertRepositoryImpl;
 
     @Override
@@ -32,8 +28,6 @@ public class AlertServiceImpl implements AlertService {
     public Integer getTotalAlertWork() {
         return alertRepositoryImpl.getTotalAlertWork();
     }
-=======
-    public AlertRepositoryImpl alertRepositoryImpl;
 
     @Autowired
     public AlertRepository alertRepository;
@@ -92,5 +86,4 @@ public class AlertServiceImpl implements AlertService {
 
 
 
->>>>>>> 136a0c6ccbbfcddf370d80514c668454447f10b4
 }
