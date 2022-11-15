@@ -710,6 +710,7 @@ public class LocationController {
                     for (Integer vehicleitem : vehicleId) {
                         List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate, userId);
                         List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
+
                         Map<String, Object> itemVal = new HashMap<>();
                         itemVal.put("vehicleLocation", vtuLocationDto);
                         result.add(itemVal);

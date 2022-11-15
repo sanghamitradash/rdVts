@@ -102,6 +102,7 @@ public class VtuLocationDto {
 
 
 
+
 //    private Long UpdatedLatitude;
 //    private Long UpdatedLongitude;
 }
