@@ -256,7 +256,7 @@ public class AlertCronController {
 
     @Scheduled(cron = "0 */5 * * * *")
     public void generateGeofenceAlert() throws ParseException {
-        System.out.println("hii");
+        //System.out.println("hii");
 
 
         final Integer GEO_FENCE_ALERT_ID = 4;

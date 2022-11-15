@@ -1,8 +1,5 @@
 package gov.orsac.RDVTS.service;
-import gov.orsac.RDVTS.dto.DeviceDto;
-import gov.orsac.RDVTS.dto.LocationDto;
-import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
-import gov.orsac.RDVTS.dto.VtuLocationDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertEntity;
 
 import java.math.BigDecimal;
@@ -18,6 +15,7 @@ public interface LocationService {
 
     List<VtuLocationDto> getLocationrecordList(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
     List<VtuLocationDto> getLastLocationrecordList(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
+    List<VtuLocationDto> getLastLocationRecordList(List<VehicleDeviceMappingDto> deviceDetails, Date startDate, Date endDate);
     Integer getActiveVehicle(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
     Double getDistance(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
     Double getTodayDistance(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);

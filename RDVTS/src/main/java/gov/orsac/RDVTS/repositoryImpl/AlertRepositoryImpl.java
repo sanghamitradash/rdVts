@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -119,5 +120,41 @@ public class AlertRepositoryImpl  {
                 " ),4326),  'SRID=4326;POINT("+longitude+" "+latitude+" )'::geometry) as inFlag" ;
 
         return namedJdbc.queryForObject(qry, sqlParam,(Boolean.class));
+    }
+
+    public List<AlertDto> getAllDeviceByVehicle() {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = " SELECT distinct vm.id, vm.speed_limit as speedLimit, vdm.vehicle_id as vehicleId,vdm.device_id as deviceId,dm.imei_no_1 as imei" +
+                " FROM rdvts_oltp.vehicle_m vm " +
+                "  join rdvts_oltp.vehicle_device_mapping vdm on vdm.vehicle_id=vm.id " +
+                "  join rdvts_oltp.device_m dm on vdm.device_id= dm.id" ;
+
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
+    }
+
+    public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Integer recordLimit) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on " +
+                " FROM rdvts_oltp.vtu_location where is_active=true ";
+        qry += " and imei =:imei1 and gps_fix::numeric =1 ";
+
+        Date currentDateMinus = new Date(System.currentTimeMillis() - 900 * 1000); //5 minute in millisecond 60*5
+//        DateTime dateTime = new DateTime();
+//        dateTime = dateTime.minusMinutes(5);
+//        Date modifiedDate = dateTime.toDate();
+        Date currentDate=new Date();
+
+
+        qry += "   AND date(date_time)=date(now()) AND  date_time BETWEEN :currentDateMinus AND :currentDate and REPLACE(speed, ' ', '')::numeric > :speedLimit order by date_time ASC  limit :recordLimit ";
+        sqlParam.addValue("imei1", imei);
+
+        sqlParam.addValue("recordLimit", recordLimit);
+        sqlParam.addValue("currentDateMinus", currentDateMinus);
+        sqlParam.addValue("speedLimit", speedLimit);
+        sqlParam.addValue("currentDate", currentDate);
+
+        //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
     }
 }

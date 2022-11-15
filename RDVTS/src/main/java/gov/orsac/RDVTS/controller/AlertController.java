@@ -5,12 +5,9 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.AlertEntity;
 import gov.orsac.RDVTS.service.*;
-import io.swagger.models.auth.In;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -405,7 +402,73 @@ public class AlertController {
         return response;
 
     }
+
+
+    @RequestMapping("/generateOverSpeedAlert")
+    public RDVTSResponse generateOverSpeedAlert(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String, Object>> resultabc = new ArrayList<>();
+        //final Integer noDataAlertTimeSpan = 60; //in minutes Alert Time Span
+        final Integer OVER_SPEED_ALERT_ID = 5;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
+        final Integer OVER_SPEED_TIME = 15; //in minutes
+        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
+        Integer recordLimit = OVER_SPEED_TIME * LOCATION_DATA_FREQUENCY;
+
+        try {
+
+           List<AlertDto> alertDto= alertService.getAllDeviceByVehicle();
+            for (AlertDto alertDtoItem : alertDto) {
+                List<VtuLocationDto> vtuLocationDto=alertService.getAlertLocationOverSpeed(alertDtoItem.getImei(),alertDtoItem.getSpeedLimit(),recordLimit);
+                if (vtuLocationDto !=null){
+                        AlertDto alertExists = alertService.checkAlertExists(alertDtoItem.getImei(), OVER_SPEED_ALERT_ID); //Check If alert Exist Or Not
+                    if (alertExists == null) {
+                        for (VtuLocationDto vtuItem: vtuLocationDto) {
+                            AlertEntity alertEntity = new AlertEntity();
+                            alertEntity.setImei(alertDtoItem.getImei());
+                            alertEntity.setAlertTypeId(OVER_SPEED_ALERT_ID);
+                            if (vtuItem.getLatitude() != null) {
+                                alertEntity.setLatitude(Double.parseDouble(vtuItem.getLatitude()));
+                            }
+                            if (vtuItem.getLongitude() != null) {
+                                alertEntity.setLongitude(Double.parseDouble(vtuItem.getLongitude()));
+                            }
+                            if (vtuItem.getAltitude() != null) {
+                                alertEntity.setAltitude(Double.parseDouble(vtuItem.getAltitude()));
+                            }
+                            if (vtuItem.getAccuracy() != null) {
+                                alertEntity.setAccuracy(Double.parseDouble(vtuItem.getAccuracy()));
+                            }
+
+                            alertEntity.setSpeed(Double.parseDouble(vtuItem.getSpeed()));
+                            alertEntity.setGpsDtm(new Date());
+
+                            AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+                        }
+
+
+                    }
+                }
+                else {
+                    for (VtuLocationDto vtuItem: vtuLocationDto) {
+                        Boolean updateResolve = alertService.updateResolve(vtuItem.getImei(), OVER_SPEED_ALERT_ID);
+                    }
+
+                }
+            }
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), ex.getMessage(), result);
+        }
+
+
+        return response;
+
+    }
 }
+
 
 
 

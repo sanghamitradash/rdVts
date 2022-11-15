@@ -61,5 +61,18 @@ public class AlertServiceImpl implements AlertService {
         return alertRepositoryImpl.checkGeoFenceIntersected(geom,longitude,latitude);
     }
 
+    @Override
+    public List<AlertDto> getAllDeviceByVehicle() {
+        return alertRepositoryImpl.getAllDeviceByVehicle();
+
+    }
+
+    @Override
+    public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Integer recordLimit) {
+        return alertRepositoryImpl.getAlertLocationOverSpeed(imei,speedLimit,recordLimit);
+    }
+
+
+
 
 }

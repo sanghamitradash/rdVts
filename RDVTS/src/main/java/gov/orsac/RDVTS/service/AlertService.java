@@ -24,4 +24,11 @@ public interface AlertService  {
     Boolean bufferQuery(String BufferPointLongitude, String BufferPointLatitude, String longitude, String latitude);
 
     Boolean checkGeoFenceIntersected(String geom, String longitude, String latitude);
+
+    List<AlertDto> getAllDeviceByVehicle();
+
+
+
+
+    List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Integer recordLimit);
 }
