@@ -29,4 +29,8 @@ public class AlertDto {
     private boolean resolve ;
     private Integer resolvedBy ;
     private String resolvedByUser;
+    private double speedLimit;
+    private Integer vehicleId;
+    private Integer deviceId;
+
 }
