@@ -32,6 +32,9 @@ public class WorkController {
     @Autowired
     private LocationService locationService;
 
+    @Autowired
+    private AlertService alertService;
+
 
     @Autowired
     private DeviceService deviceService;
@@ -201,8 +204,14 @@ public class WorkController {
                 location.setAvgSpeedToday(avgSpeedToday);
             }
             location.setAvgSpeedWork(avgSpeedWork);
-            location.setTotalAlertToday(1);
+
+//            --------------------------
+            List<AlertCountDto> alertDto = new ArrayList<>();
+            location.setTotalAlertToday(alertService.getTotalAlertToday());
+
             location.setTotalAlertWork(1);
+//            --------------------------
+
             location.setTotalVehicleActive(totalActiveVehicle);
             if (totalVehicleCount > 0 ){
                 location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
