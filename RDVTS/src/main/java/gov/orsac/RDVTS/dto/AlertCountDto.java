@@ -14,6 +14,6 @@ public class AlertCountDto {
     private Integer totalAlertToday;
     private Integer totalAlertWork;
     private List<Integer> vehicleId;
-    private List<Integer> workId;
+    private Integer workId;
 
 }

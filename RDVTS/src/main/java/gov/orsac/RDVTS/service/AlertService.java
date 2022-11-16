@@ -11,8 +11,8 @@ import java.util.List;
 
 
 public interface AlertService  {
-    Integer getTotalAlertToday();
-    Integer getTotalAlertWork();
+    Integer getTotalAlertToday(Integer id);
+    Integer getTotalAlertWork(Integer id);
     AlertDto checkAlertExists(Long imei, Integer noDataAlertId);
     AlertEntity saveAlert(AlertEntity alertEntity);
     Boolean updateResolve(Long imei1, Integer noDataAlertId);

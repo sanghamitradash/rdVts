@@ -205,12 +205,9 @@ public class WorkController {
             }
             location.setAvgSpeedWork(avgSpeedWork);
 
-//            --------------------------
-            List<AlertCountDto> alertDto = new ArrayList<>();
-            location.setTotalAlertToday(1);
+            location.setTotalAlertToday(alertService.getTotalAlertToday(id));
 
-            location.setTotalAlertWork(1);
-//            --------------------------
+            location.setTotalAlertWork(alertService.getTotalAlertWork(id));
 
             location.setTotalVehicleActive(totalActiveVehicle);
             if (totalVehicleCount > 0 ){
@@ -242,6 +239,7 @@ public class WorkController {
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),

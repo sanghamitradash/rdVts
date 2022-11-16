@@ -20,13 +20,13 @@ public class AlertServiceImpl implements AlertService {
     private AlertRepositoryImpl alertRepositoryImpl;
 
     @Override
-    public Integer getTotalAlertToday() {
-        Integer count = alertRepositoryImpl.getTotalAlertToday();
+    public Integer getTotalAlertToday(Integer id) {
+        Integer count = alertRepositoryImpl.getTotalAlertToday(id);
         return count;
     }
     @Override
-    public Integer getTotalAlertWork() {
-        return alertRepositoryImpl.getTotalAlertWork();
+    public Integer getTotalAlertWork(Integer id) {
+        return alertRepositoryImpl.getTotalAlertWork(id);
     }
 
     @Autowired
