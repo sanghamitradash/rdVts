@@ -16,24 +16,24 @@ public class AlertRepositoryImpl {
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
 
-    public Integer getTotalAlertToday(Integer id) {
+    public List<Integer> getTotalAlertToday(Integer id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = " select distinct count(id) from rdvts_oltp.alert_data where imei in (select imei_no_1 from rdvts_oltp.device_m where id in " +
                 " (select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id in " +
                 " (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id in " +
                 " (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId)))) " +
-                " and date(gps_dtm)=date(now()) and is_active=true " ;
+                " and date(gps_dtm)=date(now()) and is_active=true group by alert_type_id " ;
         sqlParam.addValue("workId", id);
-        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
-    public Integer getTotalAlertWork(Integer id) {
+    public List<Integer> getTotalAlertWork(Integer id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "  select distinct count(id) from rdvts_oltp.alert_data where imei in (select imei_no_1 from rdvts_oltp.device_m where id in  " +
                 "  (select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id in  " +
                 "    (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id in  " +
-                "       (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId)))) and is_active=true " ;
+                "       (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId)))) and is_active=true group by alert_type_id " ;
         sqlParam.addValue("workId", id);
-        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 
 //alert count today qry//
