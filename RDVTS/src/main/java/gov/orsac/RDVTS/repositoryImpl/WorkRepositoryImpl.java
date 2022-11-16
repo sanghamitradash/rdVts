@@ -93,6 +93,18 @@ public class WorkRepositoryImpl {
             qry += " and wm.work_status = :work_status";
             sqlParam.addValue("work_status", workDto.getWorkStatus());
         }
+        if (workDto.getDistId() != null && workDto.getDistId() > 0){
+            qry += " and geo.dist_id = :distId";
+            sqlParam.addValue("distId", workDto.getDistId());
+        }
+        if (workDto.getDivisionId() != null && workDto.getDivisionId() > 0){
+            qry += " and geo.division_id = :divisionId";
+            sqlParam.addValue("divisionId", workDto.getDivisionId());
+        }
+        if (workDto.getCircleId() != null && workDto.getCircleId() > 0){
+            qry += " and geo.circle_id = :circleId";
+            sqlParam.addValue("circleId", workDto.getCircleId());
+        }
 //        if (workDto.getActivityId() > 0) {
 //            qry += " and act.id = :activityId";
 //            sqlParam.addValue("activityId", workDto.getActivityId());
