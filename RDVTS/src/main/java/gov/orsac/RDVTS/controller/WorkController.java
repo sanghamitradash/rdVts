@@ -206,7 +206,6 @@ public class WorkController {
             location.setAvgSpeedWork(avgSpeedWork);
 
             location.setTotalAlertToday(alertService.getTotalAlertToday(id));
-
             location.setTotalAlertWork(alertService.getTotalAlertWork(id));
 
             location.setTotalVehicleActive(totalActiveVehicle);
