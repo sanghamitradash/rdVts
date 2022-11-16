@@ -1,6 +1,5 @@
 package gov.orsac.RDVTS.serviceImpl;
 
-import gov.orsac.RDVTS.dto.AlertCountDto;
 import gov.orsac.RDVTS.dto.AlertDto;
 import gov.orsac.RDVTS.dto.BufferDto;
 import gov.orsac.RDVTS.dto.VtuLocationDto;
@@ -20,13 +19,13 @@ public class AlertServiceImpl implements AlertService {
     private AlertRepositoryImpl alertRepositoryImpl;
 
     @Override
-    public Integer getTotalAlertToday() {
-        Integer count = alertRepositoryImpl.getTotalAlertToday();
+    public List<Integer> getTotalAlertToday(Integer id) {
+        List<Integer> count = alertRepositoryImpl.getTotalAlertToday(id);
         return count;
     }
     @Override
-    public Integer getTotalAlertWork() {
-        return alertRepositoryImpl.getTotalAlertWork();
+    public List<Integer> getTotalAlertWork(Integer id) {
+        return alertRepositoryImpl.getTotalAlertWork(id);
     }
 
     @Autowired

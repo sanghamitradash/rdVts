@@ -4,6 +4,7 @@ import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 import java.util.Date;
 
@@ -25,7 +26,7 @@ public class LocationDto {
     private Integer totalVehicleActive;
     private Integer totalInactiveVehicle;
     private Double percentageOfActiveVehicle;
-    private Integer totalAlertToday;
-    private Integer totalAlertWork;
+    private List<Integer> totalAlertToday;
+    private List<Integer> totalAlertWork;
 
 }
