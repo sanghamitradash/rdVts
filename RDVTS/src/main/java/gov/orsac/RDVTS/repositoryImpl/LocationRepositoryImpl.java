@@ -272,7 +272,7 @@ public class LocationRepositoryImpl {
         }
 
 
-        String qry = "select b.*,vdm.vehicle_id as vehicleId ,dm.device_id as deviceId from rdvts_oltp.vehicle_device_mapping as vdm"+
+        String qry = "select b.* from rdvts_oltp.vehicle_device_mapping as vdm"+
         " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id"+
         " left join (select distinct imei,max(id) over(partition by imei) as vtuid from"+
         " rdvts_oltp.vtu_location as vtu where date(date_time)=date(now()) and  gps_fix::numeric =1  and imei in (:imei2) ) as a on dm.imei_no_1=a.imei"+
@@ -427,7 +427,8 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "and imei=:imei2 and date(date_time)=date(now()) and gps_fix::numeric=1  " +
+
+            qry += "and imei=:imei2 and date(date_time)=date(now()) and gps_fix::numeric=1  /*and longitude::numeric between 81 and 88 and latitude::numeric between 17 and 23*/  " +
                     "order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
