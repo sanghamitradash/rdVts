@@ -805,6 +805,8 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         sqlParam.addValue("deviceId", deviceId);
         return namedJdbc.queryForObject(qry, sqlParam, Boolean.class);
     }
+
+
 }
 
 
