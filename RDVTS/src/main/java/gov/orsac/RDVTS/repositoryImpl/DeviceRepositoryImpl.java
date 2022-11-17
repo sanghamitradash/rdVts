@@ -185,10 +185,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         if (deviceDto.getImeiNo1() != null && deviceDto.getImeiNo1() > 0) {
             if (subQuery.length() <= 0) {
                 subQuery += " WHERE imeiNo1::varchar LIKE :imeiNo1   ";
-                sqlParam.addValue("imeiNo1", String.valueOf(deviceDto.getImeiNo1() + "%"));
+                sqlParam.addValue("imeiNo1", String.valueOf("%" + deviceDto.getImeiNo1() + "%"));
             } else {
                 subQuery += " AND imeiNo1::varchar LIKE :imeiNo1  ";
-                sqlParam.addValue("imeiNo1", String.valueOf(deviceDto.getImeiNo1() + "%"));
+                sqlParam.addValue("imeiNo1", String.valueOf("%" + deviceDto.getImeiNo1() + "%"));
             }
 
         }
@@ -229,10 +229,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         if (deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0) {
             if (subQuery.length() <= 0) {
                 subQuery += " WHERE mobileNumber1::varchar LIKE :mobileNumber1   ";
-                sqlParam.addValue("mobileNumber1", String.valueOf(deviceDto.getMobileNumber1() + "%"));
+                sqlParam.addValue("mobileNumber1", String.valueOf("%" +deviceDto.getMobileNumber1() + "%"));
             } else {
                 subQuery += " AND mobileNumber1::varchar LIKE :mobileNumber1  ";
-                sqlParam.addValue("mobileNumber1", String.valueOf(deviceDto.getMobileNumber1() + "%"));
+                sqlParam.addValue("mobileNumber1", String.valueOf("%" + deviceDto.getMobileNumber1() + "%"));
             }
 
         }
