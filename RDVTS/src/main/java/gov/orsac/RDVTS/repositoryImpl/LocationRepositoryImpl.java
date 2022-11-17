@@ -277,7 +277,7 @@ public class LocationRepositoryImpl {
         }
 
 
-        String qry = "select b.* from rdvts_oltp.vehicle_device_mapping as vdm"+
+        String qry = "select b.*,vdm.vehicle_id as vehicleId from rdvts_oltp.vehicle_device_mapping as vdm"+
         " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id"+
         " left join (select distinct imei,max(id) over(partition by imei) as vtuid from"+
         " rdvts_oltp.vtu_location as vtu where date(date_time)=date(now()) and  gps_fix::numeric =1  and imei in (:imei2) ) as a on dm.imei_no_1=a.imei"+
