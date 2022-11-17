@@ -709,10 +709,12 @@ public class LocationController {
 
                     for (Integer vehicleitem : vehicleId) {
                         List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate, userId);
-                        List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
-                        Map<String, Object> itemVal = new HashMap<>();
-                        itemVal.put("vehicleLocation", vtuLocationDto);
-                        result.add(itemVal);
+                        if (getdeviceList.size()>0){
+                            List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
+                            Map<String, Object> itemVal = new HashMap<>();
+                            itemVal.put("vehicleLocation", vtuLocationDto);
+                            result.add(itemVal);
+                        }
 
 
                     }
@@ -722,10 +724,12 @@ public class LocationController {
                         List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityItem, userId);
                         for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                             List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
-                            List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
-                            Map<String, Object> itemVal = new HashMap<>();
-                            itemVal.put("vehicleLocation", vtuLocationDto);
-                            result.add(itemVal);
+                            if (getdeviceList.size()>0){
+                                List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
+                                Map<String, Object> itemVal = new HashMap<>();
+                                itemVal.put("vehicleLocation", vtuLocationDto);
+                                result.add(itemVal);
+                            }
                         }
                     }
 
@@ -738,10 +742,12 @@ public class LocationController {
                             List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                             for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                 List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
-                                List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
-                                Map<String, Object> itemVal = new HashMap<>();
-                                itemVal.put("vehicleLocation", vtuLocationDto);
-                                result.add(itemVal);
+                                if (getdeviceList.size()>0){
+                                    List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
+                                    Map<String, Object> itemVal = new HashMap<>();
+                                    itemVal.put("vehicleLocation", vtuLocationDto);
+                                    result.add(itemVal);
+                                }
                             }
 
                         }
@@ -765,10 +771,12 @@ public class LocationController {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
-                                    List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
-                                    Map<String, Object> itemVal = new HashMap<>();
-                                    itemVal.put("vehicleLocation", vtuLocationDto);
-                                    result.add(itemVal);
+                                    if (getdeviceList.size()>0){
+                                        List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
+                                        Map<String, Object> itemVal = new HashMap<>();
+                                        itemVal.put("vehicleLocation", vtuLocationDto);
+                                        result.add(itemVal);
+                                    }
                                 }
 
                             }
@@ -796,10 +804,12 @@ public class LocationController {
                                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                         List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
-                                        List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
-                                        Map<String, Object> itemVal = new HashMap<>();
-                                        itemVal.put("vehicleLocation", vtuLocationDto);
-                                        result.add(itemVal);
+                                        if (getdeviceList.size()>0){
+                                            List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
+                                            Map<String, Object> itemVal = new HashMap<>();
+                                            itemVal.put("vehicleLocation", vtuLocationDto);
+                                            result.add(itemVal);
+                                        }
                                     }
 
                                 }
@@ -822,10 +832,14 @@ public class LocationController {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
-                                    List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
-                                    Map<String, Object> itemVal = new HashMap<>();
-                                    itemVal.put("vehicleLocation", vtuLocationDto);
-                                    result.add(itemVal);
+                                    if (getdeviceList.size()>0){
+                                        List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
+                                        Map<String, Object> itemVal = new HashMap<>();
+                                        itemVal.put("vehicleLocation", vtuLocationDto);
+                                        result.add(itemVal);
+                                    }
+
+
                                 }
 
                             }
@@ -844,10 +858,12 @@ public class LocationController {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
-                                    List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
-                                    Map<String, Object> itemVal = new HashMap<>();
-                                    itemVal.put("vehicleLocation", vtuLocationDto);
-                                    result.add(itemVal);
+                                    if (getdeviceList.size()>0){
+                                        List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
+                                        Map<String, Object> itemVal = new HashMap<>();
+                                        itemVal.put("vehicleLocation", vtuLocationDto);
+                                        result.add(itemVal);
+                                    }
                                 }
 
                             }
@@ -864,10 +880,12 @@ public class LocationController {
                                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
-                                    List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
-                                    Map<String, Object> itemVal = new HashMap<>();
-                                    itemVal.put("vehicleLocation", vtuLocationDto);
-                                    result.add(itemVal);
+                                    if (getdeviceList.size()>0){
+                                        List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
+                                        Map<String, Object> itemVal = new HashMap<>();
+                                        itemVal.put("vehicleLocation", vtuLocationDto);
+                                        result.add(itemVal);
+                                    }
                                 }
 
                             }
