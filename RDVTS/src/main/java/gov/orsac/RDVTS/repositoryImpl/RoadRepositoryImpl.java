@@ -231,8 +231,8 @@ public class RoadRepositoryImpl {
     public List<GeoMasterDto> getworkByDistrictId(Integer districtId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +
-                "\tFROM rdvts_oltp.geo_master where is_active=true and dist_id =:districtId; ";
+        String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on " +
+                " FROM rdvts_oltp.geo_master where is_active=true  ";
         /*   "AND id>1 ORDER BY id";*/
         if (districtId > 0) {
             qry += " and dist_id =:districtId";
@@ -260,7 +260,7 @@ public class RoadRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +
-                "\tFROM rdvts_oltp.geo_master where is_active=true and dist_id =:divisionId; ";
+                "\tFROM rdvts_oltp.geo_master where is_active=true and division_id =:divisionId; ";
         /*   "AND id>1 ORDER BY id";*/ // add division Id here
         sqlParam.addValue("divisionId", divisionId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
