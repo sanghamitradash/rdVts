@@ -223,6 +223,7 @@ public class DeviceController {
 
             }
             //result.put("deviceList", deviceList);
+
             response.setData(deviceList);
             response.setMessage("Device List");
             response.setStatus(1);
