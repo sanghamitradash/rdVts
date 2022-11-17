@@ -7,11 +7,9 @@ import gov.orsac.RDVTS.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class LocationServiceImpl implements LocationService {
@@ -105,6 +103,12 @@ public class LocationServiceImpl implements LocationService {
         List<VtuLocationDto> vtuLocationDtoList=locationRepository.getLocationrecordList(imeiNo1,imeiNo2,startDate,endDate,createdOn,deactivationDate,recordLimit);
         return vtuLocationDtoList;
     }
+    @Override
+    public List<VtuLocationDto> getLastLocationByDeviceId(List<Integer> deviceIdList, Integer checkArea){
+
+        return locationRepository.getLastLocationByDeviceId(deviceIdList,checkArea);
+    }
+
 
 
 }

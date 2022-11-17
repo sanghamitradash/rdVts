@@ -185,6 +185,11 @@ public class RoadServiceImpl implements RoadService {
         return roadRepositoryImpl.saveGeom(roadId, roadLocation, userId);
     }
 
+    @Override
+    public List<GeoMasterDto> getWorkByCircleId(Integer circleObj) {
+        return roadRepositoryImpl.getWorkByCircleId(circleObj);
+    }
+
 
     @Override
     public List<GeoMasterDto> getVehicleListByRoadId(Integer roadId){

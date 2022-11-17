@@ -3,8 +3,6 @@ package gov.orsac.RDVTS.serviceImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
-import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
-import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.DeviceAreaMappingRepository;
 import gov.orsac.RDVTS.repository.DeviceMasterRepository;
@@ -83,6 +81,8 @@ public class DeviceServiceImpl implements DeviceService {
     public List<VehicleDeviceMappingDto> getVehicleDeviceMappingDDByDeviceId(Integer deviceId, Integer userId) {
         return deviceRepositoryImpl.getVehicleDeviceMappingDDByDeviceId(deviceId,userId);
     }
+
+
 
     @Override
     public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId, Integer userId) {
