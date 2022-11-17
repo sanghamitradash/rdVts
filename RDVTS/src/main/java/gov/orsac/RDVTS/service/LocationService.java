@@ -1,11 +1,8 @@
 package gov.orsac.RDVTS.service;
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.AlertEntity;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface LocationService {
     List<VtuLocationDto> getLatestRecordByImeiNumber(List<Long> imei1,List<Long> imei2);
@@ -27,4 +24,8 @@ public interface LocationService {
 
 
     List<VtuLocationDto> getLocationrecordList(Long imeiNo1, Long imeiNo2, Date startDate, Date endDate, Date createdOn, Date deactivationDate, Integer recordLimit);
+
+    List<VtuLocationDto> getLastLocationByDeviceId(List<Integer> deviceIdList, Integer checkArea);
+
+
 }
