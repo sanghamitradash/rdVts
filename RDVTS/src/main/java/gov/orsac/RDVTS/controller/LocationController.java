@@ -849,26 +849,15 @@ public class LocationController {
                     result.add(itemVal);
                 }
                 else if (circleId != null && !circleId.isEmpty()) {
-                    for (Integer circleObj : circleId) {
-                        List<GeoMasterDto> workByDivisionId = roadService.getWorkByCircleId(circleObj);
-                        for (GeoMasterDto workItem : workByDivisionId) {
-                            List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workItem.getWorkId());
-                            for (ActivityDto activityId : activityDtoList) {
-                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
-                                for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                                    List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
-                                    if (getdeviceList.size()>0){
-                                        List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
-                                        Map<String, Object> itemVal = new HashMap<>();
-                                        itemVal.put("vehicleLocation", vtuLocationDto);
-                                        result.add(itemVal);
-                                    }
-                                }
-
-                            }
-                        }
-
+                    final Integer CheckArea=4; //For Circle
+                    List<Integer> IdList=new ArrayList<>();
+                    for (Integer item: circleId){
+                        IdList.add(item);
                     }
+                    List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationByDeviceId(IdList,CheckArea);
+                    Map<String, Object> itemVal = new HashMap<>();
+                    itemVal.put("vehicleLocation", vtuLocationDto);
+                    result.add(itemVal);
                 }
                 else {
                     response.setStatus(1);
