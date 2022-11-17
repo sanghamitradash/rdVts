@@ -47,5 +47,7 @@ public class VehicleDeviceMappingDto {
 
     private Long imeiNo2;
 
+    private Long imei;
+
 
 }
