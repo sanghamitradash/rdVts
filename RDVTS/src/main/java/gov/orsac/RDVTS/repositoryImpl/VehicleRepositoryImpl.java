@@ -754,16 +754,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<RoadMasterDto> getRoadDetailByVehicleId(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry ="SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, " +
-                "road.road_allignment, ST_AsGeoJSON(road.geom) as geom, ST_AsGeoJSON(road.geom) as geoJSON, road.road_width, road.g_road_id, road.is_active, road.created_by, " +
-                "road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, road.road_status, " +
-                "road.approval_status, road.approved_by, gm.work_id as workIds, am.id as activityId, vm.id as vehicleId  " +
-                "FROM rdvts_oltp.geo_construction_m as road " +
-                "LEFT JOIN rdvts_oltp.geo_master as gm on gm.road_id=road.id " +
-                "LEFT JOIN rdvts_oltp.work_m as wm on wm.id=gm.work_id " +
-                "LEFT JOIN rdvts_oltp.activity_m as am on am.work_id=wm.id " +
-                "LEFT JOIN rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=am.id " +
-                "LEFT JOIN rdvts_oltp.vehicle_m as vm on vm.id=vam.vehicle_id where vm.id=:vehicleId";
+        String qry ="select id, package_id, package_name, road_name, road_length, road_location, " +
+                "road_allignment, ST_AsGeoJSON(geom) as geom, ST_AsGeoJSON(geom) as geoJSON, road_width, g_road_id, is_active, created_by, " +
+                "created_on, updated_by, updated_on, completed_road_length, sanction_date, road_code, road_status, " +
+                "approval_status, approved_by from rdvts_oltp.geo_construction_m where id in (select road_id from rdvts_oltp.geo_master where work_id in " +
+                " (select work_id from rdvts_oltp.activity_m where id in " +
+                "  (select activity_id from rdvts_oltp.vehicle_activity_mapping where vehicle_id in (:vehicleId)))) and is_active=true ";
         sqlParam.addValue("vehicleId", vehicleId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
     }
@@ -956,6 +952,15 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             sqlParam.addValue("activityId", activityId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleActivityMappingDto.class));
+    }
+
+    public List<Integer> getRoadIdsByVehicleIdsForFilter(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select id from rdvts_oltp.geo_construction_m where id in (select road_id from rdvts_oltp.geo_master where work_id in " +
+                " (select work_id from rdvts_oltp.activity_m where id in " +
+                " (select activity_id from rdvts_oltp.vehicle_activity_mapping where vehicle_id in (:vehicleId)))) and is_active=true ";
+        sqlParam.addValue("vehicleId", vehicleId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 }
 
