@@ -181,6 +181,7 @@ public class LocationRepositoryImpl {
             qry += " order by date_time ASC";
 
 
+
             //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
         }
@@ -252,6 +253,7 @@ public class LocationRepositoryImpl {
             sqlParam.addValue("currentDate", currentDate);
 
 
+
             //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
         }
@@ -278,6 +280,8 @@ public class LocationRepositoryImpl {
         sqlParam.addValue("imei2", imeiList);
 
 
+
+
 //            if (deviceVehicleDeactivationDate == null) {
 //                deviceVehicleDeactivationDate = new Date();
 //            }
@@ -291,6 +295,7 @@ public class LocationRepositoryImpl {
 //        qry += " and date(date_time)=date(now()) order by date_time";
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+
 
 
 //        if (imei1 == null) {
@@ -371,6 +376,8 @@ public class LocationRepositoryImpl {
             sqlParam.addValue("imei2", imei2);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
+
+
         } else {
             String qry = "with c as " +
                     "(select st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint " +
