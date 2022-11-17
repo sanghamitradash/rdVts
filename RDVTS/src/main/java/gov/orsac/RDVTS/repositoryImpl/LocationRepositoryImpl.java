@@ -373,7 +373,8 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "and imei=:imei2 and gps_fix::numeric =1 order by date_time desc )";
+            qry += "and imei=:imei2 and gps_fix::numeric =1   and longitude::numeric between 81 and 88  " +
+                    "  and latitude::numeric between 17 and 23   order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
@@ -426,7 +427,7 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "and imei=:imei2 and date(date_time)=date(now()) and gps_fix::numeric=1  /*and longitude::numeric between 81 and 88 and latitude::numeric between 17 and 23*/  " +
+            qry += "and imei=:imei2 and date(date_time)=date(now()) and gps_fix::numeric=1  " +
                     "order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
