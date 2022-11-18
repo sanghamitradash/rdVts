@@ -23,6 +23,17 @@ public class AlertServiceImpl implements AlertService {
     @Autowired
     public AlertRepository alertRepository;
 
+
+    @Override
+    public List<Integer> getTotalAlertToday(Integer id) {
+        return alertRepositoryImpl.getTotalAlertToday(id);
+    }
+
+    @Override
+    public List<Integer> getTotalAlertWork(Integer id) {
+        return alertRepositoryImpl.getTotalAlertWork(id);
+    }
+
     public List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId){
 
 
@@ -76,11 +87,13 @@ public class AlertServiceImpl implements AlertService {
 
     @Override
     public List<Integer> getTotalAlertToday(int id) {
-        return alertRepositoryImpl.getTotalAlertToday(id);
+        return null;
     }
 
     @Override
     public List<Integer> getTotalAlertWork(int id) {
-        return alertRepositoryImpl.getTotalAlertWork(id);
+        return null;
     }
+
+
 }
