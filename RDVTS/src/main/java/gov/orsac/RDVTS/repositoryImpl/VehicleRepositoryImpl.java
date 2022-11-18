@@ -269,7 +269,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "left join rdvts_oltp.device_area_mapping as dam on dam.device_id = device.device_id and dam.is_active =true  "  +
                 "left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true " +
                 "left join rdvts_oltp.activity_m as am on am.id = activity.activity_id  " +
-                "left join rdvts_oltp.work_m as work on work.id = am.work_id  " +
+                "left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id  " +
+                "left join rdvts_oltp.work_m as work on work.id = awm.work_id  " +
                 "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id " +
                 "left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id " +
                 "left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id " +
