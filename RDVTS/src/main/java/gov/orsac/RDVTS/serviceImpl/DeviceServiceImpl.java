@@ -148,8 +148,8 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public List<userLevelDto> getDeviceUserLevel() {
-        return deviceMasterRepository.getDeviceUserLevel();
+    public List<userLevelDto> getDeviceUserLevel(Integer userId) {
+        return deviceMasterRepository.getDeviceUserLevel(userId);
     }
 
     public DeviceMappingEntity saveDeviceAreaMapping(DeviceMappingEntity deviceMapping, Integer deviceId,Integer userLevelId){
@@ -198,8 +198,8 @@ public class DeviceServiceImpl implements DeviceService {
 
 
     @Override
-    public List<VTUVendorMasterDto> getVtuVendorDropDown() {
-        return deviceRepositoryImpl.getVtuVendorDropDown();
+    public List<VTUVendorMasterDto> getVtuVendorDropDown(Integer userId) {
+        return deviceRepositoryImpl.getVtuVendorDropDown(userId);
     }
 
     @Override

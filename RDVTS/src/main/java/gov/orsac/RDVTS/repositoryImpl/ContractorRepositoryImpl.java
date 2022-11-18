@@ -170,9 +170,10 @@ public class ContractorRepositoryImpl implements ContractorRepository {
     }
 
     @Override
-    public List<ContractorDto> getContractorDropDown() {
+    public List<ContractorDto> getContractorDropDown(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry ="SELECT cm.id,cm.name,cm.mobile,cm.g_contractor_id from rdvts_oltp.contractor_m as cm ";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ContractorDto.class));
     }
 }

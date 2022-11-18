@@ -475,9 +475,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     }
 
     @Override
-    public List<userLevelDto> getDeviceUserLevel() {
+    public List<userLevelDto> getDeviceUserLevel(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = " SELECT um.id, um.name, um.is_active as isactive,um.created_by,um.created_on,um.updated_by,um.updated_on FROM rdvts_oltp.user_level_m as um where id != 5 ";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(userLevelDto.class));
     }
 
@@ -540,9 +541,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
     }
 
-    public List<VTUVendorMasterDto> getVtuVendorDropDown() {
+    public List<VTUVendorMasterDto> getVtuVendorDropDown(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT vm.id,vm.vtu_vendor_name,vm.vtu_vendor_address,vm.vtu_vendor_phone,vm.customer_care_number from rdvts_oltp.vtu_vendor_m as vm ";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
     }
 
