@@ -717,14 +717,15 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<VehicleMasterDto> getVehicleHistoryList(int id){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicle_type_name,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no,vm.is_active as active, " +
-                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on  from rdvts_oltp.vehicle_m as vm " +
-                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id " +
-                "left join rdvts_oltp.activity_m as act on vam.activity_id = act.id " +
+        String qry = "select vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicle_type_name,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no,vm.is_active as active, \n" +
+                " vm.created_by,vm.created_on,vm.updated_by,vm.updated_on  " +
+                " from rdvts_oltp.vehicle_m as vm " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id = vam.activity_id " +
                 "left join rdvts_oltp.vehicle_type as vt on vt.id = vm.vehicle_type_id " +
-                "where vm.is_active = true and vam.is_active = true and act.is_active = true and vt.is_active= true  " ;
+                "where vm.is_active = true and vam.is_active = true and awm.is_active = true and vt.is_active= true   " ;
         if (id > 0){
-            qry +=" and act.work_id = :id " ;
+            qry +=" and awm.work_id = :id " ;
             sqlParam.addValue("id", id);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
