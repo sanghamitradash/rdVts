@@ -36,7 +36,7 @@ public interface AlertService  {
 
     List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Integer recordLimit);
 
-    List<AlertCountDto> getTotalAlertToday(int id);
+    List<Integer> getTotalAlertToday(int id);
 
-    List<AlertCountDto> getTotalAlertWork(int id);
+    List<Integer> getTotalAlertWork(int id);
 }

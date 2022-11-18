@@ -11,6 +11,7 @@ import gov.orsac.RDVTS.service.AlertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -74,12 +75,12 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public List<AlertCountDto> getTotalAlertToday(int id) {
+    public List<Integer> getTotalAlertToday(int id) {
         return alertRepositoryImpl.getTotalAlertToday(id);
     }
 
     @Override
-    public List<AlertCountDto> getTotalAlertWork(int id) {
+    public List<Integer> getTotalAlertWork(int id) {
         return alertRepositoryImpl.getTotalAlertWork(id);
     }
 }
