@@ -947,7 +947,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             sqlParam.addValue("activityStartDate", actualActivityStartDate);
             sqlParam.addValue("activityCompletionDate", actualActivityCompletionDate);
         }
-        if (activityId > 0 && activityId != null) {
+        if ( activityId != null && activityId > 0) {
             qry += " AND activity_id=:activityId ";
             sqlParam.addValue("activityId", activityId);
         }

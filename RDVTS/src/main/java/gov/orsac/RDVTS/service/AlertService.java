@@ -7,13 +7,11 @@ import gov.orsac.RDVTS.dto.BufferDto;
 import gov.orsac.RDVTS.dto.VtuLocationDto;
 import gov.orsac.RDVTS.entities.AlertEntity;
 
-import java.util.List;
-
 
 public interface AlertService  {
     List<Integer> getTotalAlertToday(Integer id);
     List<Integer> getTotalAlertWork(Integer id);
-    AlertDto checkAlertExists(Long imei, Integer noDataAlertId);
+    List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId);
     AlertEntity saveAlert(AlertEntity alertEntity);
     Boolean updateResolve(Long imei1, Integer noDataAlertId);
 
