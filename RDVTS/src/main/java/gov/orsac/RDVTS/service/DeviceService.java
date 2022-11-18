@@ -30,14 +30,14 @@ public interface DeviceService {
 
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId);
 
-    List<userLevelDto> getDeviceUserLevel();
+    List<userLevelDto> getDeviceUserLevel(Integer userId);
 
     //for Imei Get SOubhagya
     List<DeviceDto> getImeiListByDeviceId(Integer deviceId);
     Integer  getvehicleIdbydevice(Integer deviceId);
 
 
-    List<VTUVendorMasterDto> getVtuVendorDropDown();
+    List<VTUVendorMasterDto> getVtuVendorDropDown(Integer userId);
 
     Boolean deactivateDeviceVehicle(Integer id);
 

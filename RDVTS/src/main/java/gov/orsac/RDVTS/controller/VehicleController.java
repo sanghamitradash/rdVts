@@ -509,7 +509,7 @@ public class VehicleController {
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("Road By Id");
+            response.setMessage("Vehicle By Id");
         } catch (Exception ex) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -561,7 +561,8 @@ public class VehicleController {
 
 
     @PostMapping("/getVehicleByActivityId")
-    public RDVTSResponse getVehicleByActivityId(@RequestParam(name = "activityId", required = false) Integer activityId, Integer userId) {
+    public RDVTSResponse getVehicleByActivityId(@RequestParam(name = "activityId", required = false) Integer activityId,
+                                                @RequestParam(name = "userId", required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -581,7 +582,8 @@ public class VehicleController {
     }
 
     @PostMapping("/getVehicleByVehicleTypeId")
-    public RDVTSResponse getVehicleByVehicleTypeId(@RequestParam(value = "vehicleTypeId", required = false) Integer vehicleTypeId) {
+    public RDVTSResponse getVehicleByVehicleTypeId(@RequestParam(value = "vehicleTypeId", required = false) Integer vehicleTypeId,
+                                                   @RequestParam(name = "userId", required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -601,7 +603,8 @@ public class VehicleController {
     }
 
     @PostMapping("/getRoadDetailByVehicleId")
-    public RDVTSResponse getRoadDetailByVehicleId(@RequestParam(value = "vehicleId", required = false) Integer vehicleId) {
+    public RDVTSResponse getRoadDetailByVehicleId(@RequestParam(value = "vehicleId", required = false) Integer vehicleId,
+                                                  @RequestParam(name = "userId", required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {

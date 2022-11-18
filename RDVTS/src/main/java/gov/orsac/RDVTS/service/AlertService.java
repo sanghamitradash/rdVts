@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.service;
 
 import java.util.List;
 
+import gov.orsac.RDVTS.dto.AlertCountDto;
 import gov.orsac.RDVTS.dto.AlertDto;
 import gov.orsac.RDVTS.dto.BufferDto;
 import gov.orsac.RDVTS.dto.VtuLocationDto;
@@ -33,4 +34,8 @@ public interface AlertService  {
 
 
     List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Integer recordLimit);
+
+    List<Integer> getTotalAlertToday(int id);
+
+    List<Integer> getTotalAlertWork(int id);
 }

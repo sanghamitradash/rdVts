@@ -18,20 +18,30 @@ public class AlertRepositoryImpl {
 
     public List<Integer> getTotalAlertToday(Integer id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " select distinct count(id) from rdvts_oltp.alert_data where imei in (select imei_no_1 from rdvts_oltp.device_m where id in " +
+        String qry = " select count(id) from rdvts_oltp.alert_data where imei in  (select imei_no_1 from rdvts_oltp.device_m where id in " +
                 " (select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id in " +
                 " (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id in " +
                 " (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId)))) " +
-                " and date(gps_dtm)=date(now()) and is_active=true group by alert_type_id " ;
+                " and date(gps_dtm)=date(now()) and is_active=true " ;
         sqlParam.addValue("workId", id);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
+//    public List<AlertCountDto> getTotalAlertDetailToday(Integer workId) {
+//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+//        String qry = " select  id, alert_type_id, imei  from rdvts_oltp.alert_data where imei in  (select imei_no_1 from rdvts_oltp.device_m where id in \n" +
+//                " (select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id in " +
+//                "   (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id in " +
+//                "    (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId)))) " +
+//                "      and date(gps_dtm)=date(now()) and is_active=true group by alert_type_id, id, imei  ";
+//        sqlParam.addValue("workId", workId);
+//        return namedJdbc.queryForList(qry,sqlParam,AlertCountDto.class);
+//    }
     public List<Integer> getTotalAlertWork(Integer id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  select distinct count(id) from rdvts_oltp.alert_data where imei in (select imei_no_1 from rdvts_oltp.device_m where id in  " +
+        String qry = "  select distinct count(id)   from rdvts_oltp.alert_data where imei in (select imei_no_1 from rdvts_oltp.device_m where id in  " +
                 "  (select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id in  " +
                 "    (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id in  " +
-                "       (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId)))) and is_active=true group by alert_type_id " ;
+                "       (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId)))) and is_active=true  " ;
         sqlParam.addValue("workId", id);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
@@ -179,4 +189,7 @@ public class AlertRepositoryImpl {
         //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
     }
+
+//    public List<AlertCountDto> getTotalAlertToday(int id) {
+//    }
 }

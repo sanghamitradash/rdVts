@@ -66,7 +66,7 @@ public class ContractorServiceImpl implements ContractorService {
     }
 
     @Override
-    public List<ContractorDto> getContractorDropDown() {
-        return contractorRepository.getContractorDropDown();
+    public List<ContractorDto> getContractorDropDown(Integer userId) {
+        return contractorRepository.getContractorDropDown(userId);
     }
 }

@@ -155,12 +155,12 @@ public class ContractorController {
     //Contract For DropDown
 
     @PostMapping("/getContractorDropDown")
-    public RDVTSResponse getContractorDropDown() {
+    public RDVTSResponse getContractorDropDown(@RequestParam(value = "userId", required = false) Integer userId) {
 
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<ContractorDto> contractor = contractorService.getContractorDropDown();
+            List<ContractorDto> contractor = contractorService.getContractorDropDown(userId);
             result.put("contractor", contractor);
             response.setData(result);
             response.setStatus(1);
