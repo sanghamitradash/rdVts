@@ -19,7 +19,7 @@ public interface ActivityService {
 
     ActivityWorkMapping updateActivity(Integer id, ActivityWorkMappingDto activityData, MultipartFile[] issueImages);
 
-    List<ActivityEntity> getAllActivity();
+    List<ActivityEntity> getAllActivity(Integer userId);
 
     Page<ActivityDto> getActivityList(ActivityListDto activity);
 
