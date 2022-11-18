@@ -63,7 +63,7 @@ public class WorkController {
 
     @PostMapping("/getWorkList")
     public RDVTSListResponse getWorkList(@RequestParam(name = "id", required = false) Integer id,
-                                         @RequestParam(name = "userId", required = false) Integer userId,
+                                         @RequestParam(name = "userId") Integer userId,
                                          @RequestParam(name = "activityId", required = false) Integer activityId,
                                          @RequestParam(name = "workStatus", required = false) Integer workStatus,
                                          @RequestParam(name = "distId", required = false) Integer distId,
@@ -112,7 +112,7 @@ public class WorkController {
 
     @PostMapping("/getWorkById")
     public RDVTSResponse getWorkById(@RequestParam int id,
-                                     @RequestParam(name = "userId", required = false) Integer userId) {
+                                     @RequestParam(name = "userId" ) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -256,7 +256,7 @@ public class WorkController {
 
     @PostMapping("/getWorkDDById")
     public RDVTSResponse getWorkDDById(@RequestParam int id,
-                                       @RequestParam(name = "userId", required = false) Integer userId) {
+                                       @RequestParam(name = "userId" ) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
