@@ -54,7 +54,7 @@ public class AlertRepositoryImpl {
 
 
 
-    public AlertDto checkAlertExists(Long imei, Integer noDataAlertId){
+    public List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId){
 
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
         AlertDto alertDto=new AlertDto();
@@ -64,14 +64,7 @@ public class AlertRepositoryImpl {
 
         sqlParam.addValue("imei", imei);
         sqlParam.addValue("noDataAlertId",noDataAlertId);
-        try {
-           if(namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class)) != null)
-            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
-           else
-               return null;
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
 
 
         //return locationDto;

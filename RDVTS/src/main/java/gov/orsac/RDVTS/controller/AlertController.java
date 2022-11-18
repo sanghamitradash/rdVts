@@ -83,7 +83,7 @@ public class AlertController {
                         }
                         System.out.println(noDataAlertStatus);
                         if (noDataAlertStatus == 1) {
-                            AlertDto alertExists = alertService.checkAlertExists(item.getImeiNo1(), NO_DATA_ALERT_ID); //Check If alert Exist Or Not
+                            List<AlertDto> alertExists = alertService.checkAlertExists(item.getImeiNo1(), NO_DATA_ALERT_ID); //Check If alert Exist Or Not
                             if (alertExists == null) {
 
                                 AlertEntity alertEntity = new AlertEntity();
@@ -180,7 +180,7 @@ public class AlertController {
                     }
 
                     if (outsideCount < OUTSIDE_POINT_COUNT) {
-                        AlertDto alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
+                        List<AlertDto> alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
                         if (alertExists == null) {
                             AlertEntity alertEntity = new AlertEntity();
                             alertEntity.setImei(item);
@@ -330,10 +330,11 @@ public class AlertController {
                                     List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate(), recordLimit);
                                     // Integer outsideCount=0;
                                     for (VtuLocationDto vtuItem : vtuLocationDto) {
-                                        if (road.get(0).getGeom() != null) {
+                                        if ( road.size()>0 && road.get(0).getGeom() != null) {
+
                                             Boolean b = alertService.checkGeoFenceIntersected(road.get(0).getGeom(), vtuItem.getLongitude(), vtuItem.getLatitude());
                                             if (b == false) {
-                                                AlertDto alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
+                                                List<AlertDto> alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
                                                 if (alertExists == null) {
                                                     AlertEntity alertEntity = new AlertEntity();
                                                     alertEntity.setImei(vtuItem.getImei());
@@ -421,7 +422,7 @@ public class AlertController {
             for (AlertDto alertDtoItem : alertDto) {
                 List<VtuLocationDto> vtuLocationDto=alertService.getAlertLocationOverSpeed(alertDtoItem.getImei(),alertDtoItem.getSpeedLimit(),recordLimit);
                 if (vtuLocationDto !=null){
-                        AlertDto alertExists = alertService.checkAlertExists(alertDtoItem.getImei(), OVER_SPEED_ALERT_ID); //Check If alert Exist Or Not
+                        List<AlertDto> alertExists = alertService.checkAlertExists(alertDtoItem.getImei(), OVER_SPEED_ALERT_ID); //Check If alert Exist Or Not
                     if (alertExists == null) {
                         for (VtuLocationDto vtuItem: vtuLocationDto) {
                             AlertEntity alertEntity = new AlertEntity();
