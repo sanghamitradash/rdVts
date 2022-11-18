@@ -31,7 +31,7 @@ public class AlertServiceImpl implements AlertService {
     @Autowired
     public AlertRepository alertRepository;
 
-    public AlertDto checkAlertExists(Long imei, Integer noDataAlertId){
+    public List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId){
 
 
         return alertRepositoryImpl.checkAlertExists(imei, noDataAlertId);

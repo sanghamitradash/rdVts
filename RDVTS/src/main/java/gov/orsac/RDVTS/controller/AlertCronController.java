@@ -6,17 +6,12 @@ import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.AlertEntity;
 import gov.orsac.RDVTS.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +36,7 @@ public class AlertCronController {
     public RoadService roadService;
 
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void generateNoDataAlert() {
         //System.out.println("nomove");
 
@@ -78,7 +73,7 @@ public class AlertCronController {
                     }
 
                     if (noDataAlertStatus == 1) {
-                        AlertDto alertExists = alertService.checkAlertExists(item.getImeiNo1(), NO_DATA_ALERT_ID);
+                        List<AlertDto> alertExists = alertService.checkAlertExists(item.getImeiNo1(), NO_DATA_ALERT_ID);
                         if (alertExists == null) {
 
                             AlertEntity alertEntity = new AlertEntity();
@@ -117,7 +112,7 @@ public class AlertCronController {
 
     }
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void generateNoMovementAlert() {
 
 
@@ -159,7 +154,7 @@ public class AlertCronController {
                 }
 
                 if (outsideCount < OUTSIDE_POINT_COUNT) {
-                    AlertDto alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
+                    List<AlertDto> alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
                     if (alertExists == null) {
                         AlertEntity alertEntity = new AlertEntity();
                         alertEntity.setImei(item);
@@ -254,7 +249,7 @@ public class AlertCronController {
 
     }
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void generateGeofenceAlert() throws ParseException {
         //System.out.println("hii");
 
@@ -303,8 +298,8 @@ public class AlertCronController {
                                     if (road.get(0).getGeom() != null) {
                                         Boolean b = alertService.checkGeoFenceIntersected(road.get(0).getGeom(), vtuItem.getLongitude(), vtuItem.getLatitude());
                                         if (b == false) {
-                                            AlertDto alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
-                                            if (alertExists == null) {
+                                            List<AlertDto> alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
+                                            if (alertExists.size()> 0) {
                                                 AlertEntity alertEntity = new AlertEntity();
                                                 alertEntity.setImei(vtuItem.getImei());
                                                 alertEntity.setAlertTypeId(GEO_FENCE_ALERT_ID);
