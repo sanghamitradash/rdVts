@@ -186,7 +186,7 @@ public class WorkRepositoryImpl {
 
     public List<ActivityDto> getActivityByWorkId(int id){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select am.*,asm.name as activity_status_name from rdvts_oltp.activity_m as am " +
+        String qry = "select am.activity_name , awm.*,asm.name as activity_status_name from rdvts_oltp.activity_m as am " +
                 "left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id and awm.is_active = true " +
                 "left join rdvts_oltp.activity_status_m as asm on asm.id = awm.activity_status and asm.is_active = true " +
                 "where am.is_active = true " ;
