@@ -295,7 +295,7 @@ public class AlertCronController {
                                 List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate(), recordLimit);
                                 // Integer outsideCount=0;
                                 for (VtuLocationDto vtuItem : vtuLocationDto) {
-                                    if (road.get(0).getGeom() != null) {
+                                    if ( road.size()>0 && road.get(0).getGeom() != null) {
                                         Boolean b = alertService.checkGeoFenceIntersected(road.get(0).getGeom(), vtuItem.getLongitude(), vtuItem.getLatitude());
                                         if (b == false) {
                                             List<AlertDto> alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
