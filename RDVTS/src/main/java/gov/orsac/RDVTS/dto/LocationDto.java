@@ -26,7 +26,7 @@ public class LocationDto {
     private Integer totalVehicleActive;
     private Integer totalInactiveVehicle;
     private Double percentageOfActiveVehicle;
-    private List<Integer> totalAlertToday;
-    private List<Integer> totalAlertWork;
+    private List<AlertCountDto> totalAlertToday;
+    private List<AlertCountDto> totalAlertWork;
 
 }
