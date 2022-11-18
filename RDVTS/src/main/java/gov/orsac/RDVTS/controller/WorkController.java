@@ -223,14 +223,6 @@ public class WorkController {
 
             location.setPercentageOfActiveVehicle(percentageOfTotalActiveVehicle);
 
-            //Static DAta
-              // location.setDateTime(dateTime);
-//                     location.setLatitude(21.7787878);
-//                     location.setLongitude(80.676767);
-//                     location.setSpeed(20);
-
-//                     location.setAvgSpeed(30.2);
-//                     locationList.add(location);
             locationList.add(location);
 
             result.put("contractorDto", contractorDtoList);

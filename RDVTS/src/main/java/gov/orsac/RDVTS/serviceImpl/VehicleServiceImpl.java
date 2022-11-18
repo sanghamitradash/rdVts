@@ -128,7 +128,6 @@ public class VehicleServiceImpl implements VehicleService {
        @Override
        public List<VehicleMasterDto> getVehicleHistoryList(int id) {
            return vehicleRepository.getVehicleHistoryList(id);
-//                     List<VehicleMasterDto> vehicleMasterDtoList=new ArrayList<>();
               }
        @Override
        public VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId) {
@@ -307,7 +306,7 @@ public class VehicleServiceImpl implements VehicleService {
        public List<AlertDto> getAlertArray(int id) throws ParseException {
               List<AlertDto> alertList=new ArrayList<>();
 
-              List<ActivityDto> activityDtoList = workServiceImpl.getActivityByWorkId(id);
+//              List<ActivityDto> activityDtoList = workServiceImpl.getActivityByWorkId(id);
 //              List<Integer> activityList=new ArrayList<>();
 //              for(ActivityDto activity:activityDtoList){
 //                  activityList.add(activity.getId());
