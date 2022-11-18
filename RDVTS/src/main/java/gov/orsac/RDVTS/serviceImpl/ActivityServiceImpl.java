@@ -80,7 +80,7 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
-    public List<ActivityEntity> getAllActivity() {
+    public List<ActivityEntity> getAllActivity(Integer userId) {
         return activityMasterRepository.findAll();
     }
 

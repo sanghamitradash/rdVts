@@ -82,11 +82,11 @@ public class ActivityController {
 
 
     @PostMapping("/getAllActivity")
-    public RDVTSResponse getAllActivity() {
+    public RDVTSResponse getAllActivity(@RequestParam (name ="userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<ActivityEntity> activityList = activityService.getAllActivity();
+            List<ActivityEntity> activityList = activityService.getAllActivity(userId);
             result.put("activityList", activityList);
             response.setData(result);
             response.setStatus(1);
