@@ -236,7 +236,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry = "select work.id as workId,work.g_work_id as gWorkId,work.g_work_name as workName," +
                 " work.completion_date as completionDate,work.work_status as workStatusId,status.name as status," +
                 " work.approval_status as approvalStatusId, work.pmis_finalize_date as pmisFinalizeDate,work.award_date as awardDate,approvalStatus.name as approvalStatus from rdvts_oltp.work_m as work " +
-                " left join rdvts_oltp.activity_m as activity on activity.work_id=work.id " +
+                " left join rdvts_oltp.activity_work_mapping as activity on activity.work_id=work.id " +
                 " left join rdvts_oltp.work_status_m as status on status.id=work.work_status " +
                 " left join rdvts_oltp.approval_status_m as approvalStatus on approvalStatus.id=work.approval_status " +
                 " where activity.id in (:activityIds) and activity.is_active=true  ";
@@ -830,12 +830,13 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
     public List<ActivityInfoDto> getActivityListByVehicleId(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT am.id,am.activity_name as activityName,am.activity_quantity as activityQuantity,am.activity_start_date as startDate,"+
-                "am.activity_completion_date as activityCompletionDate,am.actual_activity_start_date as actualActivityStartDate," +
-                " am.actual_activity_completion_date as actualActivityCompletionDate,am.executed_quantity as executedQuantity,"+
-                "am.activity_status as statusId,status.name as statusName from rdvts_oltp.activity_m as am   " +
-                "left join rdvts_oltp.activity_status_m as status on status.id=am.activity_status  " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = am.id  " +
+        String qry = "SELECT am.id,am.activity_name as activityName,awm.activity_quantity as activityQuantity,awm.activity_start_date as startDate,  " +
+                "awm.activity_completion_date as activityCompletionDate,awm.actual_activity_start_date as actualActivityStartDate,  " +
+                "awm.actual_activity_completion_date as actualActivityCompletionDate,awm.executed_quantity as executedQuantity,  " +
+                "awm.activity_status as statusId,status.name as statusName from rdvts_oltp.activity_m as am   " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id = am.id  " +
+                "left join rdvts_oltp.activity_status_m as status on status.id=awm.activity_status  " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = am.id   " +
                 "WHERE vam.is_active =false  ";
 
         if(vehicleId>0){
