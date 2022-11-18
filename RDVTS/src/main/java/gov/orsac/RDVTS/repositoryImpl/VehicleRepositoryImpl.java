@@ -704,9 +704,10 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry = " SELECT  count( vam.vehicle_id) FROM rdvts_oltp.vehicle_activity_mapping as vam " +
                 " LEFT JOIN rdvts_oltp.vehicle_m as vm on vm.id=vam.vehicle_id " +
                 " left join rdvts_oltp.activity_m as am on am.id=vam.activity_id " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id = am.id " +
                 " WHERE 1=1 and am.is_active=true and vm.is_active=true and vam.is_active=true ";
         if (id > 0) {
-            qry += " and am.work_id=:workId";
+            qry += " and awm.work_id=:workId";
             sqlParam.addValue("workId", id);
         }
         return   namedJdbc.queryForObject(qry, sqlParam, Integer.class);
@@ -717,11 +718,11 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<VehicleMasterDto> getVehicleHistoryList(int id){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicle_type_name,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no,vm.is_active as active, \n" +
-                " vm.created_by,vm.created_on,vm.updated_by,vm.updated_on  " +
-                " from rdvts_oltp.vehicle_m as vm " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id " +
-                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id = vam.activity_id " +
+        String qry = "select vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicle_type_name,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no,vm.is_active as active, " +
+                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on  from rdvts_oltp.vehicle_m as vm " +
+                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id " +
+                "left join rdvts_oltp.activity_m as act on vam.activity_id = act.id " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id = act.id " +
                 "left join rdvts_oltp.vehicle_type as vt on vt.id = vm.vehicle_type_id " +
                 "where vm.is_active = true and vam.is_active = true and awm.is_active = true and vt.is_active= true   " ;
         if (id > 0){

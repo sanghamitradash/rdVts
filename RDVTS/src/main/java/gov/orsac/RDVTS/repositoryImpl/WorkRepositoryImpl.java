@@ -187,10 +187,11 @@ public class WorkRepositoryImpl {
     public List<ActivityDto> getActivityByWorkId(int id){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select am.*,asm.name as activity_status_name from rdvts_oltp.activity_m as am " +
-                "left join rdvts_oltp.activity_status_m as asm on asm.id = am.activity_status and asm.is_active = true " +
+                "left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id and awm.is_active = true " +
+                "left join rdvts_oltp.activity_status_m as asm on asm.id = awm.activity_status and asm.is_active = true " +
                 "where am.is_active = true " ;
         if (id > 0){
-            qry +=" and am.work_id= :id " ;
+            qry +=" and awm.work_id= :id " ;
             sqlParam.addValue("id", id);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
