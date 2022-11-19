@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
 import gov.orsac.RDVTS.entities.VehicleMaster;
 import gov.orsac.RDVTS.repository.ActivityRepository;
@@ -234,6 +235,33 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         String qry = "select id,name from rdvts_oltp.resolved_status_m   ";
         sqlParam.addValue("userId",userId);
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ResolvedStatusDto.class));
+    }
+
+    public List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId, Integer workId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT distinct aw.activity_id,am.activity_name,aw.work_id,aw.activity_quantity,aw.activity_start_date,aw.activity_completion_date,   " +
+                "aw.actual_activity_start_date,aw.actual_activity_completion_date,aw.executed_quantity,aw.activity_status,status.name as statusName,  " +
+                "aw.g_activity_id,aw.g_work_id from rdvts_oltp.activity_work_mapping as aw  " +
+                "left join rdvts_oltp.activity_m as am on am.id = aw.activity_id AND aw.is_active = true  " +
+                "left join rdvts_oltp.activity_status_m as status on status.id = aw.activity_status  " +
+                "Where aw.work_id =:workId AND aw.activity_id =:activityId ";
+        sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("workId",workId);
+        sqlParam.addValue("userId",userId);
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ActivityWorkMapping.class));
+
+
+    }
+
+    public IssueDto getIssueByWorkId(Integer workId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT issue.id,issue.activity_work_id,issue.issue_reason,issue.resolved_status,issue.resolved_date, " +
+                "issue.resolved_by,issue.issue_image from rdvts_oltp.issue_m as issue  " +
+                "left join rdvts_oltp.activity_work_mapping as work on work.id =issue.activity_work_id  "+
+                "WHERE issue.is_active = true And work.id=:workId  ";
+
+         sqlParam.addValue("workId",workId);
+         return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(IssueDto.class));
     }
 }
 

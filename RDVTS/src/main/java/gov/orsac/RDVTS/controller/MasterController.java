@@ -1151,11 +1151,12 @@ public class MasterController {
     }
 
     @PostMapping("/getDivisionByCircleId")
-    public RDVTSResponse getDivisionByCircleId(@RequestParam(name = "circleId", required = false) Integer circleId) {
+    public RDVTSResponse getDivisionByCircleId(@RequestParam(name = "circleId", required = false) Integer circleId,
+                                               @RequestParam(name = "userId",required = false)Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<DivisionDto> div = masterService.getDivisionByCircleId(circleId);
+            List<DivisionDto> div = masterService.getDivisionByCircleId(circleId,userId);
             result.put("div", div);
             response.setData(result);
             response.setStatus(1);
