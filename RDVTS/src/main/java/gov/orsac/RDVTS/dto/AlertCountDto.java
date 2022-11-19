@@ -10,14 +10,20 @@ import java.util.Date;
 @NoArgsConstructor
 public class AlertCountDto {
 
-    private Integer id;
+    private Integer workId;
     private Long imei;
     private Integer alertTypeId;
-//    private Double latitude;
-//    private Double longitude;
-//    private Double altitude;
-//    private Double accuracy;
-//    private Double speed;
+    private String alertType;
+    private Integer count;
+    private Double latitude;
+    private Double longitude;
+    private Double altitude;
+    private Double accuracy;
+    private Double speed;
+    private Integer roadId;
+    private String roadName;
+    private Integer packageId;
+    private String packageName;
 //    private Date alertTime;
 //    private Boolean isActive;
 //    private Integer createdBy;
@@ -27,7 +33,6 @@ public class AlertCountDto {
 //    private Boolean isResolve;
 //    private Integer resolvedBy;
 //    private Integer userId;
-//    private Integer count;
 //    private String alertName;
 
 

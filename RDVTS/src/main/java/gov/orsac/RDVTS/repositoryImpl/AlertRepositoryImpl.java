@@ -16,34 +16,35 @@ public class AlertRepositoryImpl {
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
 
-    public List<Integer> getTotalAlertToday(Integer id) {
+    public List<AlertCountDto> getTotalAlertToday(Integer id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " select count(id) from rdvts_oltp.alert_data where imei in  (select imei_no_1 from rdvts_oltp.device_m where id in " +
-                " (select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id in " +
-                " (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id in " +
-                " (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId)))) " +
-                " and date(gps_dtm)=date(now()) and is_active=true " ;
+        String qry = " select distinct wm.id as workId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType,count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
+                "from rdvts_oltp.work_m as wm " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on awm.activity_id=vam.activity_id and vam.is_active=true " +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vam.vehicle_id=vdm.vehicle_id and vdm.is_active=true " +
+                "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
+                "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
+                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
+                "where awm.is_active=true and wm.id=:workId and date(ad.gps_dtm)=date(now())  " +
+                "order by wm.id " ;
         sqlParam.addValue("workId", id);
-        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(AlertCountDto.class));
     }
-//    public List<AlertCountDto> getTotalAlertDetailToday(Integer workId) {
-//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-//        String qry = " select  id, alert_type_id, imei  from rdvts_oltp.alert_data where imei in  (select imei_no_1 from rdvts_oltp.device_m where id in \n" +
-//                " (select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id in " +
-//                "   (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id in " +
-//                "    (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId)))) " +
-//                "      and date(gps_dtm)=date(now()) and is_active=true group by alert_type_id, id, imei  ";
-//        sqlParam.addValue("workId", workId);
-//        return namedJdbc.queryForList(qry,sqlParam,AlertCountDto.class);
-//    }
-    public List<Integer> getTotalAlertWork(Integer id) {
+    public List<AlertCountDto> getTotalAlertWork(Integer id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  select distinct count(id)   from rdvts_oltp.alert_data where imei in (select imei_no_1 from rdvts_oltp.device_m where id in  " +
-                "  (select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id in  " +
-                "    (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id in  " +
-                "       (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId)))) and is_active=true  " ;
+        String qry = "  select distinct wm.id as workId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType,count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
+                "from rdvts_oltp.work_m as wm " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on awm.activity_id=vam.activity_id and vam.is_active=true " +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vam.vehicle_id=vdm.vehicle_id and vdm.is_active=true " +
+                "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
+                "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
+                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
+                "where awm.is_active=true and wm.id=:workId  " +
+                "order by wm.id  " ;
         sqlParam.addValue("workId", id);
-        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(AlertCountDto.class));
     }
 
 //alert count today qry//

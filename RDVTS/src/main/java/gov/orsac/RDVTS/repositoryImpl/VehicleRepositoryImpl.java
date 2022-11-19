@@ -667,10 +667,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<AlertDto> getAlertList(Long imeiNo) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " select imei,alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm," +
-                "is_resolve,resolved_by,userM.first_name as resolvedByUser from  rdvts_oltp.alert_data  as alert " +
-                "left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id " +
-                "left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by where imei=:imeiNo";
+        String qry = " select imei,alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
+                "                is_resolve,resolved_by,userM.first_name as resolvedByUser from  rdvts_oltp.alert_data  as alert  " +
+                "                left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id  " +
+                "                left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by  " +
+                " left join rdvts_oltp.device_m as dm on dm.imei_no_1=alert.imei " +
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id where imei=:imeiNo";
         sqlParam.addValue("imeiNo", imeiNo);
 
 

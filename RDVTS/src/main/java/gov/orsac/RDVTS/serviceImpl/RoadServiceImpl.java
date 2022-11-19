@@ -47,6 +47,11 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
+    public List<AlertCountDto> getAlert(Integer roadId) {
+        return roadRepositoryImpl.getAlert(roadId);
+    }
+
+    @Override
     public List<RoadMasterDto> getRoadByWorkId(Integer workId) {
         return roadRepositoryImpl.getRoadWorkById(workId);
     }

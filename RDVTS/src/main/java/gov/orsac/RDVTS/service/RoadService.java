@@ -13,6 +13,8 @@ public interface RoadService {
 
     List<RoadMasterDto> getRoadById(Integer roadId, Integer userId);
 
+    List<AlertCountDto> getAlert(Integer roadId);
+
     List<RoadMasterDto> getRoadByWorkId(Integer workId);
 
     RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);

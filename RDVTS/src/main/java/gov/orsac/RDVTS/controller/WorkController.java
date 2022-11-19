@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.service.*;
+import javafx.scene.control.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -111,7 +112,7 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkById")
-    public RDVTSResponse getWorkById(@RequestParam int id,
+    public RDVTSResponse getWorkById(@RequestParam Integer id,
                                      @RequestParam(name = "userId" ) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
