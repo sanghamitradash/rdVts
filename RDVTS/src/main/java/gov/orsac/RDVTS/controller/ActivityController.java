@@ -324,11 +324,14 @@ public class ActivityController {
     }
 
     @PostMapping("/unassignedActivityDD")
-    public RDVTSResponse unassignedActivity(@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse unassignedActivity(@RequestParam(name = "userId") Integer userId,
+                                            @RequestParam(name = "workId")Integer workId ) {
+        ActivityDto activity = new ActivityDto();
+        activity.setWorkId(workId);
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<ActivityDto> activityDto = activityService.unassignedActivity(userId);
+            List<ActivityDto> activityDto = activityService.unassignedActivity(userId,workId);
 
             result.put("unassignedActivity", activityDto);
             response.setData(result);

@@ -188,10 +188,11 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     }
 
 
-    public List<ActivityDto> unassignedActivity(Integer userId) {
+    public List<ActivityDto> unassignedActivity(Integer userId, Integer workId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  SELECT id, activity_name FROM rdvts_oltp.activity_m where id not in (select activity_id from rdvts_oltp.activity_work_mapping where work_id is null) order by activity_name";
+        String qry = "  SELECT id, activity_name FROM rdvts_oltp.activity_m where id not in (select activity_id from rdvts_oltp.activity_work_mapping where work_id = :workId ) order by activity_name";
         sqlParam.addValue("userId", userId);
+        sqlParam.addValue("workId", workId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
     }
 

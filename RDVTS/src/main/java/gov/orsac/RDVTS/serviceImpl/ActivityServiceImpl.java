@@ -151,8 +151,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityDto> unassignedActivity(Integer userId) {
-        return activityRepositoryImpl.unassignedActivity(userId);
+    public List<ActivityDto> unassignedActivity(Integer userId, Integer workId) {
+        return activityRepositoryImpl.unassignedActivity(userId,workId);
     }
 
     @Override
