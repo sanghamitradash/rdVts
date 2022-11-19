@@ -346,8 +346,8 @@ public class MasterServiceImpl implements MasterService {
 
 
     @Override
-    public List<DivisionDto> getDivisionByCircleId(Integer circleId) {
-        return masterRepositoryImpl.getDivisionByCircleId(circleId);
+    public List<DivisionDto> getDivisionByCircleId(Integer circleId,Integer userId) {
+        return masterRepositoryImpl.getDivisionByCircleId(circleId,userId);
     }
 
     @Override

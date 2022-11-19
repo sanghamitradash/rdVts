@@ -10,12 +10,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -364,6 +362,11 @@ public class MasterRepositoryImpl implements MasterRepository {
 
     @Override
     public List<DivisionDto> getDivisionByCircleId(Integer circleId) {
+        return null;
+    }
+
+    @Override
+    public List<DivisionDto> getDivisionByCircleId(Integer circleId, Integer userId) {
         List<DivisionDto> division;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry  = "SELECT div.id,div.division_name,div.dist_id,div.acrnym,div.is_active,div.division_id,div.circle_id from rdvts_oltp.division_m as div  " +
@@ -374,7 +377,7 @@ public class MasterRepositoryImpl implements MasterRepository {
             qry+=" WHERE div.circle_id =:circleId";
         }
         sqlParam.addValue("circleId", circleId);
-        //sqlParam.addValue("userId",userId);
+        sqlParam.addValue("userId",userId);
         try {
             division = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DivisionDto.class));
         }

@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.entities;
 
+import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,20 +14,32 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "activity_m")
-public class ActivityEntity {
+@Table(name="issue_m")
+public class IssueEntity {
 
     @Id
-    @SequenceGenerator(name = "activity_m_sequence", sequenceName = "activity_m_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "activity_m_sequence")
+    @SequenceGenerator(name = "issue_m_sequence", sequenceName = "issue_m_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "issue_m_sequence")
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "activity_name")
-    private String activityName;
+    @Column(name = "activity_work_id")
+    private Integer activityWorkId;
 
-    @Column(name = "g_activity_id")
-     private Integer gActivityId;
+    @Column(name = "issue_reason")
+    private Integer issueReason;
+
+    @Column(name ="resolved_status")
+    private Integer resolvedStatus;
+
+    @Column(name = "resolved_date")
+    private Date resolvedDate;
+
+    @Column(name = "resolved_by")
+    private Integer resolvedBy;
+
+    @Column(name = "issue_image")
+    private String issueImage;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
@@ -46,10 +59,6 @@ public class ActivityEntity {
     @Column(name = "updated_on")
     @UpdateTimestamp
     private Date updatedOn;
-
-
-
-
 
 
 
