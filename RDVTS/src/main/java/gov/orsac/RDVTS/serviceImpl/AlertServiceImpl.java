@@ -1,9 +1,6 @@
 package gov.orsac.RDVTS.serviceImpl;
 
-import gov.orsac.RDVTS.dto.AlertCountDto;
-import gov.orsac.RDVTS.dto.AlertDto;
-import gov.orsac.RDVTS.dto.BufferDto;
-import gov.orsac.RDVTS.dto.VtuLocationDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertEntity;
 import gov.orsac.RDVTS.repository.AlertRepository;
 import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
@@ -12,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AlertServiceImpl implements AlertService {
@@ -25,13 +24,33 @@ public class AlertServiceImpl implements AlertService {
 
 
     @Override
-    public List<Integer> getTotalAlertToday(Integer id) {
-        return alertRepositoryImpl.getTotalAlertToday(id);
+    public List<AlertCountDto> getTotalAlertToday(Integer id) {
+        List<AlertCountDto> finalCount = new ArrayList<>();
+        List<AlertCountDto> alertCount = alertRepositoryImpl.getTotalAlertToday(id);
+        AlertCountDto se=new AlertCountDto();
+        for (int i = 0; i < alertCount.size(); i++) {
+            se.setAlertType(alertCount.get(i).getAlertType());
+            se.setAlertTypeId(alertCount.get(i).getAlertTypeId());
+            se.setCount(alertCount.get(i).getCount());
+            se.setWorkId(alertCount.get(i).getWorkId());
+            finalCount.add(se);
+        }
+        return finalCount;
     }
 
     @Override
-    public List<Integer> getTotalAlertWork(Integer id) {
-        return alertRepositoryImpl.getTotalAlertWork(id);
+    public List<AlertCountDto> getTotalAlertWork(Integer id) {
+        List<AlertCountDto> finalCount = new ArrayList<>();
+        List<AlertCountDto> alertCount = alertRepositoryImpl.getTotalAlertWork(id);
+        AlertCountDto se=new AlertCountDto();
+        for (int i = 0; i < alertCount.size(); i++) {
+            se.setAlertType(alertCount.get(i).getAlertType());
+            se.setAlertTypeId(alertCount.get(i).getAlertTypeId());
+            se.setCount(alertCount.get(i).getCount());
+            se.setWorkId(alertCount.get(i).getWorkId());
+            finalCount.add(se);
+        }
+        return finalCount;
     }
 
     public List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId){

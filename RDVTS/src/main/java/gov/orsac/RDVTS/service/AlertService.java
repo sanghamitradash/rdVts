@@ -10,8 +10,8 @@ import gov.orsac.RDVTS.entities.AlertEntity;
 
 
 public interface AlertService  {
-    List<Integer> getTotalAlertToday(Integer id);
-    List<Integer> getTotalAlertWork(Integer id);
+    List<AlertCountDto> getTotalAlertToday(Integer id);
+    List<AlertCountDto> getTotalAlertWork(Integer id);
     List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId);
     AlertEntity saveAlert(AlertEntity alertEntity);
     Boolean updateResolve(Long imei1, Integer noDataAlertId);
