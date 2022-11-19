@@ -2,15 +2,9 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.dto.ActivityDto;
-import gov.orsac.RDVTS.entities.ActivityEntity;
-import gov.orsac.RDVTS.entities.ActivityWorkMapping;
-import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
-import gov.orsac.RDVTS.entities.VehicleMaster;
+import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
-import gov.orsac.RDVTS.repository.ActivityMasterRepository;
-import gov.orsac.RDVTS.repository.ActivityRepository;
-import gov.orsac.RDVTS.repository.ActivityWorkMappingRepository;
-import gov.orsac.RDVTS.repository.VehicleActivityMappingRepository;
+import gov.orsac.RDVTS.repository.*;
 import gov.orsac.RDVTS.repositoryImpl.ActivityRepositoryImpl;
 import gov.orsac.RDVTS.service.ActivityService;
 import org.springframework.beans.BeanUtils;
@@ -36,6 +30,9 @@ public class ActivityServiceImpl implements ActivityService {
     ActivityRepository activityRepository;
 
     @Autowired
+    IssueRepository issueRepository;
+
+    @Autowired
     ActivityRepositoryImpl activityRepositoryImpl;
 
     @Autowired
@@ -58,29 +55,19 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityWorkMapping updateActivity(Integer id, ActivityWorkMappingDto activityData, MultipartFile[] issueImages) {
-        ActivityWorkMapping save = null;
-        for (MultipartFile multipartFile : issueImages) {
-            ActivityWorkMapping activityEntity = new ActivityWorkMapping();
+    public ActivityWorkMapping updateActivity(Integer id, ActivityWorkMappingDto activityData) {
             ActivityWorkMapping existingActivity = activityWorkMappingRepository.findByActivityId(id);
-            BeanUtils.copyProperties(activityData, activityEntity);
+            //BeanUtils.copyProperties(activityData, activityEntity);
             existingActivity.setActivityId(id);
-            existingActivity.setIssueReason(activityData.getIssueReason());
-            existingActivity.setResolvedStatus(activityData.getResolvedStatus());
-            existingActivity.setResolvedDate(activityData.getResolvedDate());
-            existingActivity.setResolvedBy(activityData.getResolvedBy());
             existingActivity.setActualActivityStartDate(activityData.getActualActivityStartDate());
             existingActivity.setActualActivityCompletionDate(activityData.getActualActivityCompletionDate());
-            existingActivity.setIssueImage("https://ofarisbucket.s3.ap-south-1.amazonaws.com/rdvts/" + multipartFile.getOriginalFilename());
             existingActivity.setActivityStatus(activityData.getActivityStatus());
-            save = activityWorkMappingRepository.save(existingActivity);
-        }
-        return save;
+            return activityWorkMappingRepository.save(existingActivity);
     }
 
 
     @Override
-    public List<ActivityEntity> getAllActivity() {
+    public List<ActivityEntity> getAllActivity(Integer userId) {
         return activityMasterRepository.findAll();
     }
 
@@ -173,6 +160,25 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public List<ResolvedStatusDto> resolvedStatusDD(Integer userId) {
         return activityRepositoryImpl.resolvedStatusDD(userId);
+    }
+
+    @Override
+    public IssueEntity saveIssueImage(IssueDto issue, Integer id, MultipartFile issueImages) {
+        IssueEntity issueImage = new IssueEntity();
+        BeanUtils.copyProperties(issue, issueImage);
+        issueImage.setActivityWorkId(id);
+        issueImage.setIssueImage("https://ofarisbucket.s3.ap-south-1.amazonaws.com/rdvts/" + issueImages.getOriginalFilename());
+        return issueRepository.save(issueImage);
+    }
+
+    @Override
+    public List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId) {
+        return activityRepositoryImpl.getActivityByIdAndWorkId(activityId,userId,workId);
+    }
+
+    @Override
+    public IssueDto getIssueByWorkId(Integer workId) {
+        return activityRepositoryImpl.getIssueByWorkId(workId);
     }
 
 

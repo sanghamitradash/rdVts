@@ -19,4 +19,6 @@ public interface MasterRepository {
     List<Integer> getDeviceByVendorId(Integer deviceId);
 
     List<DivisionDto> getDivisionByCircleId(Integer circleId);
+
+    List<DivisionDto> getDivisionByCircleId(Integer circleId, Integer userId);
 }

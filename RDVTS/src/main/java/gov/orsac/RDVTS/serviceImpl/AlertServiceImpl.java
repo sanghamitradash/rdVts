@@ -23,6 +23,16 @@ public class AlertServiceImpl implements AlertService {
     @Autowired
     public AlertRepository alertRepository;
 
+    @Override
+    public List<Integer> getTotalAlertToday(Integer id) {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getTotalAlertWork(Integer id) {
+        return null;
+    }
+
     public List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId){
 
 
