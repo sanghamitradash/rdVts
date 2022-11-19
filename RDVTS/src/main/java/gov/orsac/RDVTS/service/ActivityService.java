@@ -30,7 +30,7 @@ public interface ActivityService {
 
     Integer updateWorkId(Integer workId, Integer activityId, Integer userId);
 
-    Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId);
+    Integer updateWorkActivity(ActivityWorkDto activityWorkDto);
 
     Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId);
 
