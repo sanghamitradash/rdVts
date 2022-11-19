@@ -55,4 +55,6 @@ public class ActivityWorkMappingDto {
 
     private Date updatedOn;
 
+    private IssueDto issue;
+
 }

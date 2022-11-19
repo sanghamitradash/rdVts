@@ -61,7 +61,7 @@ public interface MasterService {
     Boolean deactivateVendor(Integer vendorId, Integer userId);
  //   Boolean deactivateVendor(Integer vendorId);
 
-    List<DivisionDto> getDivisionByCircleId(Integer circleId);
+    List<DivisionDto> getDivisionByCircleId(Integer circleId,Integer userId);
 
     List<CircleMasterDto> getAllCircleDD();
 

@@ -52,20 +52,8 @@ public class ActivityWorkMapping {
     @Column(name = "g_activity_id")
     private Integer gActivityId;
 
-    @Column(name = "issue_reason")
-    private String issueReason;
-
-    @Column(name = "resolved_status")
-    private Integer resolvedStatus;
-
-    @Column(name = "resolved_date")
-    private Date resolvedDate;
-
-    @Column(name = "resolved_by")
-    private Integer resolvedBy;
-
-    @Column(name = "issue_image")
-    private String issueImage;
+    @Column(name = "g_work_id")
+    private Integer gWorkId;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
