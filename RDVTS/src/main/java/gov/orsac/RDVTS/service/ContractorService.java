@@ -21,5 +21,5 @@ public interface ContractorService {
 
     Page<ContractorDto> getContractorDetails(ContractorFilterDto contractor);
 
-    List<ContractorDto> getContractorDropDown();
+    List<ContractorDto> getContractorDropDown(Integer userId);
 }

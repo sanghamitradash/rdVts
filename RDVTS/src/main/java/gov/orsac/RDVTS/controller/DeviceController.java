@@ -223,6 +223,7 @@ public class DeviceController {
 
             }
             //result.put("deviceList", deviceList);
+
             response.setData(deviceList);
             response.setMessage("Device List");
             response.setStatus(1);
@@ -309,11 +310,11 @@ public class DeviceController {
     //Get Device UserLevel DropDown
 
     @PostMapping("/getDeviceUserLevel")
-    public RDVTSResponse getDeviceUserLevel() {
+    public RDVTSResponse getDeviceUserLevel(@RequestParam(value = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-           List<userLevelDto> userLevel = deviceService.getDeviceUserLevel();
+           List<userLevelDto> userLevel = deviceService.getDeviceUserLevel(userId);
             result.put("userLevel", userLevel);
             response.setData(result);
             response.setStatus(1);
@@ -331,11 +332,11 @@ public class DeviceController {
     //Get vtu Vendor DropDown
 
     @PostMapping("/getVtuVendorDropDown")
-    public RDVTSResponse getVtuVendorDropDown() {
+    public RDVTSResponse getVtuVendorDropDown(@RequestParam(value = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<VTUVendorMasterDto> vtuVendor = deviceService.getVtuVendorDropDown();
+            List<VTUVendorMasterDto> vtuVendor = deviceService.getVtuVendorDropDown(userId);
             result.put("vtuVendor", vtuVendor);
             response.setData(result);
             response.setStatus(1);

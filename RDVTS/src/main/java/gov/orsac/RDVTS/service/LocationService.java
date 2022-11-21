@@ -1,12 +1,8 @@
 package gov.orsac.RDVTS.service;
-import gov.orsac.RDVTS.dto.DeviceDto;
-import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
-import gov.orsac.RDVTS.dto.VtuLocationDto;
+import gov.orsac.RDVTS.dto.*;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface LocationService {
     List<VtuLocationDto> getLatestRecordByImeiNumber(List<Long> imei1,List<Long> imei2);
@@ -16,6 +12,7 @@ public interface LocationService {
 
     List<VtuLocationDto> getLocationrecordList(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
     List<VtuLocationDto> getLastLocationrecordList(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
+    List<VtuLocationDto> getLastLocationRecordList(List<VehicleDeviceMappingDto> deviceDetails, Date startDate, Date endDate);
     Integer getActiveVehicle(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
     Double getDistance(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
     Double getTodayDistance(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
@@ -23,7 +20,12 @@ public interface LocationService {
 
     Double getspeed(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
 
+    VtuLocationDto getLastLocationByImei(Long imei1);
 
+
+    List<VtuLocationDto> getLocationrecordList(Long imeiNo1, Long imeiNo2, Date startDate, Date endDate, Date createdOn, Date deactivationDate, Integer recordLimit);
+
+    List<VtuLocationDto> getLastLocationByDeviceId(List<Integer> deviceIdList, Integer checkArea);
 
 
 }

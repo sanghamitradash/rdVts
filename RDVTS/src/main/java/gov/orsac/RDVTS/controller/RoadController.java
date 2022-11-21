@@ -56,7 +56,9 @@ public class RoadController {
         Map<String, Object> result = new HashMap<>();
         try {
             List<RoadMasterDto> road = roadService.getRoadById(roadId, userId);
+            List<AlertCountDto> alertCount = roadService.getAlert(roadId);
             result.put("road", road);
+            result.put("alertList", alertCount);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

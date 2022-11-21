@@ -185,10 +185,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         if (deviceDto.getImeiNo1() != null && deviceDto.getImeiNo1() > 0) {
             if (subQuery.length() <= 0) {
                 subQuery += " WHERE imeiNo1::varchar LIKE :imeiNo1   ";
-                sqlParam.addValue("imeiNo1", String.valueOf(deviceDto.getImeiNo1() + "%"));
+                sqlParam.addValue("imeiNo1", String.valueOf("%" + deviceDto.getImeiNo1() + "%"));
             } else {
                 subQuery += " AND imeiNo1::varchar LIKE :imeiNo1  ";
-                sqlParam.addValue("imeiNo1", String.valueOf(deviceDto.getImeiNo1() + "%"));
+                sqlParam.addValue("imeiNo1", String.valueOf("%" + deviceDto.getImeiNo1() + "%"));
             }
 
         }
@@ -229,10 +229,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         if (deviceDto.getMobileNumber1() != null && deviceDto.getMobileNumber1() > 0) {
             if (subQuery.length() <= 0) {
                 subQuery += " WHERE mobileNumber1::varchar LIKE :mobileNumber1   ";
-                sqlParam.addValue("mobileNumber1", String.valueOf(deviceDto.getMobileNumber1() + "%"));
+                sqlParam.addValue("mobileNumber1", String.valueOf("%" +deviceDto.getMobileNumber1() + "%"));
             } else {
                 subQuery += " AND mobileNumber1::varchar LIKE :mobileNumber1  ";
-                sqlParam.addValue("mobileNumber1", String.valueOf(deviceDto.getMobileNumber1() + "%"));
+                sqlParam.addValue("mobileNumber1", String.valueOf("%" + deviceDto.getMobileNumber1() + "%"));
             }
 
         }
@@ -475,9 +475,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     }
 
     @Override
-    public List<userLevelDto> getDeviceUserLevel() {
+    public List<userLevelDto> getDeviceUserLevel(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = " SELECT um.id, um.name, um.is_active as isactive,um.created_by,um.created_on,um.updated_by,um.updated_on FROM rdvts_oltp.user_level_m as um where id != 5 ";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(userLevelDto.class));
     }
 
@@ -540,9 +541,10 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
     }
 
-    public List<VTUVendorMasterDto> getVtuVendorDropDown() {
+    public List<VTUVendorMasterDto> getVtuVendorDropDown(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT vm.id,vm.vtu_vendor_name,vm.vtu_vendor_address,vm.vtu_vendor_phone,vm.customer_care_number from rdvts_oltp.vtu_vendor_m as vm ";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
     }
 
@@ -747,10 +749,12 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         if (deviceId > 0) {
             qry += " AND dm.id=:deviceId";
         }
+        qry += " order by dm.id asc";
         sqlParam.addValue("deviceId", deviceId);
         sqlParam.addValue("userId", userId);
         try {
             device = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DeviceDto.class));
+
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -803,6 +807,8 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
         sqlParam.addValue("deviceId", deviceId);
         return namedJdbc.queryForObject(qry, sqlParam, Boolean.class);
     }
+
+
 }
 
 

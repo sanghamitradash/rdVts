@@ -3,9 +3,7 @@ package gov.orsac.RDVTS.service;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.dto.ActivityDto;
 import gov.orsac.RDVTS.dto.VehicleActivityMappingDto;
-import gov.orsac.RDVTS.entities.ActivityEntity;
-import gov.orsac.RDVTS.entities.VehicleActivityMappingEntity;
-import gov.orsac.RDVTS.entities.VehicleMaster;
+import gov.orsac.RDVTS.entities.*;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,9 +14,9 @@ public interface ActivityService {
 
     List<ActivityDto> getActivityById(Integer activityId, Integer userId);
 
-    ActivityEntity updateActivity(Integer id, ActivityDto activityData, MultipartFile[] issueImages);
+    ActivityWorkMapping updateActivity(Integer id, ActivityWorkMappingDto activityData);
 
-    List<ActivityEntity> getAllActivity();
+    List<ActivityEntity> getAllActivity(Integer userId);
 
     Page<ActivityDto> getActivityList(ActivityListDto activity);
 
@@ -32,7 +30,7 @@ public interface ActivityService {
 
     Integer updateWorkId(Integer workId, Integer activityId, Integer userId);
 
-    Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId);
+    Integer updateWorkActivity(ActivityWorkDto activityWorkDto);
 
     Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId);
 
@@ -40,13 +38,21 @@ public interface ActivityService {
 
     List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId);
 
-    List<ActivityDto> unassignedActivity(Integer userId);
+    List<ActivityDto> unassignedActivity(Integer userId, Integer workId);
 
     Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId);
 
     List<ActivityStatusDto> activityStatusDD(Integer userId);
 
     List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId);
+
+    List<ResolvedStatusDto> resolvedStatusDD(Integer userId);
+
+    IssueEntity saveIssueImage(IssueDto issue, Integer id, MultipartFile issueImages);
+
+    List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId);
+
+    IssueDto getIssueByWorkId(Integer workId);
 }
 
 

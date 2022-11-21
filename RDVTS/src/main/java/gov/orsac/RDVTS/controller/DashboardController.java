@@ -80,6 +80,7 @@ public class DashboardController {
                 count.add(vehicle1.getActive()+vehicle1.getInActive());
                // geom.add(vehicle1.getGeom());
             }
+            //List<Integer>sortedList=vehicle.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
             result.put("districtName", districtName);
             //result.put("geom",geom);
             result.put("active", active);

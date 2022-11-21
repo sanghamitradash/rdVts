@@ -3,8 +3,6 @@ package gov.orsac.RDVTS.serviceImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
-import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
-import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.DeviceAreaMappingRepository;
 import gov.orsac.RDVTS.repository.DeviceMasterRepository;
@@ -84,6 +82,8 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceRepositoryImpl.getVehicleDeviceMappingDDByDeviceId(deviceId,userId);
     }
 
+
+
     @Override
     public List<DeviceAreaMappingDto> getDeviceAreaByDeviceId(Integer deviceId, Integer userId) {
         List<DeviceAreaMappingDto> deviceMapping=new ArrayList<>();
@@ -148,8 +148,8 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public List<userLevelDto> getDeviceUserLevel() {
-        return deviceMasterRepository.getDeviceUserLevel();
+    public List<userLevelDto> getDeviceUserLevel(Integer userId) {
+        return deviceMasterRepository.getDeviceUserLevel(userId);
     }
 
     public DeviceMappingEntity saveDeviceAreaMapping(DeviceMappingEntity deviceMapping, Integer deviceId,Integer userLevelId){
@@ -198,8 +198,8 @@ public class DeviceServiceImpl implements DeviceService {
 
 
     @Override
-    public List<VTUVendorMasterDto> getVtuVendorDropDown() {
-        return deviceRepositoryImpl.getVtuVendorDropDown();
+    public List<VTUVendorMasterDto> getVtuVendorDropDown(Integer userId) {
+        return deviceRepositoryImpl.getVtuVendorDropDown(userId);
     }
 
     @Override

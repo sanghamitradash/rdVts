@@ -43,5 +43,11 @@ public class VehicleDeviceMappingDto {
 
     private String instalDate;
 
+    private Long imeiNo1;
+
+    private Long imeiNo2;
+
+    private Long imei;
+
 
 }

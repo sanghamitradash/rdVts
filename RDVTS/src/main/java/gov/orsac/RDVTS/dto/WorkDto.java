@@ -43,6 +43,10 @@ public class WorkDto {
     private String packageName;
     private String contractorId;
 
+    private Integer distId;
+    private Integer divisionId;
+    private Integer circleId;
+
     private Integer offSet;
     private Integer limit;
     private Integer draw;

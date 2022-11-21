@@ -3,8 +3,6 @@ package gov.orsac.RDVTS.service;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.DeviceEntity;
 import gov.orsac.RDVTS.entities.DeviceMappingEntity;
-import gov.orsac.RDVTS.entities.VehicleDeviceMappingEntity;
-import io.swagger.models.auth.In;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -32,14 +30,14 @@ public interface DeviceService {
 
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingByDeviceId(Integer deviceId, Integer userId);
 
-    List<userLevelDto> getDeviceUserLevel();
+    List<userLevelDto> getDeviceUserLevel(Integer userId);
 
     //for Imei Get SOubhagya
     List<DeviceDto> getImeiListByDeviceId(Integer deviceId);
     Integer  getvehicleIdbydevice(Integer deviceId);
 
 
-    List<VTUVendorMasterDto> getVtuVendorDropDown();
+    List<VTUVendorMasterDto> getVtuVendorDropDown(Integer userId);
 
     Boolean deactivateDeviceVehicle(Integer id);
 
@@ -56,4 +54,6 @@ public interface DeviceService {
     List<DeviceAreaMappingDto> getAllDeviceAreaByDeviceId(Integer deviceId, Integer userId);
 
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingDDByDeviceId(Integer deviceId, Integer userId);
+
+
 }

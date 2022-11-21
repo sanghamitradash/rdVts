@@ -1,24 +1,24 @@
 package gov.orsac.RDVTS.serviceImpl;
 
-import gov.orsac.RDVTS.dto.DeviceDto;
-import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
-import gov.orsac.RDVTS.dto.VtuLocationDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.repositoryImpl.LocationRepositoryImpl;
+import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class LocationServiceImpl implements LocationService {
 
     @Autowired
     LocationRepositoryImpl locationRepository;
+
+    @Autowired
+    VehicleRepositoryImpl vehicleRepositoryimpl;
     @Override
     public List<VtuLocationDto> getLatestRecordByImeiNumber(List<Long> imei2,List<Long> imei1){
         List<VtuLocationDto> vtuLocationDto = new ArrayList<>();
@@ -59,6 +59,14 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    public List<VtuLocationDto> getLastLocationRecordList(List<VehicleDeviceMappingDto> deviceDetails, Date startDate, Date endDate){
+
+        List<VtuLocationDto> vtuLocationDtoList=locationRepository.getLastLocationRecordList(deviceDetails,startDate,endDate);
+        return vtuLocationDtoList;
+
+    }
+
+    @Override
     public Integer getActiveVehicle(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate){
 
         Integer activeVehicle=locationRepository.getActiveVehicle(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);
@@ -84,8 +92,22 @@ public class LocationServiceImpl implements LocationService {
         return locationRepository.getspeed(imei2,imei1,startDate,endDate,deviceVehicleCreatedOn,deviceVehicleDeactivationDate);
     }
 
+    @Override
+    public VtuLocationDto  getLastLocationByImei(Long imei1){
+        return locationRepository.getLastLocationByImei(imei1);
 
+    }
 
+    @Override
+    public List<VtuLocationDto> getLocationrecordList(Long imeiNo1, Long imeiNo2, Date startDate, Date endDate, Date createdOn, Date deactivationDate, Integer recordLimit) {
+        List<VtuLocationDto> vtuLocationDtoList=locationRepository.getLocationrecordList(imeiNo1,imeiNo2,startDate,endDate,createdOn,deactivationDate,recordLimit);
+        return vtuLocationDtoList;
+    }
+    @Override
+    public List<VtuLocationDto> getLastLocationByDeviceId(List<Integer> deviceIdList, Integer checkArea){
+
+        return locationRepository.getLastLocationByDeviceId(deviceIdList,checkArea);
+    }
 
 
 

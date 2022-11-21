@@ -47,6 +47,11 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
+    public List<AlertCountDto> getAlert(Integer roadId) {
+        return roadRepositoryImpl.getAlert(roadId);
+    }
+
+    @Override
     public List<RoadMasterDto> getRoadByWorkId(Integer workId) {
         return roadRepositoryImpl.getRoadWorkById(workId);
     }
@@ -183,6 +188,11 @@ public class RoadServiceImpl implements RoadService {
     @Override
     public Integer saveGeom(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
         return roadRepositoryImpl.saveGeom(roadId, roadLocation, userId);
+    }
+
+    @Override
+    public List<GeoMasterDto> getWorkByCircleId(Integer circleObj) {
+        return roadRepositoryImpl.getWorkByCircleId(circleObj);
     }
 
 

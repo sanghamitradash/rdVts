@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.VehicleRepository;
@@ -12,7 +13,6 @@ import gov.orsac.RDVTS.service.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -62,16 +62,17 @@ public class WorkServiceImpl implements WorkService {
         if (existingWork == null) {
             throw new RecordNotFoundException("WorkEntity", "id", id);
         }
-        existingWork.setGeoWorkId(workDto.getGeoWorkId());
-        existingWork.setGeoWorkName(workDto.getGeoWorkName());
-        existingWork.setAwardDate(workDto.getAwardDate());
+//        existingWork.setGeoWorkId(workDto.getGeoWorkId());
+//        existingWork.setGeoWorkName(workDto.getGeoWorkName());
+//        existingWork.setAwardDate(workDto.getAwardDate());
         existingWork.setCompletionDate(workDto.getCompletionDate());
-        existingWork.setPmisFinalizeDate(workDto.getPmisFinalizeDate());
+//        existingWork.setPmisFinalizeDate(workDto.getPmisFinalizeDate());
         existingWork.setWorkStatus(workDto.getWorkStatus());
-        existingWork.setApprovalStatus(workDto.getApprovalStatus());
-        existingWork.setApprovedBy(workDto.getApprovedBy());
+//        existingWork.setApprovalStatus(workDto.getApprovalStatus());
+//        existingWork.setApprovedBy(workDto.getApprovedBy());
         existingWork.setUpdatedBy(workDto.getUpdatedBy());
-        existingWork.setCreatedBy(workDto.getCreatedBy());
+//        existingWork.setCreatedBy(workDto.getCreatedBy());
+//        existingWork.setUpdatedOn(workDto.getUpdatedOn());
 
 
         WorkEntity save = workRepository.save(existingWork);
@@ -107,6 +108,16 @@ public class WorkServiceImpl implements WorkService {
 //            userIdList=helperService.getLowerUserByUserId(userId);
 //        }
         return workRepositoryImpl.getUnAssignedWorkData(userId);
+    }
+
+    @Override
+    public List<ActivityWorkMapping> getActivityDetailsByWorkId(Integer workId) {
+        return workRepositoryImpl.getActivityDetailsByWorkId(workId);
+    }
+
+    @Override
+    public List<WorkStatusDto> getWorkStatusDD(Integer userId) {
+        return workRepositoryImpl.getWorkStatusDD(userId);
     }
 
     public Integer deactivateVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {

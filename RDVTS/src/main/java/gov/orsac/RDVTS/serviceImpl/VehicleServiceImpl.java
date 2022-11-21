@@ -128,7 +128,6 @@ public class VehicleServiceImpl implements VehicleService {
        @Override
        public List<VehicleMasterDto> getVehicleHistoryList(int id) {
            return vehicleRepository.getVehicleHistoryList(id);
-//                     List<VehicleMasterDto> vehicleMasterDtoList=new ArrayList<>();
               }
        @Override
        public VehicleDeviceInfo getVehicleDeviceMapping(Integer vehicleId) {
@@ -141,8 +140,8 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate,Date vehicleWorkEndDate) throws ParseException {
-              return vehicleRepositoryimpl.getdeviceListByVehicleId(vehicleId,vehicleWorkStartDate,vehicleWorkEndDate);
+       public List<VehicleDeviceMappingDto> getdeviceListByVehicleId(Integer vehicleId, Date vehicleWorkStartDate,Date vehicleWorkEndDate,Integer userId) throws ParseException {
+              return vehicleRepositoryimpl.getdeviceListByVehicleId(vehicleId,vehicleWorkStartDate,vehicleWorkEndDate,userId);
        }
 
        @Override
@@ -238,6 +237,10 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleActivityMappingRepository.saveAll(vehicleActivity);
     }
 
+    @Override
+    public List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId, Date actualActivityStartDate, Date actualActivityCompletionDate) {
+        return vehicleRepositoryimpl.getVehicleByActivityId(activityId, userId,actualActivityStartDate,actualActivityCompletionDate);
+    }
 
 
     @Override
@@ -299,11 +302,11 @@ public class VehicleServiceImpl implements VehicleService {
               return alertList;
        }
 
-       @Override
-       public List<AlertDto> getAlertArray(int id) throws ParseException {
-              List<AlertDto> alertList=new ArrayList<>();
+//       @Override
+//       public List<AlertDto> getAlertArray(int id) throws ParseException {
+//              List<AlertDto> alertList=new ArrayList<>();
 
-              List<ActivityDto> activityDtoList = workServiceImpl.getActivityByWorkId(id);
+//              List<ActivityDto> activityDtoList = workServiceImpl.getActivityByWorkId(id);
 //              List<Integer> activityList=new ArrayList<>();
 //              for(ActivityDto activity:activityDtoList){
 //                  activityList.add(activity.getId());
@@ -312,8 +315,8 @@ public class VehicleServiceImpl implements VehicleService {
 //              List<Integer> deviceIds=vehicleRepositoryimpl.getDeviceIdsByVehicleIds(vehicleIds);
 //              List<String> imei=vehicleRepositoryimpl.getImeiByDeviceId(deviceIds);
 
-              return alertList;
-       }
+//              return alertList;
+//       }
 
        public int getvehicleCountByWorkId(int id){
            return vehicleRepositoryimpl.getvehicleCountByWorkId(id);

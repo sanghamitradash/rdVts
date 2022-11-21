@@ -15,4 +15,5 @@ public class RoleMenuDto {
     private List<Integer> menuId;
     private Integer createdBy;
     private Boolean isDefault;
+    private Integer userId;
 }
