@@ -116,8 +116,8 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepositoryImpl.updateWorkId(workId, activityId, userId);
     }
     @Override
-    public Integer updateWorkActivity(Integer workId, Integer activityId, Integer userId) {
-        return activityRepositoryImpl.updateWorkActivity(workId, activityId, userId);
+    public Integer updateWorkActivity(ActivityWorkDto activityWorkDto) {
+        return activityRepositoryImpl.updateWorkActivity(activityWorkDto);
     }
 
     @Override
