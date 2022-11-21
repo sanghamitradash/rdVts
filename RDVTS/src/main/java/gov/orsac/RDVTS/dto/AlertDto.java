@@ -32,5 +32,6 @@ public class AlertDto {
     private double speedLimit;
     private Integer vehicleId;
     private Integer deviceId;
+    private Integer count;
 
 }

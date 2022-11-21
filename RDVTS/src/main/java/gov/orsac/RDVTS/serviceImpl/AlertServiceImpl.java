@@ -26,31 +26,22 @@ public class AlertServiceImpl implements AlertService {
     @Override
     public List<AlertCountDto> getTotalAlertToday(Integer id) {
         List<AlertCountDto> finalCount = new ArrayList<>();
-        List<AlertCountDto> alertCount = alertRepositoryImpl.getTotalAlertToday(id);
-        AlertCountDto se=new AlertCountDto();
-        for (int i = 0; i < alertCount.size(); i++) {
-            se.setAlertType(alertCount.get(i).getAlertType());
-            se.setAlertTypeId(alertCount.get(i).getAlertTypeId());
-            se.setCount(alertCount.get(i).getCount());
-            se.setWorkId(alertCount.get(i).getWorkId());
-            finalCount.add(se);
-        }
-        return finalCount;
+        return alertRepositoryImpl.getTotalAlertToday(id);
     }
 
     @Override
     public List<AlertCountDto> getTotalAlertWork(Integer id) {
         List<AlertCountDto> finalCount = new ArrayList<>();
-        List<AlertCountDto> alertCount = alertRepositoryImpl.getTotalAlertWork(id);
-        AlertCountDto se=new AlertCountDto();
-        for (int i = 0; i < alertCount.size(); i++) {
-            se.setAlertType(alertCount.get(i).getAlertType());
-            se.setAlertTypeId(alertCount.get(i).getAlertTypeId());
-            se.setCount(alertCount.get(i).getCount());
-            se.setWorkId(alertCount.get(i).getWorkId());
-            finalCount.add(se);
-        }
-        return finalCount;
+        return alertRepositoryImpl.getTotalAlertWork(id);
+//        AlertCountDto se=new AlertCountDto();
+//        for (int i = 0; i < alertCount.size(); i++) {
+//            se.setAlertType(alertCount.get(i).getAlertType());
+//            se.setAlertTypeId(alertCount.get(i).getAlertTypeId());
+//            se.setCount(alertCount.get(i).getCount());
+//            se.setWorkId(alertCount.get(i).getWorkId());
+//            finalCount.add(se);
+//        }
+//        return finalCount;
     }
 
     public List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId){
