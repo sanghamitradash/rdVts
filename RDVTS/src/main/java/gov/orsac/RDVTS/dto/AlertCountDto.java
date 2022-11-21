@@ -10,6 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class AlertCountDto {
 
+    private Integer id;
     private Integer workId;
     private Long imei;
     private Integer alertTypeId;
@@ -34,6 +35,4 @@ public class AlertCountDto {
 //    private Integer resolvedBy;
 //    private Integer userId;
 //    private String alertName;
-
-
 }

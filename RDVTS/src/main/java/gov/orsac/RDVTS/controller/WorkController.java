@@ -121,7 +121,7 @@ public class WorkController {
             List<WorkDto> workDto = workService.getWorkById(id);
             List<VehicleMasterDto> vehicle = vehicleService.getVehicleHistoryList(id);
           //  List<LocationDto> location = vehicleService.getLocationArray(id);
-            List<AlertDto> alertDtoList = vehicleService.getAlertArray(id);
+//            List<AlertDto> alertDtoList = vehicleService.getAlertArray(id);
             List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
             List<ContractorDto> contractorDtoList = contractorService.getContractorByWorkId(id);
 
@@ -231,7 +231,7 @@ public class WorkController {
             result.put("vehicleArray", vehicle);
             result.put("locationArray", locationList);
             result.put("roadArray", roadMasterDtoList);
-            result.put("alertArray", alertDtoList);
+//            result.put("alertArray", alertDtoList);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

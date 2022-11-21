@@ -26,7 +26,7 @@ public interface VehicleService {
     LocationDto getLocation(Integer vehicleId) throws ParseException;
     List<LocationDto> getLocationArray(int id) throws ParseException;
     List<AlertDto>getAlert(Integer vehicleId) throws ParseException;
-    List<AlertDto>getAlertArray(int id) throws ParseException;
+//    List<AlertDto>getAlertArray(int id) throws ParseException;
     int getvehicleCountByWorkId(int id);
 
     List<RoadMasterDto>getRoadArray(int id) throws ParseException;
