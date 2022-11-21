@@ -41,6 +41,17 @@ public class AlertController {
 
     @Autowired
     public VehicleService vehicleService;
+    final Integer OVER_SPEED_ALERT_ID = 1;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
+    final Integer NO_DATA_ALERT_ID = 2;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
+    final Integer NO_MOVEMENT_ALERT_ID = 3;
+    final Integer GEO_FENCE_ALERT_ID = 4;
+    final Integer noDataAlertTimeSpan = 60; //in minutes Alert Time Span
+    final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
+    final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
+    final Integer OUTSIDE_POINT_COUNT = 5;
+    final Integer OVER_SPEED_TIME = 15; //in minutes
+
+
 
     @RequestMapping("/generateNoDataAlert")
 
@@ -48,13 +59,13 @@ public class AlertController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
-        final Integer noDataAlertTimeSpan = 60; //in minutes Alert Time Span
-        final Integer NO_DATA_ALERT_ID = 3;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
+//        final Integer noDataAlertTimeSpan = 60; //in minutes Alert Time Span
+       // final Integer NO_DATA_ALERT_ID = 3;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
 
         try {
             Integer deviceId = -1; //fro getting all device
             //get all device
-            List<DeviceDto> device = deviceService.getAllDeviceDD(deviceId, userId);
+            List<DeviceDto> device = deviceService.getAllDeviceDD(deviceId, null);
             Map<String, Integer> map = new HashMap<>();
             for (DeviceDto item : device) {
                 //get Last location of the Current Date
@@ -143,11 +154,11 @@ public class AlertController {
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
 
-        final Integer NO_MOVEMENT_ALERT_ID = 2;
-        final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
-        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
-        final Integer SEEDING_GAP = 3; //taking point by 3 record gap
-        final Integer OUTSIDE_POINT_COUNT = 5;
+//        final Integer NO_MOVEMENT_ALERT_ID = 2;
+//        final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
+//        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
+//        final Integer SEEDING_GAP = 3; //taking point by 3 record gap
+//        final Integer OUTSIDE_POINT_COUNT = 5;
 
         try {
             //Get Imei
@@ -288,11 +299,11 @@ public class AlertController {
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
 
-        final Integer GEO_FENCE_ALERT_ID = 4;
-        final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
-        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
-        final Integer SEEDING_GAP = 3; //taking point by 3 record gap
-        final Integer OUTSIDE_POINT_COUNT = 5;
+//        final Integer GEO_FENCE_ALERT_ID = 4;
+//        final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
+//        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
+//        final Integer SEEDING_GAP = 3; //taking point by 3 record gap
+//        final Integer OUTSIDE_POINT_COUNT = 5;
 
         try {
             //Get All Work
@@ -411,9 +422,9 @@ public class AlertController {
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
         //final Integer noDataAlertTimeSpan = 60; //in minutes Alert Time Span
-        final Integer OVER_SPEED_ALERT_ID = 5;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
-        final Integer OVER_SPEED_TIME = 15; //in minutes
-        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
+//        final Integer OVER_SPEED_ALERT_ID = 5;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
+//        final Integer OVER_SPEED_TIME = 15; //in minutes
+//        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
         Integer recordLimit = OVER_SPEED_TIME * LOCATION_DATA_FREQUENCY;
 
         try {

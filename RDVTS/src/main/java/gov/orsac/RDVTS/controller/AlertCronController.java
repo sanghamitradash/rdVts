@@ -35,13 +35,21 @@ public class AlertCronController {
     @Autowired
     public RoadService roadService;
 
+    final Integer OVER_SPEED_ALERT_ID = 1;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
+    final Integer NO_DATA_ALERT_ID = 2;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
+    final Integer NO_MOVEMENT_ALERT_ID = 3;
+    final Integer GEO_FENCE_ALERT_ID = 4;
+    final Integer noDataAlertTimeSpan = 60; //in minutes Alert Time Span
+    final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
+    final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
+    final Integer OUTSIDE_POINT_COUNT = 5;
+    final Integer OVER_SPEED_TIME = 15; //in minutes
+
 
     @Scheduled(cron = "0 */5 * * * *")
     public void generateNoDataAlert() {
         //System.out.println("nomove");
 
-        final Integer noDataAlertTimeSpan = 60; //in minutes
-        final Integer NO_DATA_ALERT_ID = 3;//NO_DATA_ALERT_ID
 
         Integer deviceId = -1;
         Integer userId = null;
@@ -118,12 +126,6 @@ public class AlertCronController {
 
         //System.out.println("run");
 
-
-        final Integer NO_MOVEMENT_ALERT_ID = 2;
-        final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
-        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
-        final Integer SEEDING_GAP = 3; //taking point by 3 record gap
-        final Integer OUTSIDE_POINT_COUNT = 5;
 
         List<Long> imei = alertService.getImeiForNoMovement();
         if (imei.size() > 0) {
@@ -254,20 +256,10 @@ public class AlertCronController {
         //System.out.println("hii");
 
 
-        final Integer GEO_FENCE_ALERT_ID = 4;
-        final Integer NO_MOVEMENT_TIME_GAP = 15; //in minutes
-        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
-        final Integer SEEDING_GAP = 3; //taking point by 3 record gap
-        final Integer OUTSIDE_POINT_COUNT = 5;
         //Get All Work
         Integer userId=1;
         List<WorkDto> workDto = workService.getWorkById(-1);
 
-
-        //Foreach Work Get Vehicle
-        //Foreach Vechicle get Device
-        //Foreach device get Imei
-        //Foreach Imei Get location Record list
 
         for (WorkDto Work : workDto) {
             //Foreach work get Road Geom
@@ -350,9 +342,7 @@ public class AlertCronController {
 
     @Scheduled(cron = "0 */5 * * * *")
     public void generateOverSpeedAlert() throws ParseException {
-        final Integer OVER_SPEED_ALERT_ID = 5;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
-        final Integer OVER_SPEED_TIME = 15; //in minutes
-        final Integer LOCATION_DATA_FREQUENCY = 6; //per minute 6 locations are saved
+
         Integer recordLimit = OVER_SPEED_TIME * LOCATION_DATA_FREQUENCY;
         List<AlertDto> alertDto= alertService.getAllDeviceByVehicle();
         for (AlertDto alertDtoItem : alertDto) {
