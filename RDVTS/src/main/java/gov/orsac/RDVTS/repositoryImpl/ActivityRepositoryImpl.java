@@ -182,7 +182,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         sqlParam.addValue("activityId", activityId);
         int update = namedJdbc.update(qry, sqlParam);
         boolean result = false;
-        if (update >= 0) {
+        if (update > 0) {
             result = true;
         }
         return result;

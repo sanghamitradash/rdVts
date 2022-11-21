@@ -62,16 +62,17 @@ public class WorkServiceImpl implements WorkService {
         if (existingWork == null) {
             throw new RecordNotFoundException("WorkEntity", "id", id);
         }
-        existingWork.setGeoWorkId(workDto.getGeoWorkId());
-        existingWork.setGeoWorkName(workDto.getGeoWorkName());
-        existingWork.setAwardDate(workDto.getAwardDate());
+//        existingWork.setGeoWorkId(workDto.getGeoWorkId());
+//        existingWork.setGeoWorkName(workDto.getGeoWorkName());
+//        existingWork.setAwardDate(workDto.getAwardDate());
         existingWork.setCompletionDate(workDto.getCompletionDate());
-        existingWork.setPmisFinalizeDate(workDto.getPmisFinalizeDate());
+//        existingWork.setPmisFinalizeDate(workDto.getPmisFinalizeDate());
         existingWork.setWorkStatus(workDto.getWorkStatus());
-        existingWork.setApprovalStatus(workDto.getApprovalStatus());
-        existingWork.setApprovedBy(workDto.getApprovedBy());
+//        existingWork.setApprovalStatus(workDto.getApprovalStatus());
+//        existingWork.setApprovedBy(workDto.getApprovedBy());
         existingWork.setUpdatedBy(workDto.getUpdatedBy());
-        existingWork.setCreatedBy(workDto.getCreatedBy());
+//        existingWork.setCreatedBy(workDto.getCreatedBy());
+//        existingWork.setUpdatedOn(workDto.getUpdatedOn());
 
 
         WorkEntity save = workRepository.save(existingWork);
