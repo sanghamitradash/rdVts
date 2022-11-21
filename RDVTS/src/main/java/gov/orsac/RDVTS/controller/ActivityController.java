@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.controller;
 
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityEntity;
@@ -19,18 +20,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
-@Slf4j
-@RestController
 @CrossOrigin("*")
+@RestController
 @RequestMapping("/api/v1/activity")
 public class ActivityController {
-
 
     @Autowired
     private AWSS3StorageService awss3StorageService;
 
-    @Autowired
-    private AWSS3StorageServiceImpl awsS3StorageServiceImpl;
 
     @Autowired
     private ActivityService activityService;
@@ -112,7 +109,7 @@ public class ActivityController {
             if (issueImages!=null && issueImages.length > 0) {
 
                 for (MultipartFile files : issueImages) {
-                    boolean saveDocument = awsS3StorageServiceImpl.uploadIssueImages(files, String.valueOf(activity1.getId()), files.getOriginalFilename());
+                    boolean saveDocument = awss3StorageService.uploadIssueImages(files, String.valueOf(activity1.getId()), files.getOriginalFilename());
                 }
             }
                     result.put("activity1", activity1);
