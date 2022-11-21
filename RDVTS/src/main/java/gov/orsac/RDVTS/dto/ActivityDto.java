@@ -14,6 +14,7 @@ import java.util.List;
 public class ActivityDto {
 
     private Integer id;
+    private Integer activityId;
     private String activityName;
     private Double activityQuantity;
     private Date activityStartDate;
