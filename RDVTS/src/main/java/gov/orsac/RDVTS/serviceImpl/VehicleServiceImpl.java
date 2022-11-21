@@ -302,9 +302,9 @@ public class VehicleServiceImpl implements VehicleService {
               return alertList;
        }
 
-       @Override
-       public List<AlertDto> getAlertArray(int id) throws ParseException {
-              List<AlertDto> alertList=new ArrayList<>();
+//       @Override
+//       public List<AlertDto> getAlertArray(int id) throws ParseException {
+//              List<AlertDto> alertList=new ArrayList<>();
 
 //              List<ActivityDto> activityDtoList = workServiceImpl.getActivityByWorkId(id);
 //              List<Integer> activityList=new ArrayList<>();
@@ -315,8 +315,8 @@ public class VehicleServiceImpl implements VehicleService {
 //              List<Integer> deviceIds=vehicleRepositoryimpl.getDeviceIdsByVehicleIds(vehicleIds);
 //              List<String> imei=vehicleRepositoryimpl.getImeiByDeviceId(deviceIds);
 
-              return alertList;
-       }
+//              return alertList;
+//       }
 
        public int getvehicleCountByWorkId(int id){
            return vehicleRepositoryimpl.getvehicleCountByWorkId(id);

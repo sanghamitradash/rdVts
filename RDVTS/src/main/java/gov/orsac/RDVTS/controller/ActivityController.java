@@ -57,7 +57,7 @@ public class ActivityController {
     @PostMapping("/getActivityById")
     public RDVTSResponse getActivityByIdAndWorkId(@RequestParam(name = "activityId", required = false) Integer activityId,
                                          @RequestParam(name = "userId", required = false) Integer userId,
-                                         @RequestParam (name ="workId ",required = false)Integer workId) {
+                                         @RequestParam(name = "workId") Integer workId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -75,6 +75,7 @@ public class ActivityController {
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Activity By Id");
         } catch (Exception ex) {
+            ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),
