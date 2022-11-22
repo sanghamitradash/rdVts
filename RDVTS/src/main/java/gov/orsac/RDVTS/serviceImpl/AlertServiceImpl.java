@@ -102,5 +102,10 @@ public class AlertServiceImpl implements AlertService {
         return alertRepositoryImpl.getAlertLocationOverSpeed(imei,speedLimit);
     }
 
+    @Override
+    public AlertTypeEntity getAlertTypeDetails(int i) {
+        return  alertRepositoryImpl.getAlertTypeDetails(i);
+    }
+
 
 }
