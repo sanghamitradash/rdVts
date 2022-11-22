@@ -8,6 +8,7 @@ import gov.orsac.RDVTS.repository.AlertTypeRepository;
 import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
 import gov.orsac.RDVTS.service.AlertService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -26,15 +27,19 @@ public class AlertServiceImpl implements AlertService {
 
 
     @Override
-    public List<AlertCountDto> getTotalAlertToday(Integer id) {
-        List<AlertCountDto> finalCount = new ArrayList<>();
-        return alertRepositoryImpl.getTotalAlertToday(id);
+    public Page<AlertCountDto> getTotalAlertToday(AlertFilterDto filterDto, Integer id, Integer userId) {
+        return alertRepositoryImpl.getTotalAlertToday(filterDto, id, userId);
     }
 
     @Override
-    public List<AlertCountDto> getTotalAlertWork(Integer id) {
-        List<AlertCountDto> finalCount = new ArrayList<>();
-        return alertRepositoryImpl.getTotalAlertWork(id);
+    public Page<AlertCountDto> getTotalAlertWork(AlertFilterDto filterDto, Integer id, Integer userId) {
+        return alertRepositoryImpl.getTotalAlertWork(filterDto, id, userId);
+    }
+//
+//    @Override
+//    public Page<AlertCountDto> getTotalAlertWork(Integer id) {
+//        List<AlertCountDto> finalCount = new ArrayList<>();
+//        return alertRepositoryImpl.getTotalAlertWork(id);
 //        AlertCountDto se=new AlertCountDto();
 //        for (int i = 0; i < alertCount.size(); i++) {
 //            se.setAlertType(alertCount.get(i).getAlertType());
@@ -44,7 +49,7 @@ public class AlertServiceImpl implements AlertService {
 //            finalCount.add(se);
 //        }
 //        return finalCount;
-    }
+//    }
 
     public Boolean checkAlertExists(Long imei, Integer noDataAlertId){
 
@@ -95,21 +100,6 @@ public class AlertServiceImpl implements AlertService {
     @Override
     public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit) {
         return alertRepositoryImpl.getAlertLocationOverSpeed(imei,speedLimit);
-    }
-
-    @Override
-    public List<Integer> getTotalAlertToday(int id) {
-        return null;
-    }
-
-    @Override
-    public List<Integer> getTotalAlertWork(int id) {
-        return null;
-    }
-
-    @Override
-    public AlertTypeEntity getAlertTypeDetails(int i) {
-        return  alertRepositoryImpl.getAlertTypeDetails(i);
     }
 
 

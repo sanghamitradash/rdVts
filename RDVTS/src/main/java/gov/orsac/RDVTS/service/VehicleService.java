@@ -25,7 +25,6 @@ public interface VehicleService {
     VehicleWorkMappingDto getVehicleWorkMapping(Integer activityId);
     LocationDto getLocation(Integer vehicleId) throws ParseException;
     List<LocationDto> getLocationArray(int id) throws ParseException;
-    List<AlertDto>getAlert(Integer vehicleId) throws ParseException;
 //    List<AlertDto>getAlertArray(int id) throws ParseException;
     int getvehicleCountByWorkId(int id);
 
@@ -70,4 +69,6 @@ public interface VehicleService {
     List<VehicleActivityMappingEntity> assignVehicleActivity(List<VehicleActivityDto> activity) throws ParseException;
 
     List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId, Date actualActivityStartDate, Date actualActivityCompletionDate);
+
+    Page<AlertDto> getAlert(AlertFilterDto alertFiler, Integer vehicleId) throws ParseException;
 }

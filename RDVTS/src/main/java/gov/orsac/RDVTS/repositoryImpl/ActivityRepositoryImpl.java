@@ -59,10 +59,11 @@ public class ActivityRepositoryImpl implements ActivityRepository {
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
 
     }
-    public List<ActivityDto> getActivityDD() {
+    public List<ActivityDto> getActivityDD(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT id, activity_name  " +
                 " FROM rdvts_oltp.activity_m";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
     }
 
@@ -250,8 +251,10 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     public List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId, Integer workId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT distinct aw.id,aw.activity_id,am.activity_name,aw.work_id,aw.activity_quantity,aw.activity_start_date,aw.activity_completion_date,   " +
-                "aw.actual_activity_start_date,aw.actual_activity_completion_date,aw.executed_quantity,aw.activity_status,status.name as statusName,  " +
+
+        String qry = "SELECT distinct aw.activity_id,am.activity_name,aw.work_id,aw.activity_quantity,aw.activity_start_date,aw.activity_completion_date,   " +
+                "aw.actual_activity_start_date,aw.actual_activity_completion_date,aw.executed_quantity,aw.activity_status,status.name as activityStatusName,  " +
+
                 "aw.g_activity_id,aw.g_work_id from rdvts_oltp.activity_work_mapping as aw  " +
                 "left join rdvts_oltp.activity_m as am on am.id = aw.activity_id AND aw.is_active = true  " +
                 "left join rdvts_oltp.activity_status_m as status on status.id = aw.activity_status  " +
@@ -264,15 +267,22 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     }
 
-    public IssueDto getIssueByWorkId(Integer workId) {
+    public List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT issue.id,issue.activity_work_id,issue.issue_reason,issue.resolved_status,issue.resolved_date, " +
-                "issue.resolved_by,issue.issue_image from rdvts_oltp.issue_m as issue  " +
-                "left join rdvts_oltp.activity_work_mapping as work on work.id =issue.activity_work_id  "+
-                "WHERE issue.is_active = true And work.id=:workId  ";
+        String qry = "SELECT issue.id,issue.activity_work_id,issue.issue_reason,issue.resolved_status,issue.resolved_date,issue.resolved_by,issue.issue_image, " +
+                " Concat(um.first_name,' ',um.middle_name,' ',um.last_name) as resolvedbyname,rsm.name as resolvedStatusName from rdvts_oltp.issue_m as issue  " +
+                " left join rdvts_oltp.activity_work_mapping as work on work.id =issue.activity_work_id and work.is_active = true " +
+                " left join rdvts_oltp.user_m as um on um.id = issue.resolved_by " +
+                " left join rdvts_oltp.resolved_status_m as rsm on rsm.id = issue.resolved_status and rsm.is_active = true  " +
+                "WHERE issue.is_active = true And work.work_id=:workId  ";
 
          sqlParam.addValue("workId",workId);
-         return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(IssueDto.class));
+
+         if(activityId > 0 && activityId != null ){
+             qry += " and work.activity_id = :activityId ";
+             sqlParam.addValue("activityId", activityId);
+         }
+         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(IssueDto.class));
     }
 }
 

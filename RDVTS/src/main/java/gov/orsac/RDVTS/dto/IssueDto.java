@@ -14,10 +14,12 @@ public class IssueDto {
 
     private Integer id;
     private Integer activityWorkId;
-    private Integer issueReason;
+    private String issueReason;
     private Integer resolvedStatus;
+    private String resolvedStatusName;
     private Date resolvedDate;
     private Integer resolvedBy;
+    private String resolvedByName;
     private String issueImage;
     private Boolean isActive = true;
     private Integer createdBy;

@@ -45,4 +45,6 @@ public class GeoMasterDto {
     private Integer updatedBy;
 
     private String updatedOn;
+
+    private Integer userId;
 }

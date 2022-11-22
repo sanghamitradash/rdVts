@@ -56,7 +56,7 @@ public class AlertController {
 
     @RequestMapping("/generateNoDataAlert")
 
-    public RDVTSResponse generateNoDataAlert(@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse generateNoDataAlert(@RequestParam(name = "userId" ) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
@@ -150,7 +150,7 @@ public class AlertController {
     }
 
     @RequestMapping("/generateNoMovementAlert")
-    public RDVTSResponse generateNoMovementAlert(@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse generateNoMovementAlert(@RequestParam(name = "userId" ) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
@@ -297,7 +297,7 @@ public class AlertController {
     }
 
     @RequestMapping("/generateGeofenceAlert")
-    public RDVTSResponse generateGeofenceAlert(@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse generateGeofenceAlert(@RequestParam(name = "userId" ) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
@@ -422,7 +422,7 @@ public class AlertController {
 
 
     @RequestMapping("/generateOverSpeedAlert")
-    public RDVTSResponse generateOverSpeedAlert(@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse generateOverSpeedAlert(@RequestParam(name = "userId" ) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();

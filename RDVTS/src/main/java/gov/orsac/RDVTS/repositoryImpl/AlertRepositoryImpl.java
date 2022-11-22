@@ -2,39 +2,49 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertTypeEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
+@Slf4j
 @Repository
 public class AlertRepositoryImpl {
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
 
-    public List<AlertCountDto> getTotalAlertToday(Integer id) {
-        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " select distinct wm.id as workId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType,count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
-                "from rdvts_oltp.work_m as wm " +
-                "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on awm.activity_id=vam.activity_id and vam.is_active=true " +
-                "left join rdvts_oltp.vehicle_device_mapping as vdm on vam.vehicle_id=vdm.vehicle_id and vdm.is_active=true " +
-                "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
-                "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
-                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
-                "where awm.is_active=true and wm.id=:workId and date(ad.gps_dtm)=date(now())  " +
-                "order by wm.id " ;
-        sqlParam.addValue("workId", id);
-        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(AlertCountDto.class));
+    public int count(String qryStr, MapSqlParameterSource sqlParam) {
+        String sqlStr = "SELECT COUNT(*) from (" + qryStr + ") as t";
+        Integer intRes = namedJdbc.queryForObject(sqlStr, sqlParam, Integer.class);
+        if (null != intRes) {
+            return intRes;
+        }
+        return 0;
     }
-    public List<AlertCountDto> getTotalAlertWork(Integer id) {
+
+    public Page<AlertCountDto> getTotalAlertToday(AlertFilterDto filterDto, Integer id, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  select distinct wm.id as workId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType,count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
+        PageRequest pageable = null;
+
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        int resultCount=0;
+        String qry = " select distinct wm.id as workId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude, \n" +
+                "ad.gps_dtm as gpsDtm, ad.is_resolve as isResolve, ad.resolved_by as resolvedBy, count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
                 "from rdvts_oltp.work_m as wm " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on awm.activity_id=vam.activity_id and vam.is_active=true " +
@@ -42,10 +52,97 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
                 "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
-                "where awm.is_active=true and wm.id=:workId  " +
-                "order by wm.id  " ;
+                "where awm.is_active=true and wm.id=:workId and date(ad.gps_dtm)=date(now())  ";
         sqlParam.addValue("workId", id);
-        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(AlertCountDto.class));
+        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
+            qry += " AND ad.alert_type_id=:alertTypeId ";
+            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
+            qry += " AND date(ad.gps_dtm) >= :startDate";
+            Date startDate = null;
+            try {
+                startDate = format.parse(filterDto.getStartDate());
+            } catch (Exception exception) {
+                log.info("From Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("startDate", startDate, Types.DATE);
+        }
+        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
+            qry += " AND date(ad.gps_dtm) <= :endDate";
+            Date endDate = null;
+            try {
+                endDate = format.parse(filterDto.getEndDate());
+            } catch (Exception exception) {
+                log.info("To Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("endDate", endDate, Types.DATE);
+        }
+
+
+        resultCount = count(qry, sqlParam);
+        if (filterDto.getLimit() > 0){
+            qry += " Order by wm.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+        }
+
+        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+        return new PageImpl<>(list, pageable, resultCount);
+    }
+    public Page<AlertCountDto> getTotalAlertWork(AlertFilterDto filterDto, Integer id, Integer userId) {
+        PageRequest pageable = null;
+
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        int resultCount=0;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "  select distinct wm.id as workId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude,  " +
+                " ad.gps_dtm as gpsDtm,count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
+                "from rdvts_oltp.work_m as wm " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on awm.activity_id=vam.activity_id and vam.is_active=true " +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vam.vehicle_id=vdm.vehicle_id and vdm.is_active=true " +
+                "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
+                "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
+                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
+                "where awm.is_active=true and wm.id=:workId  "  ;
+        sqlParam.addValue("workId", id);
+        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
+            qry += " AND ad.alert_type_id=:alertTypeId ";
+            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
+            qry += " AND date(ad.gps_dtm) >= :startDate";
+            Date startDate = null;
+            try {
+                startDate = format.parse(filterDto.getStartDate());
+            } catch (Exception exception) {
+                log.info("From Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("startDate", startDate, Types.DATE);
+        }
+        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
+            qry += " AND date(ad.gps_dtm) <= :endDate";
+            Date endDate = null;
+            try {
+                endDate = format.parse(filterDto.getEndDate());
+            } catch (Exception exception) {
+                log.info("To Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("endDate", endDate, Types.DATE);
+        }
+
+
+        resultCount = count(qry, sqlParam);
+        if (filterDto.getLimit() > 0){
+            qry += " order by wm.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+        }
+
+        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+        return new PageImpl<>(list, pageable, resultCount);
     }
 
 //alert count today qry//

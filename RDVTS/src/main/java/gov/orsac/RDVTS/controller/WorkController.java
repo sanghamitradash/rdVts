@@ -112,9 +112,22 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkById")
-    public RDVTSResponse getWorkById(@RequestParam Integer id,
-                                     @RequestParam(name = "userId" ) Integer userId) {
-        RDVTSResponse response = new RDVTSResponse();
+    public RDVTSListResponse getWorkById(@RequestParam Integer id,
+                                         @RequestParam(name = "userId" ) Integer userId,
+                                         @RequestParam(name = "startDate", required = false) String startDate,
+                                         @RequestParam (name = "endDate", required = false) String endDate,
+                                         @RequestParam(name = "alertTypeId", required = false) Integer alertTypeId,
+                                         @RequestParam(name = "start") Integer start,
+                                         @RequestParam(name = "length") Integer length,
+                                         @RequestParam(name = "draw") Integer draw) {
+        AlertFilterDto filterDto=new AlertFilterDto();
+        filterDto.setStartDate(startDate);
+        filterDto.setEndDate(endDate);
+        filterDto.setAlertTypeId(alertTypeId);
+        filterDto.setOffSet(start);
+        filterDto.setLimit(length);
+        filterDto.setDraw(draw);
+        RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
 //            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
@@ -125,8 +138,8 @@ public class WorkController {
             List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
             List<ContractorDto> contractorDtoList = contractorService.getContractorByWorkId(id);
 
-            Date startDate = null;
-            Date endDate = null;
+            Date startDate1 = null;
+            Date endDate1 = null;
             Date vehicleStartDate = null;
             Date vehicleendDate = null;
             Double todayDistance=0.0;
@@ -148,12 +161,12 @@ public class WorkController {
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                             //int i = 0;
                             for (DeviceDto imei : getImeiList) {
-                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
                                 int i=0;
                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
                                     i++;
@@ -212,8 +225,20 @@ public class WorkController {
             }
             location.setAvgSpeedWork(avgSpeedWork);
 
-            location.setTotalAlertToday(alertService.getTotalAlertToday(id));
-            location.setTotalAlertWork(alertService.getTotalAlertWork(id));
+            Page<AlertCountDto> alertListToday = alertService.getTotalAlertToday(filterDto, id, userId);
+            Page<AlertCountDto> alertListTotal = alertService.getTotalAlertWork(filterDto, id, userId);
+            List<AlertCountDto> alertList1 = alertListToday.getContent();
+            Integer start1=start;
+            for(int i=0;i<alertList1.size();i++){
+                start1=start1+1;
+                alertList1.get(i).setSlNo(start1);
+            }
+            List<AlertCountDto> alertList2 = alertListTotal.getContent();
+            Integer start2=start;
+            for(int i=0;i<alertList2.size();i++){
+                start1=start1+1;
+                alertList2.get(i).setSlNo(start1);
+            }
 
             location.setTotalVehicleActive(totalActiveVehicle);
             if (totalVehicleCount > 0 ){
@@ -231,14 +256,20 @@ public class WorkController {
             result.put("vehicleArray", vehicle);
             result.put("locationArray", locationList);
             result.put("roadArray", roadMasterDtoList);
-//            result.put("alertArray", alertDtoList);
+            result.put("totalAlertToday", alertList1);
+            result.put("totalAlertWork", alertList2);
             response.setData(result);
             response.setStatus(1);
+            response.setDraw(draw);
+            response.setRecordsFiltered(alertListToday.getTotalElements());
+            response.setRecordsTotal(alertListToday.getTotalElements());
+            response.setRecordsFiltered(alertListTotal.getTotalElements());
+            response.setRecordsTotal(alertListTotal.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
         } catch (Exception e) {
             e.printStackTrace();
-            response = new RDVTSResponse(0,
+            response = new RDVTSListResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
                     result);

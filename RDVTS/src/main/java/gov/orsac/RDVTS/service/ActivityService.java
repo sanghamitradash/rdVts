@@ -21,7 +21,7 @@ public interface ActivityService {
     Page<ActivityDto> getActivityList(ActivityListDto activity);
 
 
-    List<ActivityDto> getActivityDD();
+    List<ActivityDto> getActivityDD(Integer userId);
 
 
     ActivityEntity addActivity(ActivityDto activity);
@@ -52,7 +52,7 @@ public interface ActivityService {
 
     List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId);
 
-    IssueDto getIssueByWorkId(Integer workId);
+    List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId);
 }
 
 

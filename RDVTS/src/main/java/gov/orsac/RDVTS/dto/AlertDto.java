@@ -33,5 +33,6 @@ public class AlertDto {
     private Integer vehicleId;
     private Integer deviceId;
     private Integer count;
+    private Integer slNo;
 
 }

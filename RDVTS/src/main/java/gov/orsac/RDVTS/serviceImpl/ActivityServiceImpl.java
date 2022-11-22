@@ -74,8 +74,8 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
-    public List<ActivityDto> getActivityDD() {
-        return activityRepositoryImpl.getActivityDD();
+    public List<ActivityDto> getActivityDD(Integer userId) {
+        return activityRepositoryImpl.getActivityDD(userId);
     }
 
     @Override
@@ -177,8 +177,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public IssueDto getIssueByWorkId(Integer workId) {
-        return activityRepositoryImpl.getIssueByWorkId(workId);
+    public List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId) {
+        return activityRepositoryImpl.getIssueByWorkId(workId,activityId);
     }
 
 
