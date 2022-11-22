@@ -40,6 +40,7 @@ public class VehicleWorkMappingDto {
     private String approvalStatus;
     private String awardDate;
     private String pmisFinalizeDate;
+    private Integer userId;
 
 
 }

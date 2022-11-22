@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.serviceImpl.HelperServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Repository
 public class VehicleRepositoryImpl implements VehicleRepository {
 
@@ -669,18 +672,59 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return locationDto;
     }
 
-    public List<AlertDto> getAlertList(Long imeiNo) {
+    public Page<AlertDto> getAlertList(AlertFilterDto filterDto, Long imeiNo) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        PageRequest pageable = null;
+
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        int resultCount=0;
+
         String qry = " select imei,alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
-                "                is_resolve,resolved_by,userM.first_name as resolvedByUser from  rdvts_oltp.alert_data  as alert  " +
-                "                left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id  " +
-                "                left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by  " +
+                " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser from  rdvts_oltp.alert_data  as alert  " +
+                " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id  " +
+                " left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by  " +
                 " left join rdvts_oltp.device_m as dm on dm.imei_no_1=alert.imei " +
                 " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id where imei=:imeiNo";
+
         sqlParam.addValue("imeiNo", imeiNo);
 
+        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
+            qry += " AND alert.alert_type_id=:alertTypeId ";
+            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
+            qry += " AND date(alert.gps_dtm) >= :startDate";
+            Date startDate = null;
+            try {
+                startDate = format.parse(filterDto.getStartDate());
+            } catch (Exception exception) {
+                log.info("From Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("startDate", startDate, Types.DATE);
+        }
+        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
+            qry += " AND date(alert.gps_dtm) <= :endDate";
+            Date endDate = null;
+            try {
+                endDate = format.parse(filterDto.getEndDate());
+            } catch (Exception exception) {
+                log.info("To Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("endDate", endDate, Types.DATE);
+        }
 
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
+
+        resultCount = count(qry, sqlParam);
+        if (filterDto.getLimit() > 0){
+            qry += " Order by alert.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+        }
+
+        List<AlertDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
+        return new PageImpl<>(list, pageable, resultCount);
     }
 
     public List<UserInfoDto> getUserDropDownForVehicleOwnerMapping(Integer userId) {
