@@ -653,7 +653,6 @@ public class LocationController {
                                                    @RequestParam(name = "blockId", required = false) List<Integer> blockId,
                                                    @RequestParam(name = "divisionId", required = false) List<Integer> divisionId,
                                                    @RequestParam(name = "circleId", required = false) List<Integer> circleId,
-
                                                    @RequestParam(name = "startTime", required = false) String startTime,
                                                    @RequestParam(name = "endTime", required = false) String endTime) throws ParseException {
         RDVTSResponse response = new RDVTSResponse();

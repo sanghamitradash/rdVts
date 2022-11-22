@@ -44,7 +44,7 @@ public class AlertCronController {
         final Integer NO_DATA_ALERT_ID = 3;//NO_DATA_ALERT_ID
 
         Integer deviceId = -1;
-        Integer userId = 1;
+        Integer userId = null;
         List<DeviceDto> device = deviceService.getAllDeviceDD(deviceId, userId);
         Map<String, Integer> map = new HashMap<>();
         for (DeviceDto item : device) {
@@ -396,4 +396,6 @@ public class AlertCronController {
 
 
     }
+
+
 }
