@@ -391,24 +391,49 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
             List<Integer> deviceIds  = masterRepositoryImpl.getDeviceIdsByBlockAndDivision(blockIds,divisionIds,distIds);
             if(subQuery!= " " && subQuery.length()<=0) {
-                subQuery += " WHERE  deviceList.id in(:deviceIds) ";
-                sqlParam.addValue("deviceIds",deviceIds);;
+
+                if (deviceIds != null && deviceIds.size() > 0) {
+                    subQuery += " WHERE  deviceList.id in(:deviceIds)  ";
+                    sqlParam.addValue("deviceIds", deviceIds);
+                } else {
+                    subQuery += " WHERE  deviceList.id in(0) ";
+
+                }
             }
             else{
-                subQuery += " and deviceList.id in(:deviceIds) ";
-                sqlParam.addValue("deviceIds",deviceIds);;
+                if(deviceIds!=null && deviceIds.size()>0){
+                    subQuery += " AND  deviceList.id in(:deviceIds) ";
+                    sqlParam.addValue("deviceIds",deviceIds);
+                }
+                else{
+                    subQuery += " AND deviceList.id in(0) ";
+
+                }
             }
         }
         else if(user.getUserLevelId()==3){
             List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(deviceDto.getUserId());
-            List<Integer> deviceIds  = masterRepositoryImpl.getDeviceIdsByBlockIds(blockIds);
+            List<Integer> distIds = userRepositoryImpl.getDistIdByBlockId(blockIds);
+            List<Integer> deviceIds  = masterRepositoryImpl.getDeviceIdsByDistIds(distIds);
+
             if(subQuery!= " " && subQuery.length()<=0) {
-                subQuery += " WHERE  deviceList.id in(:deviceIds) ";
-                sqlParam.addValue("deviceIds",deviceIds);;
+                if (deviceIds != null && deviceIds.size() > 0) {
+                    subQuery += " WHERE  deviceList.id in(:deviceIds)  ";
+                    sqlParam.addValue("deviceIds", deviceIds);
+                } else {
+                    subQuery += " WHERE  deviceList.id in(0) ";
+
+                }
             }
             else{
-                subQuery += " and deviceList.id in(:deviceIds) ";
-                sqlParam.addValue("deviceIds",deviceIds);;
+                    if(deviceIds!=null && deviceIds.size()>0){
+                        subQuery += " AND  deviceList.id in(:deviceIds) ";
+                        sqlParam.addValue("deviceIds",deviceIds);
+                    }
+                    else{
+                        subQuery += " AND  deviceList.id in(0) ";
+
+                    }
             }
         }
 

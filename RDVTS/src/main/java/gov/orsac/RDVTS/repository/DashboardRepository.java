@@ -17,7 +17,7 @@ public interface DashboardRepository {
     List<Integer> totalInactiveIds();
 
 
-    List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount(List<Integer> ids);
+    List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount(List<Integer> ids,Integer userId);
 
-    List<DivisionWiseVehicleDto> getDivisionWiseVehicleCount(List<Integer> totalActiveIds);
+    List<DivisionWiseVehicleDto> getDivisionWiseVehicleCount(List<Integer> totalActiveIds,Integer userId);
 }

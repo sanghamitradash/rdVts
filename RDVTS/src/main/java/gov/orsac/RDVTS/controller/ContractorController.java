@@ -62,7 +62,7 @@ public class ContractorController {
 
     @PostMapping("/getContractById")
     public RDVTSResponse getContractById(@RequestParam(name = "contractId", required = false) Integer contractId,
-                                         @RequestParam(name = "userId" )Integer userId) {
+                                         @RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
