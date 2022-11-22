@@ -57,8 +57,8 @@ public class DashboardServiceImpl implements DashboardService {
         List<Integer> totalActiveIds = dashboardRepository.totalActiveIds();
         List<Integer> totalInActiveIds = dashboardRepository.totalInactiveIds();
         /* DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();*/
-         List<DistrictWiseVehicleDto> activeCount=dashboardRepository.getDistrictWiseVehicleCount(totalActiveIds);
-        List<DistrictWiseVehicleDto> inActiveCount=dashboardRepository.getDistrictWiseVehicleCount(totalInActiveIds);
+         List<DistrictWiseVehicleDto> activeCount=dashboardRepository.getDistrictWiseVehicleCount(totalActiveIds,userId);
+        List<DistrictWiseVehicleDto> inActiveCount=dashboardRepository.getDistrictWiseVehicleCount(totalInActiveIds,userId);
         for(int i=0;i<activeCount.size();i++){
             DistrictWiseVehicleDto dw=new DistrictWiseVehicleDto();
             dw.setActive(activeCount.get(i).getCount());
@@ -82,8 +82,8 @@ public class DashboardServiceImpl implements DashboardService {
         List<Integer> totalActiveIds = dashboardRepository.totalActiveIds();
         List<Integer> totalInActiveIds = dashboardRepository.totalInactiveIds();
         /* DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();*/
-        List<DivisionWiseVehicleDto> activeCount=dashboardRepository.getDivisionWiseVehicleCount(totalActiveIds);
-        List<DivisionWiseVehicleDto> inActiveCount=dashboardRepository.getDivisionWiseVehicleCount(totalInActiveIds);
+        List<DivisionWiseVehicleDto> activeCount=dashboardRepository.getDivisionWiseVehicleCount(totalActiveIds,userId);
+        List<DivisionWiseVehicleDto> inActiveCount=dashboardRepository.getDivisionWiseVehicleCount(totalInActiveIds,userId);
         for(int i=0;i<activeCount.size();i++){
             DivisionWiseVehicleDto dw=new DivisionWiseVehicleDto();
             dw.setActive(activeCount.get(i).getCount());

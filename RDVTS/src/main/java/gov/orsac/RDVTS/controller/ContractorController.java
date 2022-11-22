@@ -62,7 +62,7 @@ public class ContractorController {
 
     @PostMapping("/getContractById")
     public RDVTSResponse getContractById(@RequestParam(name = "contractId", required = false) Integer contractId,
-                                         @RequestParam(name = "userId",required = false)Integer userId) {
+                                         @RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -155,7 +155,7 @@ public class ContractorController {
     //Contract For DropDown
 
     @PostMapping("/getContractorDropDown")
-    public RDVTSResponse getContractorDropDown(@RequestParam(value = "userId", required = false) Integer userId) {
+    public RDVTSResponse getContractorDropDown(@RequestParam(value = "userId") Integer userId) {
 
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
