@@ -7,12 +7,13 @@ import gov.orsac.RDVTS.dto.AlertDto;
 import gov.orsac.RDVTS.dto.BufferDto;
 import gov.orsac.RDVTS.dto.VtuLocationDto;
 import gov.orsac.RDVTS.entities.AlertEntity;
+import gov.orsac.RDVTS.entities.AlertTypeEntity;
 
 
 public interface AlertService  {
     List<AlertCountDto> getTotalAlertToday(Integer id);
     List<AlertCountDto> getTotalAlertWork(Integer id);
-    List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId);
+    Boolean checkAlertExists(Long imei, Integer noDataAlertId);
     AlertEntity saveAlert(AlertEntity alertEntity);
     Boolean updateResolve(Long imei1, Integer noDataAlertId);
 
@@ -33,9 +34,11 @@ public interface AlertService  {
 
 
 
-    List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Integer recordLimit);
+    List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit);
 
     List<Integer> getTotalAlertToday(int id);
 
     List<Integer> getTotalAlertWork(int id);
+
+    AlertTypeEntity getAlertTypeDetails(int i);
 }

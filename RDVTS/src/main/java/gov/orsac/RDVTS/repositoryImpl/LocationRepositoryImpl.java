@@ -635,8 +635,14 @@ public class LocationRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         VtuLocationDto locationDto = null;
 
-        String qry = "select  * from rdvts_oltp.vtu_location  where imei=:imeiNo and gps_fix::numeric=1 order by date_time desc limit 1 ";
-        sqlParam.addValue("imeiNo", imeiNo);
+        String qry = "select dm.id,b.* from rdvts_oltp.vehicle_device_mapping as vdm " +
+                "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id " +
+                "left join (select distinct imei,max(id) over(partition by imei) as vtuid from " +
+                "rdvts_oltp.vtu_location as vtu  where imei=:imeiNo and gps_fix::numeric=1 order by imei ) as a on dm.imei_no_1=a.imei\n" +
+                "left join rdvts_oltp.vtu_location as b on a.vtuid=b.id " +
+                "where vdm.is_active=true and b.id is not null";
+        sqlParam.addValue("imeiNo",imeiNo);
+
         try {
             locationDto = namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
         } catch (EmptyResultDataAccessException e) {
