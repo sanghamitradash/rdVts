@@ -55,8 +55,10 @@ public class ActivityController {
     }
 
     @PostMapping("/getActivityById")
+
     public RDVTSResponse getActivityByIdAndWorkId(@RequestParam(name = "activityId") Integer activityId,
                                          @RequestParam(name = "userId") Integer userId,
+
                                          @RequestParam(name = "workId") Integer workId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
@@ -140,11 +142,11 @@ public class ActivityController {
     }
 
     @PostMapping("/getActivityDD")
-    public RDVTSResponse getActivityDD() {
+    public RDVTSResponse getActivityDD(@RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<ActivityDto> activityDD = activityService.getActivityDD();
+            List<ActivityDto> activityDD = activityService.getActivityDD(userId);
             result.put("activityDD", activityDD);
             response.setData(result);
             response.setStatus(1);
@@ -373,7 +375,7 @@ public class ActivityController {
     }
 
     @PostMapping("/activityStatusDD")
-    public RDVTSResponse activityStatusDD(@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse activityStatusDD(@RequestParam(name = "userId" ) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -395,7 +397,7 @@ public class ActivityController {
 
 
     @PostMapping("/resolvedStatusDD")
-    public RDVTSResponse resolvedStatusDD(@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse resolvedStatusDD(@RequestParam(name = "userId" ) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {

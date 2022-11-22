@@ -74,8 +74,8 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
-    public List<ActivityDto> getActivityDD() {
-        return activityRepositoryImpl.getActivityDD();
+    public List<ActivityDto> getActivityDD(Integer userId) {
+        return activityRepositoryImpl.getActivityDD(userId);
     }
 
     @Override
