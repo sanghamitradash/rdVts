@@ -15,8 +15,6 @@ public class AlertFilterDto {
     private String endDate;
     private Integer alertTypeId;
 
-//    private Integer start;
-//    private Integer length;
     private Integer draw;
     private Integer offSet;
     private Integer limit;

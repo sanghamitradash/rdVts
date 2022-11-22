@@ -32,8 +32,9 @@ public class AlertCountDto {
 //    private Date createdOn;
 //    private Integer updatedBy;
 //    private Date updatedOn;
-//    private Boolean isResolve;
-//    private Integer resolvedBy;
+    private Boolean isResolve;
+    private Integer resolvedBy;
 //    private Integer userId;
 //    private String alertName;
+    private Integer slNo;
 }

@@ -175,6 +175,7 @@ public class VehicleController {
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Vehicle By Id");
+            response.setDraw(draw);
             response.setRecordsFiltered(alertPageList.getTotalElements());
             response.setRecordsTotal(alertPageList.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
