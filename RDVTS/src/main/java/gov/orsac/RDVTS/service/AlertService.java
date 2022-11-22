@@ -4,11 +4,12 @@ import java.util.List;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertEntity;
+import gov.orsac.RDVTS.entities.AlertTypeEntity;
 import org.springframework.data.domain.Page;
 
 
 public interface AlertService  {
-    List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId);
+    Boolean checkAlertExists(Long imei, Integer noDataAlertId);
     AlertEntity saveAlert(AlertEntity alertEntity);
     Boolean updateResolve(Long imei1, Integer noDataAlertId);
 
@@ -29,9 +30,11 @@ public interface AlertService  {
 
 
 
-    List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Integer recordLimit);
+    List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit);
 
     Page<AlertCountDto> getTotalAlertToday(AlertFilterDto filterDto, Integer id, Integer userId);
 
     Page<AlertCountDto> getTotalAlertWork(AlertFilterDto filterDto, Integer id, Integer userId);
+
+    AlertTypeEntity getAlertTypeDetails(int i);
 }

@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.AlertTypeEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -152,17 +153,17 @@ public class AlertRepositoryImpl {
 
 
 
-    public List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId){
+    public Boolean checkAlertExists(Long imei, Integer noDataAlertId){
 
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
         AlertDto alertDto=new AlertDto();
-        String qry = "SELECT * FROM rdvts_oltp.alert_data " +
-                "   WHERE imei=:imei AND alert_type_id=:noDataAlertId AND date(gps_dtm)=date(now()) AND is_resolve = false  " ;
+        String qry = " select case when count(*) >0 then true else false  end as bool FROM rdvts_oltp.alert_data  " +
+                "WHERE imei=:imei AND alert_type_id=:noDataAlertId AND date(gps_dtm)=date(now()) AND is_resolve = false  " ;
 
 
         sqlParam.addValue("imei", imei);
         sqlParam.addValue("noDataAlertId",noDataAlertId);
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
+        return namedJdbc.queryForObject(qry, sqlParam, (Boolean.class));
 
 
         //return locationDto;
@@ -263,7 +264,7 @@ public class AlertRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
     }
 
-    public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Integer recordLimit) {
+    public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on " +
                 " FROM rdvts_oltp.vtu_location where is_active=true ";
@@ -276,16 +277,26 @@ public class AlertRepositoryImpl {
         Date currentDate=new Date();
 
 
-        qry += "   AND date(date_time)=date(now()) AND  date_time BETWEEN :currentDateMinus AND :currentDate and REPLACE(speed, ' ', '')::numeric > :speedLimit order by date_time ASC  limit :recordLimit ";
+        qry += "   AND date(date_time)=date(now()) AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC ";
         sqlParam.addValue("imei1", imei);
 
-        sqlParam.addValue("recordLimit", recordLimit);
         sqlParam.addValue("currentDateMinus", currentDateMinus);
         sqlParam.addValue("speedLimit", speedLimit);
         sqlParam.addValue("currentDate", currentDate);
 
-        //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+        List<VtuLocationDto> vtuLocationDtoList= namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+      return vtuLocationDtoList;
+
+
+    }
+
+    public AlertTypeEntity getAlertTypeDetails(int i) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        String qry = "SELECT * FROM rdvts_oltp.alert_type_m where is_active=true and id=:id" ;
+
+        sqlParam.addValue("id", i);
+
+        return namedJdbc.queryForObject(qry, sqlParam,new BeanPropertyRowMapper<>(AlertTypeEntity.class));
     }
 
 //    public List<AlertCountDto> getTotalAlertToday(int id) {

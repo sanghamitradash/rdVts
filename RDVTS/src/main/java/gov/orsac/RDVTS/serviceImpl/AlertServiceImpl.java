@@ -2,17 +2,16 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertEntity;
+import gov.orsac.RDVTS.entities.AlertTypeEntity;
 import gov.orsac.RDVTS.repository.AlertRepository;
+import gov.orsac.RDVTS.repository.AlertTypeRepository;
 import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
 import gov.orsac.RDVTS.service.AlertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class AlertServiceImpl implements AlertService {
@@ -22,6 +21,10 @@ public class AlertServiceImpl implements AlertService {
 
     @Autowired
     public AlertRepository alertRepository;
+
+    @Autowired
+    public AlertTypeRepository alertTypeRepository;
+
 
     @Override
     public Page<AlertCountDto> getTotalAlertToday(AlertFilterDto filterDto, Integer id, Integer userId) {
@@ -48,7 +51,7 @@ public class AlertServiceImpl implements AlertService {
 //        return finalCount;
 //    }
 
-    public List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId){
+    public Boolean checkAlertExists(Long imei, Integer noDataAlertId){
 
 
         return alertRepositoryImpl.checkAlertExists(imei, noDataAlertId);
@@ -95,8 +98,13 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Integer recordLimit) {
-        return alertRepositoryImpl.getAlertLocationOverSpeed(imei,speedLimit,recordLimit);
+    public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit) {
+        return alertRepositoryImpl.getAlertLocationOverSpeed(imei,speedLimit);
+    }
+
+    @Override
+    public AlertTypeEntity getAlertTypeDetails(int i) {
+        return  alertRepositoryImpl.getAlertTypeDetails(i);
     }
 
 
