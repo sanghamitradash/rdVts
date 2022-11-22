@@ -495,7 +495,8 @@ public class RoadRepositoryImpl {
     }
     public List<AlertCountDto> getAlert(Integer roadId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " select distinct road.id as roadId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, count(ad.id) over (partition by ad.alert_type_id,road.id)  " +
+        String qry = " select distinct road.id as roadId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve,\n" +
+                "ad.resolved_by, count(ad.id) over (partition by ad.alert_type_id,road.id)  " +
                 "from rdvts_oltp.geo_construction_m as road " +
                 "left join rdvts_oltp.geo_master as gm on gm.road_id=road.id " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=gm.work_id " +
