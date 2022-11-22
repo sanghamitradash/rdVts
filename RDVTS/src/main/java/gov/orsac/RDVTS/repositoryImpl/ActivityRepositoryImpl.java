@@ -291,11 +291,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return null;
     }
 
-    public ActivityWorkMapping findActivityId(Integer id) {
-        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        return null;
-    }
 }
 
 
