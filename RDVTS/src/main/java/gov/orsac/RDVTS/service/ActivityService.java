@@ -52,7 +52,7 @@ public interface ActivityService {
 
     List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId);
 
-    IssueDto getIssueByWorkId(Integer workId);
+    List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId);
 }
 
 
