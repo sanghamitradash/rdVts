@@ -25,6 +25,7 @@ public class AlertCountDto {
     private String roadName;
     private Integer packageId;
     private String packageName;
+    private Date gpsDtm;
 //    private Date alertTime;
 //    private Boolean isActive;
 //    private Integer createdBy;

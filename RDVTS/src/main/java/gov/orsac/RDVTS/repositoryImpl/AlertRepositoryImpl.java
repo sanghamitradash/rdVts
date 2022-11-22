@@ -18,7 +18,8 @@ public class AlertRepositoryImpl {
 
     public List<AlertCountDto> getTotalAlertToday(Integer id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " select distinct wm.id as workId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType,count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
+        String qry = " select distinct wm.id as workId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude, \n" +
+                "ad.gps_dtm as gpsDtm, count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
                 "from rdvts_oltp.work_m as wm " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on awm.activity_id=vam.activity_id and vam.is_active=true " +
@@ -33,7 +34,8 @@ public class AlertRepositoryImpl {
     }
     public List<AlertCountDto> getTotalAlertWork(Integer id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  select distinct wm.id as workId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType,count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
+        String qry = "  select distinct wm.id as workId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude,  " +
+                " ad.gps_dtm as gpsDtm,count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
                 "from rdvts_oltp.work_m as wm " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on awm.activity_id=vam.activity_id and vam.is_active=true " +
