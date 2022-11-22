@@ -274,6 +274,12 @@ public class ActivityRepositoryImpl implements ActivityRepository {
          sqlParam.addValue("workId",workId);
          return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(IssueDto.class));
     }
+
+    public ActivityWorkMapping findActivityId(Integer id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        return null;
+    }
 }
 
 
