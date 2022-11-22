@@ -355,5 +355,34 @@ public class UserRepositoryImpl {
         sqlParam.addValue("distId", distId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
+
+
+    public List<Integer> getVehicleIdByContractorId(List<Integer> contractorId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "Select distinct vehicle_id from rdvts_oltp.vehicle_owner_mapping where contractor_id in(:contractorId) ";
+        sqlParam.addValue("contractorId", contractorId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getDeviceIdsByVehicleIds(List<Integer> vehicleIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "Select distinct device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id in(:vehicleIds) ";
+        sqlParam.addValue("vehicleIds", vehicleIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getDivisionByDeviceIds(List<Integer> deviceIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "Select distinct division_id from rdvts_oltp.device_area_mapping where is_active=true AND device_id in(:deviceIds) ";
+        sqlParam.addValue("deviceIds", deviceIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+
+    public List<Integer> getDistIdsByDeviceIds(List<Integer> deviceIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "Select distinct dist_id from rdvts_oltp.device_area_mapping where is_active=true AND device_id in(:deviceIds) ";
+        sqlParam.addValue("deviceIds", deviceIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
 }
 
