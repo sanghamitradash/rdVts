@@ -57,4 +57,6 @@ public class ActivityWorkMappingDto {
 
     private IssueDto issue;
 
+    private Integer userId;
+
 }

@@ -500,7 +500,8 @@ public class VehicleController {
     }*/
 
     @PostMapping("/getVehicleById")
-    public RDVTSResponse getVehicleById(@RequestParam(name = "id", required = false) Integer id, Integer userId) {
+    public RDVTSResponse getVehicleById(@RequestParam(name = "id", required = false) Integer id,
+                                        @RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -562,7 +563,7 @@ public class VehicleController {
 
     @PostMapping("/getVehicleByActivityId")
     public RDVTSResponse getVehicleByActivityId(@RequestParam(name = "activityId", required = false) Integer activityId,
-                                                @RequestParam(name = "userId", required = false)Integer userId) {
+                                                @RequestParam(name = "userId" )Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -583,7 +584,7 @@ public class VehicleController {
 
     @PostMapping("/getVehicleByVehicleTypeId")
     public RDVTSResponse getVehicleByVehicleTypeId(@RequestParam(value = "vehicleTypeId", required = false) Integer vehicleTypeId,
-                                                   @RequestParam(name = "userId", required = false)Integer userId) {
+                                                   @RequestParam(name = "userId" )Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -604,7 +605,7 @@ public class VehicleController {
 
     @PostMapping("/getRoadDetailByVehicleId")
     public RDVTSResponse getRoadDetailByVehicleId(@RequestParam(value = "vehicleId", required = false) Integer vehicleId,
-                                                  @RequestParam(name = "userId", required = false)Integer userId) {
+                                                  @RequestParam(name = "userId" )Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -624,7 +625,7 @@ public class VehicleController {
     }
 
     @PostMapping("/deactivateVehicle")
-    public RDVTSResponse deactivateVehicle(@RequestParam Integer vehicleId, @RequestParam Integer status, @RequestParam (required = false)Integer userId) {
+    public RDVTSResponse deactivateVehicle(@RequestParam Integer vehicleId, @RequestParam Integer status, @RequestParam  Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {

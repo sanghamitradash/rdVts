@@ -21,7 +21,7 @@ public interface ActivityService {
     Page<ActivityDto> getActivityList(ActivityListDto activity);
 
 
-    List<ActivityDto> getActivityDD();
+    List<ActivityDto> getActivityDD(Integer userId);
 
 
     ActivityEntity addActivity(ActivityDto activity);

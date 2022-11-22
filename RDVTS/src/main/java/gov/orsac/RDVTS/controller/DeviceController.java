@@ -130,7 +130,7 @@ public class DeviceController {
 
     @PostMapping("/getDeviceById")
     public RDVTSResponse getDeviceById(@RequestParam(name = "deviceId", required = false) Integer deviceId,
-                                       @RequestParam(name = "userId",required = false)Integer userId) {
+                                       @RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -287,7 +287,7 @@ public class DeviceController {
     //Get UnAssigned Device By ID
 
     @PostMapping("/getUnassignedDeviceData")
-    public RDVTSResponse getUnassignedDeviceData (@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse getUnassignedDeviceData (@RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -310,7 +310,7 @@ public class DeviceController {
     //Get Device UserLevel DropDown
 
     @PostMapping("/getDeviceUserLevel")
-    public RDVTSResponse getDeviceUserLevel(@RequestParam(value = "userId", required = false) Integer userId) {
+    public RDVTSResponse getDeviceUserLevel(@RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -332,7 +332,7 @@ public class DeviceController {
     //Get vtu Vendor DropDown
 
     @PostMapping("/getVtuVendorDropDown")
-    public RDVTSResponse getVtuVendorDropDown(@RequestParam(value = "userId", required = false) Integer userId) {
+    public RDVTSResponse getVtuVendorDropDown(@RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -354,7 +354,7 @@ public class DeviceController {
     //Delete Device
 
     @PostMapping("/deactivateDevice")
-    public RDVTSResponse deactivateDevice(@RequestParam Integer deviceId,@RequestParam Integer status,@RequestParam (required = false)Integer userId) {
+    public RDVTSResponse deactivateDevice(@RequestParam Integer deviceId,@RequestParam Integer status,@RequestParam  Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -381,7 +381,7 @@ public class DeviceController {
 
     @PostMapping("/getAllDeviceDD")
     public RDVTSResponse getAllDeviceDD(@RequestParam(name = "deviceId", required = false) Integer deviceId,
-                                       @RequestParam(name = "userId",required = false)Integer userId) {
+                                       @RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
