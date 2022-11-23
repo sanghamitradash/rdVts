@@ -267,6 +267,7 @@ public class UserController {
                                          @RequestParam(name = "designationId", required = false) Integer designationId,
                                          @RequestParam(name = "roleId", required = false) Integer roleId,
                                          @RequestParam(name = "distId", required = false) Integer distId,
+                                         @RequestParam(name = "divisionId", required = false) Integer divisionId,
                                          @RequestParam(name = "contractorId", required = false) Integer contractorId,
                                          @RequestParam(name = "userLevelId", required = false) Integer userLevelId,
                                          @RequestParam(name = "email", required = false) String email,
@@ -287,7 +288,7 @@ public class UserController {
             userListDto.setEmail(email);
             userListDto.setMobile1(mobile1);
             userListDto.setDistId(distId);
-
+            userListDto.setDivisionId(divisionId);
             userListDto.setLimit(length);
             userListDto.setOffSet(start);
             userListDto.setDraw(draw);
