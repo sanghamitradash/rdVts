@@ -696,7 +696,8 @@ public class LocationController {
 
 
     @PostMapping("/getVehicleListByWorkId")
-    public RDVTSResponse getVehicleListByWorkId(@RequestParam(name = "workIds", required = false) List<Integer> workIds) {
+    public RDVTSResponse getVehicleListByWorkId(@RequestParam(name = "workIds", required = false) List<Integer> workIds,
+                                                @RequestParam(name = "userId") Integer userId ) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {

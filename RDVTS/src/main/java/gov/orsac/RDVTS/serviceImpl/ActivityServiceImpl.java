@@ -172,7 +172,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId) {
+    public List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId) {
         return activityRepositoryImpl.getActivityByIdAndWorkId(activityId,userId,workId);
     }
 
