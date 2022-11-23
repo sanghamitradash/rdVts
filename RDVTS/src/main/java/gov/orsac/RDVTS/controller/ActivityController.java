@@ -56,15 +56,14 @@ public class ActivityController {
 
     @PostMapping("/getActivityById")
 
-    public RDVTSResponse getActivityByIdAndWorkId(@RequestParam(name = "activityId") Integer activityId,
-                                         @RequestParam(name = "userId") Integer userId,
-
-                                         @RequestParam(name = "workId") Integer workId) {
+      public RDVTSResponse getActivityByIdAndWorkId(@RequestParam(name = "activityId") Integer activityId,
+                                                    @RequestParam(name = "userId") Integer userId,
+                                                    @RequestParam(name = "workId") Integer workId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
 
-            List<ActivityWorkMapping> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,workId);
+            List<ActivityWorkMappingDto> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,workId);
 
             List<IssueDto> issue = activityService.getIssueByWorkId(activityWork.get(0).getWorkId(), activityWork.get(0).getActivityId());
 

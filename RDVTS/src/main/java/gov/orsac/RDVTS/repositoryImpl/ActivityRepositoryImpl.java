@@ -249,7 +249,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ResolvedStatusDto.class));
     }
 
-    public List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId, Integer workId) {
+    public List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId, Integer workId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT distinct aw.activity_id,am.activity_name,aw.work_id,aw.activity_quantity,aw.activity_start_date,aw.activity_completion_date,   " +
@@ -262,7 +262,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("workId",workId);
         sqlParam.addValue("userId",userId);
-        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ActivityWorkMapping.class));
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ActivityWorkMappingDto.class));
 
 
     }

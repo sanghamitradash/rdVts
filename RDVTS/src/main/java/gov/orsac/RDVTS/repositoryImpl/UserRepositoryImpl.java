@@ -107,7 +107,7 @@ public class UserRepositoryImpl {
         }
         if (userListRequest.getMobile1() != null && !userListRequest.getMobile1().toString().isEmpty()) {
             queryString += " AND um.mobile_1::varchar Like :mobile1  ";
-            sqlParam.addValue("mobile1", String.valueOf(userListRequest.getMobile1() + "%"));
+            sqlParam.addValue("mobile1", String.valueOf("%" + userListRequest.getMobile1() + "%"));
 
         }
 

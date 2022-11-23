@@ -51,7 +51,7 @@ public interface ActivityService {
 
     IssueEntity saveIssueImage(IssueDto issue, Integer id, MultipartFile issueImages);
 
-    List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId);
+    List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId);
 
     List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId);
 }

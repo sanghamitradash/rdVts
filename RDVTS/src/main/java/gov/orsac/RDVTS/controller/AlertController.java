@@ -354,20 +354,20 @@ public class AlertController {
                                                         AlertEntity alertEntity = new AlertEntity();
                                                         alertEntity.setImei(vtuItem.getImei());
                                                         alertEntity.setAlertTypeId(GEO_FENCE_ALERT_ID);
-                                                        if (vtuLocationDto.get(0).getLatitude() != null) {
-                                                            alertEntity.setLatitude(Double.parseDouble(vtuLocationDto.get(0).getLatitude()));
+                                                        if (vtuItem.getLatitude() != null) {
+                                                            alertEntity.setLatitude(Double.parseDouble(vtuItem.getLatitude()));
                                                         }
-                                                        if (vtuLocationDto.get(0).getLongitude() != null) {
-                                                            alertEntity.setLongitude(Double.parseDouble(vtuLocationDto.get(0).getLongitude()));
+                                                        if (vtuItem.getLongitude() != null) {
+                                                            alertEntity.setLongitude(Double.parseDouble(vtuItem.getLongitude()));
                                                         }
-                                                        if (vtuLocationDto.get(0).getAltitude() != null) {
-                                                            alertEntity.setAltitude(Double.parseDouble(vtuLocationDto.get(0).getAltitude()));
+                                                        if (vtuItem.getAltitude() != null) {
+                                                            alertEntity.setAltitude(Double.parseDouble(vtuItem.getAltitude()));
                                                         }
-                                                        if (vtuLocationDto.get(0).getAccuracy() != null) {
-                                                            alertEntity.setAccuracy(Double.parseDouble(vtuLocationDto.get(0).getAccuracy()));
+                                                        if (vtuItem.getAccuracy() != null) {
+                                                            alertEntity.setAccuracy(Double.parseDouble(vtuItem.getAccuracy()));
                                                         }
 
-                                                        alertEntity.setSpeed(Double.parseDouble(vtuLocationDto.get(0).getSpeed()));
+                                                        alertEntity.setSpeed(Double.parseDouble(vtuItem.getSpeed()));
                                                         alertEntity.setGpsDtm(new Date());
 
                                                         AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
