@@ -55,20 +55,21 @@ public class ActivityController {
     }
 
     @PostMapping("/getActivityById")
-    public RDVTSResponse getActivityByIdAndWorkId(@RequestParam(name = "activityId", required = false) Integer activityId,
-                                         @RequestParam(name = "userId" ) Integer userId,
-                                         @RequestParam(name = "workId") Integer workId) {
+
+      public RDVTSResponse getActivityByIdAndWorkId(@RequestParam(name = "activityId") Integer activityId,
+                                                    @RequestParam(name = "userId") Integer userId,
+                                                    @RequestParam(name = "workId") Integer workId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
 
-            List<ActivityWorkMapping> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,workId);
+            List<ActivityWorkMappingDto> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,workId);
 
-           // IssueDto issue = activityService.getIssueByWorkId(activityWork.get(0).getWorkId());
+            List<IssueDto> issue = activityService.getIssueByWorkId(activityWork.get(0).getWorkId(), activityWork.get(0).getActivityId());
 
             List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(activityId, userId);
-            result.put("activityWork", activityWork);
-            //result.put("issue",issue);
+            result.put("activity", activityWork);
+            result.put("issue",issue);
             result.put("vehicle", vehicle);
             response.setData(result);
             response.setStatus(1);

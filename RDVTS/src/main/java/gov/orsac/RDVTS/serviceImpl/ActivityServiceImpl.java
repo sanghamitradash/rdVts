@@ -172,13 +172,13 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId) {
+    public List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId) {
         return activityRepositoryImpl.getActivityByIdAndWorkId(activityId,userId,workId);
     }
 
     @Override
-    public IssueDto getIssueByWorkId(Integer workId) {
-        return activityRepositoryImpl.getIssueByWorkId(workId);
+    public List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId) {
+        return activityRepositoryImpl.getIssueByWorkId(workId,activityId);
     }
 
 

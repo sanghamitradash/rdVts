@@ -17,6 +17,10 @@ public class ActivityWorkMappingDto {
 
     private Integer activityId;
 
+    private String activityName;
+
+    private String activityStatusName;
+
     private Integer workId;
 
     private Double activityQuantity;
