@@ -111,20 +111,20 @@ public class WorkController {
 
     @PostMapping("/getWorkById")
     public RDVTSListResponse getWorkById(@RequestParam Integer id,
-                                         @RequestParam(name = "userId" ) Integer userId,
+                                         @RequestParam(name = "userId" ) Integer userId/*,
                                          @RequestParam(name = "startDate", required = false) String startDate,
                                          @RequestParam (name = "endDate", required = false) String endDate,
                                          @RequestParam(name = "alertTypeId", required = false) Integer alertTypeId,
                                          @RequestParam(name = "start", required = false) Integer start,
                                          @RequestParam(name = "length", required = false) Integer length,
-                                         @RequestParam(name = "draw", required = false) Integer draw) {
+                                         @RequestParam(name = "draw", required = false) Integer draw*/) {
         AlertFilterDto filterDto=new AlertFilterDto();
-        filterDto.setStartDate(startDate);
-        filterDto.setEndDate(endDate);
-        filterDto.setAlertTypeId(alertTypeId);
-        filterDto.setOffSet(start);
-        filterDto.setLimit(length);
-        filterDto.setDraw(draw);
+//        filterDto.setStartDate(startDate);
+//        filterDto.setEndDate(endDate);
+//        filterDto.setAlertTypeId(alertTypeId);
+//        filterDto.setOffSet(start);
+//        filterDto.setLimit(length);
+//        filterDto.setDraw(draw);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -223,27 +223,27 @@ public class WorkController {
             }
             location.setAvgSpeedWork(avgSpeedWork);
 
-            Page<AlertCountDto> alertListToday = alertService.getTotalAlertToday(filterDto, id, userId);
-            Page<AlertCountDto> alertListTotal = alertService.getTotalAlertWork(filterDto, id, userId);
-            List<AlertCountDto> alertList1 = alertListToday.getContent();
-            Integer start1=start;
-            for(int i=0;i<alertList1.size();i++){
-                start1=start1+1;
-                alertList1.get(i).setSlNo(start1);
-            }
-            List<AlertCountDto> alertList2 = alertListTotal.getContent();
-            Integer start2=start;
-            for(int i=0;i<alertList2.size();i++){
-                start1=start1+1;
-                alertList2.get(i).setSlNo(start1);
-            }
-
-            location.setTotalVehicleActive(totalActiveVehicle);
-            if (totalVehicleCount > 0 ){
-                location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
-            }else {
-                location.setTotalInactiveVehicle(0);
-            }
+//            Page<AlertCountDto> alertListToday = alertService.getTotalAlertToday(filterDto, id, userId);
+//            Page<AlertCountDto> alertListTotal = alertService.getTotalAlertWork(filterDto, id, userId);
+//            List<AlertCountDto> alertList1 = alertListToday.getContent();
+//            Integer start1=start;
+//            for(int i=0;i<alertList1.size();i++){
+//                start1=start1+1;
+//                alertList1.get(i).setSlNo(start1);
+//            }
+//            List<AlertCountDto> alertList2 = alertListTotal.getContent();
+//            Integer start2=start;
+//            for(int i=0;i<alertList2.size();i++){
+//                start1=start1+1;
+//                alertList2.get(i).setSlNo(start1);
+//            }
+//
+//            location.setTotalVehicleActive(totalActiveVehicle);
+//            if (totalVehicleCount > 0 ){
+//                location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
+//            }else {
+//                location.setTotalInactiveVehicle(0);
+//            }
 
             location.setPercentageOfActiveVehicle(percentageOfTotalActiveVehicle);
 
@@ -254,15 +254,15 @@ public class WorkController {
             result.put("vehicleArray", vehicle);
             result.put("locationArray", locationList);
             result.put("roadArray", roadMasterDtoList);
-            result.put("totalAlertToday", alertList1);
-            result.put("totalAlertWork", alertList2);
+//            result.put("totalAlertToday", alertList1);
+//            result.put("totalAlertWork", alertList2);
             response.setData(result);
             response.setStatus(1);
-            response.setDraw(draw);
-            response.setRecordsFiltered(alertListToday.getTotalElements());
-            response.setRecordsTotal(alertListToday.getTotalElements());
-            response.setRecordsFiltered(alertListTotal.getTotalElements());
-            response.setRecordsTotal(alertListTotal.getTotalElements());
+//            response.setDraw(draw);
+//            response.setRecordsFiltered(alertListToday.getTotalElements());
+//            response.setRecordsTotal(alertListToday.getTotalElements());
+//            response.setRecordsFiltered(alertListTotal.getTotalElements());
+//            response.setRecordsTotal(alertListTotal.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
         } catch (Exception e) {
