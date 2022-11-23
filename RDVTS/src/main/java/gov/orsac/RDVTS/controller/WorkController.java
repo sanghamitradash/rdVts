@@ -115,9 +115,9 @@ public class WorkController {
                                          @RequestParam(name = "startDate", required = false) String startDate,
                                          @RequestParam (name = "endDate", required = false) String endDate,
                                          @RequestParam(name = "alertTypeId", required = false) Integer alertTypeId,
-                                         @RequestParam(name = "start") Integer start,
-                                         @RequestParam(name = "length") Integer length,
-                                         @RequestParam(name = "draw") Integer draw) {
+                                         @RequestParam(name = "start", required = false) Integer start,
+                                         @RequestParam(name = "length", required = false) Integer length,
+                                         @RequestParam(name = "draw", required = false) Integer draw) {
         AlertFilterDto filterDto=new AlertFilterDto();
         filterDto.setStartDate(startDate);
         filterDto.setEndDate(endDate);

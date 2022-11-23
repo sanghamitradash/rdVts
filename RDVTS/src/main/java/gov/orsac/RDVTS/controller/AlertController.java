@@ -6,6 +6,7 @@ import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.AlertEntity;
 import gov.orsac.RDVTS.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -466,6 +467,104 @@ public class AlertController {
 
 
         return response;
+
+    }
+
+    @RequestMapping("/getAlert")
+    public RDVTSAlertResponse getAlert(@RequestParam(name = "userId" ) Integer userId,
+                                      @RequestParam(name = "roadId", required = false) Integer roadId,
+                                      @RequestParam(name = "vehicleId", required = false) Integer vehicleId,
+                                      @RequestParam(name = "deviceId", required = false) Integer deviceId,
+                                      @RequestParam(name = "activityId", required = false) Integer activityId,
+                                      @RequestParam(name = "workId", required = false) Integer workId,
+                                      @RequestParam(name = "startDate", required = false) String startDate,
+                                      @RequestParam (name = "endDate", required = false) String endDate,
+                                      @RequestParam(name = "alertTypeId", required = false) Integer alertTypeId,
+                                      @RequestParam(name = "circleId", required = false) Integer circleId,
+                                      @RequestParam(name = "distId", required = false) Integer distId,
+                                      @RequestParam(name = "divisionId", required = false) Integer divisionId,
+                                      @RequestParam(name = "start", required = false) Integer start,
+                                      @RequestParam(name = "length", required = false) Integer length,
+                                      @RequestParam(name = "draw", required = false) Integer draw){
+        AlertFilterDto filterDto = new AlertFilterDto();
+        filterDto.setUserId(userId);
+        filterDto.setRoadId(roadId);
+        filterDto.setVehicleId(vehicleId);
+        filterDto.setDeviceId(deviceId);
+        filterDto.setActivityId(activityId);
+        filterDto.setWorkId(workId);
+        filterDto.setStartDate(startDate);
+        filterDto.setEndDate(endDate);
+        filterDto.setAlertTypeId(alertTypeId);
+        filterDto.setCircleId(circleId);
+        filterDto.setDistId(distId);
+        filterDto.setDivisionId(divisionId);
+        filterDto.setOffSet(start);
+        filterDto.setLimit(length);
+        filterDto.setDraw(draw);
+
+        RDVTSAlertResponse response = new RDVTSAlertResponse();
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            Page<AlertCountDto> alertListToday = alertService.getAlertToday(filterDto);
+            Page<AlertCountDto> alertListTotal = alertService.getAlertTotal(filterDto);
+            Page<AlertCountDto> vehicleAlertList=alertService.getVehicleAlert(filterDto);
+            Page<AlertCountDto> roadAlertList = alertService.getRoadAlert(filterDto);
+
+            List<AlertCountDto> alertList1 = alertListToday.getContent();
+            Integer start1=start;
+            for(int i=0;i<alertList1.size();i++){
+                start1=start1+1;
+                alertList1.get(i).setSlNo(start1);
+            }
+            List<AlertCountDto> alertList2 = alertListTotal.getContent();
+            Integer start2=start;
+            for(int i=0;i<alertList2.size();i++){
+                start2=start2+1;
+                alertList2.get(i).setSlNo(start2);
+            }
+            List<AlertCountDto> alertList3 = vehicleAlertList.getContent();
+            Integer start3=start;
+            for(int i=0;i<alertList3.size();i++){
+                start3=start3+1;
+                alertList3.get(i).setSlNo(start3);
+            }
+            List<AlertCountDto> alertList4 = roadAlertList.getContent();
+            Integer start4=start;
+            for(int i=0;i<alertList4.size();i++){
+                start4=start4+1;
+                alertList4.get(i).setSlNo(start4);
+            }
+
+            result.put("totalAlertToday", alertList1);
+            result.put("totalAlertWork", alertList2);
+            result.put("vehicleAlert", alertList3);
+            result.put("roadAlert", alertList4);
+            response.setData(result);
+            response.setStatus(1);
+            response.setDraw(draw);
+            response.setWorkRecordsFiltered(alertListToday.getTotalElements());
+            response.setWorkRecordsTotal(alertListToday.getTotalElements());
+            response.setWorkRecordsFiltered(alertListTotal.getTotalElements());
+            response.setWorkRecordsTotal(alertListTotal.getTotalElements());
+
+            response.setVehicleRecordsFiltered(vehicleAlertList.getTotalElements());
+            response.setVehicleRecordsTotal(vehicleAlertList.getTotalElements());
+
+            response.setRoadRecordsFiltered(roadAlertList.getTotalElements());
+            response.setRoadRecordsTotal(roadAlertList.getTotalElements());
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSAlertResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+
 
     }
 }

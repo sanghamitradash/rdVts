@@ -34,4 +34,12 @@ public interface AlertService  {
     Page<AlertCountDto> getTotalAlertToday(AlertFilterDto filterDto, Integer id, Integer userId);
 
     Page<AlertCountDto> getTotalAlertWork(AlertFilterDto filterDto, Integer id, Integer userId);
+
+    Page<AlertCountDto> getAlertToday(AlertFilterDto filterDto);
+
+    Page<AlertCountDto> getAlertTotal(AlertFilterDto filterDto);
+
+    Page<AlertCountDto> getVehicleAlert(AlertFilterDto filterDto);
+
+    Page<AlertCountDto> getRoadAlert(AlertFilterDto filterDto);
 }

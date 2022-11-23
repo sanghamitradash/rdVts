@@ -495,16 +495,16 @@ public class RoadRepositoryImpl {
     }
     public List<AlertCountDto> getAlert(Integer roadId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " select distinct road.id as roadId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve,\n" +
-                "ad.resolved_by, count(ad.id) over (partition by ad.alert_type_id,road.id)  " +
-                "from rdvts_oltp.geo_construction_m as road " +
-                "left join rdvts_oltp.geo_master as gm on gm.road_id=road.id " +
-                "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=gm.work_id " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=awm.activity_id " +
-                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id = vam.vehicle_id " +
-                "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id " +
-                "left join rdvts_oltp.alert_data as ad on ad.imei=dm.imei_no_1 " +
-                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where gm.is_active=true and road.id=:roadId order by road.id ";
+            String qry = " select distinct road.id as roadId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve,\n" +
+                    "ad.resolved_by, count(ad.id) over (partition by ad.alert_type_id,road.id)  " +
+                    "from rdvts_oltp.geo_construction_m as road " +
+                    "left join rdvts_oltp.geo_master as gm on gm.road_id=road.id " +
+                    "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=gm.work_id " +
+                    "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=awm.activity_id " +
+                    "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id = vam.vehicle_id " +
+                    "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id " +
+                    "left join rdvts_oltp.alert_data as ad on ad.imei=dm.imei_no_1 " +
+                    "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where gm.is_active=true and road.id=:roadId order by road.id ";
         sqlParam.addValue("roadId", roadId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
     }

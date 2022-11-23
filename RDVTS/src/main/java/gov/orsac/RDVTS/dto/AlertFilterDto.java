@@ -11,6 +11,16 @@ import java.util.Date;
 @NoArgsConstructor
 public class AlertFilterDto {
 
+    private Integer roadId;
+    private Integer vehicleId;
+    private Integer deviceId;
+    private Integer activityId;
+    private Integer workId;
+    private Integer circleId;
+    private Integer distId;
+    private Integer blockId;
+    private Integer divisionId;
+
     private String startDate;
     private String endDate;
     private Integer alertTypeId;
