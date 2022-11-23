@@ -35,7 +35,7 @@ public class LocationController {
 
 
     @PostMapping("/getLocationRecordList")
-    public RDVTSResponse getLocationRecordList(@RequestParam(name = "userId", required = false) Integer userId,
+    public RDVTSResponse getLocationRecordList(@RequestParam(name = "userId") Integer userId,
                                                @RequestParam(name = "imei1", required = false) List<Long> imei1,
                                                @RequestParam(name = "imei2", required = false) List<Long> imei2,
                                                @RequestParam(name = "deviceId", required = false) List<Integer> deviceId,
@@ -426,7 +426,7 @@ public class LocationController {
 
 
     @PostMapping("/getLastLocationRecordList")
-    public RDVTSResponse getLastLocationRecordList(@RequestParam(name = "userId", required = false) Integer userId,
+    public RDVTSResponse getLastLocationRecordList(@RequestParam(name = "userId") Integer userId,
                                                    @RequestParam(name = "imei1", required = false) List<Long> imei1,
                                                    @RequestParam(name = "imei2", required = false) List<Long> imei2,
                                                    @RequestParam(name = "deviceId", required = false) List<Integer> deviceId,
@@ -645,9 +645,15 @@ public class LocationController {
                     result.add(itemVal);
                 }
                 else {
-                    response.setStatus(1);
-                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                    response.setMessage("No Imei Found");
+                    List<Integer> IdList=new ArrayList<>();
+                    IdList.add(-1);
+                    List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationByDeviceId(IdList,null);
+                    Map<String, Object> itemVal = new HashMap<>();
+                    itemVal.put("vehicleLocation", vtuLocationDto);
+                    result.add(itemVal);
+//                    response.setStatus(1);
+//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//                    response.setMessage("No Imei Found");
                 }
 
 

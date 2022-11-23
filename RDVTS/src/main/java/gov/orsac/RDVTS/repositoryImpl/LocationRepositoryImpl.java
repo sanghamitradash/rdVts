@@ -699,8 +699,6 @@ public class LocationRepositoryImpl {
 
         if (IdList.get(0) > 1) {
             if (checkArea == 1) {
-
-
                 qry += " and dm.id in (SELECT device_id FROM rdvts_oltp.device_area_mapping where dist_id IN(:IdList))  ";
                 sqlParam.addValue("IdList", IdList);
             }
