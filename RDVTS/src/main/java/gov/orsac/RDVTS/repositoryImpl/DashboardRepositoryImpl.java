@@ -118,6 +118,23 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             }
         }
 
+        else if(user.getUserLevelId()==5) {
+            List<Integer> contractorId = userRepositoryImpl.getContractorByUserId(userId);
+            List<Integer> vehicleIds = userRepositoryImpl.getVehicleIdByContractorId(contractorId);
+            List<Integer> deviceIds = userRepositoryImpl.getDeviceIdsByVehicleIds(vehicleIds);
+            if (deviceIds != null && deviceIds.size() > 0) {
+                List<Integer> distIds = userRepositoryImpl.getDistIdsByDeviceIds(deviceIds);
+                if (qry != null && qry.length() > 0) {
+                    qry += " AND  dist.dist_id in(:distIds) ";
+                    sqlParam.addValue("distIds", distIds);
+                } else {
+                    qry += " AND  dist.dist_id in(:distIds) ";
+                    sqlParam.addValue("distIds", distIds);
+                }
+            }
+            else qry += " AND dist.dist_id in(0)";
+        }
+
         qry += " order by dist.district_name ";
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DistrictWiseVehicleDto.class));
     }
@@ -173,7 +190,25 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             }
         }
 
+        else if(user.getUserLevelId()==5) {
+            List<Integer> contractorId = userRepositoryImpl.getContractorByUserId(userId);
+            List<Integer> vehicleIds = userRepositoryImpl.getVehicleIdByContractorId(contractorId);
+            List<Integer> deviceIds = userRepositoryImpl.getDeviceIdsByVehicleIds(vehicleIds);
+            if (deviceIds != null && deviceIds.size() > 0) {
+                List<Integer> divisionIds = userRepositoryImpl.getDivisionByDeviceIds(deviceIds);
+                if (qry != null && qry.length() > 0) {
+                    qry += " AND  div.division_id in(:divisionIds) ";
+                    sqlParam.addValue("divisionIds", divisionIds);
+                } else {
+                    qry += " AND div.division_id in(:divisionIds) ";
+                    sqlParam.addValue("divisionIds", divisionIds);
+                }
+            }
+            else qry += " AND div.division_id in(0)";
+        }
+
         qry += "  order by div.division_name ";
+
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionWiseVehicleDto.class));
     }
 }

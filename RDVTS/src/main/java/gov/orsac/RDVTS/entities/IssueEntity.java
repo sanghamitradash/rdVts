@@ -27,7 +27,7 @@ public class IssueEntity {
     private Integer activityWorkId;
 
     @Column(name = "issue_reason")
-    private Integer issueReason;
+    private String issueReason;
 
     @Column(name ="resolved_status")
     private Integer resolvedStatus;
