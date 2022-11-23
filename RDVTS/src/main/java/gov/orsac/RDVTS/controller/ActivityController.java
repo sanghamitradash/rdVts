@@ -120,6 +120,7 @@ public class ActivityController {
             ActivityWorkMappingDto activityData = mapper.readValue(data, ActivityWorkMappingDto.class);
             IssueDto issueData=mapper.readValue(issue,IssueDto.class);
             ActivityWorkMapping activity = activityService.getActivity(activityId,workId);
+
             if (activity != null){
                 Integer update = activityService.updateActivity(activity.getId(), activityData);
 
