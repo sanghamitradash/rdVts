@@ -14,7 +14,8 @@ public interface ActivityService {
 
     List<ActivityDto> getActivityById(Integer activityId, Integer userId);
 
-    ActivityWorkMapping updateActivity(Integer id, ActivityWorkMappingDto activityData);
+    Integer updateActivity(Integer id, ActivityWorkMappingDto activityData);
+    ActivityWorkMapping getActivity(Integer activityId, Integer workId);
 
     List<ActivityEntity> getAllActivity(Integer userId);
 

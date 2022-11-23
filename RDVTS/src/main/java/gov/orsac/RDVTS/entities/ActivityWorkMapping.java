@@ -25,8 +25,8 @@ public class ActivityWorkMapping {
     @Column(name = "activity_id")
     private Integer activityId;
 
-    @Column(name = "activity_name")
-    private String activityName;
+//    @Column(name = "activity_name")
+//    private String activityName;
 
     @Column(name = "work_id")
     private Integer workId;
@@ -52,8 +52,8 @@ public class ActivityWorkMapping {
     @Column(name = "activity_status")
     private Integer activityStatus;
 
-    @Column(name = "name")
-    private String activityStatusName;
+//    @Column(name = "name")
+//    private String activityStatusName;
 
     @Column(name = "g_activity_id")
     private Integer gActivityId;
