@@ -175,7 +175,7 @@ public class DeviceController {
                                            @RequestParam(name = "gDistId",required = false) Integer gDistId,
                                            @RequestParam(name = "gBlockId", required = false) Integer gBlockId,
                                            @RequestParam(name = "divisionId",required = false) Integer divisionId,
-                                           @RequestParam(name = "userId",required = false)Integer userId,
+                                           @RequestParam(name = "userId")Integer userId,
                                            @RequestParam(name = "vehicleAssigned", required = false)Boolean vehicleAssigned,
                                            @RequestParam(name = "start") Integer start,
                                            @RequestParam(name = "length")Integer length,
