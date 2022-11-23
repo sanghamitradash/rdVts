@@ -55,14 +55,19 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityWorkMapping updateActivity(Integer id, ActivityWorkMappingDto activityData) {
-            ActivityWorkMapping existingActivity = activityWorkMappingRepository.findByActivityId(id);
-            //BeanUtils.copyProperties(activityData, activityEntity);
-            existingActivity.setActivityId(id);
-            existingActivity.setActualActivityStartDate(activityData.getActualActivityStartDate());
-            existingActivity.setActualActivityCompletionDate(activityData.getActualActivityCompletionDate());
-            existingActivity.setActivityStatus(activityData.getActivityStatus());
-            return activityWorkMappingRepository.save(existingActivity);
+    public Integer updateActivity(Integer id, ActivityWorkMappingDto activityData) {
+        /*ActivityWorkMapping existingActivity = activityRepositoryImpl.findByActivityId(id);
+        existingActivity.setActivityStatus(activityData.getActivityStatus());
+        existingActivity.setActivityStartDate(activityData.getActivityStartDate());
+        existingActivity.setActivityCompletionDate(activityData.getActivityCompletionDate());
+        ActivityWorkMapping save = activityWorkMappingRepository.save(existingActivity);*/
+        Integer update=activityRepositoryImpl.updateActivity(id,activityData);
+        return update;
+    }
+
+    @Override
+    public ActivityWorkMapping getActivity(Integer activityId, Integer workId) {
+        return activityRepositoryImpl.getActivity(activityId,workId);
     }
 
 

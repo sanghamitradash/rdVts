@@ -107,28 +107,34 @@ public class ActivityController {
     }
 
     @PostMapping("/updateActivity")
-    public RDVTSResponse updateActivity(@RequestParam Integer activityId, @RequestParam(name = "data") String data,
-                                        @RequestParam (name = "issue")String issue,
+    public RDVTSResponse updateActivity(@RequestParam Integer activityId,@RequestParam Integer workId,
+                                        @RequestParam Integer userId,
+                                        @RequestParam(name = "data") String data,
+                                        @RequestParam (name = "issue",required = false)String  issue,
                                         @RequestParam(name = "image",required = false) MultipartFile issueImages) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
             ActivityWorkMappingDto activityData = mapper.readValue(data, ActivityWorkMappingDto.class);
-            ActivityWorkMapping activity1 = activityService.updateActivity(activityId, activityData);
+            IssueDto issueData=mapper.readValue(issue,IssueDto.class);
+            ActivityWorkMapping activity = activityService.getActivity(activityId,workId);
 
-            if(issueImages!=null && activityData.getIssueImage() != null) {
-                IssueDto issueDto = mapper.readValue(issue,IssueDto.class);
-                IssueEntity issueImage = activityService.saveIssueImage(issueDto, activity1.getId(), issueImages);
-                boolean saveIssueImage = awss3StorageService.uploadIssueImages(issueImages, String.valueOf(activity1.getId()), issueImages.getOriginalFilename());
+            if (activity != null){
+                Integer update = activityService.updateActivity(activity.getId(), activityData);
+
+                if (issueImages != null ) {
+                IssueEntity issueImage = activityService.saveIssueImage(issueData, activity.getId(), issueImages);
+                issueImage.setIssueImage("https://ofarisbucket.s3.ap-south-1.amazonaws.com/rdvts/" + issueImages.getOriginalFilename());
+                boolean saveIssueImage = awss3StorageService.uploadIssueImages(issueImages, String.valueOf(activity.getId()), issueImages.getOriginalFilename());
 
             }
-                    result.put("activity1", activity1);
+        }
+                    result.put("updateActivity", activityData);
                     response.setData(result);
                     response.setStatus(1);
                     response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
                     response.setMessage("Activity Updated successfully.");
-
 
         } catch (Exception ex) {
             ex.printStackTrace();
