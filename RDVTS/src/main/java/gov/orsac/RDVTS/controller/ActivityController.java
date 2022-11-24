@@ -9,6 +9,7 @@ import gov.orsac.RDVTS.service.ActivityService;
 import gov.orsac.RDVTS.serviceImpl.AWSS3StorageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,10 @@ public class ActivityController {
 
     @Autowired
     private ActivityService activityService;
+
+
+    @Value("${accessImagePath}")
+    private String accessImagePath;
 
     @PostMapping("/createActivity")
     public RDVTSResponse saveActivity(@RequestBody List<ActivityEntity> activityEntity) {
@@ -125,7 +130,7 @@ public class ActivityController {
 
                 if (issueImages != null ) {
                 IssueEntity issueImage = activityService.saveIssueImage(issueData, activity.getId(), issueImages);
-                issueImage.setIssueImage("https://ofarisbucket.s3.ap-south-1.amazonaws.com/rdvts/" + issueImages.getOriginalFilename());
+                //issueImage.setIssueImage( issueImages.getOriginalFilename());
                 boolean saveIssueImage = awss3StorageService.uploadIssueImages(issueImages, String.valueOf(activity.getId()), issueImages.getOriginalFilename());
 
             }

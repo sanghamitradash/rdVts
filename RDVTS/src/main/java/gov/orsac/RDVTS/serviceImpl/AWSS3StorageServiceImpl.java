@@ -28,7 +28,7 @@ public class AWSS3StorageServiceImpl implements AWSS3StorageService {
            boolean result = false;
             String bucketDestination = bucketName;
             if (!activityId.equals("")){
-                bucketDestination = bucketName+ "/"+"rdvts/" + activityId;
+                bucketDestination = bucketName+ "/"+"issue/" + activityId;
             }
             String fileName = files.getOriginalFilename();
             if (!keyName.isEmpty() && !fileName.equals(keyName)){
