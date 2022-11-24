@@ -43,7 +43,7 @@ public class AlertRepositoryImpl {
 //
 //        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
 //        int resultCount=0;
-        String qry = " select distinct wm.id as workId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude, \n" +
+        String qry = " select distinct wm.id as workId, ad.id as alertId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude, \n" +
                 "ad.gps_dtm as gpsDtm, ad.is_resolve as isResolve, ad.resolved_by as resolvedBy, count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
                 "from rdvts_oltp.work_m as wm " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
@@ -98,7 +98,7 @@ public class AlertRepositoryImpl {
 //        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
 //        int resultCount=0;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  select distinct wm.id as workId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude,  " +
+        String qry = "  select distinct wm.id as workId, ad.id as alertId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude,  " +
                 " ad.gps_dtm as gpsDtm,count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
                 "from rdvts_oltp.work_m as wm " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
@@ -308,7 +308,7 @@ public class AlertRepositoryImpl {
 
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
-        String qry = " select distinct wm.id as workId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude, \n" +
+        String qry = " select distinct wm.id as workId, ad.id as alertId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude, \n" +
                 "ad.gps_dtm as gpsDtm, ad.is_resolve as isResolve, ad.resolved_by as resolvedBy, count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
                 "from rdvts_oltp.work_m as wm " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
@@ -365,7 +365,7 @@ public class AlertRepositoryImpl {
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  select distinct wm.id as workId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude,   \n" +
+        String qry = "  select distinct wm.id as workId, ad.id as alertId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude,   \n" +
                 "  ad.gps_dtm as gpsDtm,count(ad.id) over (partition by ad.alert_type_id,wm.id) ,\n" +
                 "  vdm.vehicle_id,vdm.device_id,awm.activity_id, awm.work_id,gm.dist_id,gm.division_id\n" +
                 " from rdvts_oltp.work_m as wm  \n" +
@@ -449,7 +449,7 @@ public class AlertRepositoryImpl {
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
 
-        String qry = "select imei,alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
+        String qry = "select imei,alert.id as alertId, alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
                 " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser , gm.road_id " +
                 " from  rdvts_oltp.alert_data  as alert  " +
                 " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id    " +
@@ -532,7 +532,7 @@ public class AlertRepositoryImpl {
 
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
-        String qry = "  select distinct road.id as roadId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.gps_dtm, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve, \n" +
+        String qry = "  select distinct road.id as roadId, ad.id as alertId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.gps_dtm, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve, \n" +
                 " ad.resolved_by, count(ad.id) over (partition by ad.alert_type_id,road.id) \n" +
                 " from rdvts_oltp.geo_construction_m as road  \n" +
                 " left join rdvts_oltp.geo_master as gm on gm.road_id=road.id  \n" +

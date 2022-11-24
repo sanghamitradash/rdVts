@@ -789,7 +789,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 //        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
 //        int resultCount=0;
 
-        String qry = " select imei,alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
+        String qry = " select alert.id as alertId,imei,alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
                 " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser from  rdvts_oltp.alert_data  as alert  " +
                 " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id  " +
                 " left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by  " +
