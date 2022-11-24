@@ -9,6 +9,7 @@ import gov.orsac.RDVTS.repositoryImpl.ActivityRepositoryImpl;
 import gov.orsac.RDVTS.service.ActivityService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,13 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     ActivityMasterRepository activityMasterRepository;
+
+
+    @Value("${accessImagePath}")
+    private String accessImagePath;
+
+    @Value("${saveIssueImagePath}")
+    private String saveIssueImagePath;
 
     @Autowired
     ActivityWorkMappingRepository activityWorkMappingRepository;
@@ -172,7 +180,7 @@ public class ActivityServiceImpl implements ActivityService {
         IssueEntity issueImage = new IssueEntity();
         BeanUtils.copyProperties(issue, issueImage);
         issueImage.setActivityWorkId(id);
-        issueImage.setIssueImage("https://ofarisbucket.s3.ap-south-1.amazonaws.com/rdvts/" + issueImages.getOriginalFilename());
+        issueImage.setIssueImage( saveIssueImagePath + "/" +id+"/"+ issueImages.getOriginalFilename());
         return issueRepository.save(issueImage);
     }
 
