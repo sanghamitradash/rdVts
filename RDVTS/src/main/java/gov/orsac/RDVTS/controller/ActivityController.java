@@ -298,9 +298,9 @@ public class ActivityController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            Boolean res = activityService.workActivityDeassign(activityWork.getActivityId(), activityWork.getWorkId(), activityWork.getUserId());
-            Boolean res1 = activityService.vehicleActivityDeassign(activityWork.getActivityId());
-            if (res == true && res1 == true) {
+            Integer res = activityService.workActivityDeassign(activityWork.getActivityId(), activityWork.getWorkId(), activityWork.getUserId());
+            Integer res1 = activityService.vehicleActivityDeassign(activityWork.getActivityId());
+            if (res > 0 && res1 > 0) {
                 response.setData(result);
                 response.setStatus(1);
                 response.setMessage("Activity Deassigned!");
@@ -311,6 +311,7 @@ public class ActivityController {
                 response.setStatusCode(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),

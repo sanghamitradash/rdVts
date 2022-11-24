@@ -33,9 +33,9 @@ public interface ActivityService {
 
     Integer updateWorkActivity(ActivityWorkDto activityWorkDto);
 
-    Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId);
+    Integer workActivityDeassign(Integer activityId, Integer workId, Integer userId);
 
-    Boolean vehicleActivityDeassign(Integer activityId);
+    Integer vehicleActivityDeassign(Integer activityId);
 
     List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId);
 

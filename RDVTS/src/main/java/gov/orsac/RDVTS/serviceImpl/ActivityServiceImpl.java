@@ -134,14 +134,14 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
-        Boolean res = activityRepositoryImpl.workActivityDeassign(activityId, workId, userId);
+    public Integer workActivityDeassign(Integer activityId, Integer workId, Integer userId ) {
+        Integer res = activityRepositoryImpl.workActivityDeassign(activityId, workId, userId);
         return res;
     }
 
     @Override
-    public Boolean vehicleActivityDeassign(Integer activityId) {
-        Boolean res = activityRepositoryImpl.vehicleActivityDeassign(activityId);
+    public Integer vehicleActivityDeassign(Integer activityId) {
+        Integer res = activityRepositoryImpl.vehicleActivityDeassign(activityId);
         return res;
     }
 
