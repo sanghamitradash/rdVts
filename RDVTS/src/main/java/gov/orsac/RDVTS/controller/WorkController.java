@@ -225,8 +225,8 @@ public class WorkController {
             }
             location.setAvgSpeedWork(avgSpeedWork);
 
-//            Page<AlertCountDto> alertListToday = alertService.getTotalAlertToday(filterDto, id, userId);
-//            Page<AlertCountDto> alertListTotal = alertService.getTotalAlertWork(filterDto, id, userId);
+            location.setTotalAlertToday(alertService.getTotalAlertToday(/*filterDto,*/ id, userId));
+            location.setTotalAlertWork(alertService.getTotalAlertWork(/*filterDto,*/ id, userId));
 //            List<AlertCountDto> alertList1 = alertListToday.getContent();
 //            Integer start1=start;
 //            for(int i=0;i<alertList1.size();i++){

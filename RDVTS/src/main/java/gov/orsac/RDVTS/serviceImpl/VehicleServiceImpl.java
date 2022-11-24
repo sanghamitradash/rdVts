@@ -292,12 +292,12 @@ public class VehicleServiceImpl implements VehicleService {
        }
 
        @Override
-       public Page<AlertDto> getAlert(AlertFilterDto alertFiler, Integer vehicleId) throws ParseException {
+       public List<AlertDto> getAlert(AlertFilterDto alertFiler, Integer vehicleId) throws ParseException {
 //              List<AlertDto> alertList= new ArrayList<>();
 
            VehicleDeviceInfo device =vehicleRepositoryimpl.getVehicleDeviceMapping(vehicleId);
            if(device!=null){
-               Page<AlertDto> alertList=vehicleRepositoryimpl.getAlertList(alertFiler, device.getImeiNo1());
+               List<AlertDto> alertList=vehicleRepositoryimpl.getAlertList(alertFiler, device.getImeiNo1());
                return alertList;
            }
          return null;
