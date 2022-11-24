@@ -32,9 +32,9 @@ public interface AlertService  {
 
     List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit);
 
-    Page<AlertCountDto> getTotalAlertToday(AlertFilterDto filterDto, Integer id, Integer userId);
+    List<AlertCountDto> getTotalAlertToday(/*AlertFilterDto filterDto, */Integer id, Integer userId);
 
-    Page<AlertCountDto> getTotalAlertWork(AlertFilterDto filterDto, Integer id, Integer userId);
+    List<AlertCountDto> getTotalAlertWork(/*AlertFilterDto filterDto,*/ Integer id, Integer userId);
 
     Page<AlertCountDto> getAlertToday(AlertFilterDto filterDto);
 

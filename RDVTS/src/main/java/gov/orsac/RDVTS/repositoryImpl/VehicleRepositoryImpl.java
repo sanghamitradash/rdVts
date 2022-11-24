@@ -779,22 +779,22 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return locationDto;
     }
 
-    public Page<AlertDto> getAlertList(AlertFilterDto filterDto, Long imeiNo) {
+    public List<AlertDto> getAlertList(AlertFilterDto filterDto, Long imeiNo) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        PageRequest pageable = null;
-
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
-
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
-        int resultCount=0;
+//        PageRequest pageable = null;
+//
+//        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+//        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+//
+//        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+//        int resultCount=0;
 
         String qry = " select imei,alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
                 " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser from  rdvts_oltp.alert_data  as alert  " +
                 " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id  " +
                 " left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by  " +
                 " left join rdvts_oltp.device_m as dm on dm.imei_no_1=alert.imei " +
-                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id where imei=:imeiNo";
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id where imei=:imeiNo Order by alert.id ";
 
         sqlParam.addValue("imeiNo", imeiNo);
 
@@ -825,13 +825,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }
 
 
-        resultCount = count(qry, sqlParam);
-        if (filterDto.getLimit() > 0){
-            qry += " Order by alert.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
-        }
+//        resultCount = count(qry, sqlParam);
+//        if (filterDto.getLimit() > 0){
+//            qry += " Order by alert.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+//        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
 
-        List<AlertDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
-        return new PageImpl<>(list, pageable, resultCount);
+//        List<AlertDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
+//        return new PageImpl<>(list, pageable, resultCount);
     }
 
     public List<UserInfoDto> getUserDropDownForVehicleOwnerMapping(Integer userId) {

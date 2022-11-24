@@ -70,5 +70,5 @@ public interface VehicleService {
 
     List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId, Date actualActivityStartDate, Date actualActivityCompletionDate);
 
-    Page<AlertDto> getAlert(AlertFilterDto alertFiler, Integer vehicleId) throws ParseException;
+    List<AlertDto> getAlert(AlertFilterDto alertFiler, Integer vehicleId) throws ParseException;
 }

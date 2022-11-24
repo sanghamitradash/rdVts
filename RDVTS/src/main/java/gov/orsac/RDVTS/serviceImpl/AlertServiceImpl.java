@@ -27,13 +27,13 @@ public class AlertServiceImpl implements AlertService {
 
 
     @Override
-    public Page<AlertCountDto> getTotalAlertToday(AlertFilterDto filterDto, Integer id, Integer userId) {
-        return alertRepositoryImpl.getTotalAlertToday(filterDto, id, userId);
+    public List<AlertCountDto> getTotalAlertToday(/*AlertFilterDto filterDto,*/ Integer id, Integer userId) {
+        return alertRepositoryImpl.getTotalAlertToday(/*filterDto,*/ id, userId);
     }
 
     @Override
-    public Page<AlertCountDto> getTotalAlertWork(AlertFilterDto filterDto, Integer id, Integer userId) {
-        return alertRepositoryImpl.getTotalAlertWork(filterDto, id, userId);
+    public List<AlertCountDto> getTotalAlertWork(/*AlertFilterDto filterDto,*/ Integer id, Integer userId) {
+        return alertRepositoryImpl.getTotalAlertWork(/*filterDto,*/ id, userId);
     }
 
     @Override
