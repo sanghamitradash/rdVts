@@ -317,8 +317,11 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
                 "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
-                "where awm.is_active=true and wm.id=:workId and date(ad.gps_dtm)=date(now())  ";
-        sqlParam.addValue("workId", filterDto.getWorkId());
+                "where awm.is_active=true and date(ad.gps_dtm)=date(now())  ";
+        if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
+            qry += " and wm.id=:workId ";
+            sqlParam.addValue("workId", filterDto.getWorkId());
+        }
         if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
             qry += " AND ad.alert_type_id=:alertTypeId ";
             sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
@@ -376,8 +379,11 @@ public class AlertRepositoryImpl {
                 " left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id\n" +
                 " left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true   \n" +
                 " left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id  \n" +
-                " where awm.is_active=true and wm.id=:workId    "  ;
-        sqlParam.addValue("workId", filterDto.getWorkId());
+                " where awm.is_active=true     "  ;
+        if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
+            qry += " and wm.id=:workId ";
+            sqlParam.addValue("workId", filterDto.getWorkId());
+        }
         if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
             qry += " AND vam.vehicle_id = :vehicleId";
             sqlParam.addValue("vehicleId", filterDto.getVehicleId());
@@ -458,11 +464,12 @@ public class AlertRepositoryImpl {
                 " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id  " +
                 " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id " +
                 " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  " +
-                " left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id " +
-                " where vdm.vehicle_id=:vehicleId ";
+                " left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  " ;
 
-        sqlParam.addValue("vehicleId", filterDto.getVehicleId());
-
+        if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
+            qry += " where vdm.vehicle_id=:vehicleId ";
+            sqlParam.addValue("vehicleId", filterDto.getVehicleId());
+        }
         if (filterDto.getActivityId() != null && filterDto.getActivityId() > 0) {
             qry += " AND vam.activity_id = :activityId";
             sqlParam.addValue("activityId", filterDto.getActivityId());
@@ -541,8 +548,11 @@ public class AlertRepositoryImpl {
                 " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id = vam.vehicle_id  \n" +
                 " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id  \n" +
                 " left join rdvts_oltp.alert_data as ad on ad.imei=dm.imei_no_1  \n" +
-                " left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where gm.is_active=true and road.id=:roadId ";
-        sqlParam.addValue("roadId", filterDto.getRoadId());
+                " left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where gm.is_active=true  ";
+        if (filterDto.getRoadId() != null && filterDto.getRoadId() > 0) {
+            qry += " and road.id=:roadId ";
+            sqlParam.addValue("roadId", filterDto.getRoadId());
+        }
         if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
             qry += " AND vdm.vehicle_id = :vehicleId";
             sqlParam.addValue("vehicleId", filterDto.getVehicleId());
