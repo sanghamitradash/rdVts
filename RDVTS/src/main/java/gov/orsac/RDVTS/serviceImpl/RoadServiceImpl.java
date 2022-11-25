@@ -80,14 +80,6 @@ public class RoadServiceImpl implements RoadService {
 
     @Override
     public Page<RoadMasterDto> getRoadList(RoadFilterDto roadFilterDto) {
-//        RoadMasterDto roadMasterDto = new RoadMasterDto();
-//        Page<RoadMasterDto> roadMasterDto = roadRepositoryImpl.getRoadList(roadFilterDto);
-
-//        if(roadMasterDto.getGeom() != null){
-//            roadMasterDto.setGeomPresent(true);
-//        } else {
-//            roadMasterDto.setGeomPresent(false);
-//        }
         return roadRepositoryImpl.getRoadList(roadFilterDto);
     }
     @Override
