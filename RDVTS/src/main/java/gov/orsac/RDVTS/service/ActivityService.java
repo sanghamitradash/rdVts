@@ -54,6 +54,8 @@ public interface ActivityService {
     List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId);
 
     List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId);
+
+    IssueEntity updateIssue(int id, IssueDto issueDto);
 }
 
 
