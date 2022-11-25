@@ -299,8 +299,9 @@ public class ActivityController {
         Map<String, Object> result = new HashMap<>();
 
         try {
+            Integer res1 = activityService.vehicleActivityDeassign(activityWork.getActivityId(),activityWork.getWorkId(),activityWork.getUserId());
             Integer res = activityService.workActivityDeassign(activityWork.getActivityId(), activityWork.getWorkId(), activityWork.getUserId());
-            Integer res1 = activityService.vehicleActivityDeassign(activityWork.getActivityId());
+
             if (res > 0 && res1 > 0) {
                 response.setData(result);
                 response.setStatus(1);
