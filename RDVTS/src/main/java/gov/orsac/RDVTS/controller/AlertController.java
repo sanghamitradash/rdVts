@@ -516,7 +516,8 @@ public class AlertController {
                                       @RequestParam(name = "divisionId", required = false) Integer divisionId,
                                       @RequestParam(name = "start", required = false) Integer start,
                                       @RequestParam(name = "length", required = false) Integer length,
-                                      @RequestParam(name = "draw", required = false) Integer draw){
+                                      @RequestParam(name = "draw", required = false) Integer draw,
+                                       @RequestParam(name = "alertId", required = false) Integer alertId){
         AlertFilterDto filterDto = new AlertFilterDto();
         filterDto.setUserId(userId);
         filterDto.setRoadId(roadId);
@@ -533,13 +534,14 @@ public class AlertController {
         filterDto.setOffSet(start);
         filterDto.setLimit(length);
         filterDto.setDraw(draw);
+        filterDto.setAlertId(alertId);
 
         RDVTSAlertResponse response = new RDVTSAlertResponse();
         Map<String, Object> result = new HashMap<>();
 
         try {
             Page<AlertCountDto> alertListToday = alertService.getAlertToday(filterDto);
-            Page<AlertCountDto> alertListTotal = alertService.getAlertTotal(filterDto);
+            Page<AlertCountDto> alertListTotal = alertService.getWorkAlertTotal(filterDto);
             Page<AlertCountDto> vehicleAlertList=alertService.getVehicleAlert(filterDto);
             Page<AlertCountDto> roadAlertList = alertService.getRoadAlert(filterDto);
 

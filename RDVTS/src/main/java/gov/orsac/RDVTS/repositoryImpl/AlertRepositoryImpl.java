@@ -359,7 +359,7 @@ public class AlertRepositoryImpl {
 
     }
 
-    public Page<AlertCountDto> getAlertTotal(AlertFilterDto filterDto) {
+    public Page<AlertCountDto> getWorkAlertTotal(AlertFilterDto filterDto) {
         PageRequest pageable = null;
 
         Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
@@ -368,21 +368,23 @@ public class AlertRepositoryImpl {
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  select distinct wm.id as workId, ad.id as alertId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude,   \n" +
-                "  ad.gps_dtm as gpsDtm,count(ad.id) over (partition by ad.alert_type_id,wm.id) ,\n" +
-                "  vdm.vehicle_id,vdm.device_id,awm.activity_id, awm.work_id,gm.dist_id,gm.division_id\n" +
-                " from rdvts_oltp.work_m as wm  \n" +
-                " left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id   \n" +
-                " left join rdvts_oltp.vehicle_activity_mapping as vam on awm.activity_id=vam.activity_id and vam.is_active=true   \n" +
-                " left join rdvts_oltp.vehicle_device_mapping as vdm on vam.vehicle_id=vdm.vehicle_id and vdm.is_active=true   \n" +
-                " left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true   \n" +
-                " left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id\n" +
-                " left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true   \n" +
-                " left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id  \n" +
-                " where awm.is_active=true     "  ;
+        String qry = "  select distinct ad.id as alertId, ad.alert_type_id as alertTypeId, gm.work_id as workId, ad.speed as speed,atm.alert_type as alertType, ad.latitude,  " +
+                "ad.longitude, ad.accuracy, ad.speed, ad.altitude, ad.gps_dtm as gpsDtm, " +
+                "count(ad.id) over (partition by ad.alert_type_id,gm.work_id) " +
+                "from rdvts_oltp.alert_data as ad  " +
+                "left join rdvts_oltp.device_m as dm on dm.imei_no_1=ad.id and dm.is_active=true   " +
+                "left join rdvts_oltp.vehicle_device_mapping  as vdm on vdm.device_id=dm.id and vdm.is_active=true " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vdm.vehicle_id and vam.is_active=true " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id " +
+                "left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id " +
+                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id  where ad.is_active=true  " ;
         if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
-            qry += " and wm.id=:workId ";
+            qry += " and gm.work_id=:workId ";
             sqlParam.addValue("workId", filterDto.getWorkId());
+        }
+        if (filterDto.getAlertId() != null && filterDto.getAlertId() > 0) {
+            qry += " and ad.id=:alertId ";
+            sqlParam.addValue("alertId", filterDto.getAlertId());
         }
         if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
             qry += " AND vam.vehicle_id = :vehicleId";
@@ -437,7 +439,7 @@ public class AlertRepositoryImpl {
 
         resultCount = count(qry, sqlParam);
         if (filterDto.getLimit() > 0){
-            qry += " order by wm.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+            qry += " order by ad.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
         }
 
         List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
@@ -455,8 +457,8 @@ public class AlertRepositoryImpl {
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
 
-        String qry = "select imei,alert.id as alertId, alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
-                " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser , gm.road_id " +
+        String qry = "select imei,alert.id as alertId, alert_type_id,type.alert_type as alertType,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
+                " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser, count(alert.id) over (partition by alert.alert_type_id,vdm.vehicle_id)   " +
                 " from  rdvts_oltp.alert_data  as alert  " +
                 " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id    " +
                 " left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by    " +
@@ -466,6 +468,10 @@ public class AlertRepositoryImpl {
                 " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  " +
                 " left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  " ;
 
+        if (filterDto.getAlertId() != null && filterDto.getAlertId() > 0) {
+            qry += " where alert.id=:alertId ";
+            sqlParam.addValue("alertId", filterDto.getAlertId());
+        }
         if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
             qry += " where vdm.vehicle_id=:vehicleId ";
             sqlParam.addValue("vehicleId", filterDto.getVehicleId());
@@ -539,19 +545,22 @@ public class AlertRepositoryImpl {
 
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
-        String qry = "  select distinct road.id as roadId, ad.id as alertId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.gps_dtm, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve, \n" +
-                " ad.resolved_by, count(ad.id) over (partition by ad.alert_type_id,road.id) \n" +
-                " from rdvts_oltp.geo_construction_m as road  \n" +
-                " left join rdvts_oltp.geo_master as gm on gm.road_id=road.id  \n" +
-                " left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=gm.work_id  \n" +
-                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=awm.activity_id \n" +
-                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id = vam.vehicle_id  \n" +
-                " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id  \n" +
-                " left join rdvts_oltp.alert_data as ad on ad.imei=dm.imei_no_1  \n" +
-                " left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where gm.is_active=true  ";
+        String qry = "  select distinct ad.id as alertId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.gps_dtm, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve, " +
+                "ad.resolved_by, gm.road_id as roadId, count(ad.id) over (partition by ad.alert_type_id,gm.road_id)  " +
+                "from rdvts_oltp.alert_data as ad " +
+                "left join rdvts_oltp.device_m as dm on dm.imei_no_1=ad.imei " +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id = dm.id " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id " +
+                "left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id " +
+                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " ;
         if (filterDto.getRoadId() != null && filterDto.getRoadId() > 0) {
-            qry += " and road.id=:roadId ";
+            qry += " where gm.road_id=:roadId ";
             sqlParam.addValue("roadId", filterDto.getRoadId());
+        }
+        if (filterDto.getAlertId() != null && filterDto.getAlertId() > 0) {
+            qry += " where ad.id=:alertId ";
+            sqlParam.addValue("alertId", filterDto.getAlertId());
         }
         if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
             qry += " AND vdm.vehicle_id = :vehicleId";
@@ -605,7 +614,7 @@ public class AlertRepositoryImpl {
 
         resultCount = count(qry, sqlParam);
         if (filterDto.getLimit() > 0){
-            qry += " Order by road.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+            qry += " Order by ad.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
         }
 
         List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));

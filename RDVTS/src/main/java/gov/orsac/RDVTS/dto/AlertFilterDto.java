@@ -30,4 +30,5 @@ public class AlertFilterDto {
     private Integer limit;
 
     private Integer userId;
+    private Integer alertId;
 }
