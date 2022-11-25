@@ -34,16 +34,16 @@ public class AlertRepositoryImpl {
         return 0;
     }
 
-    public Page<AlertCountDto> getTotalAlertToday(AlertFilterDto filterDto, Integer id, Integer userId) {
+    public List<AlertCountDto> getTotalAlertToday(/*AlertFilterDto filterDto,*/ Integer id, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        PageRequest pageable = null;
-
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
-
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
-        int resultCount=0;
-        String qry = " select distinct wm.id as workId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude, \n" +
+//        PageRequest pageable = null;
+//
+//        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+//        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+//
+//        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+//        int resultCount=0;
+        String qry = " select distinct wm.id as workId, ad.id as alertId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude, \n" +
                 "ad.gps_dtm as gpsDtm, ad.is_resolve as isResolve, ad.resolved_by as resolvedBy, count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
                 "from rdvts_oltp.work_m as wm " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
@@ -54,51 +54,51 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
                 "where awm.is_active=true and wm.id=:workId and date(ad.gps_dtm)=date(now())  ";
         sqlParam.addValue("workId", id);
-        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
-            qry += " AND ad.alert_type_id=:alertTypeId ";
-            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
-        }
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
-            qry += " AND date(ad.gps_dtm) >= :startDate";
-            Date startDate = null;
-            try {
-                startDate = format.parse(filterDto.getStartDate());
-            } catch (Exception exception) {
-                log.info("From Date Parsing exception : {}", exception.getMessage());
-            }
-            sqlParam.addValue("startDate", startDate, Types.DATE);
-        }
-        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
-            qry += " AND date(ad.gps_dtm) <= :endDate";
-            Date endDate = null;
-            try {
-                endDate = format.parse(filterDto.getEndDate());
-            } catch (Exception exception) {
-                log.info("To Date Parsing exception : {}", exception.getMessage());
-            }
-            sqlParam.addValue("endDate", endDate, Types.DATE);
-        }
+//        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
+//            qry += " AND ad.alert_type_id=:alertTypeId ";
+//            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
+//        }
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
+//            qry += " AND date(ad.gps_dtm) >= :startDate";
+//            Date startDate = null;
+//            try {
+//                startDate = format.parse(filterDto.getStartDate());
+//            } catch (Exception exception) {
+//                log.info("From Date Parsing exception : {}", exception.getMessage());
+//            }
+//            sqlParam.addValue("startDate", startDate, Types.DATE);
+//        }
+//        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
+//            qry += " AND date(ad.gps_dtm) <= :endDate";
+//            Date endDate = null;
+//            try {
+//                endDate = format.parse(filterDto.getEndDate());
+//            } catch (Exception exception) {
+//                log.info("To Date Parsing exception : {}", exception.getMessage());
+//            }
+//            sqlParam.addValue("endDate", endDate, Types.DATE);
+//        }
 
-
-        resultCount = count(qry, sqlParam);
-        if (filterDto.getLimit() > 0){
-            qry += " Order by wm.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
-        }
-
-        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
-        return new PageImpl<>(list, pageable, resultCount);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+//        resultCount = count(qry, sqlParam);
+//        if (filterDto.getLimit() > 0){
+//            qry += " Order by wm.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+//        }
+//
+//        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+//        return new PageImpl<>(list, pageable, resultCount);
     }
-    public Page<AlertCountDto> getTotalAlertWork(AlertFilterDto filterDto, Integer id, Integer userId) {
-        PageRequest pageable = null;
-
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
-
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
-        int resultCount=0;
+    public List<AlertCountDto> getTotalAlertWork(/*AlertFilterDto filterDto,*/ Integer id, Integer userId) {
+//        PageRequest pageable = null;
+//
+//        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+//        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+//
+//        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+//        int resultCount=0;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  select distinct wm.id as workId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude,  " +
+        String qry = "  select distinct wm.id as workId, ad.id as alertId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude,  " +
                 " ad.gps_dtm as gpsDtm,count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
                 "from rdvts_oltp.work_m as wm " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
@@ -109,40 +109,40 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
                 "where awm.is_active=true and wm.id=:workId  "  ;
         sqlParam.addValue("workId", id);
-        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
-            qry += " AND ad.alert_type_id=:alertTypeId ";
-            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
-        }
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
-            qry += " AND date(ad.gps_dtm) >= :startDate";
-            Date startDate = null;
-            try {
-                startDate = format.parse(filterDto.getStartDate());
-            } catch (Exception exception) {
-                log.info("From Date Parsing exception : {}", exception.getMessage());
-            }
-            sqlParam.addValue("startDate", startDate, Types.DATE);
-        }
-        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
-            qry += " AND date(ad.gps_dtm) <= :endDate";
-            Date endDate = null;
-            try {
-                endDate = format.parse(filterDto.getEndDate());
-            } catch (Exception exception) {
-                log.info("To Date Parsing exception : {}", exception.getMessage());
-            }
-            sqlParam.addValue("endDate", endDate, Types.DATE);
-        }
+//        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
+//            qry += " AND ad.alert_type_id=:alertTypeId ";
+//            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
+//        }
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
+//            qry += " AND date(ad.gps_dtm) >= :startDate";
+//            Date startDate = null;
+//            try {
+//                startDate = format.parse(filterDto.getStartDate());
+//            } catch (Exception exception) {
+//                log.info("From Date Parsing exception : {}", exception.getMessage());
+//            }
+//            sqlParam.addValue("startDate", startDate, Types.DATE);
+//        }
+//        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
+//            qry += " AND date(ad.gps_dtm) <= :endDate";
+//            Date endDate = null;
+//            try {
+//                endDate = format.parse(filterDto.getEndDate());
+//            } catch (Exception exception) {
+//                log.info("To Date Parsing exception : {}", exception.getMessage());
+//            }
+//            sqlParam.addValue("endDate", endDate, Types.DATE);
+//        }
+        return  namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
 
-
-        resultCount = count(qry, sqlParam);
-        if (filterDto.getLimit() > 0){
-            qry += " order by wm.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
-        }
-
-        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
-        return new PageImpl<>(list, pageable, resultCount);
+//        resultCount = count(qry, sqlParam);
+//        if (filterDto.getLimit() > 0){
+//            qry += " order by wm.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+//        }
+//
+//        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+//        return new PageImpl<>(list, pageable, resultCount);
     }
 
 //alert count today qry//
@@ -297,6 +297,319 @@ public class AlertRepositoryImpl {
         sqlParam.addValue("id", i);
 
         return namedJdbc.queryForObject(qry, sqlParam,new BeanPropertyRowMapper<>(AlertTypeEntity.class));
+    }
+
+    public Page<AlertCountDto> getAlertToday(AlertFilterDto filterDto) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        PageRequest pageable = null;
+
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        int resultCount=0;
+        String qry = " select distinct wm.id as workId, ad.id as alertId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude, \n" +
+                "ad.gps_dtm as gpsDtm, ad.is_resolve as isResolve, ad.resolved_by as resolvedBy, count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
+                "from rdvts_oltp.work_m as wm " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on awm.activity_id=vam.activity_id and vam.is_active=true " +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vam.vehicle_id=vdm.vehicle_id and vdm.is_active=true " +
+                "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
+                "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
+                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
+                "where awm.is_active=true and date(ad.gps_dtm)=date(now())  ";
+        if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
+            qry += " and wm.id=:workId ";
+            sqlParam.addValue("workId", filterDto.getWorkId());
+        }
+        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
+            qry += " AND ad.alert_type_id=:alertTypeId ";
+            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
+            qry += " AND date(ad.gps_dtm) >= :startDate";
+            Date startDate = null;
+            try {
+                startDate = format.parse(filterDto.getStartDate());
+            } catch (Exception exception) {
+                log.info("From Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("startDate", startDate, Types.DATE);
+        }
+        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
+            qry += " AND date(ad.gps_dtm) <= :endDate";
+            Date endDate = null;
+            try {
+                endDate = format.parse(filterDto.getEndDate());
+            } catch (Exception exception) {
+                log.info("To Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("endDate", endDate, Types.DATE);
+        }
+
+
+        resultCount = count(qry, sqlParam);
+        if (filterDto.getLimit() > 0){
+            qry += " Order by wm.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+        }
+
+        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+        return new PageImpl<>(list, pageable, resultCount);
+
+    }
+
+    public Page<AlertCountDto> getAlertTotal(AlertFilterDto filterDto) {
+        PageRequest pageable = null;
+
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        int resultCount=0;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "  select distinct wm.id as workId, ad.id as alertId, ad.alert_type_id as alertTypeId,ad.speed as speed,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude,   \n" +
+                "  ad.gps_dtm as gpsDtm,count(ad.id) over (partition by ad.alert_type_id,wm.id) ,\n" +
+                "  vdm.vehicle_id,vdm.device_id,awm.activity_id, awm.work_id,gm.dist_id,gm.division_id\n" +
+                " from rdvts_oltp.work_m as wm  \n" +
+                " left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=wm.id   \n" +
+                " left join rdvts_oltp.vehicle_activity_mapping as vam on awm.activity_id=vam.activity_id and vam.is_active=true   \n" +
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vam.vehicle_id=vdm.vehicle_id and vdm.is_active=true   \n" +
+                " left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true   \n" +
+                " left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id\n" +
+                " left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true   \n" +
+                " left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id  \n" +
+                " where awm.is_active=true     "  ;
+        if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
+            qry += " and wm.id=:workId ";
+            sqlParam.addValue("workId", filterDto.getWorkId());
+        }
+        if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
+            qry += " AND vam.vehicle_id = :vehicleId";
+            sqlParam.addValue("vehicleId", filterDto.getVehicleId());
+        }
+        if (filterDto.getActivityId() != null && filterDto.getActivityId() > 0) {
+            qry += " AND vam.activity_id = :activityId";
+            sqlParam.addValue("activityId", filterDto.getActivityId());
+        }
+        if (filterDto.getDeviceId() != null && filterDto.getDeviceId() > 0) {
+            qry += " AND vdm.device_id = :deviceId";
+            sqlParam.addValue("deviceId", filterDto.getDeviceId());
+        }
+        if (filterDto.getDistId() != null && filterDto.getDistId() > 0) {
+            qry += " AND gm.dist_id = :distId";
+            sqlParam.addValue("distId", filterDto.getDistId());
+        }
+        if (filterDto.getDivisionId() != null && filterDto.getDivisionId() > 0) {
+            qry += " AND gm.division_id = :divisionId";
+            sqlParam.addValue("divisionId", filterDto.getDivisionId());
+        }
+        if (filterDto.getRoadId() != null && filterDto.getRoadId() > 0) {
+            qry += " AND gm.road_id = :roadId";
+            sqlParam.addValue("roadId", filterDto.getRoadId());
+        }
+        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
+            qry += " AND ad.alert_type_id=:alertTypeId ";
+            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
+            qry += " AND date(ad.gps_dtm) >= :startDate";
+            Date startDate = null;
+            try {
+                startDate = format.parse(filterDto.getStartDate());
+            } catch (Exception exception) {
+                log.info("From Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("startDate", startDate, Types.DATE);
+        }
+        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
+            qry += " AND date(ad.gps_dtm) <= :endDate";
+            Date endDate = null;
+            try {
+                endDate = format.parse(filterDto.getEndDate());
+            } catch (Exception exception) {
+                log.info("To Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("endDate", endDate, Types.DATE);
+        }
+
+
+        resultCount = count(qry, sqlParam);
+        if (filterDto.getLimit() > 0){
+            qry += " order by wm.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+        }
+
+        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+        return new PageImpl<>(list, pageable, resultCount);
+
+    }
+
+    public Page<AlertCountDto> getVehicleAlert(AlertFilterDto filterDto) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        PageRequest pageable = null;
+
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        int resultCount=0;
+
+        String qry = "select imei,alert.id as alertId, alert_type_id,type.alert_type as alertTypeName,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
+                " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser , gm.road_id " +
+                " from  rdvts_oltp.alert_data  as alert  " +
+                " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id    " +
+                " left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by    " +
+                " left join rdvts_oltp.device_m as dm on dm.imei_no_1=alert.imei  " +
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id  " +
+                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id " +
+                " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  " +
+                " left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  " ;
+
+        if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
+            qry += " where vdm.vehicle_id=:vehicleId ";
+            sqlParam.addValue("vehicleId", filterDto.getVehicleId());
+        }
+        if (filterDto.getActivityId() != null && filterDto.getActivityId() > 0) {
+            qry += " AND vam.activity_id = :activityId";
+            sqlParam.addValue("activityId", filterDto.getActivityId());
+        }
+        if (filterDto.getDeviceId() != null && filterDto.getDeviceId() > 0) {
+            qry += " AND vdm.device_id = :deviceId";
+            sqlParam.addValue("deviceId", filterDto.getDeviceId());
+        }
+        if (filterDto.getDistId() != null && filterDto.getDistId() > 0) {
+            qry += " AND gm.dist_id = :distId";
+            sqlParam.addValue("distId", filterDto.getDistId());
+        }
+        if (filterDto.getDivisionId() != null && filterDto.getDivisionId() > 0) {
+            qry += " AND gm.division_id = :divisionId";
+            sqlParam.addValue("divisionId", filterDto.getDivisionId());
+        }
+        if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
+            qry += " AND gm.work_id = :workId";
+            sqlParam.addValue("workId", filterDto.getWorkId());
+        }
+        if (filterDto.getRoadId() != null && filterDto.getRoadId() > 0) {
+            qry += " AND gm.road_id = :roadId";
+            sqlParam.addValue("roadId", filterDto.getRoadId());
+        }
+        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
+            qry += " AND alert.alert_type_id=:alertTypeId ";
+            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
+            qry += " AND date(alert.gps_dtm) >= :startDate";
+            Date startDate = null;
+            try {
+                startDate = format.parse(filterDto.getStartDate());
+            } catch (Exception exception) {
+                log.info("From Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("startDate", startDate, Types.DATE);
+        }
+        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
+            qry += " AND date(alert.gps_dtm) <= :endDate";
+            Date endDate = null;
+            try {
+                endDate = format.parse(filterDto.getEndDate());
+            } catch (Exception exception) {
+                log.info("To Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("endDate", endDate, Types.DATE);
+        }
+
+        resultCount = count(qry, sqlParam);
+        if (filterDto.getLimit() > 0){
+            qry += " Order by alert.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+        }
+
+        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+        return new PageImpl<>(list, pageable, resultCount);
+
+    }
+
+    public Page<AlertCountDto> getRoadAlert(AlertFilterDto filterDto) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        PageRequest pageable = null;
+
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
+        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
+        int resultCount=0;
+        String qry = "  select distinct road.id as roadId, ad.id as alertId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.gps_dtm, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve, \n" +
+                " ad.resolved_by, count(ad.id) over (partition by ad.alert_type_id,road.id) \n" +
+                " from rdvts_oltp.geo_construction_m as road  \n" +
+                " left join rdvts_oltp.geo_master as gm on gm.road_id=road.id  \n" +
+                " left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=gm.work_id  \n" +
+                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=awm.activity_id \n" +
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id = vam.vehicle_id  \n" +
+                " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id  \n" +
+                " left join rdvts_oltp.alert_data as ad on ad.imei=dm.imei_no_1  \n" +
+                " left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where gm.is_active=true  ";
+        if (filterDto.getRoadId() != null && filterDto.getRoadId() > 0) {
+            qry += " and road.id=:roadId ";
+            sqlParam.addValue("roadId", filterDto.getRoadId());
+        }
+        if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
+            qry += " AND vdm.vehicle_id = :vehicleId";
+            sqlParam.addValue("vehicleId", filterDto.getVehicleId());
+        }
+        if (filterDto.getActivityId() != null && filterDto.getActivityId() > 0) {
+            qry += " AND vam.activity_id = :activityId";
+            sqlParam.addValue("activityId", filterDto.getActivityId());
+        }
+        if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
+            qry += " AND awm.work_id = :workId";
+            sqlParam.addValue("workId", filterDto.getWorkId());
+        }
+        if (filterDto.getDeviceId() != null && filterDto.getDeviceId() > 0) {
+            qry += " AND vdm.device_id = :deviceId";
+            sqlParam.addValue("deviceId", filterDto.getDeviceId());
+        }
+        if (filterDto.getDistId() != null && filterDto.getDistId() > 0) {
+            qry += " AND gm.dist_id = :distId";
+            sqlParam.addValue("distId", filterDto.getDistId());
+        }
+        if (filterDto.getDivisionId() != null && filterDto.getDivisionId() > 0) {
+            qry += " AND gm.division_id = :divisionId";
+            sqlParam.addValue("divisionId", filterDto.getDivisionId());
+        }
+        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
+            qry += " AND ad.alert_type_id=:alertTypeId ";
+            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
+            qry += " AND date(ad.gps_dtm) >= :startDate";
+            Date startDate = null;
+            try {
+                startDate = format.parse(filterDto.getStartDate());
+            } catch (Exception exception) {
+                log.info("From Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("startDate", startDate, Types.DATE);
+        }
+        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
+            qry += " AND date(ad.gps_dtm) <= :endDate";
+            Date endDate = null;
+            try {
+                endDate = format.parse(filterDto.getEndDate());
+            } catch (Exception exception) {
+                log.info("To Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("endDate", endDate, Types.DATE);
+        }
+
+        resultCount = count(qry, sqlParam);
+        if (filterDto.getLimit() > 0){
+            qry += " Order by road.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
+        }
+
+        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+        return new PageImpl<>(list, pageable, resultCount);
     }
 
 //    public List<AlertCountDto> getTotalAlertToday(int id) {

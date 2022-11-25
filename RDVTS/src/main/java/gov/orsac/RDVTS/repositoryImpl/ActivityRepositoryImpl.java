@@ -159,34 +159,34 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return namedJdbc.update(qry, sqlParam);
     }
 
-    public Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
+    public Integer workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry= " UPDATE rdvts_oltp.activity_work_mapping " +
-                "SET is_active=false,updated_by=:userId " +
-                " WHERE activity_id=:activityId and work_id=:workId";
+                " SET is_active=false  and updated_by=:userId " +
+                " WHERE activity_id=:activityId and work_id=:workId ";
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("workId", workId);
         sqlParam.addValue("userId", userId);
-        int update = namedJdbc.update(qry, sqlParam);
-        boolean result = false;
-        if (update > 0) {
-            result = true;
-        }
-        return result;
+        return namedJdbc.update(qry, sqlParam);
+//        boolean result = false;
+//        if (update > 0) {
+//            result = true;
+//        }
+//        return result;
     }
 
-    public Boolean vehicleActivityDeassign(Integer activityId) {
+    public Integer vehicleActivityDeassign(Integer activityId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry= " UPDATE rdvts_oltp.vehicle_activity_mapping " +
                 " SET  is_active=false " +
                 " WHERE activity_id=:activityId ; ";
         sqlParam.addValue("activityId", activityId);
-        int update = namedJdbc.update(qry, sqlParam);
-        boolean result = false;
-        if (update > 0) {
-            result = true;
-        }
-        return result;
+        return namedJdbc.update(qry, sqlParam);
+//        boolean result = false;
+//        if (update > 0) {
+//            result = true;
+//        }
+//        return result;
     }
 
     public List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId) {
@@ -284,7 +284,40 @@ public class ActivityRepositoryImpl implements ActivityRepository {
          }
          return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(IssueDto.class));
     }
+
+
+
+
+       public ActivityWorkMapping findByActivityId(Integer id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select activity_id FROM rdvts_oltp.activity_work_mapping WHERE activity_id=:id AND is_active = true   ";
+        sqlParam.addValue("id",id);
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(ActivityWorkMapping.class));
+    }
+
+    public Integer updateActivity(Integer id,ActivityWorkMappingDto activityData) {
+        MapSqlParameterSource sqlParam  = new MapSqlParameterSource();
+        String qry = " UPDATE rdvts_oltp.activity_work_mapping SET actual_activity_start_date=:actualActivityStartDate ,actual_activity_completion_date=:actualActivityCompletionDate,  " +
+                     " activity_status=:activityStatus  WHERE is_active = true  AND id=:id         ";
+       // sqlParam.addValue("id",activityData.getActivityId());
+        sqlParam.addValue("id",id);
+        sqlParam.addValue("actualActivityStartDate",activityData.getActualActivityStartDate());
+        sqlParam.addValue("actualActivityCompletionDate",activityData.getActualActivityCompletionDate());
+        sqlParam.addValue("activityStatus",activityData.getActivityStatus());
+        return namedJdbc.update(qry,sqlParam);
+
+    }
+    public ActivityWorkMapping getActivity(Integer activityId,Integer workId) {
+        MapSqlParameterSource sqlParam  = new MapSqlParameterSource();
+        String qry = " SELECT id from rdvts_oltp.activity_work_mapping where is_active = true AND activity_id=:activityId AND work_id=:workId ";
+        sqlParam.addValue("activityId",activityId);
+        sqlParam.addValue("workId",workId);
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(ActivityWorkMapping.class));
+
+    }
+
 }
+
 
 
 

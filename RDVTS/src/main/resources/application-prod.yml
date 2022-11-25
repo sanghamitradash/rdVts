@@ -16,20 +16,22 @@ spring:
 
 
 #AWS S3 Configuration
-#aws:
-#  access_key_id: AKIAWP75M2FMKB5J7DGW
-#  secret_access_key: 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
-#  s3:
-#    region: ap-south-1
-#    bucket: ofarisbucket
+aws:
+  access_key_id: AKIA3MVFO7DNOAEIRN4P
+  secret_access_key: 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
+  s3:
+    region: ap-south-1
+    bucket: rdvts-uploads
 
-#accessImagePath: "https://ofarisbucket.s3.ap-south-1.amazonaws.com/"
-#accessDocumentPath: "https://ofarisbucket.s3.ap-south-1.amazonaws.com/ContractDocument/"
-#accessIssueDocumentPath: "https://ofarisbucket.s3.ap-south-1.amazonaws.com/IssueDocument/"
-#accessAgencyImagePath: "https://ofarisbucket.s3.ap-south-1.amazonaws.com/AgencyImage/"
-#saveAgencyImagePath: "https://ofarisbucket.s3.ap-south-1.amazonaws.com/AgencyImage/"
-#accessWorkProgressImagePath: "https://ofarisbucket.s3.ap-south-1.amazonaws.com/WorkProgress/"
-#accessGrievanceDocumentPath: "https://ofarisbucket.s3.ap-south-1.amazonaws.com/Grievance/"
+accessImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com/"
+saveIssueImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com/issue"
+accessIssueImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com/issue"
+#accessDocumentPath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//ContractDocument/"
+#accessIssueDocumentPath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//IssueDocument/"
+#accessAgencyImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//AgencyImage/"
+#saveAgencyImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//AgencyImage/"
+#accessWorkProgressImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//WorkProgress/"
+#accessGrievanceDocumentPath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//Grievance/"
 
 
 #PDF IMAGE PATH

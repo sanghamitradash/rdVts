@@ -27,13 +27,33 @@ public class AlertServiceImpl implements AlertService {
 
 
     @Override
-    public Page<AlertCountDto> getTotalAlertToday(AlertFilterDto filterDto, Integer id, Integer userId) {
-        return alertRepositoryImpl.getTotalAlertToday(filterDto, id, userId);
+    public List<AlertCountDto> getTotalAlertToday(/*AlertFilterDto filterDto,*/ Integer id, Integer userId) {
+        return alertRepositoryImpl.getTotalAlertToday(/*filterDto,*/ id, userId);
     }
 
     @Override
-    public Page<AlertCountDto> getTotalAlertWork(AlertFilterDto filterDto, Integer id, Integer userId) {
-        return alertRepositoryImpl.getTotalAlertWork(filterDto, id, userId);
+    public List<AlertCountDto> getTotalAlertWork(/*AlertFilterDto filterDto,*/ Integer id, Integer userId) {
+        return alertRepositoryImpl.getTotalAlertWork(/*filterDto,*/ id, userId);
+    }
+
+    @Override
+    public Page<AlertCountDto> getAlertToday(AlertFilterDto filterDto) {
+        return alertRepositoryImpl.getAlertToday(filterDto);
+    }
+
+    @Override
+    public Page<AlertCountDto> getAlertTotal(AlertFilterDto filterDto) {
+        return alertRepositoryImpl.getAlertTotal(filterDto);
+    }
+
+    @Override
+    public Page<AlertCountDto> getVehicleAlert(AlertFilterDto filterDto) {
+        return alertRepositoryImpl.getVehicleAlert(filterDto);
+    }
+
+    @Override
+    public Page<AlertCountDto> getRoadAlert(AlertFilterDto filterDto) {
+        return alertRepositoryImpl.getRoadAlert(filterDto);
     }
 //
 //    @Override
