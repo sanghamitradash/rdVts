@@ -348,7 +348,8 @@ public class WorkController {
     }
 
     @PostMapping("/getActivityByWorkId")
-    public RDVTSResponse getActivityByWorkId(@RequestParam int id) {
+    public RDVTSResponse getActivityByWorkId(@RequestParam int id,
+                                            @RequestParam int userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {

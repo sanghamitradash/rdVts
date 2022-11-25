@@ -108,7 +108,7 @@ public class ActivityController {
 
     @PostMapping("/updateActivity")
     public RDVTSResponse updateActivity(@RequestParam Integer activityId, @RequestParam(name = "data") String data,
-                                        @RequestParam (name = "issue")String issue,
+                                        @RequestParam (name = "issue",required = false)String issue,
                                         @RequestParam(name = "image",required = false) MultipartFile issueImages) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
@@ -414,6 +414,28 @@ public class ActivityController {
                     result);
         }
         return response;
+    }
+
+    @PostMapping("/updateIssue")
+    public RDVTSResponse updateIssue(@RequestParam int id,
+                                    @RequestParam(name = "data") String data) {
+        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            IssueDto updateIssueDto = mapper.readValue(data, IssueDto.class);
+            IssueEntity issueEntity = activityService.updateIssue(id, updateIssueDto);
+            rdvtsResponse.setData(result);
+            rdvtsResponse.setStatus(1);
+            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            rdvtsResponse.setMessage("Issue Updated Successfully");
+        } catch (Exception e) {
+            rdvtsResponse = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return rdvtsResponse;
     }
 
 

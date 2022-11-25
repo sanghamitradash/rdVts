@@ -181,6 +181,21 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepositoryImpl.getIssueByWorkId(workId,activityId);
     }
 
+    @Override
+    public IssueEntity updateIssue(int id, IssueDto issueDto) {
+        IssueEntity existingIssue = issueRepository.findById(id);
+        if (existingIssue == null) {
+            throw new RecordNotFoundException("IssueEntity", "id", id);
+        }
+        existingIssue.setResolvedDate(issueDto.getResolvedDate());
+        existingIssue.setResolvedStatus(issueDto.getResolvedStatus());
+        existingIssue.setResolvedBy(issueDto.getResolvedBy());
+
+
+        IssueEntity save = issueRepository.save(existingIssue);
+        return save;
+    }
+
 
 //    @Override
 //    public List<VehicleActivityMappingEntity> workActivityVehicleMap(VehicleActivityWorkMappingDto vehicleActivityWorkMappingDto) {

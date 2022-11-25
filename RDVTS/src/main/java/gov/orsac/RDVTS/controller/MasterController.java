@@ -406,7 +406,7 @@ public class MasterController {
 
     @PostMapping("/activateAndDeactivateDesignation")
     public RDVTSResponse activateAndDeactivateDesignation(@RequestParam Integer id,
-                                                          @RequestParam(value = "userId") Integer userId) {
+                                                          @RequestParam(value = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
