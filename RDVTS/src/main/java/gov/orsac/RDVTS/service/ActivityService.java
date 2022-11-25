@@ -35,7 +35,7 @@ public interface ActivityService {
 
     Integer workActivityDeassign(Integer activityId, Integer workId, Integer userId);
 
-    Integer vehicleActivityDeassign(Integer activityId);
+    Integer vehicleActivityDeassign(Integer activityId, Integer workId,Integer userId);
 
     List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId);
 

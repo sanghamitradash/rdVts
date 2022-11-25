@@ -140,8 +140,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Integer vehicleActivityDeassign(Integer activityId) {
-        Integer res = activityRepositoryImpl.vehicleActivityDeassign(activityId);
+    public Integer vehicleActivityDeassign(Integer activityId, Integer workId,Integer userId) {
+        Integer res = activityRepositoryImpl.vehicleActivityDeassign(activityId, workId, userId);
         return res;
     }
 
