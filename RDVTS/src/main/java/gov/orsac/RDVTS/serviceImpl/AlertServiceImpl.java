@@ -42,8 +42,8 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public Page<AlertCountDto> getAlertTotal(AlertFilterDto filterDto) {
-        return alertRepositoryImpl.getAlertTotal(filterDto);
+    public Page<AlertCountDto> getWorkAlertTotal(AlertFilterDto filterDto) {
+        return alertRepositoryImpl.getWorkAlertTotal(filterDto);
     }
 
     @Override
