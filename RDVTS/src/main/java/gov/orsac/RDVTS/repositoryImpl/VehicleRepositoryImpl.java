@@ -366,58 +366,59 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
 
         int resultCount = 0;
-        String qry = "select distinct * from (SELECT distinct vm.id, vm.vehicle_no,vt.name as vehicleTypeName,vm.model, vm.chassis_no, \n" +
-                " vm.engine_no,vm.is_active as active, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,    \n" +
-                " owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName, \n" +
-                " contractor.name as contractorName, owner.contractor_id as contractorId,vm.vehicle_type_id as vehicleTypeId, device.device_id as deviceId, dam.dist_id as distId, dam.division_id as divisionId,\n" +
-                "--  vm.vehicle_type_id as vehicleTypeId, device.device_id as deviceId, dam.dist_id as distId, dam.division_id, awm.activity_id  as activityId,owner.contractor_id,  \n" +
-                " \n" +
-                " case when vdCount.vehicleCount>0 then true else false end as deviceAssigned, \n" +
-                " case when vtuLocation.imeiCount>0 then true else false end as trackingStatus, \n" +
-                " case when actCount.activityCount>0 then true else false end as activityAssigned  \n" +
-                " FROM rdvts_oltp.vehicle_m as vm  \n" +
-                " left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id  and vt.is_active=true \n" +
-                " left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true \n" +
-                " left join rdvts_oltp.device_area_mapping as dam on dam.device_id = device.device_id and dam.is_active =true    \n" +
-                " left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true \n" +
-                "--                 left join rdvts_oltp.activity_m as am on am.id = activity.activity_id   \n" +
-                " left join rdvts_oltp.activity_work_mapping as awm on activity.activity_id = awm.id and awm.is_active=true   \n" +
-                " left join rdvts_oltp.work_m as work on work.id = awm.work_id   and work.is_active=true \n" +
-                " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id and owner.is_active=true  \n" +
-                " left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id and  userM.is_active=true \n" +
-                " left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id and contractor.is_active=true \n" +
-                " left join rdvts_oltp.device_m as dm on dm.id=device.device_id and dm.is_active=true \n" +
-                " left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping  \n" +
-                " where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id  \n" +
-                " left join (select count(id) over (partition by imei) as imeiCount,imei from rdvts_oltp.vtu_location where date(date_time)=date(now()) and is_active=true ) as vtuLocation  \n" +
-                " on vtuLocation.imei=dm.imei_no_1  \n" +
-                " left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount  \n" +
-                " on actCount.vehicle_id=activity.vehicle_id) as vehicleList ";
-//        "select * from (SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,vm.model, vm.chassis_no," +
-//                "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,dam.dist_id, dam.division_id,   " +
-//                "owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id as contractorId,owner.contractor_id,  " +
-//                "contractor.name as contractorName,am.id  as activityId," +
-//                "case when vdCount.vehicleCount>0 then true else false end as deviceAssigned," +
-//                "case when vtuLocation.imeiCount>0 then true else false end as trackingStatus," +
-//                "case when actCount.activityCount>0 then true else false end as activityAssigned " +
-//                "FROM rdvts_oltp.vehicle_m as vm " +
-//                "left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id  " +
-//                "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true " +
-//                "left join rdvts_oltp.device_area_mapping as dam on dam.device_id = device.device_id and dam.is_active =true  "  +
-//                "left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true " +
-//                "left join rdvts_oltp.activity_m as am on am.id = activity.activity_id  " +
-//                "left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id  " +
-//                "left join rdvts_oltp.work_m as work on work.id = awm.work_id  " +
-//                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id " +
-//                "left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id " +
-//                "left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id " +
-//                "left join rdvts_oltp.device_m as dm on dm.id=device.device_id " +
-//                "left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping " +
-//                " where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id " +
-//                "left join (select count(id) over (partition by imei) as imeiCount,imei from rdvts_oltp.vtu_location where date(date_time)=date(now())) as vtuLocation " +
-//                "on vtuLocation.imei=dm.imei_no_1 " +
-//                "left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount " +
-//                "on actCount.vehicle_id=activity.vehicle_id) as vehicleList ";
+//        String qry = "select distinct * from (SELECT distinct vm.id, vm.vehicle_no,vt.name as vehicleTypeName,vm.model, vm.chassis_no, \n" +
+//                " vm.engine_no,vm.is_active as active, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,    \n" +
+//                " owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName, \n" +
+//                " contractor.name as contractorName, owner.contractor_id as contractorId,vm.vehicle_type_id as vehicleTypeId, device.device_id as deviceId, dam.dist_id as distId, dam.division_id as divisionId,\n" +
+//                "--  vm.vehicle_type_id as vehicleTypeId, device.device_id as deviceId, dam.dist_id as distId, dam.division_id, awm.activity_id  as activityId,owner.contractor_id,  \n" +
+//                " \n" +
+//                " case when vdCount.vehicleCount>0 then true else false end as deviceAssigned, \n" +
+//                " case when vtuLocation.imeiCount>0 then true else false end as trackingStatus, \n" +
+//                " case when actCount.activityCount>0 then true else false end as activityAssigned  \n" +
+//                " FROM rdvts_oltp.vehicle_m as vm  \n" +
+//                " left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id  and vt.is_active=true \n" +
+//                " left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true \n" +
+//                " left join rdvts_oltp.device_area_mapping as dam on dam.device_id = device.device_id and dam.is_active =true    \n" +
+//                " left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true \n" +
+//                "--                 left join rdvts_oltp.activity_m as am on am.id = activity.activity_id   \n" +
+//                " left join rdvts_oltp.activity_work_mapping as awm on activity.activity_id = awm.id and awm.is_active=true   \n" +
+//                " left join rdvts_oltp.work_m as work on work.id = awm.work_id   and work.is_active=true \n" +
+//                " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id and owner.is_active=true  \n" +
+//                " left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id and  userM.is_active=true \n" +
+//                " left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id and contractor.is_active=true \n" +
+//                " left join rdvts_oltp.device_m as dm on dm.id=device.device_id and dm.is_active=true \n" +
+//                " left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping  \n" +
+//                " where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id  \n" +
+//                " left join (select count(id) over (partition by imei) as imeiCount,imei from rdvts_oltp.vtu_location where date(date_time)=date(now()) and is_active=true ) as vtuLocation  \n" +
+//                " on vtuLocation.imei=dm.imei_no_1  \n" +
+//                " left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount  \n" +
+//                " on actCount.vehicle_id=activity.vehicle_id) as vehicleList ";
+        String qry = "select * from (SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,vm.model, vm.chassis_no," +
+                "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,dam.dist_id, dam.division_id,   " +
+                "owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id as contractorId,owner.contractor_id,  " +
+                "contractor.name as contractorName,am.id  as activityId," +
+                "case when vdCount.vehicleCount>0 then true else false end as deviceAssigned," +
+                "case when vtuLocation.imeiCount>0 then true else false end as trackingStatus," +
+                "case when actCount.activityCount>0 then true else false end as activityAssigned " +
+                "FROM rdvts_oltp.vehicle_m as vm " +
+                "left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id  " +
+                "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true " +
+                "left join rdvts_oltp.device_area_mapping as dam on dam.device_id = device.device_id and dam.is_active =true  "  +
+                "left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true " +
+                "left join rdvts_oltp.activity_m as am on am.id = activity.activity_id  " +
+                "left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id  " +
+                "left join rdvts_oltp.work_m as work on work.id = awm.work_id  " +
+                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id " +
+                "left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id " +
+                "left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id " +
+                "left join rdvts_oltp.device_m as dm on dm.id=device.device_id " +
+                "left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping " +
+                " where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id " +
+                "left join (select count(id) over (partition by imei) as imeiCount,imei from rdvts_oltp.vtu_location where date(date_time)=date(now())) as vtuLocation " +
+                "on vtuLocation.imei=dm.imei_no_1 " +
+                "left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount " +
+                "on actCount.vehicle_id=activity.vehicle_id) as vehicleList ";
+
         String subQuery = "";
         if(vehicle.getDeviceAssign()!=null){
             if(subQuery.length()<=0){
