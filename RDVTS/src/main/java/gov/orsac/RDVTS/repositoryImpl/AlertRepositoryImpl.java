@@ -709,7 +709,9 @@ public class AlertRepositoryImpl {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
 
         List<VtuLocationDto> vtuLocationDto1=new ArrayList<>();
+
         VtuLocationDto vtuLocationDto2=new VtuLocationDto();
+
         for (VtuLocationDto item:vtuLocationDto) {
             String geomText ="'"+geom+"'";
             String qry = "  select ST_Intersects(st_setsrid(st_geomfromtext(  st_astext(ST_BUFFER("+geomText+"::geography,50)::geometry)  " +
@@ -719,8 +721,10 @@ public class AlertRepositoryImpl {
                vtuLocationDto2.setLatitude(item.getLatitude());
                vtuLocationDto2.setLongitude(item.getLongitude());
                vtuLocationDto1.add(vtuLocationDto2);
+               //Filter and push geo fenced Lat lon
            }
         }
+
 
         return vtuLocationDto1;
     }
