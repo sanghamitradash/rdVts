@@ -49,7 +49,7 @@ public class AlertCronController {
 
     @Scheduled(cron = "0 */5 * * * *")
     public void generateNoDataAlert() {
-     //   System.out.println("nomove");
+       System.out.println("nomove");
         Integer deviceId = -1; //fro getting all device
         //get all device
         List<DeviceDto> device = deviceService.getAllDeviceDD(deviceId, null);
@@ -125,7 +125,7 @@ public class AlertCronController {
     public void generateNoMovementAlert() {
 
 
-        //System.out.println("generateNoMovementAlert");
+        System.out.println("generateNoMovementAlert");
 
 
         AlertTypeEntity alertTypeEntity=alertService.getAlertTypeDetails(NO_MOVEMENT_ALERT_ID);
@@ -197,7 +197,7 @@ public class AlertCronController {
 
     @Scheduled(cron = "0 */5 * * * *")
     public void generateGeofenceAlert() throws ParseException {
-        //System.out.println("generateGeofenceAlert");
+        System.out.println("generateGeofenceAlert");
 
         List<WorkDto> workDto = workService.getWorkById(-1);
 
@@ -292,7 +292,7 @@ public class AlertCronController {
 
     @Scheduled(cron = "0 */5 * * * *")
     public void generateOverSpeedAlert() throws ParseException {
-        //System.out.println("generateOverSpeedAlert");
+        System.out.println("generateOverSpeedAlert");
 
         List<AlertDto> alertDto= alertService.getAllDeviceByVehicle();
         for (AlertDto alertDtoItem : alertDto) {
