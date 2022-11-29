@@ -144,106 +144,104 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         }
 
 
-        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
-        if(user.getUserLevelId()==5){
-            if(qry.length()<=0) {
-                qry += " WHERE  owner.contractor_id=:contractorId ";
-                sqlParam.addValue("contractorId",userId);
+        if (userId!=null) {
+
+
+            UserInfoDto user = userRepositoryImpl.getUserByUserId(userId);
+            if (user.getUserLevelId() == 5) {
+                if (qry.length() <= 0) {
+                    qry += " WHERE  owner.contractor_id=:contractorId ";
+                    sqlParam.addValue("contractorId", userId);
+                } else {
+                    qry += " and owner.contractor_id=:contractorId  ";
+                    sqlParam.addValue("contractorId", userId);
+                }
             }
-            else{
-                qry += " and owner.contractor_id=:contractorId  ";
-                sqlParam.addValue("contractorId",userId);
-            }
-        }
 //       *//* else if(user.getUserLevelId()==1){
 //             List<Integer> userIdList= helperServiceImpl.getLowerUserByUserId(vehicle.getUserId());
 //           qry+=" ";
 //        }*//*
-        else if(user.getUserLevelId()==2){
-            List<Integer> distId=userRepositoryImpl.getDistIdByUserId(userId);
-            List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(distId);
-            List<Integer> vehicleByContractorIdList  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
-            if(qry!= " " && qry.length()<=0) {
-                if(vehicleId!=null && vehicleByContractorIdList.size()>0){
-                    qry += " WHERE  vehicleList.id in(:vehicleIds) ";
-                    sqlParam.addValue("vehicleIds",vehicleByContractorIdList);
-                }
+            else if (user.getUserLevelId() == 2) {
+                List<Integer> distId = userRepositoryImpl.getDistIdByUserId(userId);
+                List<Integer> contractorId = geoMasterRepositoryImpl.getContractorIdByDistIdList(distId);
+                List<Integer> vehicleByContractorIdList = masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
+                if (qry != " " && qry.length() <= 0) {
+                    if (vehicleId != null && vehicleByContractorIdList.size() > 0) {
+                        qry += " WHERE  vehicleList.id in(:vehicleIds) ";
+                        sqlParam.addValue("vehicleIds", vehicleByContractorIdList);
+                    }
 //                else{
 //                    qry += " WHERE  vehicleList.id in(0) ";
 //                    // sqlParam.addValue("vehicleIds",vehicleId);;
 //                }
 
-            }
-            else{
-                if(vehicleId!=null && vehicleByContractorIdList.size()>0){
-                    qry += " and  vehicleList.id in(:vehicleIds) ";
-                    sqlParam.addValue("vehicleIds",vehicleByContractorIdList);
-                }
+                } else {
+                    if (vehicleId != null && vehicleByContractorIdList.size() > 0) {
+                        qry += " and  vehicleList.id in(:vehicleIds) ";
+                        sqlParam.addValue("vehicleIds", vehicleByContractorIdList);
+                    }
 //                else{
 //                    qry += " and  vehicleList.id in(0) ";
 //                    // sqlParam.addValue("vehicleIds",vehicleId);;
 //                }
 
-            }
-        }
-        else if(user.getUserLevelId()==3){
-            List<Integer> blockId=userRepositoryImpl.getBlockIdByUserId(userId);
-            List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByBlockList(blockId);
-            List<Integer> vehicleByContractorIdList  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
-            if(qry!= " " && qry.length()<=0) {
-                if(vehicleId!=null && vehicleByContractorIdList.size()>0){
-                    qry += " WHERE  vehicleList.id in(:vehicleIds) ";
-                    sqlParam.addValue("vehicleIds",vehicleByContractorIdList);
                 }
+            } else if (user.getUserLevelId() == 3) {
+                List<Integer> blockId = userRepositoryImpl.getBlockIdByUserId(userId);
+                List<Integer> contractorId = geoMasterRepositoryImpl.getContractorIdByBlockList(blockId);
+                List<Integer> vehicleByContractorIdList = masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
+                if (qry != " " && qry.length() <= 0) {
+                    if (vehicleId != null && vehicleByContractorIdList.size() > 0) {
+                        qry += " WHERE  vehicleList.id in(:vehicleIds) ";
+                        sqlParam.addValue("vehicleIds", vehicleByContractorIdList);
+                    }
 //                else{
 //                    qry += " WHERE  vehicleList.id in(0) ";
 //                    // sqlParam.addValue("vehicleIds",vehicleId);;
 //                }
 
-            }
-            else{
-                if(vehicleId!=null && vehicleByContractorIdList.size()>0){
-                    qry += " and  vehicleList.id in(:vehicleIds) ";
-                    sqlParam.addValue("vehicleIds",vehicleByContractorIdList);
-                }
+                } else {
+                    if (vehicleId != null && vehicleByContractorIdList.size() > 0) {
+                        qry += " and  vehicleList.id in(:vehicleIds) ";
+                        sqlParam.addValue("vehicleIds", vehicleByContractorIdList);
+                    }
 //                else{
 //                    qry += " and  vehicleList.id in(0) ";
 //                    // sqlParam.addValue("vehicleIds",vehicleId);;
 //                }
 
-            }
-        }
-        else if(user.getUserLevelId()==4){
+                }
+            } else if (user.getUserLevelId() == 4) {
 //
 //            List<Integer> districtId=userRepositoryImpl.getDistrictByDivisionId(divisionId);
 //            List<Integer> contractorId =geoMasterRepositoryImpl.getContractorIdByDistIdList(districtId);
 //            List<Integer> vehicleId  =masterRepositoryImpl.getVehicleByContractorIdList(contractorId);
-            List<Integer> divisionId=userRepositoryImpl.getDivisionByUserId(userId);
-            List<Integer> workIds = userRepositoryImpl.getWorkIdsByDivisionId(divisionId);
-            List<Integer>activityIds = userRepositoryImpl.getActivityIdByWorkId(workIds);
-            List<Integer> vehicleByContractorIdList = userRepositoryImpl.getVehicleIdByActivityId(activityIds);
+                List<Integer> divisionId = userRepositoryImpl.getDivisionByUserId(userId);
+                List<Integer> workIds = userRepositoryImpl.getWorkIdsByDivisionId(divisionId);
+                List<Integer> activityIds = userRepositoryImpl.getActivityIdByWorkId(workIds);
+                List<Integer> vehicleByContractorIdList = userRepositoryImpl.getVehicleIdByActivityId(activityIds);
 
-            if(qry!= " " && qry.length()<=0) {
-                if(vehicleId!=null && vehicleByContractorIdList.size()>0){
-                    qry += " WHERE  vehicleList.id in(:vehicleIds) ";
-                    sqlParam.addValue("vehicleIds",vehicleByContractorIdList);
-                }
+                if (qry != " " && qry.length() <= 0) {
+                    if (vehicleId != null && vehicleByContractorIdList.size() > 0) {
+                        qry += " WHERE  vehicleList.id in(:vehicleIds) ";
+                        sqlParam.addValue("vehicleIds", vehicleByContractorIdList);
+                    }
 //                else{
 //                    qry += " WHERE  vehicleList.id in(0) ";
 //                    // sqlParam.addValue("vehicleIds",vehicleId);;
 //                }
 
-            }
-            else{
-                if(vehicleId!=null && vehicleByContractorIdList.size()>0){
-                    qry += " and  vehicleList.id in(:vehicleIds) ";
-                    sqlParam.addValue("vehicleIds",vehicleByContractorIdList);
-                }
+                } else {
+                    if (vehicleId != null && vehicleByContractorIdList.size() > 0) {
+                        qry += " and  vehicleList.id in(:vehicleIds) ";
+                        sqlParam.addValue("vehicleIds", vehicleByContractorIdList);
+                    }
 //                else{
 //                    qry += " and  vehicleList.id in(0) ";
 //                    // sqlParam.addValue("vehicleIds",vehicleId);;
 //                }
 
+                }
             }
         }
 
