@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Types;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 @Slf4j
@@ -257,6 +258,9 @@ public class AlertRepositoryImpl {
                 " ),4326),  'SRID=4326;POINT("+longitude+" "+latitude+" )'::geometry) as inFlag" ;
 
         return namedJdbc.queryForObject(qry, sqlParam,(Boolean.class));
+
+
+        //return null;
     }
 
     public List<AlertDto> getAllDeviceByVehicle() {
@@ -697,6 +701,28 @@ public class AlertRepositoryImpl {
 
         List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
         return new PageImpl<>(list, pageable, resultCount);
+    }
+
+
+
+    public List<VtuLocationDto>  GeoFenceIntersectedRecords(String geom, List<VtuLocationDto> vtuLocationDto) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        List<VtuLocationDto> vtuLocationDto1=new ArrayList<>();
+        VtuLocationDto vtuLocationDto2=new VtuLocationDto();
+        for (VtuLocationDto item:vtuLocationDto) {
+            String geomText ="'"+geom+"'";
+            String qry = "  select ST_Intersects(st_setsrid(st_geomfromtext(  st_astext(ST_BUFFER("+geomText+"::geography,50)::geometry)  " +
+                    " ),4326),  'SRID=4326;POINT("+item.getLongitude()+" "+item.getLongitude()+" )'::geometry) as inFlag" ;
+           Boolean b= namedJdbc.queryForObject(qry, sqlParam,(Boolean.class));
+           if (b){
+               vtuLocationDto2.setLatitude(item.getLatitude());
+               vtuLocationDto2.setLongitude(item.getLongitude());
+               vtuLocationDto1.add(vtuLocationDto2);
+           }
+        }
+
+        return vtuLocationDto1;
     }
 
 //    public List<AlertCountDto> getTotalAlertToday(int id) {

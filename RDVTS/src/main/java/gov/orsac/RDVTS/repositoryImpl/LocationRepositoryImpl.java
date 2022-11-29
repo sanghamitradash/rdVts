@@ -152,7 +152,7 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += " order by date_time ASC";
+            qry += " order by date_time ASC limit 100";
 
 
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
