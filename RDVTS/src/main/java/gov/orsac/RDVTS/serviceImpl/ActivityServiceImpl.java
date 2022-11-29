@@ -209,6 +209,11 @@ public class ActivityServiceImpl implements ActivityService {
         return save;
     }
 
+    @Override
+    public Integer saveContractorId(Integer contractorId, Integer activityId) {
+        return activityRepositoryImpl.saveContractorId(contractorId,  activityId);
+    }
+
 
 //    @Override
 //    public List<VehicleActivityMappingEntity> workActivityVehicleMap(VehicleActivityWorkMappingDto vehicleActivityWorkMappingDto) {

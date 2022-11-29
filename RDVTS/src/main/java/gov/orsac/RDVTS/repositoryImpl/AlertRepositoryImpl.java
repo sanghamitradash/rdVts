@@ -567,24 +567,41 @@ public class AlertRepositoryImpl {
             }
             sqlParam.addValue("endDate", endDate, Types.DATE);
         }
-//        UserInfoDto user = userRepositoryImpl.getUserByUserId(filterDto.getUserId());
-//        if (user.getUserLevelId() == 5) {
-//            qry += " AND gm.contractor_id=:contractorId ";
-//            sqlParam.addValue("contractorId", user.getUserLevelId());
-//        }
+        UserInfoDto user = userRepositoryImpl.getUserByUserId(filterDto.getUserId());
+        if (user.getUserLevelId() == 5) {
+            qry += " AND gm.contractor_id=:contractorId ";
+            sqlParam.addValue("contractorId", user.getUserLevelId());
+        }
 
-//        else if (user.getUserLevelId() == 2) {
-//            List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(filterDto.getUserId());
-//            List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
-//            List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
-//            List<Integer> vehicleIds = masterRepositoryImpl.getVehicleIdsByBlockAndDivision(blockIds, divisionIds, distIds);
-//            if (qry != null && qry.length() > 0) {
-//                qry += " AND  vdm.vehicle_id in(:vehicleIds) ";
-//                sqlParam.addValue("vehicleIds", vehicleIds);
-//            } else {
-//                qry += " WHERE vdm.vehicle_id in(:vehicleIds) ";
-//                sqlParam.addValue("vehicleIds", vehicleIds);
-//            }
+        else if (user.getUserLevelId() == 2) {
+            List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(filterDto.getUserId());
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
+            List<Integer> vehicleIds = masterRepositoryImpl.getVehicleIdsByBlockAndDivision(blockIds, divisionIds, distIds);
+            if (qry != null && qry.length() > 0) {
+                qry += " AND  vdm.vehicle_id in(:vehicleIds) ";
+                sqlParam.addValue("vehicleIds", vehicleIds);
+            } else {
+                qry += " WHERE vdm.vehicle_id in(:vehicleIds) ";
+                sqlParam.addValue("vehicleIds", vehicleIds);
+            }
+        }
+
+        else if(user.getUserLevelId()==3){
+            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
+            List<Integer> vehicleIds  = masterRepositoryImpl.getVehicleIdsByBlockIds(blockIds);
+            if(qry != null && qry.length() > 0){
+                qry += " AND  vdm.vehicle_id=:vehicleIds ";
+                sqlParam.addValue("vehicleIds",vehicleIds);
+            } else {
+                qry += " WHERE  vdm.vehicle_id in(:vehicleIds) ";
+                sqlParam.addValue("vehicleIds",vehicleIds);
+            }
+        }
+
+//        else if(user.getUserLevelId()==4){
+//            qry += " AND gm.division_id=:divisionId ";
+//            sqlParam.addValue("divisionId",user.getUserLevelId());
 //        }
 
         resultCount = count(qry, sqlParam);

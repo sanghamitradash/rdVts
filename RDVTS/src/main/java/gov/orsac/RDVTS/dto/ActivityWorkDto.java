@@ -16,6 +16,8 @@ public class ActivityWorkDto {
 
     private Integer activityId;
 
+    private Integer contractorId;
+
     private Integer workId;
 
     private Integer userId;
