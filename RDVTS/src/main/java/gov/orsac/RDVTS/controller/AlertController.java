@@ -53,16 +53,14 @@ public class AlertController {
     final Integer OUTSIDE_POINT_COUNT = 5;
 
 
-
-
     @RequestMapping("/generateNoDataAlert")
 
-    public RDVTSResponse generateNoDataAlert(@RequestParam(name = "userId" ) Integer userId) {
+    public RDVTSResponse generateNoDataAlert(@RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
 //        final Integer noDataAlertTimeSpan = 60; //in minutes Alert Time Span
-       // final Integer NO_DATA_ALERT_ID = 3;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
+        // final Integer NO_DATA_ALERT_ID = 3;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
 
         try {
             Integer deviceId = -1; //fro getting all device
@@ -150,8 +148,84 @@ public class AlertController {
 
     }
 
+    @RequestMapping("/generateRotationAlert")
+
+    public RDVTSResponse generateRotationAlert() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<WorkDto> workDto = workService.getWorkById(-1);
+
+            for (WorkDto Work : workDto) {
+                List<RoadMasterDto> road = roadService.getRoadByWorkId(Work.getId());
+                if (road.size() > 0 && road.get(0).getGeom() != null) {
+                    List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
+                    for (ActivityWorkMapping activityId : activityDtoList) {
+                        List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), null, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
+                        for (VehicleActivityMappingDto vehicleList : veActMapDto) {
+                            List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(), null);
+                            if (getdeviceList.size() > 0) {
+                                for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
+                                    List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
+                                    for (DeviceDto imei : getImeiList) {
+                                        List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), null, null, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                        alertService.GeoFenceIntersectedRecords(road.get(0).getGeom(), vtuLocationDto);
+
+
+                                        for (VtuLocationDto vtuItem : vtuLocationDto) {
+                                            Boolean b = alertService.checkGeoFenceIntersected(road.get(0).getGeom(), vtuItem.getLongitude(), vtuItem.getLatitude());
+                                            if (b == false) {
+                                                Boolean alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
+                                                if (!alertExists) {
+                                                    AlertEntity alertEntity = new AlertEntity();
+                                                    alertEntity.setImei(vtuItem.getImei());
+                                                    alertEntity.setAlertTypeId(GEO_FENCE_ALERT_ID);
+                                                    if (vtuItem.getLatitude() != null) {
+                                                        alertEntity.setLatitude(Double.parseDouble(vtuItem.getLatitude()));
+                                                    }
+                                                    if (vtuItem.getLongitude() != null) {
+                                                        alertEntity.setLongitude(Double.parseDouble(vtuItem.getLongitude()));
+                                                    }
+                                                    if (vtuItem.getAltitude() != null) {
+                                                        alertEntity.setAltitude(Double.parseDouble(vtuItem.getAltitude()));
+                                                    }
+                                                    if (vtuItem.getAccuracy() != null) {
+                                                        alertEntity.setAccuracy(Double.parseDouble(vtuItem.getAccuracy()));
+                                                    }
+                                                    alertEntity.setSpeed(Double.parseDouble(vtuItem.getSpeed()));
+                                                    alertEntity.setGpsDtm(new Date());
+                                                    AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+                                                }
+                                            } else {
+                                                Boolean updateResolve = alertService.updateResolve(vtuItem.getImei(), GEO_FENCE_ALERT_ID);
+
+                                            }
+                                        }
+
+
+                                    }
+
+
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), ex.getMessage(), result);
+        }
+
+
+        return response;
+
+    }
+
+
     @RequestMapping("/generateNoMovementAlert")
-    public RDVTSResponse generateNoMovementAlert(@RequestParam(name = "userId" ) Integer userId) {
+    public RDVTSResponse generateNoMovementAlert(@RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
@@ -164,7 +238,7 @@ public class AlertController {
 //        final Integer OUTSIDE_POINT_COUNT = 5;
 
         try {
-            AlertTypeEntity alertTypeEntity=alertService.getAlertTypeDetails(NO_MOVEMENT_ALERT_ID);
+            AlertTypeEntity alertTypeEntity = alertService.getAlertTypeDetails(NO_MOVEMENT_ALERT_ID);
             //Get Imei
             List<Long> imei = alertService.getImeiForNoMovement(); //get today all imei
             if (imei.size() > 0) {
@@ -298,7 +372,7 @@ public class AlertController {
     }
 
     @RequestMapping("/generateGeofenceAlert")
-    public RDVTSResponse generateGeofenceAlert(@RequestParam(name = "userId" ) Integer userId) {
+    public RDVTSResponse generateGeofenceAlert(@RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
@@ -326,7 +400,7 @@ public class AlertController {
                 //Foreach Vechicle get Device
                 //Foreach device get Imei
                 //Foreach Imei Get location Record list
-                if ( road.size()>0 && road.get(0).getGeom() != null) {
+                if (road.size() > 0 && road.get(0).getGeom() != null) {
                     List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
                     for (ActivityWorkMapping activityId : activityDtoList) {
                         List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
@@ -348,38 +422,38 @@ public class AlertController {
                                         for (VtuLocationDto vtuItem : vtuLocationDto) {
 //                                            if (road.size() > 0 && road.get(0).getGeom() != null) {
 
-                                                Boolean b = alertService.checkGeoFenceIntersected(road.get(0).getGeom(), vtuItem.getLongitude(), vtuItem.getLatitude());
-                                                if (b == false) {
-                                                    Boolean alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
-                                                    if (!alertExists) {
-                                                        AlertEntity alertEntity = new AlertEntity();
-                                                        alertEntity.setImei(vtuItem.getImei());
-                                                        alertEntity.setAlertTypeId(GEO_FENCE_ALERT_ID);
-                                                        if (vtuItem.getLatitude() != null) {
-                                                            alertEntity.setLatitude(Double.parseDouble(vtuItem.getLatitude()));
-                                                        }
-                                                        if (vtuItem.getLongitude() != null) {
-                                                            alertEntity.setLongitude(Double.parseDouble(vtuItem.getLongitude()));
-                                                        }
-                                                        if (vtuItem.getAltitude() != null) {
-                                                            alertEntity.setAltitude(Double.parseDouble(vtuItem.getAltitude()));
-                                                        }
-                                                        if (vtuItem.getAccuracy() != null) {
-                                                            alertEntity.setAccuracy(Double.parseDouble(vtuItem.getAccuracy()));
-                                                        }
-
-                                                        alertEntity.setSpeed(Double.parseDouble(vtuItem.getSpeed()));
-                                                        alertEntity.setGpsDtm(new Date());
-
-                                                        AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
-
+                                            Boolean b = alertService.checkGeoFenceIntersected(road.get(0).getGeom(), vtuItem.getLongitude(), vtuItem.getLatitude());
+                                            if (b == false) {
+                                                Boolean alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
+                                                if (!alertExists) {
+                                                    AlertEntity alertEntity = new AlertEntity();
+                                                    alertEntity.setImei(vtuItem.getImei());
+                                                    alertEntity.setAlertTypeId(GEO_FENCE_ALERT_ID);
+                                                    if (vtuItem.getLatitude() != null) {
+                                                        alertEntity.setLatitude(Double.parseDouble(vtuItem.getLatitude()));
                                                     }
-                                                    //  outsideCount++;
+                                                    if (vtuItem.getLongitude() != null) {
+                                                        alertEntity.setLongitude(Double.parseDouble(vtuItem.getLongitude()));
+                                                    }
+                                                    if (vtuItem.getAltitude() != null) {
+                                                        alertEntity.setAltitude(Double.parseDouble(vtuItem.getAltitude()));
+                                                    }
+                                                    if (vtuItem.getAccuracy() != null) {
+                                                        alertEntity.setAccuracy(Double.parseDouble(vtuItem.getAccuracy()));
+                                                    }
 
-                                                } else {
-                                                    Boolean updateResolve = alertService.updateResolve(vtuItem.getImei(), GEO_FENCE_ALERT_ID);
+                                                    alertEntity.setSpeed(Double.parseDouble(vtuItem.getSpeed()));
+                                                    alertEntity.setGpsDtm(new Date());
+
+                                                    AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
 
                                                 }
+                                                //  outsideCount++;
+
+                                            } else {
+                                                Boolean updateResolve = alertService.updateResolve(vtuItem.getImei(), GEO_FENCE_ALERT_ID);
+
+                                            }
 
 
 //                                            }
@@ -423,7 +497,7 @@ public class AlertController {
 
 
     @RequestMapping("/generateOverSpeedAlert")
-    public RDVTSResponse generateOverSpeedAlert(@RequestParam(name = "userId" ) Integer userId) {
+    public RDVTSResponse generateOverSpeedAlert(@RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> resultabc = new ArrayList<>();
@@ -435,17 +509,17 @@ public class AlertController {
 
         try {
 
-           List<AlertDto> alertDto= alertService.getAllDeviceByVehicle();
+            List<AlertDto> alertDto = alertService.getAllDeviceByVehicle();
             for (AlertDto alertDtoItem : alertDto) {
-                List<VtuLocationDto> vtuLocationDto=alertService.getAlertLocationOverSpeed(alertDtoItem.getImei(),alertDtoItem.getSpeedLimit());
-                if (vtuLocationDto !=null){
+                List<VtuLocationDto> vtuLocationDto = alertService.getAlertLocationOverSpeed(alertDtoItem.getImei(), alertDtoItem.getSpeedLimit());
+                if (vtuLocationDto != null) {
 
-                    if (vtuLocationDto.size()>0){
-                        Boolean checkSpeedStatus=false;
-                        for (VtuLocationDto item: vtuLocationDto) {
-                            Boolean checkIsNumeric=isNumeric(item.getSpeed());
-                            if (checkIsNumeric){
-                                if (Double.parseDouble(item.getSpeed())>alertDtoItem.getSpeedLimit()){
+                    if (vtuLocationDto.size() > 0) {
+                        Boolean checkSpeedStatus = false;
+                        for (VtuLocationDto item : vtuLocationDto) {
+                            Boolean checkIsNumeric = isNumeric(item.getSpeed());
+                            if (checkIsNumeric) {
+                                if (Double.parseDouble(item.getSpeed()) > alertDtoItem.getSpeedLimit()) {
                                     Boolean alertExists = alertService.checkAlertExists(item.getImei(), OVER_SPEED_ALERT_ID); //Check If alert Exist Or Not
                                     if (!alertExists) {
 
@@ -471,15 +545,14 @@ public class AlertController {
                                         AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
 
 
-
                                     }
-                                    checkSpeedStatus=true;
+                                    checkSpeedStatus = true;
                                     break;
                                 }
                             }
 
                         }
-                        if (checkSpeedStatus==false){
+                        if (checkSpeedStatus == false) {
                             Boolean updateResolve = alertService.updateResolve(vtuLocationDto.get(0).getImei(), OVER_SPEED_ALERT_ID);
                         }
 
@@ -502,22 +575,7 @@ public class AlertController {
     }
 
     @RequestMapping("/getAlert")
-    public RDVTSAlertResponse getAlert(@RequestParam(name = "userId" ) Integer userId,
-                                      @RequestParam(name = "roadId", required = false) Integer roadId,
-                                      @RequestParam(name = "vehicleId", required = false) Integer vehicleId,
-                                      @RequestParam(name = "deviceId", required = false) Integer deviceId,
-                                      @RequestParam(name = "activityId", required = false) Integer activityId,
-                                      @RequestParam(name = "workId", required = false) Integer workId,
-                                      @RequestParam(name = "startDate", required = false) String startDate,
-                                      @RequestParam (name = "endDate", required = false) String endDate,
-                                      @RequestParam(name = "alertTypeId", required = false) Integer alertTypeId,
-                                      @RequestParam(name = "circleId", required = false) Integer circleId,
-                                      @RequestParam(name = "distId", required = false) Integer distId,
-                                      @RequestParam(name = "divisionId", required = false) Integer divisionId,
-                                      @RequestParam(name = "start", required = false) Integer start,
-                                      @RequestParam(name = "length", required = false) Integer length,
-                                      @RequestParam(name = "draw", required = false) Integer draw,
-                                       @RequestParam(name = "alertId", required = false) Integer alertId){
+    public RDVTSAlertResponse getAlert(@RequestParam(name = "userId") Integer userId, @RequestParam(name = "roadId", required = false) Integer roadId, @RequestParam(name = "vehicleId", required = false) Integer vehicleId, @RequestParam(name = "deviceId", required = false) Integer deviceId, @RequestParam(name = "activityId", required = false) Integer activityId, @RequestParam(name = "workId", required = false) Integer workId, @RequestParam(name = "startDate", required = false) String startDate, @RequestParam(name = "endDate", required = false) String endDate, @RequestParam(name = "alertTypeId", required = false) Integer alertTypeId, @RequestParam(name = "circleId", required = false) Integer circleId, @RequestParam(name = "distId", required = false) Integer distId, @RequestParam(name = "divisionId", required = false) Integer divisionId, @RequestParam(name = "start", required = false) Integer start, @RequestParam(name = "length", required = false) Integer length, @RequestParam(name = "draw", required = false) Integer draw, @RequestParam(name = "alertId", required = false) Integer alertId) {
         AlertFilterDto filterDto = new AlertFilterDto();
         filterDto.setUserId(userId);
         filterDto.setRoadId(roadId);
@@ -542,31 +600,31 @@ public class AlertController {
         try {
             Page<AlertCountDto> alertListToday = alertService.getAlertToday(filterDto);
             Page<AlertCountDto> alertListTotal = alertService.getWorkAlertTotal(filterDto);
-            Page<AlertCountDto> vehicleAlertList=alertService.getVehicleAlert(filterDto);
+            Page<AlertCountDto> vehicleAlertList = alertService.getVehicleAlert(filterDto);
             Page<AlertCountDto> roadAlertList = alertService.getRoadAlert(filterDto);
 
             List<AlertCountDto> alertList1 = alertListToday.getContent();
-            Integer start1=start;
-            for(int i=0;i<alertList1.size();i++){
-                start1=start1+1;
+            Integer start1 = start;
+            for (int i = 0; i < alertList1.size(); i++) {
+                start1 = start1 + 1;
                 alertList1.get(i).setSlNo(start1);
             }
             List<AlertCountDto> alertList2 = alertListTotal.getContent();
-            Integer start2=start;
-            for(int i=0;i<alertList2.size();i++){
-                start2=start2+1;
+            Integer start2 = start;
+            for (int i = 0; i < alertList2.size(); i++) {
+                start2 = start2 + 1;
                 alertList2.get(i).setSlNo(start2);
             }
             List<AlertCountDto> alertList3 = vehicleAlertList.getContent();
-            Integer start3=start;
-            for(int i=0;i<alertList3.size();i++){
-                start3=start3+1;
+            Integer start3 = start;
+            for (int i = 0; i < alertList3.size(); i++) {
+                start3 = start3 + 1;
                 alertList3.get(i).setSlNo(start3);
             }
             List<AlertCountDto> alertList4 = roadAlertList.getContent();
-            Integer start4=start;
-            for(int i=0;i<alertList4.size();i++){
-                start4=start4+1;
+            Integer start4 = start;
+            for (int i = 0; i < alertList4.size(); i++) {
+                start4 = start4 + 1;
                 alertList4.get(i).setSlNo(start4);
             }
 
@@ -591,15 +649,13 @@ public class AlertController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response = new RDVTSAlertResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    e.getMessage(),
-                    result);
+            response = new RDVTSAlertResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
         return response;
 
 
     }
+
     public static boolean isNumeric(String strNum) {
         if (strNum == null) {
             return false;
