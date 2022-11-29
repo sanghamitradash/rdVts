@@ -503,23 +503,23 @@ public class AlertRepositoryImpl {
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
 
-        String qry = "select imei,alert.id as alertId, alert_type_id,type.alert_type as alertType,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, " +
-                " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser, count(alert.id) over (partition by alert.alert_type_id,vdm.vehicle_id)   " +
-                " from  rdvts_oltp.alert_data  as alert  " +
-                " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id    " +
-                " left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by    " +
-                " left join rdvts_oltp.device_m as dm on dm.imei_no_1=alert.imei  " +
-                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id  " +
-                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id " +
-                " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  " +
-                " left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  " ;
+        String qry = "select imei,alert.id as alertId, alert_type_id,type.alert_type as alertType,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, \n" +
+                " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser, count(alert.id) over (partition by alert.alert_type_id)    \n" +
+                " from  rdvts_oltp.alert_data  as alert  \n" +
+                " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id and type.is_active=true   \n" +
+                " left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by and userM.is_active=true    \n" +
+                " left join rdvts_oltp.device_m as dm on dm.imei_no_1=alert.imei and dm.is_active=true \n" +
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id and vdm.is_active=true \n" +
+                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id and vam.is_active=true \n" +
+                " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  and awm.is_active=true \n" +
+                "  left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  where alert.is_active=true   " ;
 
         if (filterDto.getAlertId() != null && filterDto.getAlertId() > 0) {
-            qry += " where alert.id=:alertId ";
+            qry += " and alert.id=:alertId ";
             sqlParam.addValue("alertId", filterDto.getAlertId());
         }
         if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
-            qry += " where vdm.vehicle_id=:vehicleId ";
+            qry += " and vdm.vehicle_id=:vehicleId ";
             sqlParam.addValue("vehicleId", filterDto.getVehicleId());
         }
         if (filterDto.getActivityId() != null && filterDto.getActivityId() > 0) {
@@ -552,7 +552,7 @@ public class AlertRepositoryImpl {
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
-            qry += " AND date(alert.gps_dtm) >= :startDate";
+            qry += " AND date(alert.gps_dtm) >= :startDate ";
             Date startDate = null;
             try {
                 startDate = format.parse(filterDto.getStartDate());
@@ -562,7 +562,7 @@ public class AlertRepositoryImpl {
             sqlParam.addValue("startDate", startDate, Types.DATE);
         }
         if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
-            qry += " AND date(alert.gps_dtm) <= :endDate";
+            qry += " AND date(alert.gps_dtm) <= :endDate ";
             Date endDate = null;
             try {
                 endDate = format.parse(filterDto.getEndDate());
@@ -586,27 +586,29 @@ public class AlertRepositoryImpl {
                 qry += " AND  vdm.vehicle_id in(:vehicleIds) ";
                 sqlParam.addValue("vehicleIds", vehicleIds);
             } else {
-                qry += " WHERE vdm.vehicle_id in(:vehicleIds) ";
+                qry += " where vdm.vehicle_id in(:vehicleIds) ";
                 sqlParam.addValue("vehicleIds", vehicleIds);
             }
         }
 
         else if(user.getUserLevelId()==3){
             List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
-            List<Integer> vehicleIds  = masterRepositoryImpl.getVehicleIdsByBlockIds(blockIds);
-            if(qry != null && qry.length() > 0){
-                qry += " AND  vdm.vehicle_id=:vehicleIds ";
-                sqlParam.addValue("vehicleIds",vehicleIds);
-            } else {
-                qry += " WHERE  vdm.vehicle_id in(:vehicleIds) ";
-                sqlParam.addValue("vehicleIds",vehicleIds);
+            List<Integer> vehicleId = masterRepositoryImpl.getVehicleIdsByBlockIds(blockIds);
+            if(vehicleId != null && vehicleId.size() > 0) {
+                if(qry != null && qry.length() > 0){
+                    qry += "AND vdm.vehicle_id in(:vehicleIds) ";
+                    sqlParam.addValue("vehicleIds",vehicleId);
+                } else {
+                    qry += " where vdm.vehicle_id in(:vehicleIds) ";
+                    sqlParam.addValue("vehicleIds",vehicleId);
+                }
             }
         }
 
-//        else if(user.getUserLevelId()==4){
-//            qry += " AND gm.division_id=:divisionId ";
-//            sqlParam.addValue("divisionId",user.getUserLevelId());
-//        }
+        else if(user.getUserLevelId()==4){
+            qry += " AND gm.division_id=:divisionId ";
+            sqlParam.addValue("divisionId",user.getUserLevelId());
+        }
 
         resultCount = count(qry, sqlParam);
         if (filterDto.getLimit() > 0){
