@@ -581,7 +581,8 @@ public class MasterRepositoryImpl implements MasterRepository {
 
     public List<Integer> getVehicleIdsByBlockIds(List<Integer> blockIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  select vehicle_id from rdvts_oltp.vehicle_device_mapping where device_id in (select device_id from rdvts_oltp.device_area_mapping where  block_id in(:blockIds)) ";
+        String qry = "  select distinct vam.vehicle_id from rdvts_oltp.vehicle_activity_mapping as vam " +
+                "left join rdvts_oltp.geo_master as gm on gm.activity_id=vam.activity_id where gm.block_id in(:blockIds) ";
         sqlParam.addValue("blockIds", blockIds);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
