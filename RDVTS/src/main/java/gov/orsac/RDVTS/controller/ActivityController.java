@@ -278,6 +278,7 @@ public class ActivityController {
 
         try {
             List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(), activityWork.getActivityId(), activityWork.getUserId());
+            Integer res = activityService.saveContractorId(activityWork.getContractorId(), activityWork.getActivityId() );
             result.put("VehicleActivityMapping", VehicleActivityMapping);
             response.setData(result);
             response.setStatus(1);

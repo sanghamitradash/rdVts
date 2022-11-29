@@ -56,6 +56,8 @@ public interface ActivityService {
     List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId);
 
     IssueEntity updateIssue(int id, IssueDto issueDto);
+
+    Integer saveContractorId(Integer contractorId, Integer activityId);
 }
 
 

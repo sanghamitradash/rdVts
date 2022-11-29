@@ -319,6 +319,13 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     }
 
+    public Integer saveContractorId(Integer contractorId, Integer activityId) {
+        MapSqlParameterSource sqlParam  = new MapSqlParameterSource();
+        String qry = " UPDATE rdvts_oltp.geo_master SET contractor_id=:contractorId WHERE activity_id=:activityId ";
+        sqlParam.addValue("activityId",activityId);
+        sqlParam.addValue("contractorId",contractorId);
+        return namedJdbc.update(qry,sqlParam);
+    }
 }
 
 
