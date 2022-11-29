@@ -154,53 +154,58 @@ public class AlertController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<WorkDto> workDto = workService.getWorkById(-1);
+            List<WorkDto> workDto = workService.getWorkById(-1);//get All Work
 
             for (WorkDto Work : workDto) {
-                List<RoadMasterDto> road = roadService.getRoadByWorkId(Work.getId());
+                List<RoadMasterDto> road = roadService.getRoadByWorkId(Work.getId()); //get Road Details By WorkId
                 if (road.size() > 0 && road.get(0).getGeom() != null) {
-                    List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
+                    List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId()); //Get Activity BY WorkId
                     for (ActivityWorkMapping activityId : activityDtoList) {
+                        //Get Vehicle By Activity
                         List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), null, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
                         for (VehicleActivityMappingDto vehicleList : veActMapDto) {
+                            //get Device BY vehicle ID
                             List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(), null);
                             if (getdeviceList.size() > 0) {
                                 for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
+                                    //get Imei By Device
                                     List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                     for (DeviceDto imei : getImeiList) {
+                                        //get Location By Imei
                                         List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), null, null, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                        //get Only GeoFenced Lat Lon From above record
                                         alertService.GeoFenceIntersectedRecords(road.get(0).getGeom(), vtuLocationDto);
 
 
-                                        for (VtuLocationDto vtuItem : vtuLocationDto) {
-                                            Boolean b = alertService.checkGeoFenceIntersected(road.get(0).getGeom(), vtuItem.getLongitude(), vtuItem.getLatitude());
-                                            if (b == false) {
-                                                Boolean alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
-                                                if (!alertExists) {
-                                                    AlertEntity alertEntity = new AlertEntity();
-                                                    alertEntity.setImei(vtuItem.getImei());
-                                                    alertEntity.setAlertTypeId(GEO_FENCE_ALERT_ID);
-                                                    if (vtuItem.getLatitude() != null) {
-                                                        alertEntity.setLatitude(Double.parseDouble(vtuItem.getLatitude()));
-                                                    }
-                                                    if (vtuItem.getLongitude() != null) {
-                                                        alertEntity.setLongitude(Double.parseDouble(vtuItem.getLongitude()));
-                                                    }
-                                                    if (vtuItem.getAltitude() != null) {
-                                                        alertEntity.setAltitude(Double.parseDouble(vtuItem.getAltitude()));
-                                                    }
-                                                    if (vtuItem.getAccuracy() != null) {
-                                                        alertEntity.setAccuracy(Double.parseDouble(vtuItem.getAccuracy()));
-                                                    }
-                                                    alertEntity.setSpeed(Double.parseDouble(vtuItem.getSpeed()));
-                                                    alertEntity.setGpsDtm(new Date());
-                                                    AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
-                                                }
-                                            } else {
-                                                Boolean updateResolve = alertService.updateResolve(vtuItem.getImei(), GEO_FENCE_ALERT_ID);
-
-                                            }
-                                        }
+//                                        for (VtuLocationDto vtuItem : vtuLocationDto) {
+//                                            Boolean b = alertService.checkGeoFenceIntersected(road.get(0).getGeom(), vtuItem.getLongitude(), vtuItem.getLatitude());
+//                                            if (b == false) {
+//                                                Boolean alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
+//                                                if (!alertExists) {
+//                                                    AlertEntity alertEntity = new AlertEntity();
+//                                                    alertEntity.setImei(vtuItem.getImei());
+//                                                    alertEntity.setAlertTypeId(GEO_FENCE_ALERT_ID);
+//                                                    if (vtuItem.getLatitude() != null) {
+//                                                        alertEntity.setLatitude(Double.parseDouble(vtuItem.getLatitude()));
+//                                                    }
+//                                                    if (vtuItem.getLongitude() != null) {
+//                                                        alertEntity.setLongitude(Double.parseDouble(vtuItem.getLongitude()));
+//                                                    }
+//                                                    if (vtuItem.getAltitude() != null) {
+//                                                        alertEntity.setAltitude(Double.parseDouble(vtuItem.getAltitude()));
+//                                                    }
+//                                                    if (vtuItem.getAccuracy() != null) {
+//                                                        alertEntity.setAccuracy(Double.parseDouble(vtuItem.getAccuracy()));
+//                                                    }
+//                                                    alertEntity.setSpeed(Double.parseDouble(vtuItem.getSpeed()));
+//                                                    alertEntity.setGpsDtm(new Date());
+//                                                    AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+//                                                }
+//                                            } else {
+//                                                Boolean updateResolve = alertService.updateResolve(vtuItem.getImei(), GEO_FENCE_ALERT_ID);
+//
+//                                            }
+//                                        }
 
 
                                     }
