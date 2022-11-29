@@ -553,6 +553,22 @@ public class MasterRepositoryImpl implements MasterRepository {
         sqlParam.addValue("deviceId", deviceId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
+
+    public List<Integer> getWorkIdsByBlockAndDivision(List<Integer> blockIds, List<Integer> divisionIds, List<Integer> distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct work_id from rdvts_oltp.geo_master where block_id in (:blockIds) or division_id in (:divisionIds) or dist_id in(:distIds) ";
+        sqlParam.addValue("blockIds", blockIds);
+        sqlParam.addValue("divisionIds", divisionIds);
+        sqlParam.addValue("distIds", distIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getWorkIdsByBlockIds(List<Integer> blockIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct work_id from rdvts_oltp.geo_master where block_id in (:blockIds) ";
+        sqlParam.addValue("blockIds", blockIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
 }
 
 

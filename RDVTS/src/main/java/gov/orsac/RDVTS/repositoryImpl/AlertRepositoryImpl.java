@@ -25,6 +25,12 @@ public class AlertRepositoryImpl {
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
 
+    @Autowired
+    private UserRepositoryImpl userRepositoryImpl;
+
+    @Autowired
+    private MasterRepositoryImpl masterRepositoryImpl;
+
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
         String sqlStr = "SELECT COUNT(*) from (" + qryStr + ") as t";
         Integer intRes = namedJdbc.queryForObject(sqlStr, sqlParam, Integer.class);
@@ -436,6 +442,42 @@ public class AlertRepositoryImpl {
             sqlParam.addValue("endDate", endDate, Types.DATE);
         }
 
+        UserInfoDto user = userRepositoryImpl.getUserByUserId(filterDto.getUserId());
+        if (user.getUserLevelId() == 5) {
+            qry += " AND gm.contractor_id=:contractorId ";
+            sqlParam.addValue("contractorId", user.getUserLevelId());
+        }
+
+        else if (user.getUserLevelId() == 2) {
+            List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(filterDto.getUserId());
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
+            List<Integer> workIds = masterRepositoryImpl.getWorkIdsByBlockAndDivision(blockIds, divisionIds, distIds);
+            if (qry != null && qry.length() > 0) {
+                qry += " AND  gm.work_id in(:workIds) ";
+                sqlParam.addValue("workIds", workIds);
+            } else {
+                qry += " WHERE gm.work_id in(:workIds) ";
+                sqlParam.addValue("workIds", workIds);
+            }
+        }
+
+        else if(user.getUserLevelId()==3){
+            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
+            List<Integer> workIds  = masterRepositoryImpl.getWorkIdsByBlockIds(blockIds);
+            if(qry != null && qry.length() > 0){
+                qry += " AND  gm.work_id in(:workIds) ";
+                sqlParam.addValue("workIds",workIds);
+            } else {
+                qry += " WHERE  gm.work_id in(:workIds) ";
+                sqlParam.addValue("workIds",workIds);
+            }
+        }
+
+        else if(user.getUserLevelId()==4){
+            qry += " AND gm.division_id=:divisionId ";
+            sqlParam.addValue("divisionId",user.getUserLevelId());
+        }
 
         resultCount = count(qry, sqlParam);
         if (filterDto.getLimit() > 0){
