@@ -25,4 +25,5 @@ public class VehicleFilterDto {
 
     private Integer distId;
     private Integer divisionId;
+    private Integer contractorId;
 }
