@@ -116,8 +116,8 @@ public class VehicleController {
 
     @PostMapping("/getVehicleByVId")
     public RDVTSListResponse getVehicleByVId(@RequestParam Integer vehicleId,
-                                             @RequestParam Integer userId/*,
-                                             @RequestParam(name = "startDate", required = false) String startDate,
+                                             @RequestParam Integer userId
+                                             /*@RequestParam(name = "startDate", required = false) String startDate,
                                              @RequestParam (name = "endDate", required = false) String endDate,
                                              @RequestParam(name = "alertTypeId", required = false) Integer alertTypeId,
                                              @RequestParam(name = "start") Integer start,
