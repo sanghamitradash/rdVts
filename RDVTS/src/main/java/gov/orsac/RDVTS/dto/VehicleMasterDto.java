@@ -27,6 +27,7 @@ public class VehicleMasterDto {
 
     private String vehicleTypeName;
 
+    private Long imeiNo1;
 
     private String model;
 
