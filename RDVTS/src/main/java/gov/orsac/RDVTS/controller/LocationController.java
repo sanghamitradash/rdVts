@@ -158,7 +158,7 @@ public class LocationController {
                     for (Integer workitem : workId) {
                         List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(workitem);
                         for (ActivityWorkMapping activityId : activityDtoList) {
-                            List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                            List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                             for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                 //road Details By vehicle
                                 List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
@@ -197,7 +197,7 @@ public class LocationController {
                         for (GeoMasterDto item : workByRoad) {
                             List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(item.getWorkId());
                             for (ActivityWorkMapping activityId : activityDtoList) {
-                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     //road Details By vehicle
                                     List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
@@ -278,7 +278,7 @@ public class LocationController {
                         for (GeoMasterDto WorkObj : workByDistrictIds) {
                             List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(WorkObj.getWorkId());
                             for (ActivityWorkMapping activityId : activityDtoList) {
-                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     //road Details By vehicle
                                     List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
@@ -320,7 +320,7 @@ public class LocationController {
                         for (GeoMasterDto workItem : workByBlockId) {
                             List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(workItem.getWorkId());
                             for (ActivityWorkMapping activityId : activityDtoList) {
-                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     //road Details By vehicle
                                     List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
@@ -360,7 +360,7 @@ public class LocationController {
                         for (GeoMasterDto workItem : workByDivisionId) {
                             List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(workItem.getWorkId());
                             for (ActivityWorkMapping activityId : activityDtoList) {
-                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     //road Details By vehicle
                                     List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
