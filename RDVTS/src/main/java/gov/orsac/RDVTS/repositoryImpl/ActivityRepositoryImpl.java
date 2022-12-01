@@ -193,9 +193,12 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     public List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select id, vehicle_no from rdvts_oltp.vehicle_m " +
-                "where id not in (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id=:activityId) " +
-                "and vehicle_type_id=:vehicleTypeId";
+//        String qry = "select id, vehicle_no from rdvts_oltp.vehicle_m " +
+//                "where id not in (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where activity_id=:activityId) " +
+//                "and vehicle_type_id=:vehicleTypeId";
+        String qry = " select id, vehicle_no from rdvts_oltp.vehicle_m " +
+                "where id not in (select vehicle_id from rdvts_oltp.vehicle_activity_mapping where is_active=true) " +
+                "and vehicle_type_id=:vehicleTypeId and is_active=true ";
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("vehicleTypeId", vehicleTypeId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMaster.class));

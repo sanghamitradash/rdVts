@@ -595,7 +595,8 @@ public class AlertController {
                                        @RequestParam(name = "start", required = false) Integer start,
                                        @RequestParam(name = "length", required = false) Integer length,
                                        @RequestParam(name = "draw", required = false) Integer draw,
-                                       @RequestParam(name = "alertId", required = false) Integer alertId) {
+                                       @RequestParam(name = "alertId", required = false) Integer alertId/*,
+                                       @RequestParam(name = "", required = false) Integer blockId*/) {
         AlertFilterDto filterDto = new AlertFilterDto();
         filterDto.setUserId(userId);
         filterDto.setRoadId(roadId);
@@ -613,6 +614,7 @@ public class AlertController {
         filterDto.setLimit(length);
         filterDto.setDraw(draw);
         filterDto.setAlertId(alertId);
+//        filterDto.setBlockId(blockId);
 
         RDVTSAlertResponse response = new RDVTSAlertResponse();
         Map<String, Object> result = new HashMap<>();
@@ -648,15 +650,15 @@ public class AlertController {
                 alertList4.get(i).setSlNo(start4);
             }
 
-            result.put("totalAlertToday", alertList1);
+//            result.put("totalAlertToday", alertList1);
             result.put("totalAlertWork", alertList2);
             result.put("vehicleAlert", alertList3);
             result.put("roadAlert", alertList4);
             response.setData(result);
             response.setStatus(1);
             response.setDraw(draw);
-            response.setWorkRecordsFiltered(alertListToday.getTotalElements());
-            response.setWorkRecordsTotal(alertListToday.getTotalElements());
+//            response.setWorkRecordsFiltered(alertListToday.getTotalElements());
+//            response.setWorkRecordsTotal(alertListToday.getTotalElements());
             response.setWorkRecordsFiltered(alertListTotal.getTotalElements());
             response.setWorkRecordsTotal(alertListTotal.getTotalElements());
 

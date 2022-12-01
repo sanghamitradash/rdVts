@@ -388,6 +388,10 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id " +
                 "left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id  where ad.is_active=true  " ;
+//        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
+//            qry += " and gm.block_id=:blockId ";
+//            sqlParam.addValue("blockId", filterDto.getBlockId());
+//        }
         if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
             qry += " and gm.work_id=:workId ";
             sqlParam.addValue("workId", filterDto.getWorkId());
@@ -513,7 +517,10 @@ public class AlertRepositoryImpl {
                 " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id and vam.is_active=true \n" +
                 " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  and awm.is_active=true \n" +
                 "  left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  where alert.is_active=true   " ;
-
+//        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
+//            qry += " and gm.block_id=:blockIds ";
+//            sqlParam.addValue("blockId", filterDto.getBlockId());
+//        }
         if (filterDto.getAlertId() != null && filterDto.getAlertId() > 0) {
             qry += " and alert.id=:alertId ";
             sqlParam.addValue("alertId", filterDto.getAlertId());
@@ -638,6 +645,10 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id and awm.is_active=true " +
                 "left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id and gm.is_active=true " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where ad.is_active=true " ;
+//        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
+//            qry += " and gm.block_id=:blockIds ";
+//            sqlParam.addValue("blockIds", filterDto.getBlockId());
+//        }
         if (filterDto.getRoadId() != null && filterDto.getRoadId() > 0) {
             qry += " and gm.road_id=:roadId ";
             sqlParam.addValue("roadId", filterDto.getRoadId());
