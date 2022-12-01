@@ -116,8 +116,8 @@ public class VehicleController {
 
     @PostMapping("/getVehicleByVId")
     public RDVTSListResponse getVehicleByVId(@RequestParam Integer vehicleId,
-                                             @RequestParam Integer userId/*,
-                                             @RequestParam(name = "startDate", required = false) String startDate,
+                                             @RequestParam Integer userId
+                                             /*@RequestParam(name = "startDate", required = false) String startDate,
                                              @RequestParam (name = "endDate", required = false) String endDate,
                                              @RequestParam(name = "alertTypeId", required = false) Integer alertTypeId,
                                              @RequestParam(name = "start") Integer start,
@@ -224,6 +224,7 @@ public class VehicleController {
                                             @RequestParam(name = "userId", required = false) Integer userId,
                                             @RequestParam(name = "distId",required = false) Integer distId,
                                             @RequestParam(name = "divisionId",required = false) Integer divisionId,
+                                            @RequestParam(name = "contractorId",required = false)Integer contractorId,
                                             @RequestParam(name = "deviceAssign", required = false) Boolean deviceAssign,
                                             @RequestParam(name = "trackingActive", required = false) Boolean trackingActive,
                                             @RequestParam(name = "activityAssign", required = false) Boolean activityAssign) {
@@ -238,6 +239,7 @@ public class VehicleController {
         vehicle.setUserId(userId);
         vehicle.setDistId(distId);
         vehicle.setDivisionId(divisionId);
+        vehicle.setContractorId(contractorId);
         vehicle.setDraw(draw);
 
         //Check and Assign Filter
