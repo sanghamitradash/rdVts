@@ -388,6 +388,10 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id " +
                 "left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id  where ad.is_active=true  " ;
+//        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
+//            qry += " and gm.block_id=:blockId ";
+//            sqlParam.addValue("blockId", filterDto.getBlockId());
+//        }
         if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
             qry += " and gm.work_id=:workId ";
             sqlParam.addValue("workId", filterDto.getWorkId());
@@ -513,7 +517,10 @@ public class AlertRepositoryImpl {
                 " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id and vam.is_active=true \n" +
                 " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  and awm.is_active=true \n" +
                 "  left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  where alert.is_active=true   " ;
-
+//        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
+//            qry += " and gm.block_id=:blockIds ";
+//            sqlParam.addValue("blockId", filterDto.getBlockId());
+//        }
         if (filterDto.getAlertId() != null && filterDto.getAlertId() > 0) {
             qry += " and alert.id=:alertId ";
             sqlParam.addValue("alertId", filterDto.getAlertId());
@@ -630,20 +637,24 @@ public class AlertRepositoryImpl {
         order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
         int resultCount=0;
         String qry = "  select distinct ad.id as alertId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.gps_dtm, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve, " +
-                "ad.resolved_by, gm.road_id as roadId, count(ad.id) over (partition by ad.alert_type_id,gm.road_id)  " +
+                "ad.resolved_by, count(ad.id) over (partition by ad.alert_type_id)  " +
                 "from rdvts_oltp.alert_data as ad " +
-                "left join rdvts_oltp.device_m as dm on dm.imei_no_1=ad.imei " +
-                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id = dm.id " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id " +
-                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id " +
-                "left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id " +
-                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " ;
+                "left join rdvts_oltp.device_m as dm on dm.imei_no_1=ad.imei and dm.is_active=true  " +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id = dm.id and vdm.is_active=true " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id and vam.is_active=true " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id and awm.is_active=true " +
+                "left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id and gm.is_active=true " +
+                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where ad.is_active=true " ;
+//        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
+//            qry += " and gm.block_id=:blockIds ";
+//            sqlParam.addValue("blockIds", filterDto.getBlockId());
+//        }
         if (filterDto.getRoadId() != null && filterDto.getRoadId() > 0) {
-            qry += " where gm.road_id=:roadId ";
+            qry += " and gm.road_id=:roadId ";
             sqlParam.addValue("roadId", filterDto.getRoadId());
         }
         if (filterDto.getAlertId() != null && filterDto.getAlertId() > 0) {
-            qry += " where ad.id=:alertId ";
+            qry += " and ad.id=:alertId ";
             sqlParam.addValue("alertId", filterDto.getAlertId());
         }
         if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
@@ -694,6 +705,41 @@ public class AlertRepositoryImpl {
                 log.info("To Date Parsing exception : {}", exception.getMessage());
             }
             sqlParam.addValue("endDate", endDate, Types.DATE);
+        }
+        UserInfoDto user = userRepositoryImpl.getUserByUserId(filterDto.getUserId());
+        if (user.getUserLevelId() == 5) {
+            qry += " AND gm.contractor_id=:contractorId ";
+            sqlParam.addValue("contractorId", user.getUserLevelId());
+        }
+        else if (user.getUserLevelId() == 2) {
+            List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(filterDto.getUserId());
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
+            List<Integer> roadIds = masterRepositoryImpl.getRoadIdsByBlockAndDivision(distIds, blockIds, divisionIds);
+            if(qry != null && qry.length() > 0){
+                qry += " and gm.road_id in (:roadIds) ";
+                sqlParam.addValue("roadIds", roadIds);
+            } else {
+                qry += " where gm.road_id in (:roadIds) ";
+                sqlParam.addValue("roadIds", roadIds);
+            }
+        }
+        else if(user.getUserLevelId()==3){
+            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
+            List<Integer> roadIds = masterRepositoryImpl.getRoadIdsByBlockIds(blockIds);
+            if(roadIds != null && roadIds.size() > 0) {
+                if(qry != null && qry.length() > 0){
+                    qry += " and gm.road_id in (:roadIds) ";
+                    sqlParam.addValue("roadIds", roadIds);
+                } else {
+                    qry += " where gm.roadId in (:roadIds) ";
+                    sqlParam.addValue("roadIds", roadIds);
+                }
+            }
+        }
+        else if(user.getUserLevelId()==4){
+            qry += " AND gm.division_id=:divisionId ";
+            sqlParam.addValue("divisionId",user.getUserLevelId());
         }
 
         resultCount = count(qry, sqlParam);
