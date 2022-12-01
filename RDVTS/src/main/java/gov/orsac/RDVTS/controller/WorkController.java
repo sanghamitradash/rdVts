@@ -156,17 +156,17 @@ public class WorkController {
                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
 
-                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
-                        for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
-                            List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
+                        List<VehicleDeviceMappingDto> getDeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
+                        for (VehicleDeviceMappingDto deviceListItem : getDeviceList) {
+                            List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceListItem.getDeviceId());
                             //int i = 0;
                             for (DeviceDto imei : getImeiList) {
-                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+                                totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+                                totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+                                todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
                                // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
                                 int i=0;
                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
                                     i++;
@@ -187,7 +187,7 @@ public class WorkController {
             }
             //Active Inactive vehicle
             List<LocationDto> locationList=new ArrayList<>();
-            int totalVehicleCount=vehicleService.getvehicleCountByWorkId(id);
+            int totalVehicleCount=vehicle.size();
             Double avgDistance;
             if(Double.isNaN(totalDistance/totalVehicleCount)){
                 avgDistance=0.0;
