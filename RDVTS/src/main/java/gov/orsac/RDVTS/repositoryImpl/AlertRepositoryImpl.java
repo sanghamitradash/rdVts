@@ -605,7 +605,7 @@ public class AlertRepositoryImpl {
             List<Integer> vehicleId = masterRepositoryImpl.getVehicleIdsByBlockIds(blockIds);
             if(vehicleId != null && vehicleId.size() > 0) {
                 if(qry != null && qry.length() > 0){
-                    qry += "AND vdm.vehicle_id in(:vehicleIds) ";
+                    qry += " AND vdm.vehicle_id in(:vehicleIds) ";
                     sqlParam.addValue("vehicleIds",vehicleId);
                 } else {
                     qry += " where vdm.vehicle_id in(:vehicleIds) ";
@@ -615,8 +615,17 @@ public class AlertRepositoryImpl {
         }
 
         else if(user.getUserLevelId()==4){
-            qry += " AND gm.division_id=:divisionId ";
-            sqlParam.addValue("divisionId",user.getUserLevelId());
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(filterDto.getUserId());
+            List<Integer> vehicleIds = userRepositoryImpl.getVehicleIdByDivisionId(divisionIds);
+            if(vehicleIds != null && vehicleIds.size() > 0){
+                if(qry != null && qry.length() > 0){
+                    qry += " AND vdm.vehicle_id in(:vehicleIds) ";
+                    sqlParam.addValue("vehicleIds", vehicleIds);
+                } else {
+                    qry += " where vdm.vehicle_id in(:vehicleIds) ";
+                    sqlParam.addValue("vehicleIds", vehicleIds);
+                }
+            }
         }
 
         resultCount = count(qry, sqlParam);
