@@ -461,12 +461,14 @@ public class AlertRepositoryImpl {
             List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
             List<Integer> workIds = masterRepositoryImpl.getWorkIdsByBlockAndDivision(blockIds, divisionIds, distIds);
-            if (qry != null && qry.length() > 0) {
-                qry += " AND  gm.work_id in(:workIds) ";
-                sqlParam.addValue("workIds", workIds);
-            } else {
-                qry += " WHERE gm.work_id in(:workIds) ";
-                sqlParam.addValue("workIds", workIds);
+            if(workIds != null && workIds.size() > 0){
+                if (qry != null && qry.length() > 0) {
+                    qry += " AND  gm.work_id in(:workIds) ";
+                    sqlParam.addValue("workIds", workIds);
+                } else {
+                    qry += " WHERE gm.work_id in(:workIds) ";
+                    sqlParam.addValue("workIds", workIds);
+                }
             }
         }
 
