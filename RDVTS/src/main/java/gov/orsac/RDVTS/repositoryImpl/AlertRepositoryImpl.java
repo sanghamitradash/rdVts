@@ -749,8 +749,17 @@ public class AlertRepositoryImpl {
             }
         }
         else if(user.getUserLevelId()==4){
-            qry += " AND gm.division_id=:divisionId ";
-            sqlParam.addValue("divisionId",user.getUserLevelId());
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(filterDto.getUserId());
+            List<Integer> roadIds = userRepositoryImpl.getRoadIdByDivisionId(divisionIds);
+            if(roadIds != null && roadIds.size() > 0){
+                if(qry != null && qry.length() > 0){
+                    qry += " and gm.road_id in(:roadIds) ";
+                    sqlParam.addValue("roadIds", roadIds);
+                } else {
+                    qry += " where gm.road_id in(:roadIds) ";
+                    sqlParam.addValue("roadIds", roadIds);
+                }
+            }
         }
 
         resultCount = count(qry, sqlParam);

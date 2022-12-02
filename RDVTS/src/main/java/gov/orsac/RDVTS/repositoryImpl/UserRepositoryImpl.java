@@ -393,5 +393,12 @@ public class UserRepositoryImpl {
         sqlParam.addValue("divisionIds", divisionIds);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
+
+    public List<Integer> getRoadIdByDivisionId(List<Integer> divisionIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select road_id from rdvts_oltp.geo_master where division_id in (:divisionIds)  ";
+        sqlParam.addValue("divisionIds", divisionIds);
+        return namedJdbc.queryForList(qry,sqlParam, Integer.class);
+    }
 }
 

@@ -60,5 +60,6 @@ public class VehicleMasterDto {
     private Integer activityId;
     private Integer distId;
     private Integer divisionId;
+    private Integer activityWorkMapId;
 
 }
