@@ -72,7 +72,7 @@ public class ActivityController {
 
             List<IssueDto> issue = activityService.getIssueByWorkId(activityWork.get(0).getWorkId(), activityWork.get(0).getActivityId());
 
-            List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(activityId, userId);
+            List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(activityWork.get(0).getId(), userId);
             result.put("activity", activityWork);
             result.put("issue",issue);
             result.put("vehicle", vehicle);
