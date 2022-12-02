@@ -63,6 +63,8 @@ public class ActivityWorkMappingDto {
 
     private Integer userId;
 
+    private Integer activityWorkMapId;
+
 
 
 }
