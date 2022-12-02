@@ -265,7 +265,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
                 "aw.g_activity_id,aw.g_work_id from rdvts_oltp.activity_work_mapping as aw  " +
                 "left join rdvts_oltp.activity_m as am on am.id = aw.activity_id AND aw.is_active = true  " +
                 "left join rdvts_oltp.activity_status_m as status on status.id = aw.activity_status  " +
-                "Where aw.work_id =:workId AND aw.activity_id =:activityId And aw.id=:activityWorkMapId ";
+                "Where aw.work_id =:workId AND aw.id =:activityId and aw.is_active = true ";
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("workId",workId);
         sqlParam.addValue("userId",userId);
