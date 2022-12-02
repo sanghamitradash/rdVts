@@ -384,5 +384,14 @@ public class UserRepositoryImpl {
         sqlParam.addValue("deviceIds", deviceIds);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
+
+    public List<Integer> getVehicleIdByDivisionId(List<Integer> divisionIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select vdm.vehicle_id from rdvts_oltp.vehicle_device_mapping as vdm " +
+                " left join rdvts_oltp.device_area_mapping as dam on dam.device_id=vdm.device_id and dam.is_active = true " +
+                " where vdm.is_active=true and dam.division_id in (:divisionIds) ";
+        sqlParam.addValue("divisionIds", divisionIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
 }
 
