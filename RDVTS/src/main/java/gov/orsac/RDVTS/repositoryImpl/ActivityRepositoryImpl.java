@@ -242,7 +242,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id and vam.is_active = true " +
                 "left join rdvts_oltp.activity_work_mapping as awm on vam.activity_id = awm.id " +
                 "left join rdvts_oltp.vehicle_type as type on type.id = vm.vehicle_type_id  " +
-                "WHERE vm.is_active = true AND  awm.activity_id=:activityId and awm.id=:activityWorkMapId " ;
+                "WHERE vm.is_active = true AND  awm.activity_id=:activityId " ;
         sqlParam.addValue("activityId",activityId);
         sqlParam.addValue("userId",userId);
         sqlParam.addValue("activityWorkMapId", activityWorkMapId);
@@ -264,7 +264,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
                 "aw.g_activity_id,aw.g_work_id from rdvts_oltp.activity_work_mapping as aw  " +
                 "left join rdvts_oltp.activity_m as am on am.id = aw.activity_id AND aw.is_active = true  " +
                 "left join rdvts_oltp.activity_status_m as status on status.id = aw.activity_status  " +
-                "Where aw.work_id =:workId AND aw.activity_id =:activityId ";
+                "Where aw.work_id =:workId AND aw.id =:activityId and aw.is_active = true ";
+                
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("workId",workId);
         sqlParam.addValue("userId",userId);
