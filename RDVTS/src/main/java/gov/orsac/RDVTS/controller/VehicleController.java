@@ -223,6 +223,7 @@ public class VehicleController {
                                             @RequestParam(name = "draw", required = false) Integer draw,
                                             @RequestParam(name = "userId", required = false) Integer userId,
                                             @RequestParam(name = "distId",required = false) Integer distId,
+                                            @RequestParam(name ="userByVehicleId",required = false)Integer userByVehicleId,
                                             @RequestParam(name = "divisionId",required = false) Integer divisionId,
                                             @RequestParam(name = "contractorId",required = false)Integer contractorId,
                                             @RequestParam(name = "deviceAssign", required = false) Boolean deviceAssign,
@@ -237,6 +238,7 @@ public class VehicleController {
         vehicle.setLimit(length);
         vehicle.setOffSet(start);
         vehicle.setUserId(userId);
+        vehicle.setVehicleTypeId(userByVehicleId);
         vehicle.setDistId(distId);
         vehicle.setDivisionId(divisionId);
         vehicle.setContractorId(contractorId);
