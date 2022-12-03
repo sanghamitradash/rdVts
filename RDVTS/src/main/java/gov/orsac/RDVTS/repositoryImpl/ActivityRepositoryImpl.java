@@ -242,7 +242,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id and vam.is_active = true " +
                 "left join rdvts_oltp.activity_work_mapping as awm on vam.activity_id = awm.id " +
                 "left join rdvts_oltp.vehicle_type as type on type.id = vm.vehicle_type_id  " +
-                "WHERE vm.is_active = true AND  awm.activity_id=:activityId and awm.id=:activityWorkMapId " ;
+                "WHERE vm.is_active = true AND  awm.activity_id=:activityId " ;
         sqlParam.addValue("activityId",activityId);
         sqlParam.addValue("userId",userId);
         sqlParam.addValue("activityWorkMapId", activityWorkMapId);
