@@ -347,7 +347,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 " left join rdvts_oltp.activity_work_mapping as activity on activity.work_id=work.id " +
                 " left join rdvts_oltp.work_status_m as status on status.id=work.work_status " +
                 " left join rdvts_oltp.approval_status_m as approvalStatus on approvalStatus.id=work.approval_status " +
-                " where activity.id in (:activityIds) and activity.is_active=true  ";
+                " where activity.activity_id in (:activityIds) and activity.is_active=false  ";
         sqlParam.addValue("activityIds", activityIds);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
     }
@@ -988,7 +988,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
     public Integer getActivityByVehicleId(Integer vehicleId){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct activity_id from rdvts_oltp.vehicle_activity_mapping  where is_active=true and vehicle_id=:vehicleId";
+        String qry = "select distinct awm.activity_id from rdvts_oltp.vehicle_activity_mapping as vam " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.id = vam.activity_id and awm.is_active = true " +
+                "where vam.is_active=true and vam.vehicle_id =:vehicleId";
         sqlParam.addValue("vehicleId", vehicleId);
         try{
           return  namedJdbc.queryForObject(qry, sqlParam, Integer.class);
@@ -999,7 +1001,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
     public List<Integer> getActivityIdsByVehicleId(Integer vehicleId){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct activity_id from rdvts_oltp.vehicle_activity_mapping  where is_active=false and vehicle_id=:vehicleId";
+        String qry = "select distinct awm.activity_id from rdvts_oltp.vehicle_activity_mapping as vam " +
+                " left join rdvts_oltp.activity_work_mapping as awm on awm.id = vam.activity_id " +
+                " where vam.is_active=false and vam.vehicle_id =:vehicleId";
         sqlParam.addValue("vehicleId", vehicleId);
         return  namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
@@ -1012,7 +1016,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "awm.actual_activity_completion_date as actualActivityCompletionDate,awm.executed_quantity as executedQuantity,awm.activity_status as statusId,status.name as statusName from rdvts_oltp.activity_work_mapping as awm   " +
                 "left join rdvts_oltp.activity_m am on am.id = awm.activity_id  " +
                 "left join rdvts_oltp.activity_status_m as status on status.id=awm.activity_status  " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = am.id   " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = awm.id   " +
                 "WHERE vam.is_active = true   ";
 
         if(vehicleId>0){
