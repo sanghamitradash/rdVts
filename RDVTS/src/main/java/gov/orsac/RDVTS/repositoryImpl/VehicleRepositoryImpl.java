@@ -393,7 +393,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 //                " on actCount.vehicle_id=activity.vehicle_id) as vehicleList ";
         String qry = "select * from (SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,vm.model, vm.chassis_no," +
                 "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,dam.dist_id, dam.division_id,   " +
-                "owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id ,   " +
+                "owner.user_id as userId, owner.user_id as userByVehicleId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id ,   " +
                 "contractor.name as contractorName,am.id  as activityId," +
                 "case when vdCount.vehicleCount>0 then true else false end as deviceAssigned," +
                 "case when vtuLocation.imeiCount>0 then true else false end as trackingStatus," +
@@ -480,6 +480,17 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             } else {
                 subQuery += " and vehicleList.contractor_id=:contractorId  ";
                 sqlParam.addValue("contractorId", vehicle.getContractorId());
+            }
+        }
+
+
+        if (vehicle.getUserByVehicleId() != null && vehicle.getUserByVehicleId() > 0) {
+            if (subQuery.length() <= 0) {
+                subQuery += " WHERE  userByVehicleId=:userByVehicleId ";
+                sqlParam.addValue("userByVehicleId", vehicle.getUserByVehicleId());
+            } else {
+                subQuery += " and userByVehicleId=:userByVehicleId  ";
+                sqlParam.addValue("userByVehicleId", vehicle.getUserByVehicleId());
             }
         }
 
