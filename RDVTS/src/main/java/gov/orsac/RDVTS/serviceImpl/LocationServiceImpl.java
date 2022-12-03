@@ -109,6 +109,17 @@ public class LocationServiceImpl implements LocationService {
         return locationRepository.getLastLocationByDeviceId(deviceIdList,checkArea);
     }
 
+    @Override
+    public List<VtuLocationDto> getLocationRecordListWithGeofence(Long imeiNo1, Long imeiNo2, Date createdOn, Date deactivationDate, Integer id) {
+        List<VtuLocationDto> vtuLocationDtoList=locationRepository.getLocationRecordListWithGeofence(imeiNo1,imeiNo2,createdOn,deactivationDate,id);
+        return vtuLocationDtoList;
+    }
+
+    @Override
+    public AlertDegreeDistanceDto getRotationDetails(String longitude, String latitude, String longitude1, String latitude1) {
+        return  locationRepository.getRotationDetails(longitude,latitude,longitude1,latitude1);
+    }
+
 
 
 }

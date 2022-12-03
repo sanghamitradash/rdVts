@@ -28,4 +28,9 @@ public interface LocationService {
     List<VtuLocationDto> getLastLocationByDeviceId(List<Integer> deviceIdList, Integer checkArea);
 
 
+    List<VtuLocationDto> getLocationRecordListWithGeofence(Long imeiNo1, Long imeiNo2, Date createdOn, Date deactivationDate, Integer id);
+
+
+
+    AlertDegreeDistanceDto getRotationDetails(String longitude, String latitude, String longitude1, String latitude1);
 }

@@ -1144,11 +1144,11 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             actualActivityCompletionDate = new Date();
         }
 
-        if (actualActivityStartDate != null && actualActivityCompletionDate != null) {
-            qry += " AND  created_on BETWEEN :activityStartDate AND :activityCompletionDate ";
-            sqlParam.addValue("activityStartDate", actualActivityStartDate);
-            sqlParam.addValue("activityCompletionDate", actualActivityCompletionDate);
-        }
+//        if (actualActivityStartDate != null && actualActivityCompletionDate != null) {
+//            qry += " AND  created_on BETWEEN :activityStartDate AND :activityCompletionDate ";
+//            sqlParam.addValue("activityStartDate", actualActivityStartDate);
+//            sqlParam.addValue("activityCompletionDate", actualActivityCompletionDate);
+//        }
         if ( activityId != null && activityId > 0) {
             qry += " AND activity_id=:activityId ";
             sqlParam.addValue("activityId", activityId);
