@@ -901,7 +901,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "FROM rdvts_oltp.vehicle_activity_mapping as vam " +
                 "LEFT JOIN rdvts_oltp.vehicle_m as vm on vm.id=vam.vehicle_id WHERE vam.is_active=true";
         if (activityId > 0 && activityId != null) {
-            qry += " AND vam.id=:activityId ";
+            qry += " AND vam.activity_id=:activityId ";
             sqlParam.addValue("activityId", activityId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleActivityMappingDto.class));
