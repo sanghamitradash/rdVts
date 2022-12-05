@@ -698,6 +698,7 @@ public class LocationRepositoryImpl {
                 " where vdm.is_active=true and dm.is_active=true and b.id is not null and b.gps_fix::numeric =1  ";
 
         if (IdList.get(0) > 1) {
+            if (checkArea !=null){
             if (checkArea == 1) {
                 qry += " and dm.id in (SELECT device_id FROM rdvts_oltp.device_area_mapping where dist_id IN(:IdList))  ";
                 sqlParam.addValue("IdList", IdList);
@@ -714,11 +715,94 @@ public class LocationRepositoryImpl {
                 qry += " and dm.id in (SELECT device_id  FROM rdvts_oltp.device_area_mapping where division_id IN(select id from rdvts_oltp.division_m where circle_id in(:IdList))) ";
                 sqlParam.addValue("IdList", IdList);
             }
+            }
+            else {
+                qry += " and dm.id=:IdList";
+                sqlParam.addValue("IdList", IdList);
+            }
         }
         qry += " order by b.date_time desc";
 
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+
+    }
+
+    public List<VtuLocationDto> getLocationRecordListWithGeofence(Long imeiNo1, Long imeiNo2, Date createdOn, Date deactivationDate, Integer id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        if (imeiNo1 == null) {
+
+            String qry = "with c as" +
+                    "(select *,st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint   " +
+                    "from rdvts_oltp.vtu_location where " +
+                    " imei=:imei2 and gps_fix::numeric=1 and date(date_time)='2022-11-28' order by date_time ) " +
+                    " select c.*,st_asgeojson(c.geomPoint) from c ,rdvts_oltp.geo_construction_m as rd where st_intersects(c.geomPoint,st_buffer(rd.geom::geography,100)::geometry) and rd.id=:roadId ";
+
+            sqlParam.addValue("imei2", imeiNo2);
+            sqlParam.addValue("roadId", id);
+
+//            if (deviceVehicleDeactivationDate == null) {
+//                deviceVehicleDeactivationDate = new Date();
+//            }
+//
+//            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+//                qry += " AND  date_time BETWEEN :createdOn AND :deactivationDate ";
+//                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+//                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+//            }
+
+
+
+            qry += " order by date_time ASC ";
+
+
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+        } else {
+            String qry = "with c as" +
+                    "(select *,st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint    " +
+                    "from rdvts_oltp.vtu_location where " +
+                    " imei=:imei1 and gps_fix::numeric=1 and date(date_time)='2022-11-29' order by date_time desc) " +
+                    " select c.*,st_asgeojson(c.geomPoint) from c ,rdvts_oltp.geo_construction_m as rd where st_intersects(c.geomPoint,st_buffer(rd.geom::geography,100)::geometry) and rd.id=:roadId ";
+
+            sqlParam.addValue("imei1", imeiNo1);
+            sqlParam.addValue("roadId", id);
+
+//            if (deviceVehicleDeactivationDate == null) {
+//                deviceVehicleDeactivationDate = new Date();
+//            }
+
+//            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+//                qry += " AND  date_time BETWEEN :createdOn AND :deactivationDate ";
+//                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+//                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+//            }
+
+//            if (startDate != null && endDate != null) {
+//                qry += " and date_time BETWEEN :startDate AND :endDate ";
+//                sqlParam.addValue("startDate", startDate);
+//                sqlParam.addValue("endDate", endDate);
+//            }
+
+
+            qry += " order by date_time ASC ";
+
+
+
+            //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+
+        }
+
+    }
+
+
+    public AlertDegreeDistanceDto getRotationDetails(String longitude, String latitude, String longitude1, String latitude1) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT degrees(ST_Azimuth(ST_Point("+longitude+", "+latitude+"),ST_Point("+longitude1+", "+latitude1+"))), " +
+                " st_distance(st_transform(st_setsrid(ST_Point("+longitude+", "+latitude+"),4326),26986), " +
+                "     st_transform(st_setsrid(ST_Point("+longitude1+", "+latitude1+"),4326),26986)) ";
+
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDegreeDistanceDto.class));
 
     }
 

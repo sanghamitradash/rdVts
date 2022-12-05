@@ -154,7 +154,7 @@ public class AlertController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<WorkDto> workDto = workService.getWorkById(-1);//get All Work
+            List<WorkDto> workDto = workService.getWorkById(62);//get All Work
 
             for (WorkDto Work : workDto) {
                 List<RoadMasterDto> road = roadService.getRoadByWorkId(Work.getId()); //get Road Details By WorkId
@@ -162,7 +162,7 @@ public class AlertController {
                     List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId()); //Get Activity BY WorkId
                     for (ActivityWorkMapping activityId : activityDtoList) {
                         //Get Vehicle By Activity
-                        List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), null, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
+                        List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), null, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
                         for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                             //get Device BY vehicle ID
                             List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(), null);
@@ -172,45 +172,26 @@ public class AlertController {
                                     List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                     for (DeviceDto imei : getImeiList) {
                                         //get Location By Imei
-                                        List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), null, null, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                        //get Only GeoFenced Lat Lon From above record
-                                        alertService.GeoFenceIntersectedRecords(road.get(0).getGeom(), vtuLocationDto);
+                                        List<VtuLocationDto> vtuLocationDto = locationService.getLocationRecordListWithGeofence(imei.getImeiNo1(), imei.getImeiNo2(), vehicleid.getCreatedOn(), vehicleid.getDeactivationDate(),road.get(0).getId());
+                                        Integer rotate=0;
+                                        Double distance=0.0;
+
+                                        for (int i=0;i<=vtuLocationDto.size();i++){
+                                            if (i+1<vtuLocationDto.size()){
+                                                AlertDegreeDistanceDto degreeDistanceDto= locationService.getRotationDetails(vtuLocationDto.get(i).getLongitude(),vtuLocationDto.get(i).getLatitude(),vtuLocationDto.get(i+1).getLongitude(),vtuLocationDto.get(i+1).getLatitude());
+                                                distance+=degreeDistanceDto.getStDistance();
+                                                if (degreeDistanceDto.getDegrees()!=null && degreeDistanceDto.getDegrees()>90.0){
+                                                    rotate++;
+                                                   // distance+=degreeDistanceDto.getStDistance();
+                                                }
+                                            }
 
 
-//                                        for (VtuLocationDto vtuItem : vtuLocationDto) {
-//                                            Boolean b = alertService.checkGeoFenceIntersected(road.get(0).getGeom(), vtuItem.getLongitude(), vtuItem.getLatitude());
-//                                            if (b == false) {
-//                                                Boolean alertExists = alertService.checkAlertExists(vtuItem.getImei(), GEO_FENCE_ALERT_ID); //Check If alert Exist Or Not
-//                                                if (!alertExists) {
-//                                                    AlertEntity alertEntity = new AlertEntity();
-//                                                    alertEntity.setImei(vtuItem.getImei());
-//                                                    alertEntity.setAlertTypeId(GEO_FENCE_ALERT_ID);
-//                                                    if (vtuItem.getLatitude() != null) {
-//                                                        alertEntity.setLatitude(Double.parseDouble(vtuItem.getLatitude()));
-//                                                    }
-//                                                    if (vtuItem.getLongitude() != null) {
-//                                                        alertEntity.setLongitude(Double.parseDouble(vtuItem.getLongitude()));
-//                                                    }
-//                                                    if (vtuItem.getAltitude() != null) {
-//                                                        alertEntity.setAltitude(Double.parseDouble(vtuItem.getAltitude()));
-//                                                    }
-//                                                    if (vtuItem.getAccuracy() != null) {
-//                                                        alertEntity.setAccuracy(Double.parseDouble(vtuItem.getAccuracy()));
-//                                                    }
-//                                                    alertEntity.setSpeed(Double.parseDouble(vtuItem.getSpeed()));
-//                                                    alertEntity.setGpsDtm(new Date());
-//                                                    AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
-//                                                }
-//                                            } else {
-//                                                Boolean updateResolve = alertService.updateResolve(vtuItem.getImei(), GEO_FENCE_ALERT_ID);
-//
-//                                            }
-//                                        }
-
-
+                                        }
+                                        System.out.println(imei.getImeiNo1());
+                                        System.out.println(rotate);
+                                        System.out.println(distance);
                                     }
-
-
                                 }
                             }
                         }

@@ -347,7 +347,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 " left join rdvts_oltp.activity_work_mapping as activity on activity.work_id=work.id " +
                 " left join rdvts_oltp.work_status_m as status on status.id=work.work_status " +
                 " left join rdvts_oltp.approval_status_m as approvalStatus on approvalStatus.id=work.approval_status " +
-                " where activity.id in (:activityIds) and activity.is_active=true  ";
+                " where activity.activity_id in (:activityIds) and activity.is_active=false  ";
         sqlParam.addValue("activityIds", activityIds);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleWorkMappingDto.class));
     }
@@ -393,7 +393,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 //                " on actCount.vehicle_id=activity.vehicle_id) as vehicleList ";
         String qry = "select * from (SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,vm.model, vm.chassis_no," +
                 "vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,dam.dist_id, dam.division_id,   " +
-                "owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id ,   " +
+                "owner.user_id as userId, owner.user_id as userByVehicleId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id ,   " +
                 "contractor.name as contractorName,am.id  as activityId," +
                 "case when vdCount.vehicleCount>0 then true else false end as deviceAssigned," +
                 "case when vtuLocation.imeiCount>0 then true else false end as trackingStatus," +
@@ -480,6 +480,17 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             } else {
                 subQuery += " and vehicleList.contractor_id=:contractorId  ";
                 sqlParam.addValue("contractorId", vehicle.getContractorId());
+            }
+        }
+
+
+        if (vehicle.getUserByVehicleId() != null && vehicle.getUserByVehicleId() > 0) {
+            if (subQuery.length() <= 0) {
+                subQuery += " WHERE  userByVehicleId=:userByVehicleId ";
+                sqlParam.addValue("userByVehicleId", vehicle.getUserByVehicleId());
+            } else {
+                subQuery += " and userByVehicleId=:userByVehicleId  ";
+                sqlParam.addValue("userByVehicleId", vehicle.getUserByVehicleId());
             }
         }
 
@@ -890,7 +901,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "FROM rdvts_oltp.vehicle_activity_mapping as vam " +
                 "LEFT JOIN rdvts_oltp.vehicle_m as vm on vm.id=vam.vehicle_id WHERE vam.is_active=true";
         if (activityId > 0 && activityId != null) {
-            qry += " AND vam.id=:activityId ";
+            qry += " AND vam.activity_id=:activityId ";
             sqlParam.addValue("activityId", activityId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleActivityMappingDto.class));
@@ -988,7 +999,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
     public Integer getActivityByVehicleId(Integer vehicleId){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct activity_id from rdvts_oltp.vehicle_activity_mapping  where is_active=true and vehicle_id=:vehicleId";
+        String qry = "select distinct awm.activity_id from rdvts_oltp.vehicle_activity_mapping as vam " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.id = vam.activity_id and awm.is_active = true " +
+                "where vam.is_active=true and vam.vehicle_id =:vehicleId";
         sqlParam.addValue("vehicleId", vehicleId);
         try{
           return  namedJdbc.queryForObject(qry, sqlParam, Integer.class);
@@ -999,7 +1012,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
     public List<Integer> getActivityIdsByVehicleId(Integer vehicleId){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct activity_id from rdvts_oltp.vehicle_activity_mapping  where is_active=false and vehicle_id=:vehicleId";
+        String qry = "select distinct awm.activity_id from rdvts_oltp.vehicle_activity_mapping as vam " +
+                " left join rdvts_oltp.activity_work_mapping as awm on awm.id = vam.activity_id " +
+                " where vam.is_active=false and vam.vehicle_id =:vehicleId";
         sqlParam.addValue("vehicleId", vehicleId);
         return  namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
@@ -1012,7 +1027,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "awm.actual_activity_completion_date as actualActivityCompletionDate,awm.executed_quantity as executedQuantity,awm.activity_status as statusId,status.name as statusName from rdvts_oltp.activity_work_mapping as awm   " +
                 "left join rdvts_oltp.activity_m am on am.id = awm.activity_id  " +
                 "left join rdvts_oltp.activity_status_m as status on status.id=awm.activity_status  " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = am.id   " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = awm.id   " +
                 "WHERE vam.is_active = true   ";
 
         if(vehicleId>0){
@@ -1144,11 +1159,11 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             actualActivityCompletionDate = new Date();
         }
 
-        if (actualActivityStartDate != null && actualActivityCompletionDate != null) {
-            qry += " AND  created_on BETWEEN :activityStartDate AND :activityCompletionDate ";
-            sqlParam.addValue("activityStartDate", actualActivityStartDate);
-            sqlParam.addValue("activityCompletionDate", actualActivityCompletionDate);
-        }
+//        if (actualActivityStartDate != null && actualActivityCompletionDate != null) {
+//            qry += " AND  created_on BETWEEN :activityStartDate AND :activityCompletionDate ";
+//            sqlParam.addValue("activityStartDate", actualActivityStartDate);
+//            sqlParam.addValue("activityCompletionDate", actualActivityCompletionDate);
+//        }
         if ( activityId != null && activityId > 0) {
             qry += " AND activity_id=:activityId ";
             sqlParam.addValue("activityId", activityId);
