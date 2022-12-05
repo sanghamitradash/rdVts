@@ -382,7 +382,7 @@ public class AlertRepositoryImpl {
                 "ad.longitude, ad.accuracy, ad.speed, ad.altitude, ad.gps_dtm as gpsDtm, " +
                 "count(ad.id) over (partition by ad.alert_type_id,gm.work_id) " +
                 "from rdvts_oltp.alert_data as ad  " +
-                "left join rdvts_oltp.device_m as dm on dm.imei_no_1=ad.id and dm.is_active=true   " +
+                "left join rdvts_oltp.device_m as dm on dm.imei_no_1=ad.imei and dm.is_active=true   " +
                 "left join rdvts_oltp.vehicle_device_mapping  as vdm on vdm.device_id=dm.id and vdm.is_active=true " +
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vdm.vehicle_id and vam.is_active=true " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id " +
@@ -484,9 +484,18 @@ public class AlertRepositoryImpl {
             }
         }
 
-        else if(user.getUserLevelId()==4){
-            qry += " AND gm.division_id=:divisionId ";
-            sqlParam.addValue("divisionId",user.getUserLevelId());
+        else if(user.getUserLevelId() == 4){
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(filterDto.getUserId());
+            List<Integer> workIds = masterRepositoryImpl.getWorkIdByDivisionId(divisionIds);
+            if(workIds != null && workIds.size() > 0){
+                if(qry != null && qry.length() > 0){
+                    qry += " and gm.work_id in(:workIds) ";
+                    sqlParam.addValue("workIds", workIds);
+                } else {
+                    qry += " and gm.work_id in(:workIds) ";
+                    sqlParam.addValue("workIds", workIds);
+                }
+            }
         }
 
         resultCount = count(qry, sqlParam);

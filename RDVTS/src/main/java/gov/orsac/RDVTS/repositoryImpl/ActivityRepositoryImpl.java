@@ -258,7 +258,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     public List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId, Integer workId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "SELECT distinct aw.activity_id,am.activity_name,aw.work_id,aw.activity_quantity,aw.activity_start_date,aw.activity_completion_date,   " +
+        String qry = " SELECT distinct aw.activity_id,am.activity_name,aw.work_id,aw.activity_quantity,aw.activity_start_date,aw.activity_completion_date,   " +
                 "aw.actual_activity_start_date,aw.actual_activity_completion_date,aw.executed_quantity,aw.activity_status,status.name as activityStatusName,  " +
                 "aw.g_activity_id,aw.g_work_id from rdvts_oltp.activity_work_mapping as aw  " +
                 "left join rdvts_oltp.activity_m as am on am.id = aw.activity_id AND aw.is_active = true  " +

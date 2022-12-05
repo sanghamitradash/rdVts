@@ -586,6 +586,13 @@ public class MasterRepositoryImpl implements MasterRepository {
         sqlParam.addValue("blockIds", blockIds);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
+
+    public List<Integer> getWorkIdByDivisionId(List<Integer> divisionIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select work_id from rdvts_oltp.geo_master where division_id in (:divisionIds) ";
+        sqlParam.addValue("divisionIds", divisionIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
 }
 
 
