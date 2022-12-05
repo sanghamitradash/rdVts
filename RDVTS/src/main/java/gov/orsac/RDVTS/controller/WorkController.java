@@ -240,12 +240,12 @@ public class WorkController {
 //                alertList2.get(i).setSlNo(start1);
 //            }
 //
-//            location.setTotalVehicleActive(totalActiveVehicle);
-//            if (totalVehicleCount > 0 ){
-//                location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
-//            }else {
-//                location.setTotalInactiveVehicle(0);
-//            }
+            location.setTotalVehicleActive(totalActiveVehicle);
+            if (totalVehicleCount > 0 ){
+                location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
+            }else {
+                location.setTotalInactiveVehicle(0);
+            }
 
             location.setPercentageOfActiveVehicle(percentageOfTotalActiveVehicle);
 
