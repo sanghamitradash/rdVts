@@ -451,8 +451,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             }
 
         }
-
-        if (vehicle.getVehicleTypeId() > 0) {
+        if (vehicle.getVehicleTypeId()!=null && vehicle.getVehicleTypeId() > 0) {
             if(subQuery.length()<=0) {
                 subQuery += " WHERE  vehicleTypeId=:vehicleTypeId ";
                 sqlParam.addValue("vehicleTypeId", vehicle.getVehicleTypeId());
