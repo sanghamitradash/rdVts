@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.dto.UserInfoDto;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.service.HelperService;
+import org.hibernate.hql.internal.ast.SqlASTFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -399,6 +400,14 @@ public class UserRepositoryImpl {
         String qry = " select road_id from rdvts_oltp.geo_master where division_id in (:divisionIds)  ";
         sqlParam.addValue("divisionIds", divisionIds);
         return namedJdbc.queryForList(qry,sqlParam, Integer.class);
+    }
+
+    public List<Integer> getVendorIdsByDivisionId(List<Integer> divisionIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select id from rdvts_oltp.vtu_vendor_m where id in (select vtu_vendor_id from rdvts_oltp.device_m where id in  \n" +
+                "(select device_id from rdvts_oltp.device_area_mapping where division_id in (:divisionIds)))  ";
+        sqlParam.addValue("divisionIds", divisionIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 }
 

@@ -337,8 +337,15 @@ public class MasterRepositoryImpl implements MasterRepository {
         }
 
         else if(user.getUserLevelId()==4){
-            queryString += " AND dev.user_level_id=:userLevelId ";
-            sqlParam.addValue("userLevelId",user.getUserLevelId());
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(vtuVendorFilterDto.getUserId());
+            List<Integer> vendorIds = userRepositoryImpl.getVendorIdsByDivisionId(divisionIds);
+            if(queryString != null && queryString.length() > 0) {
+                queryString += " AND vtuM.id in(:vendorIds) ";
+                sqlParam.addValue("vendorIds",vendorIds);
+            } else {
+                queryString += " where vtuM.id in(:vendorIds) ";
+                sqlParam.addValue("vendorIds",vendorIds);
+            }
         }
 
         resultCount = count(queryString, sqlParam);
@@ -590,6 +597,13 @@ public class MasterRepositoryImpl implements MasterRepository {
     public List<Integer> getWorkIdByDivisionId(List<Integer> divisionIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = " select work_id from rdvts_oltp.geo_master where division_id in (:divisionIds) ";
+        sqlParam.addValue("divisionIds", divisionIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getRoadIdsByDivisionId(List<Integer> divisionIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select DISTINCT road_id from rdvts_oltp.geo_master where division_id in (:divisionIds) ";
         sqlParam.addValue("divisionIds", divisionIds);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
