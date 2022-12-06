@@ -77,11 +77,17 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 "left join (select distinct vdm.id as vehicleCountId,dam.dist_id from rdvts_oltp.vehicle_device_mapping as  vdm      " +
                 "left join rdvts_oltp.device_area_mapping as dam on dam.device_id=vdm.device_id       " +
                 "where vdm.is_active=true  " ;
-                if(ids!=null && ids.size()>0){
-                    qry+=" and vdm.device_id in(:deviceIds) AND dam.is_active = true ";
+                if(ids!=null && ids.size()>0 ||  ids.size()==0){
+                    if(ids.size() == 0)
+                    {
+                        qry+=" and vdm.device_id in(0) AND dam.is_active = true ";
+                    }
+                    else {
+                        qry += " and vdm.device_id in(:deviceIds) AND dam.is_active = true ";
+                    }
                 }
                 qry+=" )as vehicle on vehicle.dist_id=dist.dist_id   ";
-         sqlParam.addValue("deviceIds",ids);
+                sqlParam.addValue("deviceIds",ids);
 
         UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
         if(user.getUserLevelId()==2){
@@ -147,8 +153,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 "left join (select distinct vdm.id as vehicleCountId,dam.division_id from rdvts_oltp.vehicle_device_mapping as  vdm     " +
                 "left join rdvts_oltp.device_area_mapping as dam on dam.device_id=vdm.device_id      " +
                 "where vdm.is_active=true " ;
-        if(ids!=null && ids.size()>0){
-            qry+=" and vdm.device_id in(:deviceIds) AND dam.is_active = true ";
+        if(ids!=null && ids.size()>0 ||  ids.size()==0){
+            if(ids.size() == 0)
+            {
+                qry+=" and vdm.device_id in(0) AND dam.is_active = true ";
+            }
+            else {
+                qry += " and vdm.device_id in(:deviceIds) AND dam.is_active = true ";
+            }
         }
         qry+=" )as vehicle on vehicle.division_id=div.division_id   ";
         sqlParam.addValue("deviceIds",ids);
