@@ -186,8 +186,15 @@ public class RoadRepositoryImpl {
         }
 
         else if(user.getUserLevelId()==4){
-                queryString += " AND geom.division_id=:divisionId ";
-                sqlParam.addValue("divisionId",user.getUserLevelId());
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(roadFilterDto.getUserId());
+            List<Integer> roadIds = masterRepositoryImpl.getRoadIdsByDivisionId(divisionIds);
+            if(queryString != null && queryString.length() > 0){
+                queryString += " AND  road.id in(:roadIds) ";
+                sqlParam.addValue("roadIds", roadIds);
+            } else {
+                queryString += " where  road.id in(:roadIds) ";
+                sqlParam.addValue("roadIds", roadIds);
+            }
         }
 
         resultCount = count(queryString, sqlParam);
