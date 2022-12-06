@@ -735,7 +735,7 @@ public class LocationRepositoryImpl {
             String qry = "with c as" +
                     "(select *,st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint   " +
                     "from rdvts_oltp.vtu_location where " +
-                    " imei=:imei2 and gps_fix::numeric=1 and date(date_time)='2022-11-28' order by date_time ) " +
+                    " imei=:imei2 and gps_fix::numeric=1 and date(date_time)='2022-11-28' order by date_time ASC ) " +
                     " select c.*,st_asgeojson(c.geomPoint) from c ,rdvts_oltp.geo_construction_m as rd where st_intersects(c.geomPoint,st_buffer(rd.geom::geography,100)::geometry) and rd.id=:roadId ";
 
             sqlParam.addValue("imei2", imeiNo2);
@@ -761,7 +761,7 @@ public class LocationRepositoryImpl {
             String qry = "with c as" +
                     "(select *,st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint    " +
                     "from rdvts_oltp.vtu_location where " +
-                    " imei=:imei1 and gps_fix::numeric=1 and date(date_time)='2022-11-29' order by date_time desc) " +
+                    " imei=:imei1 and gps_fix::numeric=1 and date(date_time)='2022-11-29' order by date_time ASC) " +
                     " select c.*,st_asgeojson(c.geomPoint) from c ,rdvts_oltp.geo_construction_m as rd where st_intersects(c.geomPoint,st_buffer(rd.geom::geography,100)::geometry) and rd.id=:roadId ";
 
             sqlParam.addValue("imei1", imeiNo1);
