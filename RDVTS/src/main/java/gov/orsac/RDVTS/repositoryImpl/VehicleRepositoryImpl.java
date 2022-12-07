@@ -967,10 +967,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<VehicleMasterDto> getVehicleByVehicleTypeId(Integer vehicleTypeId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry ="SELECT vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId, vm.chassis_no, vm.engine_no " +
+        String qry = "";
+        qry +="SELECT vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId, vm.chassis_no, vm.engine_no " +
                 "FROM rdvts_oltp.vehicle_m as vm " +
                 "LEFT JOIN rdvts_oltp.vehicle_type as vt on vt.id= vm.vehicle_type_id " +
-                "WHERE vm.is_active=true and vm.vehicle_type_id=:vehicleTypeId ";
+                "WHERE vm.is_active=true  ";
+        if(vehicleTypeId > 0){
+            qry += " and vm.vehicle_type_id=:vehicleTypeId ";
+        }
         sqlParam.addValue("vehicleTypeId", vehicleTypeId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
     }
