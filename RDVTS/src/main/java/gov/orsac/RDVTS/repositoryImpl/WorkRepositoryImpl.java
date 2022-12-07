@@ -105,6 +105,10 @@ public class WorkRepositoryImpl {
             qry += " and geo.circle_id = :circleId";
             sqlParam.addValue("circleId", workDto.getCircleId());
         }
+        if (workDto.getPackageId() != null && workDto.getPackageId() > 0  ){
+            qry += " and gcm.package_id = :packageId ";
+            sqlParam.addValue("packageId", workDto.getPackageId());
+        }
 //        if (workDto.getActivityId() > 0) {
 //            qry += " and act.id = :activityId";
 //            sqlParam.addValue("activityId", workDto.getActivityId());
@@ -262,5 +266,11 @@ public class WorkRepositoryImpl {
             sqlParam.addValue("workId", workId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityWorkMapping.class));
+    }
+
+    public List<GeoConstructionDto> getPackageDD(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select package_id,package_name from rdvts_oltp.geo_construction_m where is_active = true ";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoConstructionDto.class));
     }
 }
