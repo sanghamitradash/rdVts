@@ -215,6 +215,7 @@ public class VehicleController {
 
     @PostMapping("/getVehicleList")
     public RDVTSListResponse getVehicleList(@RequestParam(name = "vehicleTypeId", required = false) Integer vehicleTypeId,
+                                            @RequestParam(name = "vehicleId",required = false)Integer vehicleId,
                                             @RequestParam(name = "deviceId", required = false) Integer deviceId,
                                             @RequestParam(name = "workId", required = false) Integer workId,
                                             @RequestParam(name = "activityId", required = false) Integer activityId,
@@ -232,13 +233,14 @@ public class VehicleController {
 
         VehicleFilterDto vehicle = new VehicleFilterDto();
         vehicle.setVehicleTypeId(vehicleTypeId);
+        vehicle.setVehicleId(vehicleId);
         vehicle.setDeviceId(deviceId);
         vehicle.setWorkId(workId);
         vehicle.setActivityId(activityId);
         vehicle.setLimit(length);
         vehicle.setOffSet(start);
         vehicle.setUserId(userId);
-        vehicle.setVehicleTypeId(userByVehicleId);
+        vehicle.setUserByVehicleId(userByVehicleId);
         vehicle.setDistId(distId);
         vehicle.setDivisionId(divisionId);
         vehicle.setContractorId(contractorId);
