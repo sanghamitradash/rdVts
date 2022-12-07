@@ -451,6 +451,19 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             }
 
         }
+
+        if (vehicle.getVehicleId()!=null && vehicle.getVehicleId() > 0) {
+            if(subQuery.length()<=0) {
+                subQuery += " WHERE  id=:vehicleId ";
+                sqlParam.addValue("vehicleId", vehicle.getVehicleId());
+            }
+            else{
+                subQuery += " and  id=:vehicleId ";
+                sqlParam.addValue("vehicleId", vehicle.getVehicleId());
+            }
+        }
+
+
         if (vehicle.getVehicleTypeId()!=null && vehicle.getVehicleTypeId() > 0) {
             if(subQuery.length()<=0) {
                 subQuery += " WHERE  vehicleTypeId=:vehicleTypeId ";
