@@ -91,4 +91,7 @@ public class RoadEntity {
 
     @Column(name = "approved_by")
     private Integer approvedBy;
+
+    @Column(name = "gis_length")
+    private Double gisLength;
 }
