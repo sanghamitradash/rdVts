@@ -191,6 +191,11 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
+    public Integer saveLength(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
+        return roadRepositoryImpl.saveLength(roadId, roadLocation, userId);
+    }
+
+    @Override
     public List<GeoMasterDto> getWorkByCircleId(Integer circleObj) {
         return roadRepositoryImpl.getWorkByCircleId(circleObj);
     }

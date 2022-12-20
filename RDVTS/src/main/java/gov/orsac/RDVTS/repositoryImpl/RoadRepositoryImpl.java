@@ -488,8 +488,17 @@ public class RoadRepositoryImpl {
         }
         return 1;
     }
+    public Integer saveLength(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "UPDATE rdvts_oltp.geo_construction_m set gis_length=ST_Length(ST_Transform(geom,26986))/1000 where id=:roadId";
+        sqlParam.addValue("roadId", roadId);
+        sqlParam.addValue("userId", userId);
+        namedJdbc.update(qry, sqlParam);
+        return 1;
+    }
 
-    public List<GeoMasterDto> getWorkByCircleId(Integer circleObj) {
+
+        public List<GeoMasterDto> getWorkByCircleId(Integer circleObj) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +

@@ -47,6 +47,7 @@ public interface RoadService {
     List<RoadLocationEntity> addRoadLocation(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId);
 
     Integer saveGeom(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId);
+    Integer saveLength(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId);
 
     List<GeoMasterDto> getWorkByCircleId(Integer circleObj);
 

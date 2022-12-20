@@ -322,6 +322,7 @@ public class RoadController {
 
 
             Integer saveGeom = roadService.saveGeom(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(),roadLocationDto.getUserId());
+            Integer saveLength = roadService.saveLength(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(),roadLocationDto.getUserId());
             result.put("saveRoadLocation", roadLocationEntities);
             response.setData(result);
             response.setStatus(1);
