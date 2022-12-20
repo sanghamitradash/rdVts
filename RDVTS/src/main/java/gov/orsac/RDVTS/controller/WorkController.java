@@ -72,7 +72,8 @@ public class WorkController {
                                          @RequestParam(name = "circleId", required = false) Integer circleId,
                                          @RequestParam(name = "start") Integer start,
                                          @RequestParam(name = "length") Integer length,
-                                         @RequestParam(name = "draw") Integer draw) {
+                                         @RequestParam(name = "draw") Integer draw,
+                                         @RequestParam(name = "packageId", required = false) Integer packageId ) {
         WorkDto workDto = new WorkDto();
         workDto.setId(id);
         workDto.setUserId(userId);
@@ -83,6 +84,7 @@ public class WorkController {
         workDto.setCircleId(circleId);
         workDto.setOffSet(start);
         workDto.setLimit(length);
+        workDto.setPackageId(packageId);
         RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -386,4 +388,28 @@ public class WorkController {
         }
         return response;
     }
+
+    @PostMapping("/getPackageDD")
+    public RDVTSResponse getPackageDD(@RequestParam(name = "userId") Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+//            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
+            List<GeoConstructionDto> geoConstructionDto = workService.getPackageDD(userId);
+
+            result.put("geoConstructionDto", geoConstructionDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+
+    }
+
 }
