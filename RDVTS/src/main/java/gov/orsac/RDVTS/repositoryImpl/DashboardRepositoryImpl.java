@@ -12,6 +12,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -32,9 +35,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Integer getTotalActive() {
             MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-            String qry = " select count(distinct id) from rdvts_oltp.vehicle_device_mapping  " +
+           DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+           String currentDateTime = dateFormatter.format(new Date());
+            String qry = " select count(distinct id) from rdvts_oltp.vehicle_device_mapping " +
                     "where is_active=true and device_id in(select distinct id from rdvts_oltp.device_m where imei_no_1 in  " +
-                    "(select distinct imei from rdvts_oltp.vtu_location where date(date_time)=date(now()))) " ;
+                    "(select distinct imei from rdvts_oltp.vtu_location where date(date_time)=date(:dateNow))) " ;
+            sqlParam.addValue("dateNow",currentDateTime);
             return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
     }
 
@@ -55,17 +61,23 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public List<Integer> totalActiveIds() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
         String qry = "select distinct id from rdvts_oltp.device_m where imei_no_1 in  " +
-                     "(select distinct imei from rdvts_oltp.vtu_location where date(date_time)=date(now()))  ";
+                     "(select distinct imei from rdvts_oltp.vtu_location where date(date_time)=date(:dateNow)) ";
+        sqlParam.addValue("dateNow",currentDateTime);
         return namedJdbc.queryForList(qry,sqlParam, Integer.class);
     }
 
     @Override
     public List<Integer> totalInactiveIds() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
         String qry = "select distinct id as deviceId from rdvts_oltp.device_m where imei_no_1 not in  " +
-                "(select distinct imei from rdvts_oltp.vtu_location where date(date_time)=date(now()))  " +
+                "(select distinct imei from rdvts_oltp.vtu_location where date(date_time)=date(:dateNow))  " +
                 "And is_active=true ";
+        sqlParam.addValue("dateNow",currentDateTime);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 
