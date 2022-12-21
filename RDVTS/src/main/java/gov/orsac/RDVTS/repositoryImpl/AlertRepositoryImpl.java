@@ -59,8 +59,10 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
                 "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
-                "where awm.is_active=true and wm.id=:workId and date(ad.gps_dtm)=date(now())  ";
+                "where awm.is_active=true and wm.id=:workId and date(ad.gps_dtm)=:currentDateTime  ";
         sqlParam.addValue("workId", id);
+        sqlParam.addValue("currentDateTime",new Date());
+
 //        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
 //            qry += " AND ad.alert_type_id=:alertTypeId ";
 //            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
@@ -165,9 +167,9 @@ public class AlertRepositoryImpl {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
         AlertDto alertDto=new AlertDto();
         String qry = " select case when count(*) >0 then true else false  end as bool FROM rdvts_oltp.alert_data  " +
-                "WHERE imei=:imei AND alert_type_id=:noDataAlertId AND date(gps_dtm)=date(now()) AND is_resolve = false  " ;
+                "WHERE imei=:imei AND alert_type_id=:noDataAlertId AND date(gps_dtm)=:currentDateTime AND is_resolve = false  " ;
 
-
+        sqlParam.addValue("currentDateTime",new Date());
         sqlParam.addValue("imei", imei);
         sqlParam.addValue("noDataAlertId",noDataAlertId);
         return namedJdbc.queryForObject(qry, sqlParam, (Boolean.class));
@@ -204,8 +206,9 @@ public class AlertRepositoryImpl {
         String qry = " SELECT l.imei from  (select distinct imei_no_1 from rdvts_oltp.device_m  ) tl " +
                 " JOIN (select * from rdvts_oltp.vtu_location  " +
                 "  Where id IN (Select max(id) from rdvts_oltp.vtu_location where gps_fix::numeric=1 group by imei) and gps_fix::numeric=1 " +
-                " AND date(date_time)=date(now()) " +
+                " AND date(date_time)=:currentDateTime " +
                 "  order by id desc) as l ON l.imei = tl.imei_no_1 " ;
+        sqlParam.addValue("currentDateTime",new Date());
 
 
         return namedJdbc.queryForList(qry, sqlParam,Long.class);
@@ -287,8 +290,9 @@ public class AlertRepositoryImpl {
         Date currentDate=new Date();
 
 
-        qry += "   AND date(date_time)=date(now()) AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC ";
+        qry += "   AND date(date_time)=:currentDateTime AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC ";
         sqlParam.addValue("imei1", imei);
+        sqlParam.addValue("currentDateTime",new Date());
 
         sqlParam.addValue("currentDateMinus", currentDateMinus);
         sqlParam.addValue("speedLimit", speedLimit);
@@ -327,7 +331,8 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
                 "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
-                "where awm.is_active=true and date(ad.gps_dtm)=date(now())  ";
+                "where awm.is_active=true and date(ad.gps_dtm)=:currentDateTime  ";
+        sqlParam.addValue("currentDateTime",new Date());
         if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
             qry += " and wm.id=:workId ";
             sqlParam.addValue("workId", filterDto.getWorkId());
