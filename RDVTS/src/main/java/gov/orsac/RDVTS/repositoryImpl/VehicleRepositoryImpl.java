@@ -357,6 +357,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
+
+        currentDateTime = currentDateTime + " 00:00:00";
 //        PageRequest pageable = null;
 //        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
 //        pageable = PageRequest.of(vehicle.getDraw() - 1, vehicle.getLimit(), Sort.Direction.fromString("desc"), "id");
@@ -414,12 +416,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "left join rdvts_oltp.device_m as dm on dm.id=device.device_id " +
                 "left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping " +
                 " where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id " +
-                "left join (select count(id) over (partition by imei) as imeiCount,imei from rdvts_oltp.vtu_location where date(date_time)=date(:dateNow)) as vtuLocation " +
+                "left join (select count(id) over (partition by imei) as imeiCount,imei from rdvts_oltp.vtu_location where date_time >=:currentDateTime::timestamp ) as vtuLocation " +
                 "on vtuLocation.imei=dm.imei_no_1 " +
                 "left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount " +
                 "on actCount.vehicle_id=activity.vehicle_id) as vehicleList ";
 
-        sqlParam.addValue("dateNow",currentDateTime);
+        sqlParam.addValue("currentDateTime",currentDateTime);
 
         String subQuery = "";
         if(vehicle.getDeviceAssign()!=null){
