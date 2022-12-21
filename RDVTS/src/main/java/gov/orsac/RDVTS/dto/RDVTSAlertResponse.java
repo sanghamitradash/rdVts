@@ -17,14 +17,17 @@ public class RDVTSAlertResponse {
     public Object data ;
     private Integer draw;
 
-    private Long workRecordsFiltered;
-    private Long workRecordsTotal;
+//    private Long workRecordsFiltered;
+//    private Long workRecordsTotal;
+//
+//    private Long vehicleRecordsFiltered;
+//    private Long vehicleRecordsTotal;
+//
+//    private Long roadRecordsFiltered;
+//    private Long roadRecordsTotal;
 
-    private Long vehicleRecordsFiltered;
-    private Long vehicleRecordsTotal;
-
-    private Long roadRecordsFiltered;
-    private Long roadRecordsTotal;
+    private Long recordsFiltered;
+    private Long recordsTotal;
 
     public <T> RDVTSAlertResponse(int i, ResponseEntity<T> tResponseEntity, String message, Map<String, Object> result) {
     }
