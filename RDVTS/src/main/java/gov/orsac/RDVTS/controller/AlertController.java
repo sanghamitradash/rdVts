@@ -640,14 +640,29 @@ public class AlertController {
             response.setDraw(draw);
 //            response.setWorkRecordsFiltered(alertListToday.getTotalElements());
 //            response.setWorkRecordsTotal(alertListToday.getTotalElements());
-            response.setWorkRecordsFiltered(alertListTotal.getTotalElements());
-            response.setWorkRecordsTotal(alertListTotal.getTotalElements());
 
-            response.setVehicleRecordsFiltered(vehicleAlertList.getTotalElements());
-            response.setVehicleRecordsTotal(vehicleAlertList.getTotalElements());
+//            response.setWorkRecordsFiltered(alertListTotal.getTotalElements());
+//            response.setWorkRecordsTotal(alertListTotal.getTotalElements());
+//
+//            response.setVehicleRecordsFiltered(vehicleAlertList.getTotalElements());
+//            response.setVehicleRecordsTotal(vehicleAlertList.getTotalElements());
 
-            response.setRoadRecordsFiltered(roadAlertList.getTotalElements());
-            response.setRoadRecordsTotal(roadAlertList.getTotalElements());
+//            response.setRoadRecordsFiltered(roadAlertList.getTotalElements());
+//            response.setRoadRecordsTotal(roadAlertList.getTotalElements());
+
+            if(alertListTotal != null ){
+                response.setRecordsFiltered(alertListTotal.getTotalElements());
+                response.setRecordsTotal(alertListTotal.getTotalElements());
+            }
+            if(vehicleAlertList != null ){
+                response.setRecordsFiltered(vehicleAlertList.getTotalElements());
+                response.setRecordsTotal(vehicleAlertList.getTotalElements());
+            }
+            if(roadAlertList != null ){
+                response.setRecordsFiltered(roadAlertList.getTotalElements());
+                response.setRecordsTotal(roadAlertList.getTotalElements());
+            }
+
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
         } catch (Exception e) {
