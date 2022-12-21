@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Types;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +44,10 @@ public class AlertRepositoryImpl {
 
     public List<AlertCountDto> getTotalAlertToday(/*AlertFilterDto filterDto,*/ Integer id, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        currentDateTime = currentDateTime + " 00:00:00";
 //        PageRequest pageable = null;
 //
 //        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
@@ -59,9 +64,9 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
                 "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
-                "where awm.is_active=true and wm.id=:workId and date(ad.gps_dtm)=:currentDateTime  ";
+                "where awm.is_active=true and wm.id=:workId and ad.gps_dtm >=:currentDateTime::timestamp  ";
         sqlParam.addValue("workId", id);
-        sqlParam.addValue("currentDateTime",new Date());
+        sqlParam.addValue("currentDateTime",currentDateTime);
 
 //        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
 //            qry += " AND ad.alert_type_id=:alertTypeId ";
@@ -165,11 +170,15 @@ public class AlertRepositoryImpl {
     public Boolean checkAlertExists(Long imei, Integer noDataAlertId){
 
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        currentDateTime = currentDateTime + " 00:00:00";
         AlertDto alertDto=new AlertDto();
         String qry = " select case when count(*) >0 then true else false  end as bool FROM rdvts_oltp.alert_data  " +
-                "WHERE imei=:imei AND alert_type_id=:noDataAlertId AND date(gps_dtm)=:currentDateTime AND is_resolve = false  " ;
+                "WHERE imei=:imei AND alert_type_id=:noDataAlertId AND gps_dtm >=:currentDateTime::timestamp AND is_resolve = false  " ;
 
-        sqlParam.addValue("currentDateTime",new Date());
+        sqlParam.addValue("currentDateTime",currentDateTime);
         sqlParam.addValue("imei", imei);
         sqlParam.addValue("noDataAlertId",noDataAlertId);
         return namedJdbc.queryForObject(qry, sqlParam, (Boolean.class));
@@ -202,13 +211,18 @@ public class AlertRepositoryImpl {
 
     public List<Long> getImeiForNoMovement() {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        currentDateTime = currentDateTime + " 00:00:00";
+
 
         String qry = " SELECT l.imei from  (select distinct imei_no_1 from rdvts_oltp.device_m  ) tl " +
                 " JOIN (select * from rdvts_oltp.vtu_location  " +
                 "  Where id IN (Select max(id) from rdvts_oltp.vtu_location where gps_fix::numeric=1 group by imei) and gps_fix::numeric=1 " +
-                " AND date(date_time)=:currentDateTime " +
+                " AND date_time >=:currentDateTime::timestamp " +
                 "  order by id desc) as l ON l.imei = tl.imei_no_1 " ;
-        sqlParam.addValue("currentDateTime",new Date());
+        sqlParam.addValue("currentDateTime",currentDateTime);
 
 
         return namedJdbc.queryForList(qry, sqlParam,Long.class);
@@ -279,6 +293,12 @@ public class AlertRepositoryImpl {
 
     public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        currentDateTime = currentDateTime + " 00:00:00";
+
         String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on " +
                 " FROM rdvts_oltp.vtu_location where is_active=true ";
         qry += " and imei =:imei1 and gps_fix::numeric =1 ";
@@ -290,9 +310,9 @@ public class AlertRepositoryImpl {
         Date currentDate=new Date();
 
 
-        qry += "   AND date(date_time)=:currentDateTime AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC ";
+        qry += "   AND date_time >=:currentDateTime::timestamp AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC ";
         sqlParam.addValue("imei1", imei);
-        sqlParam.addValue("currentDateTime",new Date());
+        sqlParam.addValue("currentDateTime",currentDateTime);
 
         sqlParam.addValue("currentDateMinus", currentDateMinus);
         sqlParam.addValue("speedLimit", speedLimit);
@@ -315,6 +335,10 @@ public class AlertRepositoryImpl {
 
     public Page<AlertCountDto> getAlertToday(AlertFilterDto filterDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        currentDateTime = currentDateTime + " 00:00:00";
         PageRequest pageable = null;
 
         Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
@@ -331,8 +355,8 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
                 "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
-                "where awm.is_active=true and date(ad.gps_dtm)=:currentDateTime  ";
-        sqlParam.addValue("currentDateTime",new Date());
+                "where awm.is_active=true and ad.gps_dtm >=:currentDateTime::timestamp  ";
+        sqlParam.addValue("currentDateTime",currentDateTime);
         if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
             qry += " and wm.id=:workId ";
             sqlParam.addValue("workId", filterDto.getWorkId());

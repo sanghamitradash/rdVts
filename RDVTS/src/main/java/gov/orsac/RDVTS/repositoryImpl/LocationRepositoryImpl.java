@@ -268,6 +268,8 @@ public class LocationRepositoryImpl {
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
 
+        currentDateTime = currentDateTime + " 00:00:00";
+
 
         List<Long> imeiList = new ArrayList<>();
         for (VehicleDeviceMappingDto item : deviceDetails) {
@@ -278,10 +280,10 @@ public class LocationRepositoryImpl {
         String qry = "select b.*,vdm.vehicle_id as vehicleId from rdvts_oltp.vehicle_device_mapping as vdm"+
         " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id"+
         " left join (select distinct imei,max(id) over(partition by imei) as vtuid from"+
-        " rdvts_oltp.vtu_location as vtu where date(date_time)=:currentDateTime and  gps_fix::numeric =1  and imei in (:imei2) ) as a on dm.imei_no_1=a.imei"+
+        " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp and  gps_fix::numeric =1  and imei in (:imei2) ) as a on dm.imei_no_1=a.imei"+
         " left join rdvts_oltp.vtu_location as b on a.vtuid=b.id"+
         " where vdm.is_active=true and b.id is not null and b.gps_fix::numeric =1 order by b.date_time desc";
-        sqlParam.addValue("currentDateTime",new Date());
+        sqlParam.addValue("currentDateTime",currentDateTime);
         sqlParam.addValue("imei2", imeiList);
 
 
@@ -419,6 +421,7 @@ public class LocationRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
+        currentDateTime = currentDateTime + " 00:00:00";
 
 
         if (imei1 == null) {
@@ -436,10 +439,10 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
 
-            qry += "and imei=:imei2 and date(date_time)=:currentDateTime and gps_fix::numeric=1  /*and longitude::numeric between 81 and 88 and latitude::numeric between 17 and 23*/  " +
+            qry += "and imei=:imei2 and  date_time >=:currentDateTime::timestamp  and gps_fix::numeric=1  /*and longitude::numeric between 81 and 88 and latitude::numeric between 17 and 23*/  " +
                     "order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
-            sqlParam.addValue("currentDateTime",new Date());
+            sqlParam.addValue("currentDateTime",currentDateTime);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
 
@@ -458,9 +461,9 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "and imei=:imei1 and date(date_time)=:currentDateTime order by date_time desc ) ";
+            qry += "and imei=:imei1 and date_time >=:currentDateTime::timestamp order by date_time desc ) ";
             sqlParam.addValue("imei1", imei1);
-            sqlParam.addValue("currentDateTime",new Date());
+            sqlParam.addValue("currentDateTime",currentDateTime);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             Double result = namedJdbc.queryForObject(qry, sqlParam, Double.class);
             if (result != null) {
@@ -479,6 +482,7 @@ public class LocationRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
+        currentDateTime = currentDateTime + " 00:00:00";
         if (imei1 == null) {
             String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on " +
                     "    FROM rdvts_oltp.vtu_location where is_active=true  ";
@@ -502,8 +506,8 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += " and date(date_time)=:currentDateTime order by date_time ASC";
-            sqlParam.addValue("currentDateTime",new Date());
+            qry += " and  date_time >=:currentDateTime::timestamp  order by date_time ASC";
+            sqlParam.addValue("currentDateTime",currentDateTime);
 
 
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
@@ -529,8 +533,8 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += " and date(date_time)=:currentDateTime order by date_time ASC";
-            sqlParam.addValue("currentDateTime",new Date());
+            qry += " and  date_time >=:currentDateTime::timestamp  order by date_time ASC";
+            sqlParam.addValue("currentDateTime",currentDateTime);
 
             //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
@@ -543,6 +547,7 @@ public class LocationRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
+        currentDateTime = currentDateTime + " 00:00:00";
 
         if (imei1 == null) {
             String qry = "with c as " +
@@ -558,9 +563,9 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "and imei=:imei2 and date(date_time)=:currentDateTime and gps_fix::numeric =1 order by date_time desc )";
+            qry += "and imei=:imei2 and date_time >=:currentDateTime::timestamp and gps_fix::numeric =1 order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
-            sqlParam.addValue("currentDateTime",new Date());
+            sqlParam.addValue("currentDateTime",currentDateTime);
 
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
 
@@ -582,8 +587,8 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += "and imei=:imei1 and date(date_time)=:currentDateTime and gps_fix::numeric =1 order by date_time desc ) ";
-            sqlParam.addValue("currentDateTime",new Date());
+            qry += "and imei=:imei1 and date_time >=:currentDateTime::timestamp and gps_fix::numeric =1 order by date_time desc ) ";
+            sqlParam.addValue("currentDateTime",currentDateTime);
             sqlParam.addValue("imei1", imei1);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
@@ -596,6 +601,7 @@ public class LocationRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
+        currentDateTime = currentDateTime + " 00:00:00";
 
         if (imei1 == null) {
             String qry = "select count(*) from rdvts_oltp.vtu_location where   is_active=true and gps_fix::numeric=1";
@@ -609,9 +615,9 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "  and imei=:imei2 and date(date_time)=:currentDateTime )";
+            qry += "  and imei=:imei2 and date_time >=:currentDateTime::timestamp )";
             sqlParam.addValue("imei2", imei2);
-            sqlParam.addValue("currentDateTime",new Date());
+            sqlParam.addValue("currentDateTime",currentDateTime);
 
 
             if (namedJdbc.queryForObject(qry, sqlParam, Integer.class) > 0) {
@@ -636,10 +642,10 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += "and imei=:imei1 and date(date_time)=:currentDateTime  ";
+            qry += "and imei=:imei1 and date_time >=:currentDateTime::timestamp  ";
             sqlParam.addValue("imei1", imei1);
 
-            sqlParam.addValue("currentDateTime",new Date());
+            sqlParam.addValue("currentDateTime",currentDateTime);
 
             if (namedJdbc.queryForObject(qry, sqlParam, Integer.class) > 0) {
                 return 1;
@@ -683,6 +689,7 @@ public class LocationRepositoryImpl {
         qry += " and imei =:imei1 and gps_fix::numeric =1 ";
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
+        currentDateTime = currentDateTime + " 00:00:00";
         Date currentDateMinus = new Date(System.currentTimeMillis() - 300 * 1000); //5 minute in millisecond 60*5
 //        DateTime dateTime = new DateTime();
 //        dateTime = dateTime.minusMinutes(5);
@@ -698,7 +705,7 @@ public class LocationRepositoryImpl {
 
         }
 
-        qry += "   AND date(date_time)=:currentDateTime AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC  limit :recordLimit ";
+        qry += "   AND date_time >=:currentDateTime::timestamp AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC  limit :recordLimit ";
         sqlParam.addValue("imei1", imeiNo1);
         sqlParam.addValue("createdOn", createdOn);
         sqlParam.addValue("deactivationDate", deactivationDate);
@@ -706,7 +713,7 @@ public class LocationRepositoryImpl {
         sqlParam.addValue("currentDateMinus", currentDateMinus);
         sqlParam.addValue("currentDate", currentDate);
 
-        sqlParam.addValue("currentDateTime",new Date());
+        sqlParam.addValue("currentDateTime",currentDateTime);
 
 
         //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
@@ -715,14 +722,18 @@ public class LocationRepositoryImpl {
 
     public List<VtuLocationDto> getLastLocationByDeviceId(List<Integer> IdList, Integer checkArea) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        currentDateTime = currentDateTime + " 00:00:00";
 
         String qry = "select b.*,vdm.vehicle_id as vehicleId,dm.id as deviceId from rdvts_oltp.vehicle_device_mapping as vdm" +
                 " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id" +
                 " left join (select distinct imei,max(id) over(partition by imei) as vtuid from" +
-                " rdvts_oltp.vtu_location as vtu where date(date_time)=:currentDateTime and  gps_fix::numeric =1 ) as a on dm.imei_no_1=a.imei" +
+                " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp and  gps_fix::numeric =1 ) as a on dm.imei_no_1=a.imei" +
                 " left join rdvts_oltp.vtu_location as b on a.vtuid=b.id" +
                 " where vdm.is_active=true and dm.is_active=true and b.id is not null and b.gps_fix::numeric =1  ";
-        sqlParam.addValue("currentDateTime",new Date());
+        sqlParam.addValue("currentDateTime",currentDateTime);
 
         if (IdList.get(0) > 1) {
             if (checkArea !=null){
