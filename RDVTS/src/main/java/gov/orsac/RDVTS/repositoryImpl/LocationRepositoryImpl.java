@@ -558,7 +558,7 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "and imei=:imei2 and date(date_time)=currentDateTime and gps_fix::numeric =1 order by date_time desc )";
+            qry += "and imei=:imei2 and date(date_time)=:currentDateTime and gps_fix::numeric =1 order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
             sqlParam.addValue("currentDateTime",new Date());
 
