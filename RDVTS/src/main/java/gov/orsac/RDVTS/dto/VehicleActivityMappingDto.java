@@ -36,6 +36,7 @@ public class VehicleActivityMappingDto {
 
     private String start;
     private String end;
+    private Integer userId;
 
     List<ActivityEntity> activityEntityList;
 }

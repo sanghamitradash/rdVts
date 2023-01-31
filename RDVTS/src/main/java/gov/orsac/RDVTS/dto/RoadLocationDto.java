@@ -32,4 +32,5 @@ public class RoadLocationDto {
     private List<RoadLocationEntity> roadLocation;
     private List<RoadEntity> roadMaster;
     private String geom;
+    private Double gisLength;
 }

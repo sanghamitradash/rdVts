@@ -14,14 +14,15 @@ public interface ActivityService {
 
     List<ActivityDto> getActivityById(Integer activityId, Integer userId);
 
-    ActivityWorkMapping updateActivity(Integer id, ActivityWorkMappingDto activityData);
+    Integer updateActivity(Integer id, ActivityWorkMappingDto activityData);
+    ActivityWorkMapping getActivity(Integer activityId, Integer workId);
 
     List<ActivityEntity> getAllActivity(Integer userId);
 
     Page<ActivityDto> getActivityList(ActivityListDto activity);
 
 
-    List<ActivityDto> getActivityDD();
+    List<ActivityDto> getActivityDD(Integer userId);
 
 
     ActivityEntity addActivity(ActivityDto activity);
@@ -32,9 +33,9 @@ public interface ActivityService {
 
     Integer updateWorkActivity(ActivityWorkDto activityWorkDto);
 
-    Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId);
+    Integer workActivityDeassign(Integer activityId, Integer workId, Integer userId);
 
-    Boolean vehicleActivityDeassign(Integer activityId);
+    Integer vehicleActivityDeassign(Integer activityId, Integer workId,Integer userId);
 
     List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId);
 
@@ -50,9 +51,13 @@ public interface ActivityService {
 
     IssueEntity saveIssueImage(IssueDto issue, Integer id, MultipartFile issueImages);
 
-    List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId);
+    List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId);
 
-    IssueDto getIssueByWorkId(Integer workId);
+    List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId);
+
+    IssueEntity updateIssue(int id, IssueDto issueDto);
+
+    Integer saveContractorId(Integer contractorId, Integer activityId);
 }
 
 

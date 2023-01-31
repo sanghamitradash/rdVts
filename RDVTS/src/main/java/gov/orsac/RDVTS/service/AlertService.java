@@ -2,17 +2,14 @@ package gov.orsac.RDVTS.service;
 
 import java.util.List;
 
-import gov.orsac.RDVTS.dto.AlertCountDto;
-import gov.orsac.RDVTS.dto.AlertDto;
-import gov.orsac.RDVTS.dto.BufferDto;
-import gov.orsac.RDVTS.dto.VtuLocationDto;
+import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertEntity;
+import gov.orsac.RDVTS.entities.AlertTypeEntity;
+import org.springframework.data.domain.Page;
 
 
 public interface AlertService  {
-    List<AlertCountDto> getTotalAlertToday(Integer id);
-    List<AlertCountDto> getTotalAlertWork(Integer id);
-    List<AlertDto> checkAlertExists(Long imei, Integer noDataAlertId);
+    Boolean checkAlertExists(Long imei, Integer noDataAlertId);
     AlertEntity saveAlert(AlertEntity alertEntity);
     Boolean updateResolve(Long imei1, Integer noDataAlertId);
 
@@ -33,9 +30,21 @@ public interface AlertService  {
 
 
 
-    List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Integer recordLimit);
+    List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit);
 
-    List<Integer> getTotalAlertToday(int id);
+    List<AlertCountDto> getTotalAlertToday(/*AlertFilterDto filterDto, */Integer id, Integer userId);
 
-    List<Integer> getTotalAlertWork(int id);
+    List<AlertCountDto> getTotalAlertWork(/*AlertFilterDto filterDto,*/ Integer id, Integer userId);
+
+    Page<AlertCountDto> getAlertToday(AlertFilterDto filterDto);
+
+    Page<AlertCountDto> getWorkAlertTotal(AlertFilterDto filterDto);
+
+    Page<AlertCountDto> getVehicleAlert(AlertFilterDto filterDto);
+
+    Page<AlertCountDto> getRoadAlert(AlertFilterDto filterDto);
+
+    AlertTypeEntity getAlertTypeDetails(int i);
+
+    List<VtuLocationDto> GeoFenceIntersectedRecords(String geom, List<VtuLocationDto> vtuLocationDto);
 }

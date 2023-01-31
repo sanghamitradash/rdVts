@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
@@ -152,7 +154,7 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += " order by date_time ASC";
+            qry += " order by date_time ASC limit 100";
 
 
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
@@ -263,6 +265,11 @@ public class LocationRepositoryImpl {
 
     public List<VtuLocationDto> getLastLocationRecordList(List<VehicleDeviceMappingDto> deviceDetails, Date startDate, Date endDate) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        currentDateTime = currentDateTime + " 00:00:00";
+
 
         List<Long> imeiList = new ArrayList<>();
         for (VehicleDeviceMappingDto item : deviceDetails) {
@@ -273,10 +280,10 @@ public class LocationRepositoryImpl {
         String qry = "select b.*,vdm.vehicle_id as vehicleId from rdvts_oltp.vehicle_device_mapping as vdm"+
         " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id"+
         " left join (select distinct imei,max(id) over(partition by imei) as vtuid from"+
-        " rdvts_oltp.vtu_location as vtu where date(date_time)=date(now()) and  gps_fix::numeric =1  and imei in (:imei2) ) as a on dm.imei_no_1=a.imei"+
+        " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp and  gps_fix::numeric =1  and imei in (:imei2) ) as a on dm.imei_no_1=a.imei"+
         " left join rdvts_oltp.vtu_location as b on a.vtuid=b.id"+
         " where vdm.is_active=true and b.id is not null and b.gps_fix::numeric =1 order by b.date_time desc";
-
+        sqlParam.addValue("currentDateTime",currentDateTime);
         sqlParam.addValue("imei2", imeiList);
 
 
@@ -412,6 +419,10 @@ public class LocationRepositoryImpl {
 
     public Double getTodayDistance(Long imei1, Long imei2, Date startDate, Date endDate, Date deviceVehicleCreatedOn, Date deviceVehicleDeactivationDate) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+        currentDateTime = currentDateTime + " 00:00:00";
+
 
         if (imei1 == null) {
             String qry = "with c as " +
@@ -428,9 +439,10 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
 
-            qry += "and imei=:imei2 and date(date_time)=date(now()) and gps_fix::numeric=1  /*and longitude::numeric between 81 and 88 and latitude::numeric between 17 and 23*/  " +
+            qry += "and imei=:imei2 and  date_time >=:currentDateTime::timestamp  and gps_fix::numeric=1  /*and longitude::numeric between 81 and 88 and latitude::numeric between 17 and 23*/  " +
                     "order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
+            sqlParam.addValue("currentDateTime",currentDateTime);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
 
@@ -449,8 +461,9 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "and imei=:imei1 and date(date_time)=date(now()) order by date_time desc ) ";
+            qry += "and imei=:imei1 and date_time >=:currentDateTime::timestamp order by date_time desc ) ";
             sqlParam.addValue("imei1", imei1);
+            sqlParam.addValue("currentDateTime",currentDateTime);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             Double result = namedJdbc.queryForObject(qry, sqlParam, Double.class);
             if (result != null) {
@@ -467,7 +480,9 @@ public class LocationRepositoryImpl {
 
     public List<VtuLocationDto> getAvgSpeedToday(Long imei1, Long imei2, Date startDate, Date endDate, Date deviceVehicleCreatedOn, Date deviceVehicleDeactivationDate) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+        currentDateTime = currentDateTime + " 00:00:00";
         if (imei1 == null) {
             String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on " +
                     "    FROM rdvts_oltp.vtu_location where is_active=true  ";
@@ -491,7 +506,8 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += " and date(date_time)=date(now()) order by date_time ASC";
+            qry += " and  date_time >=:currentDateTime::timestamp  order by date_time ASC";
+            sqlParam.addValue("currentDateTime",currentDateTime);
 
 
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
@@ -517,8 +533,8 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += " and date(date_time)=date(now()) order by date_time ASC";
-
+            qry += " and  date_time >=:currentDateTime::timestamp  order by date_time ASC";
+            sqlParam.addValue("currentDateTime",currentDateTime);
 
             //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
@@ -529,6 +545,9 @@ public class LocationRepositoryImpl {
 
     public Double getspeed(Long imei1, Long imei2, Date startDate, Date endDate, Date deviceVehicleCreatedOn, Date deviceVehicleDeactivationDate) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+        currentDateTime = currentDateTime + " 00:00:00";
 
         if (imei1 == null) {
             String qry = "with c as " +
@@ -544,8 +563,9 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "and imei=:imei2 and date(date_time)=date(now()) and gps_fix::numeric =1 order by date_time desc )";
+            qry += "and imei=:imei2 and date_time >=:currentDateTime::timestamp and gps_fix::numeric =1 order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
+            sqlParam.addValue("currentDateTime",currentDateTime);
 
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
 
@@ -567,7 +587,8 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += "and imei=:imei1 and date(date_time)=date(now()) and gps_fix::numeric =1 order by date_time desc ) ";
+            qry += "and imei=:imei1 and date_time >=:currentDateTime::timestamp and gps_fix::numeric =1 order by date_time desc ) ";
+            sqlParam.addValue("currentDateTime",currentDateTime);
             sqlParam.addValue("imei1", imei1);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
@@ -578,6 +599,9 @@ public class LocationRepositoryImpl {
 
     public Integer getActiveVehicle(Long imei1, Long imei2, Date startDate, Date endDate, Date deviceVehicleCreatedOn, Date deviceVehicleDeactivationDate) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+        currentDateTime = currentDateTime + " 00:00:00";
 
         if (imei1 == null) {
             String qry = "select count(*) from rdvts_oltp.vtu_location where   is_active=true and gps_fix::numeric=1";
@@ -591,8 +615,10 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "  and imei=:imei2 and date(date_time)=date(now()) )";
+            qry += "  and imei=:imei2 and date_time >=:currentDateTime::timestamp )";
             sqlParam.addValue("imei2", imei2);
+            sqlParam.addValue("currentDateTime",currentDateTime);
+
 
             if (namedJdbc.queryForObject(qry, sqlParam, Integer.class) > 0) {
                 return 1;
@@ -616,8 +642,10 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += "and imei=:imei1 and date(date_time)=date(now())  ";
+            qry += "and imei=:imei1 and date_time >=:currentDateTime::timestamp  ";
             sqlParam.addValue("imei1", imei1);
+
+            sqlParam.addValue("currentDateTime",currentDateTime);
 
             if (namedJdbc.queryForObject(qry, sqlParam, Integer.class) > 0) {
                 return 1;
@@ -635,8 +663,14 @@ public class LocationRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         VtuLocationDto locationDto = null;
 
-        String qry = "select  * from rdvts_oltp.vtu_location  where imei=:imeiNo and gps_fix::numeric=1 order by date_time desc limit 1 ";
-        sqlParam.addValue("imeiNo", imeiNo);
+        String qry = "select dm.id,b.* from rdvts_oltp.vehicle_device_mapping as vdm " +
+                "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id " +
+                "left join (select distinct imei,max(id) over(partition by imei) as vtuid from " +
+                "rdvts_oltp.vtu_location as vtu  where imei=:imeiNo and gps_fix::numeric=1 order by imei ) as a on dm.imei_no_1=a.imei\n" +
+                "left join rdvts_oltp.vtu_location as b on a.vtuid=b.id " +
+                "where vdm.is_active=true and b.id is not null";
+        sqlParam.addValue("imeiNo",imeiNo);
+
         try {
             locationDto = namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
         } catch (EmptyResultDataAccessException e) {
@@ -653,7 +687,9 @@ public class LocationRepositoryImpl {
         String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on " +
                 " FROM rdvts_oltp.vtu_location where is_active=true ";
         qry += " and imei =:imei1 and gps_fix::numeric =1 ";
-
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+        currentDateTime = currentDateTime + " 00:00:00";
         Date currentDateMinus = new Date(System.currentTimeMillis() - 300 * 1000); //5 minute in millisecond 60*5
 //        DateTime dateTime = new DateTime();
 //        dateTime = dateTime.minusMinutes(5);
@@ -669,13 +705,15 @@ public class LocationRepositoryImpl {
 
         }
 
-        qry += "   AND date(date_time)=date(now()) AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC  limit :recordLimit ";
+        qry += "   AND date_time >=:currentDateTime::timestamp AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC  limit :recordLimit ";
         sqlParam.addValue("imei1", imeiNo1);
         sqlParam.addValue("createdOn", createdOn);
         sqlParam.addValue("deactivationDate", deactivationDate);
         sqlParam.addValue("recordLimit", recordLimit);
         sqlParam.addValue("currentDateMinus", currentDateMinus);
         sqlParam.addValue("currentDate", currentDate);
+
+        sqlParam.addValue("currentDateTime",currentDateTime);
 
 
         //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
@@ -684,17 +722,22 @@ public class LocationRepositoryImpl {
 
     public List<VtuLocationDto> getLastLocationByDeviceId(List<Integer> IdList, Integer checkArea) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        currentDateTime = currentDateTime + " 00:00:00";
+
         String qry = "select b.*,vdm.vehicle_id as vehicleId,dm.id as deviceId from rdvts_oltp.vehicle_device_mapping as vdm" +
                 " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id" +
                 " left join (select distinct imei,max(id) over(partition by imei) as vtuid from" +
-                " rdvts_oltp.vtu_location as vtu where date(date_time)=date(now()) and  gps_fix::numeric =1 ) as a on dm.imei_no_1=a.imei" +
+                " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp and  gps_fix::numeric =1 ) as a on dm.imei_no_1=a.imei" +
                 " left join rdvts_oltp.vtu_location as b on a.vtuid=b.id" +
                 " where vdm.is_active=true and dm.is_active=true and b.id is not null and b.gps_fix::numeric =1  ";
+        sqlParam.addValue("currentDateTime",currentDateTime);
 
         if (IdList.get(0) > 1) {
+            if (checkArea !=null){
             if (checkArea == 1) {
-
-
                 qry += " and dm.id in (SELECT device_id FROM rdvts_oltp.device_area_mapping where dist_id IN(:IdList))  ";
                 sqlParam.addValue("IdList", IdList);
             }
@@ -710,11 +753,94 @@ public class LocationRepositoryImpl {
                 qry += " and dm.id in (SELECT device_id  FROM rdvts_oltp.device_area_mapping where division_id IN(select id from rdvts_oltp.division_m where circle_id in(:IdList))) ";
                 sqlParam.addValue("IdList", IdList);
             }
+            }
+            else {
+                qry += " and dm.id=:IdList";
+                sqlParam.addValue("IdList", IdList);
+            }
         }
         qry += " order by b.date_time desc";
 
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+
+    }
+
+    public List<VtuLocationDto> getLocationRecordListWithGeofence(Long imeiNo1, Long imeiNo2, Date createdOn, Date deactivationDate, Integer id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        if (imeiNo1 == null) {
+
+            String qry = "with c as" +
+                    "(select *,st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint   " +
+                    "from rdvts_oltp.vtu_location where " +
+                    " imei=:imei2 and gps_fix::numeric=1 and date(date_time)='2022-11-28' order by date_time ASC ) " +
+                    " select c.*,st_asgeojson(c.geomPoint) from c ,rdvts_oltp.geo_construction_m as rd where st_intersects(c.geomPoint,st_buffer(rd.geom::geography,100)::geometry) and rd.id=:roadId ";
+
+            sqlParam.addValue("imei2", imeiNo2);
+            sqlParam.addValue("roadId", id);
+
+//            if (deviceVehicleDeactivationDate == null) {
+//                deviceVehicleDeactivationDate = new Date();
+//            }
+//
+//            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+//                qry += " AND  date_time BETWEEN :createdOn AND :deactivationDate ";
+//                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+//                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+//            }
+
+
+
+            qry += " order by date_time ASC ";
+
+
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+        } else {
+            String qry = "with c as" +
+                    "(select *,st_setsrid(st_makepoint(longitude::numeric,latitude::numeric),4326) as geomPoint    " +
+                    "from rdvts_oltp.vtu_location where " +
+                    " imei=:imei1 and gps_fix::numeric=1 and date(date_time)='2022-11-29' order by date_time ASC) " +
+                    " select c.*,st_asgeojson(c.geomPoint) from c ,rdvts_oltp.geo_construction_m as rd where st_intersects(c.geomPoint,st_buffer(rd.geom::geography,100)::geometry) and rd.id=:roadId ";
+
+            sqlParam.addValue("imei1", imeiNo1);
+            sqlParam.addValue("roadId", id);
+
+//            if (deviceVehicleDeactivationDate == null) {
+//                deviceVehicleDeactivationDate = new Date();
+//            }
+
+//            if (deviceVehicleCreatedOn != null && deviceVehicleDeactivationDate != null) {
+//                qry += " AND  date_time BETWEEN :createdOn AND :deactivationDate ";
+//                sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
+//                sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
+//            }
+
+//            if (startDate != null && endDate != null) {
+//                qry += " and date_time BETWEEN :startDate AND :endDate ";
+//                sqlParam.addValue("startDate", startDate);
+//                sqlParam.addValue("endDate", endDate);
+//            }
+
+
+            qry += " order by date_time ASC ";
+
+
+
+            //sqlParam.addValue("imei2", device.get(0).getImeiNo2());
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+
+        }
+
+    }
+
+
+    public AlertDegreeDistanceDto getRotationDetails(String longitude, String latitude, String longitude1, String latitude1) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT degrees(ST_Azimuth(ST_Point("+longitude+", "+latitude+"),ST_Point("+longitude1+", "+latitude1+"))), " +
+                " st_distance(st_transform(st_setsrid(ST_Point("+longitude+", "+latitude+"),4326),26986), " +
+                "     st_transform(st_setsrid(ST_Point("+longitude1+", "+latitude1+"),4326),26986)) ";
+
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDegreeDistanceDto.class));
 
     }
 

@@ -1,6 +1,5 @@
 package gov.orsac.RDVTS.entities;
 
-import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,32 +13,22 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="issue_m")
-public class IssueEntity {
+@Table(name = "alert_type_m")
+public class AlertTypeEntity {
 
     @Id
-    @SequenceGenerator(name = "issue_m_sequence", sequenceName = "issue_m_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "issue_m_sequence")
+    @SequenceGenerator(name = "alert_type_sequence", sequenceName = "alert_type_m_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "alert_type_sequence")
     @Column(name = "id")
     private Integer id;
+    @Column(name = "alert_buffer_meter")
+    private Double alertBufferMeter;
 
-    @Column(name = "activity_work_id")
-    private Integer activityWorkId;
+    @Column(name = "alert_duration_min")
+    private Integer alertDurationMin ;
 
-    @Column(name = "issue_reason")
-    private String issueReason;
-
-    @Column(name ="resolved_status")
-    private Integer resolvedStatus;
-
-    @Column(name = "resolved_date")
-    private Date resolvedDate;
-
-    @Column(name = "resolved_by")
-    private Integer resolvedBy;
-
-    @Column(name = "issue_image")
-    private String issueImage;
+    @Column(name = "alert_type")
+    private String alertType ;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
@@ -59,6 +48,14 @@ public class IssueEntity {
     @Column(name = "updated_on")
     @UpdateTimestamp
     private Date updatedOn;
+
+
+
+
+
+
+
+
 
 
 

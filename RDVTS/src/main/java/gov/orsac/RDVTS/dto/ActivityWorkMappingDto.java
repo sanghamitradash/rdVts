@@ -17,6 +17,10 @@ public class ActivityWorkMappingDto {
 
     private Integer activityId;
 
+    private String activityName;
+
+    private String activityStatusName;
+
     private Integer workId;
 
     private Double activityQuantity;
@@ -56,5 +60,11 @@ public class ActivityWorkMappingDto {
     private Date updatedOn;
 
     private IssueDto issue;
+
+    private Integer userId;
+
+    private Integer activityWorkMapId;
+
+
 
 }

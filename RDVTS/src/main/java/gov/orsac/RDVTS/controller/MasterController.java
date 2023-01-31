@@ -72,7 +72,7 @@ public class MasterController {
     }
 
     @PostMapping("/getRoleByRoleId")
-    public RDVTSResponse getRoleByRoleId(@RequestParam Integer roleId) {
+    public RDVTSResponse getRoleByRoleId(@RequestParam Integer roleId, @RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -324,7 +324,7 @@ public class MasterController {
 
     @PostMapping("/getAllDesignationByUserLevelId")
     public RDVTSResponse getAllDesignationByUserLevelId(@RequestParam int userLevelId,
-                                                        @RequestParam(value = "userId", required = false) Integer userId) {
+                                                        @RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -354,7 +354,8 @@ public class MasterController {
 
     @PostMapping("/getDesignationById")
     public RDVTSResponse getDesignationById(@RequestParam int id,
-                                            @RequestParam (defaultValue = "0", required = false) int userId) {
+                                            @RequestParam (value = "userId",defaultValue = "0") int userId) {
+
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -473,7 +474,7 @@ public class MasterController {
 
     @PostMapping("/getUserLevelById")
     public RDVTSResponse getUserLevelById(@RequestParam int id,
-                                          @RequestParam(value = "userId", required = false) Integer userId) {
+                                          @RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -781,7 +782,7 @@ public class MasterController {
     }
 
     @PostMapping("/getVTUVendorById")
-    public RDVTSResponse getVTUVendorById(@RequestParam Integer id, @RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse getVTUVendorById(@RequestParam Integer id, @RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -805,7 +806,7 @@ public class MasterController {
 
     @PostMapping("/getVTUVendorList")
     public RDVTSListResponse getVTUVendorList(@RequestParam(name = "vendorId", required = false) Integer vendorId,
-                                              @RequestParam(name = "userId", required = false) Integer userId,
+                                              @RequestParam(name = "userId") Integer userId,
                                               @RequestParam(name = "deviceId", required = false) Integer deviceId,
                                               @RequestParam(name = "vtuVendorName", required = false) String vtuVendorName,
                                               @RequestParam(name = "distId", required = false) Integer distId,
@@ -892,7 +893,8 @@ public class MasterController {
 
 
     @PostMapping("/deactivateVendor")
-    public RDVTSResponse deactivateVendor(@RequestParam Integer vendorId, @RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse deactivateVendor(@RequestParam Integer vendorId,
+                                          @RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -918,7 +920,7 @@ public class MasterController {
 
 
     @PostMapping("/getAllDistrict")
-    public RDVTSResponse getAllDistrict(@RequestParam(value = "userId", required = false) Integer userId) {
+    public RDVTSResponse getAllDistrict(@RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -945,7 +947,7 @@ public class MasterController {
 
     @PostMapping("/getBlockByDistId")
     public RDVTSResponse getBlockByDistId(@RequestParam(name = "distId", required = false) Integer distId,
-                                          @RequestParam(value = "userId", required = false) Integer userId) {
+                                          @RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -966,7 +968,7 @@ public class MasterController {
 
     @PostMapping("/getDivisionByDistId")
     public RDVTSResponse getDivisionByDistId(@RequestParam(name = "distId", required = false) Integer distId,
-                                             @RequestParam(value = "userId", required = false) Integer userId) {
+                                             @RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -1040,6 +1042,7 @@ public class MasterController {
                                                 @RequestParam(defaultValue = "0", required = false) Integer piuId,
                                                 @RequestParam(defaultValue = "0", required = false) Integer distId,
                                                 @RequestParam(defaultValue = "0", required = false) Integer blockId,
+                                                @RequestParam(defaultValue = "0") Integer userId,
                                                 @RequestParam(defaultValue = "0", required = false) Integer roadId ) {
         /*GeoMasterDto geoMasterDto = new GeoMasterDto();
         geoMasterDto.setId(id);
@@ -1072,7 +1075,7 @@ public class MasterController {
     }
 
     @PostMapping("/getAllState")
-    public RDVTSResponse getAllState(@RequestParam(value = "userId", required = false) Integer userId) {
+    public RDVTSResponse getAllState(@RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -1099,7 +1102,7 @@ public class MasterController {
 
     @PostMapping("/getDistByStateId")
     public RDVTSResponse getDistByStateId(@RequestParam(name = "stateId", required = false) Integer stateId,
-                                          @RequestParam(value = "userId", required = false) Integer userId) {
+                                          @RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -1120,7 +1123,7 @@ public class MasterController {
 
     @PostMapping("/getListOfBlockByListOfDistId")
     public RDVTSResponse getListOfBlockByListOfDistId(@RequestParam List<Integer> distId,
-                                                      @RequestParam(value = "userId", required = false) Integer userId) {
+                                                      @RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -1141,7 +1144,7 @@ public class MasterController {
 
     @PostMapping("/getListOfDivisionByListOfDistId")
     public RDVTSResponse getListOfDivisionByListOfDistId(@RequestParam List<Integer> distId,
-                                                         @RequestParam(value = "userId", required = false) Integer userId) {
+                                                         @RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -1162,7 +1165,7 @@ public class MasterController {
 
     @PostMapping("/getDivisionByCircleId")
     public RDVTSResponse getDivisionByCircleId(@RequestParam(name = "circleId", required = false) Integer circleId,
-                                               @RequestParam(name = "userId",required = false)Integer userId) {
+                                               @RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -1182,7 +1185,7 @@ public class MasterController {
     }
 
     @PostMapping("/getAllCircleDD")
-    public RDVTSResponse getAllCircleDD(@RequestParam(value = "userId", required = false) Integer userId) {
+    public RDVTSResponse getAllCircleDD(@RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -1202,7 +1205,7 @@ public class MasterController {
     }
 
     @PostMapping("/getAllDivisionDD")
-    public RDVTSResponse getAllDivisionDD(@RequestParam(value = "userId", required = false) Integer userId) {
+    public RDVTSResponse getAllDivisionDD(@RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {

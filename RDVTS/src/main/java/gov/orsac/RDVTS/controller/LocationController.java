@@ -33,223 +33,9 @@ public class LocationController {
     @Autowired
     private RoadService roadService;
 
-//    @PostMapping("/getLatestLocationRecord")
-//    public RDVTSResponse getLatestLocationRecord(@RequestParam(name = "deviceId", required = false) Integer deviceId,
-//                                                 @RequestParam(name = "vehicleId", required = false) Integer vehicleId,
-//                                                 @RequestParam(name = "userId", required = false) Integer userId,
-//                                                 @RequestParam(name = "workId", required = false) Integer workId,
-//                                                 @RequestParam(name = "roadId", required = false) Integer roadId) {
-//
-//        RDVTSResponse response = new RDVTSResponse();
-//        Map<String, Object> result = new HashMap<>();
-//        //Get All Device Ids
-//        List<Integer> vehicleIds = new ArrayList<>();
-//        List<Integer> deviceIds = new ArrayList<>();
-//        List<Integer> workIds = new ArrayList<>();
-//        List<Integer> roadIds = new ArrayList<>();
-//        List<Long> imei1 = new ArrayList<>();
-//        List<Long> imei2 = new ArrayList<>();
-//
-//        try {
-//            //If device Id is present
-//            if (deviceId != null) {
-//                deviceIds.add(deviceId);
-//            } else if (vehicleId != null) {
-//                //Get Data By Vehicle Ids
-//                VehicleDeviceInfo device = vehicleService.getVehicleDeviceMapping(vehicleId);
-//                deviceIds.add(device.getDeviceId());
-//            } else if (workId != null) {
-//                //Get Data by Work ids
-//                workIds.add(workId);
-//                List<VehicleWorkMappingDto> vehicleByWork = workService.getVehicleBywork(workIds);
-//                for (VehicleWorkMappingDto item : vehicleByWork) {
-//                    vehicleIds.add(item.getVehicleId());
-//                }
-//                List<VehicleDeviceMappingDto> device = vehicleService.getVehicleDeviceMappingList(vehicleIds);
-//                for (VehicleDeviceMappingDto item : device) {
-//                    deviceIds.add(item.getDeviceId());
-//                }
-//            } else if (roadId != null) {
-//                //Get Data by Work Ids
-//                roadIds.add(roadId);
-//                List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(roadIds);
-//                for (GeoMasterDto item : workByRoad) {
-//                    workIds.add(item.getWorkId());
-//                }
-//                List<VehicleWorkMappingDto> vehicleByWork = workService.getVehicleBywork(workIds);
-//                for (VehicleWorkMappingDto item : vehicleByWork) {
-//                    vehicleIds.add(item.getVehicleId());
-//                }
-//                List<VehicleDeviceMappingDto> device = vehicleService.getVehicleDeviceMappingList(vehicleIds);
-//                for (VehicleDeviceMappingDto item : device) {
-//                    deviceIds.add(item.getDeviceId());
-//                }
-//            }
-//
-//            if (deviceIds == null) {
-//                response = new RDVTSResponse(0,
-//                        new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                        "Device Id or Vehicle Id is empty",
-//                        result);
-//            } else {
-//                List<DeviceDto> device = deviceService.getDeviceByIds(deviceIds, userId);
-//
-//                for (DeviceDto item : device) {
-//                    if (item.getImeiNo1() != null || !item.getImeiNo1().toString().isEmpty()) {
-//                        imei1.add(item.getImeiNo1());
-//                        imei2.add(item.getImeiNo2());
-//                    }
-//                }
-//
-//
-//                //Get and Send Final Data
-//                if (imei1.size() > 0 || imei2.size() > 0) {
-//                    List<VtuLocationDto> vtuLocationDto = locationService.getLatestRecordByImeiNumber(imei1, imei2);
-//                    //result.put("user", vtuLocationDto);
-//                    response.setData(vtuLocationDto);
-//                    response.setStatus(1);
-//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-//                    response.setMessage("Device Latest Location");
-//                } else {
-//                    response = new RDVTSResponse(0,
-//                            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                            "Device Id or Vehicle Id is empty",
-//                            result);
-//                }
-//            }
-//            // Get Final IMEI Number
-//
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            response = new RDVTSResponse(0,
-//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                    ex.getMessage(),
-//                    result);
-//        }
-//        return response;
-//    }
-//
-//
-//    @PostMapping("/getLocationRecordByDateTime")
-//    public RDVTSResponse getLocationRecordByDateTime(@RequestParam(name = "deviceId", required = false) Integer deviceId,
-//                                                     @RequestParam(name = "vehicleId", required = false) Integer vehicleId,
-//                                                     @RequestParam(name = "userId", required = false) Integer userId,
-//                                                     @RequestParam(name = "startTime", required = false) String startTime,
-//                                                     @RequestParam(name = "endTime", required = false) String endTime,
-//                                                     @RequestParam(name = "WorkId", required = false) Integer workId,
-//                                                     @RequestParam(name = "roadId", required = false) Integer roadId) {
-//        RDVTSResponse response = new RDVTSResponse();
-//        Map<String, Object> result = new HashMap<>();
-//        //Get All Device Ids
-//        List<Integer> vehicleIds = new ArrayList<>();
-//        List<Integer> deviceIds = new ArrayList<>();
-//        List<Integer> workIds = new ArrayList<>();
-//        List<Integer> roadIds = new ArrayList<>();
-//        List<Long> imei1 = new ArrayList<>();
-//        List<Long> imei2 = new ArrayList<>();
-//        try {
-//            if (deviceId != null) {
-//                deviceIds.add(deviceId);
-//            } else if (vehicleId != null) {
-//                VehicleDeviceInfo device = vehicleService.getVehicleDeviceMapping(vehicleId);
-//                deviceIds.add(device.getDeviceId());
-//            } else if (workId != null) {
-//                workIds.add(workId);
-//
-//
-//                List<VehicleWorkMappingDto> vehicleByWork = workService.getVehicleBywork(workIds);
-//                for (VehicleWorkMappingDto item : vehicleByWork) {
-//                    vehicleIds.add(item.getVehicleId());
-//                }
-//                List<VehicleDeviceMappingDto> device = vehicleService.getVehicleDeviceMappingList(vehicleIds);
-//                for (VehicleDeviceMappingDto item : device) {
-//                    deviceIds.add(item.getDeviceId());
-//                }
-//            } else if (roadId != null) {
-//                roadIds.add(roadId);
-//                List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(roadIds);
-//
-//                for (GeoMasterDto item : workByRoad) {
-//                    workIds.add(item.getWorkId());
-//
-//                }
-//
-//                List<VehicleWorkMappingDto> vehicleByWork = workService.getVehicleBywork(workIds);
-//                for (VehicleWorkMappingDto item : vehicleByWork) {
-//                    vehicleIds.add(item.getVehicleId());
-//                }
-//                List<VehicleDeviceMappingDto> device = vehicleService.getVehicleDeviceMappingList(vehicleIds);
-//                for (VehicleDeviceMappingDto item : device) {
-//                    deviceIds.add(item.getDeviceId());
-//                }
-//            }
-//
-//            if (deviceIds == null) {
-//                response = new RDVTSResponse(0,
-//                        new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                        "Device Id or Vehicle Id is empty",
-//                        result);
-//            } else {
-//                List<DeviceDto> device = deviceService.getDeviceByIds(deviceIds, userId);
-//
-//                for (DeviceDto item : device) {
-//                    if (item.getImeiNo1() != null || !item.getImeiNo1().toString().isEmpty()) {
-//                        imei1.add(item.getImeiNo1());
-//                        imei2.add(item.getImeiNo2());
-//                    }
-//                }
-//
-//
-//                //Get and Send Final Data
-//                if (imei1.size() > 0) {
-//
-//
-//                    //List<VtuLocationDto> vtuLocationDto = locationService.getLatestRecordByImeiNumber(imei1,imei2);
-//
-//                    if (startTime == null && endTime == null) {
-//                        response = new RDVTSResponse(0,
-//                                new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                                "Start date and End Date is not Found",
-//                                result);
-//                    } else {
-//                        Date startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(startTime);
-//                        Date endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(endTime);
-//
-//                        List<VtuLocationDto> vtuLocationDtoList = locationService.getLocationRecordByDateTime(imei1, imei2, startDate, endDate);
-//
-//                        //result.put("user", vtuLocationDto);
-//                        response.setData(vtuLocationDtoList);
-//                        response.setStatus(1);
-//                        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-//                        response.setMessage("Device Latest Location");
-//                    }
-//
-//                    //result.put("user", vtuLocationDto);
-//
-//                } else {
-//                    response = new RDVTSResponse(0,
-//                            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                            "Device Id or Vehicle Id is empty",
-//                            result);
-//                }
-//            }
-//            // Get Final IMEI Number
-//
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            response = new RDVTSResponse(0,
-//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                    ex.getMessage(),
-//                    result);
-//        }
-//        return response;
-//    }
-
 
     @PostMapping("/getLocationRecordList")
-    public RDVTSResponse getLocationRecordList(@RequestParam(name = "userId", required = false) Integer userId,
+    public RDVTSResponse getLocationRecordList(@RequestParam(name = "userId") Integer userId,
                                                @RequestParam(name = "imei1", required = false) List<Long> imei1,
                                                @RequestParam(name = "imei2", required = false) List<Long> imei2,
                                                @RequestParam(name = "deviceId", required = false) List<Integer> deviceId,
@@ -372,7 +158,7 @@ public class LocationController {
                     for (Integer workitem : workId) {
                         List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(workitem);
                         for (ActivityWorkMapping activityId : activityDtoList) {
-                            List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                            List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                             for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                 //road Details By vehicle
                                 List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
@@ -411,7 +197,7 @@ public class LocationController {
                         for (GeoMasterDto item : workByRoad) {
                             List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(item.getWorkId());
                             for (ActivityWorkMapping activityId : activityDtoList) {
-                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     //road Details By vehicle
                                     List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
@@ -492,7 +278,7 @@ public class LocationController {
                         for (GeoMasterDto WorkObj : workByDistrictIds) {
                             List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(WorkObj.getWorkId());
                             for (ActivityWorkMapping activityId : activityDtoList) {
-                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     //road Details By vehicle
                                     List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
@@ -534,7 +320,7 @@ public class LocationController {
                         for (GeoMasterDto workItem : workByBlockId) {
                             List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(workItem.getWorkId());
                             for (ActivityWorkMapping activityId : activityDtoList) {
-                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     //road Details By vehicle
                                     List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
@@ -574,7 +360,7 @@ public class LocationController {
                         for (GeoMasterDto workItem : workByDivisionId) {
                             List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(workItem.getWorkId());
                             for (ActivityWorkMapping activityId : activityDtoList) {
-                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                                 for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                                     //road Details By vehicle
                                     List<RoadMasterDto> road = vehicleService.getRoadDetailByVehicleId(vehicleList.getVehicleId());
@@ -640,7 +426,7 @@ public class LocationController {
 
 
     @PostMapping("/getLastLocationRecordList")
-    public RDVTSResponse getLastLocationRecordList(@RequestParam(name = "userId", required = false) Integer userId,
+    public RDVTSResponse getLastLocationRecordList(@RequestParam(name = "userId") Integer userId,
                                                    @RequestParam(name = "imei1", required = false) List<Long> imei1,
                                                    @RequestParam(name = "imei2", required = false) List<Long> imei2,
                                                    @RequestParam(name = "deviceId", required = false) List<Integer> deviceId,
@@ -653,7 +439,6 @@ public class LocationController {
                                                    @RequestParam(name = "blockId", required = false) List<Integer> blockId,
                                                    @RequestParam(name = "divisionId", required = false) List<Integer> divisionId,
                                                    @RequestParam(name = "circleId", required = false) List<Integer> circleId,
-
                                                    @RequestParam(name = "startTime", required = false) String startTime,
                                                    @RequestParam(name = "endTime", required = false) String endTime) throws ParseException {
         RDVTSResponse response = new RDVTSResponse();
@@ -860,9 +645,15 @@ public class LocationController {
                     result.add(itemVal);
                 }
                 else {
-                    response.setStatus(1);
-                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-                    response.setMessage("No Imei Found");
+                    List<Integer> IdList=new ArrayList<>();
+                    IdList.add(-1);
+                    List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationByDeviceId(IdList,null);
+                    Map<String, Object> itemVal = new HashMap<>();
+                    itemVal.put("vehicleLocation", vtuLocationDto);
+                    result.add(itemVal);
+//                    response.setStatus(1);
+//                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//                    response.setMessage("No Imei Found");
                 }
 
 
@@ -905,7 +696,8 @@ public class LocationController {
 
 
     @PostMapping("/getVehicleListByWorkId")
-    public RDVTSResponse getVehicleListByWorkId(@RequestParam(name = "workIds", required = false) List<Integer> workIds) {
+    public RDVTSResponse getVehicleListByWorkId(@RequestParam(name = "workIds", required = false) List<Integer> workIds,
+                                                @RequestParam(name = "userId") Integer userId ) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {

@@ -8,10 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
@@ -20,10 +19,11 @@ public class DashboardController {
     @Autowired
     DashboardService dashboardService;
     @PostMapping("/getActiveAndInactiveVehicle")
-    public RDVTSResponse getActiveAndInactiveVehicle(@RequestParam(name = "userId",required = false)Integer userId) {
+    public RDVTSResponse getActiveAndInactiveVehicle(@RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
+
             ActiveAndInactiveVehicleDto vehicle = dashboardService.getActiveAndInactiveVehicle(userId);
 
                 result.put("vehicle", vehicle);
@@ -41,7 +41,7 @@ public class DashboardController {
         return response;
     }
     @PostMapping("/getStatusWiseWorkCount")
-    public RDVTSResponse getStatusWiseWorkCount(@RequestParam(name = "userId",required = false)Integer userId) {
+    public RDVTSResponse getStatusWiseWorkCount(@RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -62,7 +62,7 @@ public class DashboardController {
     }
 
     @PostMapping("/getDistrictWiseVehicleCount")
-    public RDVTSResponse getDistrictWiseVehicleCount(@RequestParam(name = "userId",required = false)Integer userId) {
+    public RDVTSResponse getDistrictWiseVehicleCount(@RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<String> districtName=new ArrayList<>();
@@ -104,7 +104,7 @@ public class DashboardController {
 
 
     @PostMapping("/getDivisionWiseVehicleCount")
-    public RDVTSResponse getDivisionWiseVehicleCount(@RequestParam(name = "userId",required = false)Integer userId) {
+    public RDVTSResponse getDivisionWiseVehicleCount(@RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         List<String> divName=new ArrayList<>();

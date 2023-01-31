@@ -9,6 +9,7 @@ import gov.orsac.RDVTS.repositoryImpl.ActivityRepositoryImpl;
 import gov.orsac.RDVTS.service.ActivityService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,13 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     ActivityMasterRepository activityMasterRepository;
+
+
+    @Value("${accessImagePath}")
+    private String accessImagePath;
+
+    @Value("${saveIssueImagePath}")
+    private String saveIssueImagePath;
 
     @Autowired
     ActivityWorkMappingRepository activityWorkMappingRepository;
@@ -55,14 +63,19 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityWorkMapping updateActivity(Integer id, ActivityWorkMappingDto activityData) {
-            ActivityWorkMapping existingActivity = activityWorkMappingRepository.findByActivityId(id);
-            //BeanUtils.copyProperties(activityData, activityEntity);
-            existingActivity.setActivityId(id);
-            existingActivity.setActualActivityStartDate(activityData.getActualActivityStartDate());
-            existingActivity.setActualActivityCompletionDate(activityData.getActualActivityCompletionDate());
-            existingActivity.setActivityStatus(activityData.getActivityStatus());
-            return activityWorkMappingRepository.save(existingActivity);
+    public Integer updateActivity(Integer id, ActivityWorkMappingDto activityData) {
+        /*ActivityWorkMapping existingActivity = activityRepositoryImpl.findByActivityId(id);
+        existingActivity.setActivityStatus(activityData.getActivityStatus());
+        existingActivity.setActivityStartDate(activityData.getActivityStartDate());
+        existingActivity.setActivityCompletionDate(activityData.getActivityCompletionDate());
+        ActivityWorkMapping save = activityWorkMappingRepository.save(existingActivity);*/
+        Integer update=activityRepositoryImpl.updateActivity(id,activityData);
+        return update;
+    }
+
+    @Override
+    public ActivityWorkMapping getActivity(Integer activityId, Integer workId) {
+        return activityRepositoryImpl.getActivity(activityId,workId);
     }
 
 
@@ -74,8 +87,8 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
-    public List<ActivityDto> getActivityDD() {
-        return activityRepositoryImpl.getActivityDD();
+    public List<ActivityDto> getActivityDD(Integer userId) {
+        return activityRepositoryImpl.getActivityDD(userId);
     }
 
     @Override
@@ -91,11 +104,11 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer activityId,Integer userId) {
+    public List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer workActivityMapId,Integer userId) {
         List<VehicleActivityMappingEntity> vehicleActivity = new ArrayList<>();
         for (int j = 0; j < vehicleActivityMapping.size(); j++) {
             VehicleActivityMappingEntity vehicleActivityMappingEntity = new VehicleActivityMappingEntity();
-            vehicleActivityMappingEntity.setActivityId(activityId);
+            vehicleActivityMappingEntity.setActivityId(workActivityMapId);
             vehicleActivityMappingEntity.setVehicleId(vehicleActivityMapping.get(0).getVehicleId());
             vehicleActivityMappingEntity.setStartTime(vehicleActivityMapping.get(0).getStartTime());
             vehicleActivityMappingEntity.setEndTime(vehicleActivityMapping.get(0).getEndTime());
@@ -121,14 +134,14 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Boolean workActivityDeassign(Integer activityId, Integer workId, Integer userId) {
-        Boolean res = activityRepositoryImpl.workActivityDeassign(activityId, workId, userId);
+    public Integer workActivityDeassign(Integer activityId, Integer workId, Integer userId ) {
+        Integer res = activityRepositoryImpl.workActivityDeassign(activityId, workId, userId);
         return res;
     }
 
     @Override
-    public Boolean vehicleActivityDeassign(Integer activityId) {
-        Boolean res = activityRepositoryImpl.vehicleActivityDeassign(activityId);
+    public Integer vehicleActivityDeassign(Integer activityId, Integer workId,Integer userId) {
+        Integer res = activityRepositoryImpl.vehicleActivityDeassign(activityId, workId, userId);
         return res;
     }
 
@@ -167,18 +180,38 @@ public class ActivityServiceImpl implements ActivityService {
         IssueEntity issueImage = new IssueEntity();
         BeanUtils.copyProperties(issue, issueImage);
         issueImage.setActivityWorkId(id);
-        issueImage.setIssueImage("https://ofarisbucket.s3.ap-south-1.amazonaws.com/rdvts/" + issueImages.getOriginalFilename());
+        issueImage.setIssueImage( saveIssueImagePath + "/" +id+"/"+ issueImages.getOriginalFilename());
         return issueRepository.save(issueImage);
     }
 
     @Override
-    public List<ActivityWorkMapping> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId) {
+    public List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId) {
         return activityRepositoryImpl.getActivityByIdAndWorkId(activityId,userId,workId);
     }
 
     @Override
-    public IssueDto getIssueByWorkId(Integer workId) {
-        return activityRepositoryImpl.getIssueByWorkId(workId);
+    public List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId) {
+        return activityRepositoryImpl.getIssueByWorkId(workId,activityId);
+    }
+
+    @Override
+    public IssueEntity updateIssue(int id, IssueDto issueDto) {
+        IssueEntity existingIssue = issueRepository.findById(id);
+        if (existingIssue == null) {
+            throw new RecordNotFoundException("IssueEntity", "id", id);
+        }
+        existingIssue.setResolvedDate(issueDto.getResolvedDate());
+        existingIssue.setResolvedStatus(issueDto.getResolvedStatus());
+        existingIssue.setResolvedBy(issueDto.getResolvedBy());
+
+
+        IssueEntity save = issueRepository.save(existingIssue);
+        return save;
+    }
+
+    @Override
+    public Integer saveContractorId(Integer contractorId, Integer activityId) {
+        return activityRepositoryImpl.saveContractorId(contractorId,  activityId);
     }
 
 
