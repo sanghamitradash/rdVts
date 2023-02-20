@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ContractorFilterDto {
 
-    Integer id;
-    Integer userId;
-    Integer gContractorId;
+    private Integer id;
+    private Integer userId;
+    private Integer gContractorId;
 
     private String name;
     private Long mobile;

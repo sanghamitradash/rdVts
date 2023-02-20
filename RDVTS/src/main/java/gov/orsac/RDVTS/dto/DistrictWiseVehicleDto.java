@@ -3,8 +3,7 @@ package gov.orsac.RDVTS.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.function.ObjIntConsumer;
+import org.locationtech.jts.geom.Geometry;
 
 @Data
 @AllArgsConstructor
@@ -12,6 +11,11 @@ import java.util.function.ObjIntConsumer;
 public class DistrictWiseVehicleDto {
     private Integer districtId;
     private String districtName;
-    private Integer vehicleCount;
+    //private Integer vehicleCount;
+    private String geom;
+    private Integer count;
+    private Integer active;
+    private Integer InActive;
+
 
 }

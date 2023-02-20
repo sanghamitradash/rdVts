@@ -20,30 +20,18 @@ public class VehicleMasterDto {
 
     private Integer id;
     private Integer deviceId;
-
     private String vehicleNo;
-
     private Integer vehicleTypeId;
-
     private String vehicleTypeName;
-
-
+    private Long imeiNo1;
     private String model;
-
     private Double speedLimit;
-
     private String chassisNo;
-
     private String engineNo;
-
     private boolean active;
-
     private Integer createdBy;
-
     private Date createdOn ;
-
     private Integer updatedBy;
-
     private Date updatedOn;
     private Integer slNo;
 
@@ -57,5 +45,10 @@ public class VehicleMasterDto {
     private Integer userId;
     private Integer contractorId;
     private Integer activityId;
+    private Integer distId;
+    private Integer divisionId;
+    private Integer activityWorkMapId;
+    private Integer userByVehicleId;
+    private boolean contractor;
 
 }

@@ -15,14 +15,16 @@ spring:
       max-request-size: -1
 
 
-#AWS S3 Configuration
-#aws:
-#  access_key_id: AKIAWP75M2FMKB5J7DGW
-#  secret_access_key: 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
-#  s3:
-#    region: ap-south-1
-#    bucket: ofarisbucket
-
+ # AWS S3 Configuration
+aws:
+  access_key_id: AKIAWP75M2FMKB5J7DGW
+  secret_access_key: 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
+  s3:
+    region: ap-south-1
+    bucket: ofarisbucket
+accessImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com/"
+saveIssueImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com/issue"
+accessIssueImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com/issue"
 #accessImagePath: "https://ofarisbucket.s3.ap-south-1.amazonaws.com/"
 #accessDocumentPath: "https://ofarisbucket.s3.ap-south-1.amazonaws.com/ContractDocument/"
 #accessIssueDocumentPath: "https://ofarisbucket.s3.ap-south-1.amazonaws.com/IssueDocument/"

@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.service;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.LoginLogEntity;
 import gov.orsac.RDVTS.entities.UserAreaMappingEntity;
 import gov.orsac.RDVTS.entities.UserEntity;
 import gov.orsac.RDVTS.entities.UserPasswordMasterEntity;
@@ -39,6 +40,7 @@ public interface UserService {
     Integer sendOtpToUser(UserDto user);
 
     UserInfoDto getUserByUserId(Integer userId);
+    LoginLogEntity saveLoginLog(Integer userId);
     UserDto getUserBymobile(Long mobile);
 
 
@@ -51,4 +53,6 @@ public interface UserService {
 
 
     Boolean activateAndDeactivateUser(Integer id);
+
+    UserEntity updateProfileByUserId(Integer userId, UserDto userDto);
 }

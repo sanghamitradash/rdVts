@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.VehicleRepository;
@@ -61,16 +62,17 @@ public class WorkServiceImpl implements WorkService {
         if (existingWork == null) {
             throw new RecordNotFoundException("WorkEntity", "id", id);
         }
-        existingWork.setGeoWorkId(workDto.getGeoWorkId());
-        existingWork.setGeoWorkName(workDto.getGeoWorkName());
-        existingWork.setAwardDate(workDto.getAwardDate());
+//        existingWork.setGeoWorkId(workDto.getGeoWorkId());
+//        existingWork.setGeoWorkName(workDto.getGeoWorkName());
+//        existingWork.setAwardDate(workDto.getAwardDate());
         existingWork.setCompletionDate(workDto.getCompletionDate());
-        existingWork.setPmisFinalizeDate(workDto.getPmisFinalizeDate());
+//        existingWork.setPmisFinalizeDate(workDto.getPmisFinalizeDate());
         existingWork.setWorkStatus(workDto.getWorkStatus());
-        existingWork.setApprovalStatus(workDto.getApprovalStatus());
-        existingWork.setApprovedBy(workDto.getApprovedBy());
+//        existingWork.setApprovalStatus(workDto.getApprovalStatus());
+//        existingWork.setApprovedBy(workDto.getApprovedBy());
         existingWork.setUpdatedBy(workDto.getUpdatedBy());
-        existingWork.setCreatedBy(workDto.getCreatedBy());
+//        existingWork.setCreatedBy(workDto.getCreatedBy());
+//        existingWork.setUpdatedOn(workDto.getUpdatedOn());
 
 
         WorkEntity save = workRepository.save(existingWork);
@@ -98,14 +100,38 @@ public class WorkServiceImpl implements WorkService {
         return vehicleRepository.deactivateVehicleWork(workIds, vehicleIds);
     }
 
-//    @Override
-//    public List<WorkDto> getUnAssignedWorkData(Integer userId) {
+    @Override
+    public List<UnassignedWorkDto> getUnAssignedWorkData(Integer userId) {
 //        List<Integer> userIdList=new ArrayList<>();
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
 //        if(user.getUserLevelId()!=5){
 //            userIdList=helperService.getLowerUserByUserId(userId);
 //        }
-//        return workRepositoryImpl.getUnAssignedWorkData(userIdList,userId);
-//    }
+        return workRepositoryImpl.getUnAssignedWorkData(userId);
+    }
 
+    @Override
+    public List<ActivityWorkMapping> getActivityDetailsByWorkId(Integer workId) {
+        return workRepositoryImpl.getActivityDetailsByWorkId(workId);
+    }
+
+    @Override
+    public List<WorkStatusDto> getWorkStatusDD(Integer userId) {
+        return workRepositoryImpl.getWorkStatusDD(userId);
+    }
+
+    @Override
+    public List<GeoConstructionDto> getPackageDD(Integer userId) {
+        return workRepositoryImpl.getPackageDD(userId);
+    }
+
+    public Integer deactivateVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {
+        List<Integer> activityIds = new ArrayList<>();
+        List<Integer> vehicleIds = new ArrayList<>();
+        for(VehicleActivityDto vehicle :activity ){
+            vehicleIds.add(vehicle.getVehicleId());
+            activityIds.add(vehicle.getActivityId());
+        }
+        return vehicleRepository.deactivateVehicleActivity(activityIds,vehicleIds);
+    }
 }

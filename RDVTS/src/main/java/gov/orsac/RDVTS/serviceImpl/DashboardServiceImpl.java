@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.serviceImpl;
 import gov.orsac.RDVTS.dto.ActiveAndInactiveVehicleDto;
 import gov.orsac.RDVTS.dto.CompletedAndNotCompletedWorkDto;
 import gov.orsac.RDVTS.dto.DistrictWiseVehicleDto;
+import gov.orsac.RDVTS.dto.DivisionWiseVehicleDto;
 import gov.orsac.RDVTS.repository.DashboardRepository;
 import gov.orsac.RDVTS.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired
     private DashboardRepository dashboardRepository;
     @Override
-    public ActiveAndInactiveVehicleDto getActiveAndInactiveVehicle() {
+    public ActiveAndInactiveVehicleDto getActiveAndInactiveVehicle(Integer userId) {
         Integer totalVehicle=dashboardRepository.getTotalVehicle();
         Integer totalActive=dashboardRepository.getTotalActive();
         Integer totalInactive=totalVehicle-totalActive;
@@ -32,7 +33,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public CompletedAndNotCompletedWorkDto getStatusWiseWorkCount() {
+    public CompletedAndNotCompletedWorkDto getStatusWiseWorkCount(Integer userId) {
         Integer totalWork=dashboardRepository.getTotalWork();
         Integer totalCompleted=dashboardRepository.getCompletedWork();
         Integer totalIncomplete=totalWork-totalCompleted;
@@ -47,38 +48,89 @@ public class DashboardServiceImpl implements DashboardService {
         return work;
     }
 
+
     @Override
-    public List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount() {
-        List<DistrictWiseVehicleDto>  count=new ArrayList<>();
-        for(int i=0;i<5;i++){
-            DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();
-            if(i==0){
-              count1.setDistrictId(1);
-              count1.setDistrictName("Baleswar");
-              count1.setVehicleCount(5);
-            }
-            if(i==1){
-                count1.setDistrictId(1);
-                count1.setDistrictName("Bolangir");
-                count1.setVehicleCount(10);
-            }
-            if(i==2){
-                count1.setDistrictId(1);
-                count1.setDistrictName("Cuttack");
-                count1.setVehicleCount(4);
-            }
-            if(i==3){
-                count1.setDistrictId(1);
-                count1.setDistrictName("Dhenkanala");
-                count1.setVehicleCount(6);
-            }
-            if(i==4){
-                count1.setDistrictId(1);
-                count1.setDistrictName("Khurda");
-                count1.setVehicleCount(8);
-            }
-           count.add(count1);
+    public List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount(Integer userId) {
+        List<DistrictWiseVehicleDto> count = new ArrayList<>();
+        List<DistrictWiseVehicleDto> finalCount=new ArrayList<>();
+
+        List<Integer> totalActiveIds = dashboardRepository.totalActiveIds();
+        List<Integer> totalInActiveIds = dashboardRepository.totalInactiveIds();
+        /* DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();*/
+         List<DistrictWiseVehicleDto> activeCount=dashboardRepository.getDistrictWiseVehicleCount(totalActiveIds,userId);
+        List<DistrictWiseVehicleDto> inActiveCount=dashboardRepository.getDistrictWiseVehicleCount(totalInActiveIds,userId);
+        for(int i=0;i<activeCount.size();i++){
+            DistrictWiseVehicleDto dw=new DistrictWiseVehicleDto();
+            dw.setActive(activeCount.get(i).getCount());
+            dw.setInActive(inActiveCount.get(i).getCount());
+            dw.setDistrictId(activeCount.get(i).getDistrictId());
+            dw.setDistrictName(activeCount.get(i).getDistrictName());
+            dw.setCount(activeCount.get(i).getCount() + inActiveCount.get(i).getCount());
+           // dw.setGeom(activeCount.get(i).getGeom());
+            finalCount.add(dw);
         }
-        return count;
+
+//        district.setInActive(totalInActiveIds);
+        return finalCount;
     }
-}
+
+    @Override
+    public List<DivisionWiseVehicleDto> getDivisionWiseVehicleCount(Integer userId) {
+        List<DivisionWiseVehicleDto> count = new ArrayList<>();
+        List<DivisionWiseVehicleDto> finalCount=new ArrayList<>();
+
+        List<Integer> totalActiveIds = dashboardRepository.totalActiveIds();
+        List<Integer> totalInActiveIds = dashboardRepository.totalInactiveIds();
+        /* DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();*/
+        List<DivisionWiseVehicleDto> activeCount=dashboardRepository.getDivisionWiseVehicleCount(totalActiveIds,userId);
+        List<DivisionWiseVehicleDto> inActiveCount=dashboardRepository.getDivisionWiseVehicleCount(totalInActiveIds,userId);
+        for(int i=0;i<activeCount.size();i++){
+            DivisionWiseVehicleDto dw=new DivisionWiseVehicleDto();
+            dw.setActive(activeCount.get(i).getCount());
+            dw.setInActive(inActiveCount.get(i).getCount());
+            dw.setDivId(activeCount.get(i).getDivId());
+            dw.setDivName(activeCount.get(i).getDivName());
+            dw.setCount(activeCount.get(i).getCount() + inActiveCount.get(i).getCount());
+            // dw.setGeom(activeCount.get(i).getGeom());
+            finalCount.add(dw);
+        }
+
+//        district.setInActive(totalInActiveIds);
+        return finalCount;
+    }
+    }
+
+
+
+        //        for(int i=0;i<5;i++){
+//            DistrictWiseVehicleDto count1=new DistrictWiseVehicleDto();
+//            if(i==0){
+//              count1.setDistrictId(1);
+//              count1.setDistrictName("Baleswar");
+//              count1.setVehicleCount(5);
+//            }
+//            if(i==1){
+//                count1.setDistrictId(1);
+//                count1.setDistrictName("Bolangir");
+//                count1.setVehicleCount(10);
+//            }
+//            if(i==2){
+//                count1.setDistrictId(1);
+//                count1.setDistrictName("Cuttack");
+//                count1.setVehicleCount(4);
+//            }
+//            if(i==3){
+//                count1.setDistrictId(1);
+//                count1.setDistrictName("Dhenkanala");
+//                count1.setVehicleCount(6);
+//            }
+//            if(i==4){
+//                count1.setDistrictId(1);
+//                count1.setDistrictName("Khurda");
+//                count1.setVehicleCount(8);
+//            }
+//           count.add(count1);
+//        }
+        //return count;
+
+

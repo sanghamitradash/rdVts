@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -22,8 +21,11 @@ public class MasterRepositoryImpl implements MasterRepository {
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
 
+    @Autowired
+    private UserRepositoryImpl userRepositoryImpl;
+
     public int count(String qryStr, MapSqlParameterSource sqlParam) {
-        String sqlStr = "SELECT COUNT(*) from (" + qryStr + ") as t";
+        String sqlStr = " SELECT COUNT(*) from (" + qryStr + ") as t ";
         Integer intRes = namedJdbc.queryForObject(sqlStr, sqlParam, Integer.class);
         if (null != intRes) {
             return intRes;
@@ -229,7 +231,7 @@ public class MasterRepositoryImpl implements MasterRepository {
                 "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on  " +
                 "FROM rdvts_oltp.vtu_vendor_m AS vtuM " +
 //                "LEFT JOIN rdvts_oltp.device_m AS dev ON dev.vtu_vendor_id=vtuM.id " +
-                "WHERE vtuM.is_active = true ";
+                "WHERE vtuM.is_active = true  ";
 
         if(id>0){
             qry+=" AND vtuM.id=:id";
@@ -242,6 +244,21 @@ public class MasterRepositoryImpl implements MasterRepository {
             return null;
         }
         return vendor;
+    }
+
+
+    public List<Integer> getVendorIdsByDistIdsForFilter(Integer distId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct vtu_vendor_id from rdvts_oltp.device_m where id in (select distinct device_id from rdvts_oltp.device_area_mapping where dist_id=:distId) ";
+        sqlParam.addValue("distId", distId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getVendorIdsBydivisionIdsForFilter(Integer divisionId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct vtu_vendor_id from rdvts_oltp.device_m where id in (select distinct device_id from rdvts_oltp.device_area_mapping where division_id =:divisionId) ";
+        sqlParam.addValue("divisionId", divisionId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 
     public Page<VTUVendorMasterDto> getVTUVendorList(VTUVendorFilterDto vtuVendorFilterDto){
@@ -258,7 +275,7 @@ public class MasterRepositoryImpl implements MasterRepository {
         int resultCount=0;
         String queryString = " ";
         queryString = "SELECT DISTINCT vtuM.id, vtuM.vtu_vendor_name, vtuM.vtu_vendor_address, vtuM.vtu_vendor_phone, vtuM.customer_care_number, " +
-                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on " +
+                "vtuM.is_active, vtuM.created_by, vtuM.created_on, vtuM.updated_by, vtuM.updated_on  " +
                 "FROM rdvts_oltp.vtu_vendor_m as vtuM " +
                 "Left join rdvts_oltp.device_m as dev on dev.vtu_vendor_id=vtuM.id and dev.is_active=true " +
                 "where vtuM.is_active=true ";
@@ -273,26 +290,67 @@ public class MasterRepositoryImpl implements MasterRepository {
             sqlParam.addValue("deviceId", vtuVendorFilterDto.getDeviceId());
         }
 
-
-//        if (deviceIds != null && !deviceIds.isEmpty()) {
-//            queryString += " AND dev.id IN (:deviceIds)";
-//            sqlParam.addValue("deviceIds", deviceIds);
-//        }
-
-
-//        if(vtuVendorFilterDto.getDeviceId() != null && vtuVendorFilterDto.getDeviceId() > 0){
-//            queryString += " AND dev.id=:deviceId ";
-//            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDeviceId());
-//        }
-
         if(vtuVendorFilterDto.getVtuVendorName() != null){
             queryString += " AND vtuM.vtu_vendor_name LIKE(:vtuVendorName) ";
             sqlParam.addValue("vtuVendorName", vtuVendorFilterDto.getVtuVendorName());
         }
 
+        if(vtuVendorFilterDto.getDivisionId() != null && vtuVendorFilterDto.getDivisionId() > 0){
+            queryString += " AND dev.id=:deviceId ";
+            sqlParam.addValue("deviceId", vtuVendorFilterDto.getDivisionId());
+        }
+
+        UserInfoDto user = userRepositoryImpl.getUserByUserId(vtuVendorFilterDto.getUserId());
+        if (user.getUserLevelId() == 5) {
+            queryString += " AND dev.user_level_id=:userLevelId ";
+            sqlParam.addValue("userLevelId", user.getUserLevelId());
+        }
+
+        else if (user.getUserLevelId() == 2) {
+            List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(vtuVendorFilterDto.getUserId());
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
+            List<Integer> vendorIds = userRepositoryImpl.getVendorIdsByBlockAndDivision(blockIds, divisionIds, distIds);
+            if (queryString != null && queryString.length() > 0) {
+                queryString += " AND vtuM.id in(:vendorIds) ";
+                sqlParam.addValue("vendorIds", vendorIds);
+            } else {
+                queryString += " WHERE vtuM.id in(:vendorIds) ";
+                sqlParam.addValue("vendorIds", vendorIds);
+            }
+        }
+
+        else if(user.getUserLevelId()==3){
+            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(vtuVendorFilterDto.getUserId());
+            List<Integer> vendorIds  = userRepositoryImpl.getVendorIdsByBlockIds(blockIds);
+            if(queryString != null && queryString.length() > 0) {
+                if(vendorIds != null && vendorIds.size() > 0) {
+                    queryString += " AND  vtuM.id in(:vendorIds) ";
+                    sqlParam.addValue("vendorIds", vendorIds);
+                } else {
+                    queryString += " AND  vtuM.id in(0) ";
+                }
+            } else {
+                queryString += " where  vtuM.id in(:vendorIds) ";
+                sqlParam.addValue("vendorIds", vendorIds);
+            }
+        }
+
+        else if(user.getUserLevelId()==4){
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(vtuVendorFilterDto.getUserId());
+            List<Integer> vendorIds = userRepositoryImpl.getVendorIdsByDivisionId(divisionIds);
+            if(queryString != null && queryString.length() > 0) {
+                queryString += " AND vtuM.id in(:vendorIds) ";
+                sqlParam.addValue("vendorIds",vendorIds);
+            } else {
+                queryString += " where vtuM.id in(:vendorIds) ";
+                sqlParam.addValue("vendorIds",vendorIds);
+            }
+        }
+
         resultCount = count(queryString, sqlParam);
         if (vtuVendorFilterDto.getLimit() > 0){
-            queryString += " Order by vtuM.id desc LIMIT " +vtuVendorFilterDto.getLimit() + " OFFSET " + vtuVendorFilterDto.getOffSet();
+            queryString += " Order by vtuM.id desc LIMIT " + vtuVendorFilterDto.getLimit() + " OFFSET " + vtuVendorFilterDto.getOffSet();
         }
 
         List<VTUVendorMasterDto> list = namedJdbc.query(queryString, sqlParam, new BeanPropertyRowMapper<>(VTUVendorMasterDto.class));
@@ -308,6 +366,34 @@ public class MasterRepositoryImpl implements MasterRepository {
         sqlParam.addValue("deviceId", deviceId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
+
+    @Override
+    public List<DivisionDto> getDivisionByCircleId(Integer circleId) {
+        return null;
+    }
+
+    @Override
+    public List<DivisionDto> getDivisionByCircleId(Integer circleId, Integer userId) {
+        List<DivisionDto> division;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry  = "SELECT div.id,div.division_name,div.dist_id,div.acrnym,div.is_active,div.division_id,div.circle_id from rdvts_oltp.division_m as div  " +
+                "left join rdvts_oltp.circle_m as circle on circle.id = div.circle_id  " ;
+                //"WHERE div.circle_id =:circleId ";
+
+        if(circleId>0){
+            qry+=" WHERE div.circle_id =:circleId";
+        }
+        sqlParam.addValue("circleId", circleId);
+        sqlParam.addValue("userId",userId);
+        try {
+            division = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(DivisionDto.class));
+        }
+        catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return division;
+    }
+
 
     public List<DistrictBoundaryDto> getAllDistrict() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
@@ -395,11 +481,12 @@ public class MasterRepositoryImpl implements MasterRepository {
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 
-    public Boolean deactivateVendor(Integer vendorId) {
+    public Boolean deactivateVendor(Integer vendorId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "UPDATE rdvts_oltp.vtu_vendor_m  " +
                 "SET is_active=false WHERE id=:vendorId  ";
         sqlParam.addValue("vendorId", vendorId);
+        sqlParam.addValue("userId", userId);
 
         int update = namedJdbc.update(qry, sqlParam);
         boolean result = false;
@@ -409,9 +496,118 @@ public class MasterRepositoryImpl implements MasterRepository {
         return result;
     }
 
-    public List<Integer> getDeviceIdsByDistIds(List<Integer> distId) {
-        return null;
+    public List<Integer> getDeviceIdsByDistIds(List<Integer> distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct device_id from rdvts_oltp.device_area_mapping where dist_id in(:distIds) ";
+        sqlParam.addValue("distIds", distIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getDeviceIdsByBlockIds(List<Integer> blockIds) {
+       MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+       String qry = "select distinct device_id from rdvts_oltp.device_area_mapping where block_id in (:blockIds)           ";
+       sqlParam.addValue("blockIds", blockIds);
+       return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getDeviceIdsByDivisionIds(List<Integer> divisionIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct device_id from rdvts_oltp.device_area_mapping where division_id  in(:divisionIds)           ";
+        sqlParam.addValue("divisionIds",divisionIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+
+    public List<Integer> getDeviceIdsByBlockAndDivision(List<Integer> blockIds, List<Integer> divisionIds,List<Integer>distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select distinct device_id from rdvts_oltp.device_area_mapping where block_id in (:blockIds) OR division_id in (:divisionIds) OR dist_id in (:distIds) ";
+        sqlParam.addValue("blockIds",blockIds);
+        sqlParam.addValue("divisionIds",divisionIds);
+        sqlParam.addValue("distIds",distIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+
+    public List<Integer> getRoadIdsByBlockAndDivision(List<Integer> blockIds, List<Integer> divisionIds, List<Integer> distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select DISTINCT road_id from rdvts_oltp.geo_master where block_id in (:blockIds) or division_id in (:divisionIds) or dist_id in (:distIds)";
+        sqlParam.addValue("blockIds",blockIds);
+        sqlParam.addValue("divisionIds",divisionIds);
+        sqlParam.addValue("distIds",distIds);
+        return namedJdbc.queryForList(qry,sqlParam,Integer.class);
+    }
+
+    public List<Integer> getRoadIdsByBlockIds(List<Integer> blockIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct road_id from rdvts_oltp.geo_master where block_id in (:blockIds)";
+        sqlParam.addValue("blockIds", blockIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<CircleMasterDto> getAllCircleDD() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT id,name from rdvts_oltp.circle_m ORDER BY name  ";
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(CircleMasterDto.class));
+    }
+
+    public List<DivisionDto> getAllDivisionDD() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT div.division_id, div.division_name from rdvts_oltp.division_m as div  ";
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionDto.class));
+    }
+
+    public List<Integer> getVehicleByDeviceIdList(List<Integer> deviceId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping where device_id in(:deviceId) ";
+        sqlParam.addValue("deviceId", deviceId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getWorkIdsByBlockAndDivision(List<Integer> blockIds, List<Integer> divisionIds, List<Integer> distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct work_id from rdvts_oltp.geo_master where block_id in (:blockIds) or division_id in (:divisionIds) or dist_id in(:distIds) ";
+        sqlParam.addValue("blockIds", blockIds);
+        sqlParam.addValue("divisionIds", divisionIds);
+        sqlParam.addValue("distIds", distIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getWorkIdsByBlockIds(List<Integer> blockIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct work_id from rdvts_oltp.geo_master where block_id in (:blockIds) ";
+        sqlParam.addValue("blockIds", blockIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getVehicleIdsByBlockAndDivision(List<Integer> blockIds, List<Integer> divisionIds, List<Integer> distIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select vehicle_id from rdvts_oltp.vehicle_device_mapping where device_id in (select device_id from rdvts_oltp.device_area_mapping where block_id in(:blockIds) or division_id in(:divisionIds) or dist_id in(:distIds))  ";
+        sqlParam.addValue("blockIds", blockIds);
+        sqlParam.addValue("divisionIds", divisionIds);
+        sqlParam.addValue("distIds", distIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getVehicleIdsByBlockIds(List<Integer> blockIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "  select distinct vam.vehicle_id from rdvts_oltp.vehicle_activity_mapping as vam " +
+                "left join rdvts_oltp.geo_master as gm on gm.activity_id=vam.activity_id where gm.block_id in(:blockIds) ";
+        sqlParam.addValue("blockIds", blockIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getWorkIdByDivisionId(List<Integer> divisionIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select work_id from rdvts_oltp.geo_master where division_id in (:divisionIds) ";
+        sqlParam.addValue("divisionIds", divisionIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+    public List<Integer> getRoadIdsByDivisionId(List<Integer> divisionIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select DISTINCT road_id from rdvts_oltp.geo_master where division_id in (:divisionIds) ";
+        sqlParam.addValue("divisionIds", divisionIds);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 }
+
 
 

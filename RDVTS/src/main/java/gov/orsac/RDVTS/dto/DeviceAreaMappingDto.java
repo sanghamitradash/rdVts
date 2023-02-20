@@ -21,7 +21,7 @@ public class DeviceAreaMappingDto {
     private Integer gBlockId;
     private Integer stateId;
 
-    private Boolean isActive = true;
+    private Boolean isActive ;
     private Integer createdBy;
     private Date createdOn;
     private Integer updatedBy;

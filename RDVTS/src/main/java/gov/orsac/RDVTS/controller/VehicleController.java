@@ -43,7 +43,7 @@ public class VehicleController {
     @PostMapping("/addVehicle")
     public RDVTSResponse saveVehicle(@RequestParam(name = "vehicle") String vehicleData,
                                      @RequestParam(name = "vehicleDeviceMapping", required = false) String vehicleDeviceMappingData,
-                                     @RequestParam(name = "vehicleWorkMapping", required = false) String vehicleWorkMappingData,
+                                     @RequestParam(name = "vehicleActivityMapping", required = false) String VehicleActivityMappingData,
                                      @RequestParam(name = "vehicleOwnerMapping", required = false) String vehicleOwnerMappingData) throws JsonProcessingException {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
@@ -51,12 +51,13 @@ public class VehicleController {
         VehicleDeviceMappingEntity vehicleDeviceMapping = null;
         VehicleOwnerMappingDto vehicleOwnerMapping = null;
         List<VehicleWorkMappingDto> vehicleWorkMapping = new ArrayList<>();
+        List<VehicleActivityDto> vehicleActivityMapping = new ArrayList<>();
         VehicleMaster vehicle = mapper.readValue(vehicleData, VehicleMaster.class);
         if (vehicleDeviceMappingData != null) {
             vehicleDeviceMapping = mapper.readValue(vehicleDeviceMappingData, VehicleDeviceMappingEntity.class);
         }
-        if (vehicleWorkMappingData != null) {
-            vehicleWorkMapping = mapper.readValue(vehicleWorkMappingData, mapper.getTypeFactory().constructCollectionType(List.class, VehicleWorkMappingDto.class));
+        if (VehicleActivityMappingData != null) {
+            vehicleActivityMapping = mapper.readValue(VehicleActivityMappingData, mapper.getTypeFactory().constructCollectionType(List.class, VehicleActivityDto.class));
         }
         if (vehicleOwnerMappingData != null) {
             vehicleOwnerMapping = mapper.readValue(vehicleOwnerMappingData, VehicleOwnerMappingDto.class);
@@ -78,14 +79,14 @@ public class VehicleController {
                         VehicleOwnerMappingEntity assignVehicleOwner = vehicleService.assignVehicleOwner(vehicleOwnerMapping);
                         result.put("assignVehicleOwner", assignVehicleOwner);
                     }
-                    if (vehicleWorkMapping != null && vehicleWorkMapping.size() > 0) {
-                        List<VehicleWorkMappingDto> work = new ArrayList<>();
-                        for (VehicleWorkMappingDto work1 : vehicleWorkMapping) {
-                            work1.setVehicleId(saveVehicle.getId());
-                            work.add(work1);
+                    if (vehicleActivityMapping != null && vehicleActivityMapping.size() > 0) {
+                        List<VehicleActivityDto> activity = new ArrayList<>();
+                        for (VehicleActivityDto activity1 : vehicleActivityMapping) {
+                            activity1.setVehicleId(saveVehicle.getId());
+                            activity.add(activity1);
                         }
-                        List<VehicleWorkMappingEntity> saveVehicleWorkMapping = vehicleService.assignVehicleWork(work);
-                        result.put("assignVehicleWorkMapping", saveVehicleWorkMapping);
+                        List<VehicleActivityMappingEntity> saveVehicleActivityMapping = vehicleService.assignVehicleActivity(activity);
+                        result.put("assignVehicleActivityMapping", saveVehicleActivityMapping);
                     }
                     response.setData(result);
                     response.setStatus(1);
@@ -114,8 +115,24 @@ public class VehicleController {
     }
 
     @PostMapping("/getVehicleByVId")
-    public RDVTSResponse getVehicleByVId(@RequestParam Integer vehicleId, @RequestParam Integer userId) {
-        RDVTSResponse response = new RDVTSResponse();
+    public RDVTSListResponse getVehicleByVId(@RequestParam Integer vehicleId,
+                                             @RequestParam Integer userId
+                                             /*@RequestParam(name = "startDate", required = false) String startDate,
+                                             @RequestParam (name = "endDate", required = false) String endDate,
+                                             @RequestParam(name = "alertTypeId", required = false) Integer alertTypeId,
+                                             @RequestParam(name = "start") Integer start,
+                                             @RequestParam(name = "length") Integer length,
+                                             @RequestParam(name = "draw") Integer draw*/) {
+
+        AlertFilterDto alertFiler = new AlertFilterDto();
+//        alertFiler.setStartDate(startDate);
+//        alertFiler.setEndDate(endDate);
+//        alertFiler.setAlertTypeId(alertTypeId);
+//        alertFiler.setOffSet(start);
+//        alertFiler.setLimit(length);
+//        alertFiler.setDraw(draw);
+
+        RDVTSListResponse response = new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
 
         try {
@@ -128,7 +145,16 @@ public class VehicleController {
                work= vehicleService.getVehicleWorkMapping(activityId);
             }
             LocationDto location=vehicleService.getLocation(vehicleId);
-            List<AlertDto> alertList=vehicleService.getAlert(vehicleId);
+
+            //alert pagination
+            List<AlertDto> alertPageList=vehicleService.getAlert(alertFiler, vehicleId);
+//            List<AlertDto> alertList1 = alertPageList.getContent();
+//            Integer start1=start;
+//            for(int i=0;i<alertList1.size();i++){
+//                start1=start1+1;
+//                alertList1.get(i).setSlNo(start1);
+//            }
+
             List<VehicleDeviceInfo> deviceHistory=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
             List<Integer> activityIds=vehicleRepositoryImpl.getActivityIdsByVehicleId(vehicleId);
             if(activityIds!=null && activityIds.size()>0) {
@@ -141,7 +167,7 @@ public class VehicleController {
             result.put("device",device);
             result.put("work",work);
             result.put("location",location);
-            result.put("alertList",alertList);
+            result.put("alertList",alertPageList);
             result.put("deviceHistoryList",deviceHistory);
             result.put("workHistoryList",workHistory);
             result.put("activity",activity);
@@ -149,11 +175,15 @@ public class VehicleController {
             response.setData(result);
             response.setStatus(1);
             response.setMessage("Vehicle By Id");
+//            response.setDraw(draw);
+//            response.setRecordsFiltered(alertPageList.getTotalElements());
+//            response.setRecordsTotal(alertPageList.getTotalElements());
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
-            response = new RDVTSResponse(0,
+            response = new RDVTSListResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
                     result);
@@ -185,6 +215,7 @@ public class VehicleController {
 
     @PostMapping("/getVehicleList")
     public RDVTSListResponse getVehicleList(@RequestParam(name = "vehicleTypeId", required = false) Integer vehicleTypeId,
+                                            @RequestParam(name = "vehicleId",required = false)Integer vehicleId,
                                             @RequestParam(name = "deviceId", required = false) Integer deviceId,
                                             @RequestParam(name = "workId", required = false) Integer workId,
                                             @RequestParam(name = "activityId", required = false) Integer activityId,
@@ -192,18 +223,27 @@ public class VehicleController {
                                             @RequestParam(name = "length", required = false) Integer length,
                                             @RequestParam(name = "draw", required = false) Integer draw,
                                             @RequestParam(name = "userId", required = false) Integer userId,
+                                            @RequestParam(name = "distId",required = false) Integer distId,
+                                            @RequestParam(name ="userByVehicleId",required = false)Integer userByVehicleId,
+                                            @RequestParam(name = "divisionId",required = false) Integer divisionId,
+                                            @RequestParam(name = "contractorId",required = false)Integer contractorId,
                                             @RequestParam(name = "deviceAssign", required = false) Boolean deviceAssign,
                                             @RequestParam(name = "trackingActive", required = false) Boolean trackingActive,
                                             @RequestParam(name = "activityAssign", required = false) Boolean activityAssign) {
 
         VehicleFilterDto vehicle = new VehicleFilterDto();
         vehicle.setVehicleTypeId(vehicleTypeId);
+        vehicle.setVehicleId(vehicleId);
         vehicle.setDeviceId(deviceId);
         vehicle.setWorkId(workId);
         vehicle.setActivityId(activityId);
         vehicle.setLimit(length);
         vehicle.setOffSet(start);
         vehicle.setUserId(userId);
+        vehicle.setUserByVehicleId(userByVehicleId);
+        vehicle.setDistId(distId);
+        vehicle.setDivisionId(divisionId);
+        vehicle.setContractorId(contractorId);
         vehicle.setDraw(draw);
 
         //Check and Assign Filter
@@ -495,7 +535,8 @@ public class VehicleController {
     }*/
 
     @PostMapping("/getVehicleById")
-    public RDVTSResponse getVehicleById(@RequestParam(name = "id", required = false) Integer id, Integer userId) {
+    public RDVTSResponse getVehicleById(@RequestParam(name = "id", required = false) Integer id,
+                                        @RequestParam Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -504,7 +545,7 @@ public class VehicleController {
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("Road By Id");
+            response.setMessage("Vehicle By Id");
         } catch (Exception ex) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -556,7 +597,8 @@ public class VehicleController {
 
 
     @PostMapping("/getVehicleByActivityId")
-    public RDVTSResponse getVehicleByActivityId(@RequestParam(name = "activityId", required = false) Integer activityId, Integer userId) {
+    public RDVTSResponse getVehicleByActivityId(@RequestParam(name = "activityId", required = false) Integer activityId,
+                                                @RequestParam(name = "userId" )Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -576,7 +618,8 @@ public class VehicleController {
     }
 
     @PostMapping("/getVehicleByVehicleTypeId")
-    public RDVTSResponse getVehicleByVehicleTypeId(@RequestParam(value = "vehicleTypeId", required = false) Integer vehicleTypeId) {
+    public RDVTSResponse getVehicleByVehicleTypeId(@RequestParam(value = "vehicleTypeId", required = false) Integer vehicleTypeId,
+                                                   @RequestParam(name = "userId" )Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -596,7 +639,8 @@ public class VehicleController {
     }
 
     @PostMapping("/getRoadDetailByVehicleId")
-    public RDVTSResponse getRoadDetailByVehicleId(@RequestParam(value = "vehicleId", required = false) Integer vehicleId) {
+    public RDVTSResponse getRoadDetailByVehicleId(@RequestParam(value = "vehicleId", required = false) Integer vehicleId,
+                                                  @RequestParam(name = "userId" )Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -614,4 +658,50 @@ public class VehicleController {
         }
         return response;
     }
+
+    @PostMapping("/deactivateVehicle")
+    public RDVTSResponse deactivateVehicle(@RequestParam Integer vehicleId, @RequestParam Integer status, @RequestParam  Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            if (status == 0) {
+                Integer count = vehicleService.getTotalCount(vehicleId);
+                if (count == 0) {
+                    Boolean res2 = vehicleService.deactivateVehicleActivityMapping(vehicleId, status);
+                    Boolean res1 = vehicleService.deactivateDeviceVehicleMapping(vehicleId, status);
+                    Boolean res = vehicleService.deactivateVehicle(vehicleId, status);
+                    if (res == true && res1 == true && res2 == true) {
+                        response.setData(result);
+                        response.setStatus(1);
+                        response.setMessage("vehicle Deactivated ");
+                        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                    }
+                }
+            } else if (status == 1) {
+//                Integer count = vehicleService.getTotalCount(vehicleId);
+//                if (count == 0) {
+//                    Boolean res2 = vehicleService.deactivateVehicleActivityMapping(vehicleId, status);
+//                    Boolean res1 = vehicleService.deactivateDeviceVehicleMapping(vehicleId, status);
+                Boolean res = vehicleService.deactivateVehicle(vehicleId, status);
+                if (res == true) {
+                    response.setData(result);
+                    response.setStatus(1);
+                    response.setMessage("vehicle Activated ");
+                    response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+                }
+            }
+
+     else {
+                response.setStatus(0);
+                response.setMessage("Something went wrong");
+                response.setStatusCode(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+            }
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(), result);
+        }
+        return response;
+    }
+
 }

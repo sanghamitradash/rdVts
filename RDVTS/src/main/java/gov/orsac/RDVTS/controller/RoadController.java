@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.RoadEntity;
+import gov.orsac.RDVTS.entities.RoadLocationEntity;
 import gov.orsac.RDVTS.service.RoadService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.spring.web.json.Json;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,12 +51,15 @@ public class RoadController {
     }
 
     @PostMapping("/getRoadById")
-    public RDVTSResponse getRoadById(@RequestParam(name = "roadId", required = false) Integer roadId, Integer userId) {
+    public RDVTSResponse getRoadById(@RequestParam(name = "roadId", required = false) Integer roadId,
+                                     @RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             List<RoadMasterDto> road = roadService.getRoadById(roadId, userId);
+            List<AlertCountDto> alertCount = roadService.getAlert(roadId);
             result.put("road", road);
+            result.put("alertList", alertCount);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
@@ -69,7 +74,8 @@ public class RoadController {
     }
 //Swarup
     @PostMapping("/getRoadByWorkId")
-    public RDVTSResponse getRoadByWorkId(@RequestParam(name = "workId") Integer workId, Integer userId) {
+    public RDVTSResponse getRoadByWorkId(@RequestParam(name = "workId") Integer workId,
+                                         @RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -124,6 +130,8 @@ public class RoadController {
                                            @RequestParam(name = "workIds", required = false) List<Integer> workIds,
                                            @RequestParam(name = "contractIds", required = false) List<Integer> contractIds,
                                            @RequestParam(name = "activityids", required = false) List<Integer> activityids,
+                                           @RequestParam(name = "divisionIds", required = false) List<Integer> divisionIds,
+                                           @RequestParam(name = "distIds", required = false) List<Integer> distIds,
                                            @RequestParam(name = "start") Integer start,
                                            @RequestParam(name = "length") Integer length,
                                            @RequestParam(name = "draw") Integer draw) {
@@ -136,6 +144,8 @@ public class RoadController {
         roadFilterDto.setWorkIds(workIds);
         roadFilterDto.setContractIds(contractIds);
         roadFilterDto.setActivityIds(activityids);
+        roadFilterDto.setDistIds(distIds);
+        roadFilterDto.setDivisionIds(divisionIds);
         roadFilterDto.setLimit(length);
         roadFilterDto.setOffSet(start);
         roadFilterDto.setDraw(draw);
@@ -172,7 +182,8 @@ public class RoadController {
     }
 
     @PostMapping("/getGeomByRoadId")
-    public RDVTSResponse getGeomByRoadId(@RequestParam(name = "roadId", required = false) Integer roadId, Integer userId) {
+    public RDVTSResponse getGeomByRoadId(@RequestParam(name = "roadId", required = false) Integer roadId,
+                                         @RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -192,11 +203,12 @@ public class RoadController {
     }
 
     @PostMapping("/getWorkDetailsByRoadId")
-    public RDVTSResponse getWorkDetailsByRoadId(@RequestParam(name = "roadId", required = false) Integer roadId) {
+    public RDVTSResponse getWorkDetailsByRoadId(@RequestParam(name = "roadId", required = false) Integer roadId,
+                                                @RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoadWorkMappingDto> road = roadService.getWorkDetailsByRoadId(roadId);
+            List<RoadWorkMappingDto> road = roadService.getWorkDetailsByRoadId(roadId, userId);
 //            result.put("road", road);
             response.setData(road);
             response.setStatus(1);
@@ -216,11 +228,14 @@ public class RoadController {
                                           @RequestParam(name = "workIds", required = false) List<Integer> workIds,
                                           @RequestParam(name = "distIds", required = false) List<Integer> distIds,
                                           @RequestParam(name = "blockIds", required = false) List<Integer> blockIds,
-                                          @RequestParam(name = "blockIds", required = false) List<Integer> vehicleIds) {
+                                          @RequestParam(name = "vehicleIds", required = false) List<Integer> vehicleIds,
+                                          @RequestParam(name = "activityIds", required = false) List<Integer> activityIds,
+                                          @RequestParam(name = "deviceIds", required = false) List<Integer> deviceIds,
+                                          @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds);
+            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds, activityIds, deviceIds, userId);
 //            result.put("road", road);
             response.setData(road);
             response.setStatus(1);
@@ -237,11 +252,11 @@ public class RoadController {
     }
 
     @PostMapping("/getRoadStatusDD")
-    public RDVTSResponse getRoadStatusDD() {
+    public RDVTSResponse getRoadStatusDD(@RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            RoadStatusDropDownDto roadDD = roadService.getRoadStatusDD();
+            RoadStatusDropDownDto roadDD = roadService.getRoadStatusDD(userId);
 //            result.put("road", road);
             response.setData(roadDD);
             response.setStatus(1);
@@ -257,12 +272,14 @@ public class RoadController {
     }
 
     @PostMapping("/updateGeom")
-    public RDVTSResponse updateGeom(@RequestParam Integer roadId, @RequestParam String geom) {
+    public RDVTSResponse updateGeom(@RequestParam Integer roadId,
+                                    @RequestParam String geom,
+                                    @RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
-            int updateGeom = roadService.updateGeom(roadId, (new JSONObject(geom)).get("geometry").toString());
+            int updateGeom = roadService.updateGeom(roadId, (new JSONObject(geom)).get("geometry").toString(), userId);
             result.put("updateGeom", updateGeom);
             response.setData(result);
             response.setStatus(1);
@@ -277,6 +294,48 @@ public class RoadController {
         }
         return response;
     }
+    @PostMapping("/unassignedRoadDD")
+    public RDVTSResponse unassignedActivity(@RequestParam(name = "userId") Integer userId){
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+            List<UnassignedRoadDDDto> roadDD = roadService.unassignedRoadDD(userId);
+            response.setData(roadDD);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Unassigned Road Dropdown");
+        } catch (Exception e){
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+    @PostMapping("/addRoadLocation")
+    public RDVTSResponse addRoadLocation(@RequestBody RoadLocationDto roadLocationDto){
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            List<RoadLocationEntity> roadLocationEntities = roadService.addRoadLocation(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(), roadLocationDto.getUserId());
 
+
+            Integer saveGeom = roadService.saveGeom(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(),roadLocationDto.getUserId());
+            Integer saveLength = roadService.saveLength(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(),roadLocationDto.getUserId());
+            result.put("saveRoadLocation", roadLocationEntities);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Road Location Saved Successfully!");
+        } catch(Exception e){
+            e.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
 }

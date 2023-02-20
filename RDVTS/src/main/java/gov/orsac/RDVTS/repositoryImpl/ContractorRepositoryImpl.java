@@ -133,8 +133,9 @@ public class ContractorRepositoryImpl implements ContractorRepository {
         int resultCount = 0;
 
 
-        String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on, cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
-                //"left join rdvts_oltp.user_m as um on um.contractor_id = cm.id  " +
+        String qry = "SELECT distinct cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on, cm.updated_by,cm.updated_on from rdvts_oltp.contractor_m as cm  " +
+//                "left join rdvts_oltp.user_m as um on um.contractor_id = cm.id  " +
+//                "left join rdvts_oltp.user_area_mapping as uam on uam.user_id = um.id " +
                 "where cm.is_active = true  ";
 
 
@@ -150,13 +151,13 @@ public class ContractorRepositoryImpl implements ContractorRepository {
 
         if (contractor.getMobile() != null && contractor.getMobile() > 0) {
             qry += " AND cm.mobile::varchar LIKE :mobile " ;
-            sqlParam.addValue("mobile",  String.valueOf(contractor.getMobile()+"%"));
+            sqlParam.addValue("mobile",  String.valueOf("%" + contractor.getMobile()+"%"));
         }
 
         if (contractor.getName() != null && contractor.getName().length() > 0) {
 //            qry += " AND cm.name=:name ";
 //            if (contractor.getName() != null) {
-                qry += " AND cm.name LIKE(:name) ";
+                qry += " AND upper(cm.name) LIKE upper(:name) ";
                 sqlParam.addValue("name",String.valueOf("%" + contractor.getName() + "%"));
             }
 
@@ -169,9 +170,10 @@ public class ContractorRepositoryImpl implements ContractorRepository {
     }
 
     @Override
-    public List<ContractorDto> getContractorDropDown() {
+    public List<ContractorDto> getContractorDropDown(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry ="SELECT cm.id,cm.name,cm.mobile,cm.g_contractor_id from rdvts_oltp.contractor_m as cm ";
+        sqlParam.addValue("userId", userId);
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ContractorDto.class));
     }
 }

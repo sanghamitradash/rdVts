@@ -1,0 +1,40 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    password: Rd22205$54123
+    url: jdbc:postgresql://rdvts-database.cgeqdp0cn10a.ap-south-1.rds.amazonaws.com:5432/rdvts?currentSchema=rdvts_oltp,public
+    username: app_rdvts
+
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: -1
+      max-request-size: -1
+
+
+#AWS S3 Configuration
+aws:
+  access_key_id: AKIA3MVFO7DNOAEIRN4P
+  secret_access_key: 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
+  s3:
+    region: ap-south-1
+    bucket: rdvts-uploads
+
+accessImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com/"
+saveIssueImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com/issue"
+accessIssueImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com/issue"
+#accessDocumentPath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//ContractDocument/"
+#accessIssueDocumentPath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//IssueDocument/"
+#accessAgencyImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//AgencyImage/"
+#saveAgencyImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//AgencyImage/"
+#accessWorkProgressImagePath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//WorkProgress/"
+#accessGrievanceDocumentPath: "https://rdvts-uploads.s3.ap-south-1.amazonaws.com//Grievance/"
+
+
+#PDF IMAGE PATH
+#octdmsLogoPath: "/usr/share/nginx/html/oiipcra_pdf_images/octdms-logo.png"
+#odishaWhiteLogoPath: "/usr/share/nginx/html/oiipcra_pdf_images/odishaWhite.png"
+

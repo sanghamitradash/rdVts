@@ -46,6 +46,8 @@ public class VtuLocationDto {
 
     private String longitudeDir;
 
+    private String accuracy;
+
     private String speed;
 
     private String heading;
@@ -97,6 +99,7 @@ public class VtuLocationDto {
     private Date createdOn;
     private Integer updatedBy;
     private Date updatedOn;
+
 
 
 

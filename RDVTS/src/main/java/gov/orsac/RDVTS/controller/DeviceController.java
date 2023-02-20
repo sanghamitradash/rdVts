@@ -130,16 +130,18 @@ public class DeviceController {
 
     @PostMapping("/getDeviceById")
     public RDVTSResponse getDeviceById(@RequestParam(name = "deviceId", required = false) Integer deviceId,
-                                       @RequestParam(name = "userId",required = false)Integer userId) {
+                                       @RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
             List<DeviceDto> device = deviceService.getDeviceById(deviceId,userId);
             List<DeviceAreaMappingDto> deviceArea = deviceService.getDeviceAreaByDeviceId(deviceId,userId);
+           // List<DeviceAreaMappingDto> deviceArea2 = deviceService.getDeviceAreaByDeviceIdInActive(deviceId,userId);
             List<VehicleDeviceMappingDto> vehicle  = deviceService.getVehicleDeviceMappingByDeviceId(deviceId,userId);
             List<VehicleDeviceMappingDto> vehicleDeviceMap = deviceService.getAllVehicleDeviceMappingByDeviceId(deviceId,userId);
             result.put("device", device);
             result.put("deviceArea",deviceArea);
+           // result.put("deviceAreaInActive",deviceArea2);
             result.put("vehicle",vehicle);
             result.put("vehicleDeviceMap",vehicleDeviceMap);
             response.setData(result);
@@ -147,6 +149,7 @@ public class DeviceController {
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Device By Id");
         } catch (Exception ex) {
+            ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),
@@ -172,10 +175,10 @@ public class DeviceController {
                                            @RequestParam(name = "gDistId",required = false) Integer gDistId,
                                            @RequestParam(name = "gBlockId", required = false) Integer gBlockId,
                                            @RequestParam(name = "divisionId",required = false) Integer divisionId,
-                                           @RequestParam(name = "userId",required = false)Integer userId,
+                                           @RequestParam(name = "userId")Integer userId,
                                            @RequestParam(name = "vehicleAssigned", required = false)Boolean vehicleAssigned,
                                            @RequestParam(name = "start") Integer start,
-                                           @RequestParam(name = "length") Integer length,
+                                           @RequestParam(name = "length")Integer length,
                                            @RequestParam(name = "draw") Integer draw) {
         DeviceListDto device = new DeviceListDto();
         device.setImeiNo1(imeiNo1);
@@ -220,6 +223,7 @@ public class DeviceController {
 
             }
             //result.put("deviceList", deviceList);
+
             response.setData(deviceList);
             response.setMessage("Device List");
             response.setStatus(1);
@@ -283,7 +287,7 @@ public class DeviceController {
     //Get UnAssigned Device By ID
 
     @PostMapping("/getUnassignedDeviceData")
-    public RDVTSResponse getUnassignedDeviceData (@RequestParam(name = "userId", required = false) Integer userId) {
+    public RDVTSResponse getUnassignedDeviceData (@RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -306,11 +310,11 @@ public class DeviceController {
     //Get Device UserLevel DropDown
 
     @PostMapping("/getDeviceUserLevel")
-    public RDVTSResponse getDeviceUserLevel() {
+    public RDVTSResponse getDeviceUserLevel(@RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-           List<userLevelDto> userLevel = deviceService.getDeviceUserLevel();
+           List<userLevelDto> userLevel = deviceService.getDeviceUserLevel(userId);
             result.put("userLevel", userLevel);
             response.setData(result);
             response.setStatus(1);
@@ -328,11 +332,11 @@ public class DeviceController {
     //Get vtu Vendor DropDown
 
     @PostMapping("/getVtuVendorDropDown")
-    public RDVTSResponse getVtuVendorDropDown() {
+    public RDVTSResponse getVtuVendorDropDown(@RequestParam(value = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<VTUVendorMasterDto> vtuVendor = deviceService.getVtuVendorDropDown();
+            List<VTUVendorMasterDto> vtuVendor = deviceService.getVtuVendorDropDown(userId);
             result.put("vtuVendor", vtuVendor);
             response.setData(result);
             response.setStatus(1);
@@ -350,7 +354,7 @@ public class DeviceController {
     //Delete Device
 
     @PostMapping("/deactivateDevice")
-    public RDVTSResponse deactivateDevice(@RequestParam Integer deviceId,@RequestParam Integer status,@RequestParam (required = false)Integer userId) {
+    public RDVTSResponse deactivateDevice(@RequestParam Integer deviceId,@RequestParam Integer status,@RequestParam  Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -371,6 +375,36 @@ public class DeviceController {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(), result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getAllDeviceDD")
+    public RDVTSResponse getAllDeviceDD(@RequestParam(name = "deviceId", required = false) Integer deviceId,
+                                       @RequestParam(name = "userId")Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<DeviceDto> device = deviceService.getAllDeviceDD(deviceId,userId);
+            List<DeviceAreaMappingDto> deviceArea = deviceService.getAllDeviceAreaByDeviceId(deviceId,userId);
+            // List<DeviceAreaMappingDto> deviceArea2 = deviceService.getDeviceAreaByDeviceIdInActive(deviceId,userId);
+            List<VehicleDeviceMappingDto> vehicle  = deviceService.getVehicleDeviceMappingDDByDeviceId(deviceId,userId);
+            List<VehicleDeviceMappingDto> vehicleDeviceMap = deviceService.getAllVehicleDeviceMappingByDeviceId(deviceId,userId);
+            result.put("device", device);
+            result.put("deviceArea",deviceArea);
+            // result.put("deviceAreaInActive",deviceArea2);
+            result.put("vehicle",vehicle);
+            result.put("vehicleDeviceMap",vehicleDeviceMap);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Device By Id");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
         }
         return response;
     }

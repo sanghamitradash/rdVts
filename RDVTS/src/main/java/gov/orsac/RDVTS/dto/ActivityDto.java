@@ -14,6 +14,7 @@ import java.util.List;
 public class ActivityDto {
 
     private Integer id;
+    private Integer activityId;
     private String activityName;
     private Double activityQuantity;
     private Date activityStartDate;
@@ -28,6 +29,7 @@ public class ActivityDto {
     private Integer updatedBy;
     private Date updatedOn;
     private Integer activityStatus;
+    private String activityStatusName;
     private Integer slNo;
     private String roadName;
     private String status;
@@ -35,5 +37,14 @@ public class ActivityDto {
     private String startDate;
     private  String endDate;
     private Integer gActivityId;
+
+    private String issueReason;
+    private Integer resolvedStatus;
+    private String resolvedStatusName;
+    private Date resolvedDate;
+    private Integer resolvedBy;
+    private String issueImage;
+
+
     List<VehicleActivityMappingEntity> vehicleActivity;
 }

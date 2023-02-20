@@ -34,11 +34,18 @@ public class WorkDto {
     private Integer approvalStatus;
     private Integer approvedBy;
 
+    private String approvalStatusName;
+    private String workStatusName;
+
     private Integer piuId;
     private String piuName;
     private Integer packageId;
     private String packageName;
     private String contractorId;
+
+    private Integer distId;
+    private Integer divisionId;
+    private Integer circleId;
 
     private Integer offSet;
     private Integer limit;

@@ -267,10 +267,12 @@ public class UserController {
                                          @RequestParam(name = "designationId", required = false) Integer designationId,
                                          @RequestParam(name = "roleId", required = false) Integer roleId,
                                          @RequestParam(name = "distId", required = false) Integer distId,
+                                         @RequestParam(name = "divisionId", required = false) Integer divisionId,
                                          @RequestParam(name = "contractorId", required = false) Integer contractorId,
                                          @RequestParam(name = "userLevelId", required = false) Integer userLevelId,
                                          @RequestParam(name = "email", required = false) String email,
                                          @RequestParam(name = "mobile1", required = false) Long mobile1,
+                                         @RequestParam(name = "circleId", required = false) Integer circleId,
                                          @RequestParam(name = "start") Integer start,
                                          @RequestParam(name = "length") Integer length,
                                          @RequestParam(name = "draw") Integer draw) {
@@ -286,25 +288,20 @@ public class UserController {
             userListDto.setEmail(email);
             userListDto.setMobile1(mobile1);
             userListDto.setDistId(distId);
-
+            userListDto.setDivisionId(divisionId);
             userListDto.setLimit(length);
             userListDto.setOffSet(start);
             userListDto.setDraw(draw);
             userListDto.setUserLevelId(userLevelId);
+            userListDto.setCircleId(circleId);
 
 
 
             try {
                 Page<UserInfoDto> userInfoDtos = userService.getUserList(userListDto);
                 List<UserInfoDto> userList = userInfoDtos.getContent();
-                List<UserInfoDto> finalUserList=new ArrayList<>();
-//                Integer start1=start;
-//                for(UserInfoDto user:userList){
-//
-//                    start1=start1+1;
-//                    user.setSlNo(start1);
-//                    finalUserList.add(user);
-//                }
+
+
                 Integer start1 = start;
                 for (int i = 0; i < userList.size(); i++) {
                     start1 = start1 + 1;
@@ -339,7 +336,7 @@ public class UserController {
     @PostMapping("/updateUser")
     public RDVTSResponse updateUser(@RequestParam(name = "userData") String data,
                                     @RequestParam(name = "userArea", required = false) String userAreaData,
-    @RequestParam(name = "userId",required = false)Integer userId) {
+                                    @RequestParam(name = "userId",required = false)Integer userId) {
 //        RDVTSResponse rdvtsResponse = new RDVTSResponse();
 //        Map<String, Object> result = new HashMap<>();
 //        try {
@@ -369,6 +366,8 @@ public class UserController {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 UserDto userDto = mapper.readValue(data, UserDto.class);
+
+
 
                 List<UserAreaMappingRequestDTO> userArea = mapper.readValue(userAreaData, mapper.getTypeFactory().constructCollectionType(List.class, UserAreaMappingRequestDTO.class));
 
@@ -634,7 +633,8 @@ public class UserController {
                     if (dbUser != null && !dbUser.getEmail().isEmpty()) {
                         UserPasswordMasterDto userPasswordMasterDto = userService.getPasswordByUserId(dbUser.getId());
                         boolean verifyuserpassword = encoder.matches(request.getPassword(), userPasswordMasterDto.getPassword());
-                        if (verifyuserpassword == true) {
+                        if (verifyuserpassword) {
+                            userService.saveLoginLog(dbUser.getId());
                             UserInfoDto userInfoDto = userService.getUserByUserId(dbUser.getId());
                             if (dbUser.getRoleId() > 0) {
                                 roleMenuType = masterService.getMenuHierarchyByRole(dbUser.getId(), dbUser.getRoleId());
@@ -993,6 +993,31 @@ public class UserController {
         }
         return response;
     }
+
+    @PostMapping("/updateProfileByUserId")
+    public RDVTSResponse updateProfileByUserId(@RequestParam Integer userId, @RequestParam(name = "data") String data) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            UserDto userDto = objectMapper.readValue(data, UserDto.class);
+            UserEntity userEntity = userService.updateProfileByUserId(userId, userDto);
+            result.put("userEntity", userEntity);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("User Profile Updated successfully.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
 
 
 }
