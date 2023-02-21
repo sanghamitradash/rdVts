@@ -5,10 +5,14 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.AlertEntity;
 import gov.orsac.RDVTS.entities.AlertTypeEntity;
+import gov.orsac.RDVTS.entities.DashboardCronEntity;
+import gov.orsac.RDVTS.repositoryImpl.DashboardRepositoryImpl;
 import gov.orsac.RDVTS.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -17,10 +21,16 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
+@CrossOrigin("*")
+@RequestMapping("/api/v1/cron")
 public class AlertCronController {
 
     @Autowired
     public DeviceService deviceService;
+    @Autowired
+    DashboardService dashboardService;
+    @Autowired
+    private DashboardRepositoryImpl dashboardRepositoryImpl;
 
     @Autowired
     public LocationService locationService;
@@ -362,6 +372,66 @@ public class AlertCronController {
         }
         return true;
     }
+
+   @Scheduled(cron = "0 */5 * * * *")
+    public RDVTSResponse getActiveAndInactiveVehicleCron() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+             int userId=1;
+            List<DashboardCronEntity>  vehicle = dashboardService.getActiveAndInactiveVehicleCron(userId);
+            System.out.println("TRUE");
+
+            result.put("vehicle", vehicle);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("All vehicleData");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+@PostMapping("/getDashboardData")
+public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer typeId) {
+    RDVTSResponse response = new RDVTSResponse();
+    Map<String, Object> result = new HashMap<>();
+
+    try {
+        List<DashboardDto> dashboardData = dashboardService.getDashboardData(typeId);
+        Integer active=dashboardRepositoryImpl.getActiveData();
+        Integer inActive=dashboardRepositoryImpl.getInActiveData();
+        Integer total=dashboardRepositoryImpl.getTotalData();
+        Double activePercentage=(Double.valueOf(active)/Double.valueOf(total))*100;
+        Double inActivePercentage=(Double.valueOf(inActive)/Double.valueOf(total))*100;
+
+
+        result.put("dashboardData",dashboardData);
+        result.put("active",active);
+        result.put("inActive",inActive);
+        result.put("total",total);
+        result.put("activePercentage",activePercentage);
+        result.put("inActivePercentage",inActivePercentage);
+
+        response.setData(result);
+        response.setStatus(1);
+        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+        response.setMessage("Dashboard Data");
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        response = new RDVTSResponse(0,
+                new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                ex.getMessage(),
+                result);
+    }
+    return response;
+}
 
 
 }

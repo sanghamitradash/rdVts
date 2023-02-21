@@ -1,9 +1,7 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
-import gov.orsac.RDVTS.dto.ActiveAndInactiveVehicleDto;
-import gov.orsac.RDVTS.dto.DistrictWiseVehicleDto;
-import gov.orsac.RDVTS.dto.DivisionWiseVehicleDto;
-import gov.orsac.RDVTS.dto.UserInfoDto;
+import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.DashboardCronEntity;
 import gov.orsac.RDVTS.repository.DashboardRepository;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -239,4 +237,70 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DivisionWiseVehicleDto.class));
     }
+    public Integer updateActiveAndInActiveCronDistrictWise(DashboardCronDto dw) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "UPDATE rdvts_oltp.dashboard_cron set active=:active,in_active=:inActive where area_type_id=1 and area_id=:areaId ";
+        sqlParam.addValue("active", dw.getActive());
+        sqlParam.addValue("inActive", dw.getInActive());
+        sqlParam.addValue("areaId", dw.getAreaId());
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+    }
+    public Integer updateActiveAndInActiveCronDivisionWise(DashboardCronDto dw) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "UPDATE rdvts_oltp.dashboard_cron set active=:active,in_active=:inActive where area_type_id=2 and area_id=:areaId ";
+        sqlParam.addValue("active", dw.getActive());
+        sqlParam.addValue("inActive", dw.getInActive());
+        sqlParam.addValue("areaId", dw.getAreaId());
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+    }
+    public DashboardCronEntity findDashBoardCronByAreaIdForDistrict(Integer areaId, Integer typeId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT * from rdvts_oltp.dashboard_cron where area_id=:areaId and area_type_id=:areaTypeId";
+        sqlParam.addValue("areaId", areaId);
+        sqlParam.addValue("areaTypeId", typeId);
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(DashboardCronEntity.class));
+    }
+    public DashboardCronEntity findDashBoardCronByAreaIdForDivision(Integer areaId, Integer typeId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT * from rdvts_oltp.dashboard_cron where area_id=:areaId and area_type_id=:areaTypeId";
+        sqlParam.addValue("areaId", areaId);
+        sqlParam.addValue("areaTypeId", typeId);
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(DashboardCronEntity.class));
+    }
+    public List<DashboardDto> getDistrictWiseDashboardData() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select dashboard.id,dashboard.active as activeCount,dashboard.in_active as inActiveCount,dashboard.area_id as areaId,district.district_name as districtName " +
+                "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.district_boundary as district on district.dist_id=dashboard.area_id where dashboard.area_type_id=1";
+
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DashboardDto.class));
+    }
+    public List<DashboardDto> getDivisionWiseDashboardData() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select dashboard.id,dashboard.active as activeCount,dashboard.in_active as inActiveCount,dashboard.area_id as areaId,division.division_name as divisionName " +
+                "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.division_m as division on division.division_id=dashboard.area_id where dashboard.area_type_id=2";
+
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DashboardDto.class));
+    }
+    public Integer getActiveData() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT sum(active)  from rdvts_oltp.dashboard_cron where area_type_id=1 ";
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+    }
+    public Integer getInActiveData() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT sum(in_active)  from rdvts_oltp.dashboard_cron where area_type_id=1 ";
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+    }
+    public Integer getTotalData() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT sum(active+in_active)  from rdvts_oltp.dashboard_cron where area_type_id=1 ";
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+    }
+    public ActiveInactiveDto getActiveInactiveVehicle(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT sum(active) as active ,sum(in_active) as inactive,sum(active+in_active) as total from rdvts_oltp.dashboard_cron where area_type_id=1";
+
+        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(ActiveInactiveDto.class));
+    }
+
 }
