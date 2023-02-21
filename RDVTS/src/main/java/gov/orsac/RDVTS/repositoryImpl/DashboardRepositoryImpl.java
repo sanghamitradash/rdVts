@@ -63,9 +63,20 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
         currentDateTime = currentDateTime + " 00:00:00";
-        String qry = "select device_id from rdvts_oltp.vehicle_device_mapping    " +
-                "  where is_active=true and device_id in(select distinct id from rdvts_oltp.device_m where imei_no_1 in  " +
-                " (select distinct imei from rdvts_oltp.vtu_location where date_time >=:currentDateTime::timestamp ))    ";
+//        String qry = "select device_id from rdvts_oltp.vehicle_device_mapping    " +
+//                "  where is_active=true and device_id in(select distinct id from rdvts_oltp.device_m where imei_no_1 in  " +
+//                " (select distinct imei from rdvts_oltp.vtu_location where date_time >=:currentDateTime::timestamp ))    ";
+        //Change by SP 21 feb
+        String qry = "select device_id from rdvts_oltp.vehicle_device_mapping   " +
+                "where is_active=true and device_id in(select distinct id from rdvts_oltp.device_m where imei_no_1 in   " +
+                " ( " +
+                " " +
+                "  select b.imei from  rdvts_oltp.device_m as dm  " +
+                "    left join (select distinct imei,max(id) over(partition by imei) as vtuid from " +
+                "    rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp  and  gps_fix::numeric =1 ) as a on dm.imei_no_1=a.imei " +
+                "    left join rdvts_oltp.vtu_location as b on a.vtuid=b.id " +
+                "  " +
+                " ))  ";
         sqlParam.addValue("currentDateTime",currentDateTime);
         return namedJdbc.queryForList(qry,sqlParam, Integer.class);
     }
@@ -76,9 +87,20 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
         currentDateTime = currentDateTime + " 00:00:00";
-        String qry = "select device_id from rdvts_oltp.vehicle_device_mapping   " +
-                "where is_active=true and device_id not in(select distinct id from rdvts_oltp.device_m where imei_no_1 in  " +
-                "(select distinct imei from rdvts_oltp.vtu_location where date_time >=:currentDateTime::timestamp )) ";
+        //change by SP 21 feb
+//        String qry = "select device_id from rdvts_oltp.vehicle_device_mapping   " +
+//                "where is_active=true and device_id not in(select distinct id from rdvts_oltp.device_m where imei_no_1 in  " +
+//                "(select distinct imei from rdvts_oltp.vtu_location where date_time >=:currentDateTime::timestamp )) ";
+
+        String qry = " select device_id from rdvts_oltp.vehicle_device_mapping   where is_active=true and device_id \n" +
+                " not in(select distinct id from rdvts_oltp.device_m where imei_no_1 in \n" +
+                " ( " +
+                " select b.imei from  rdvts_oltp.device_m as dm \n" +
+                "    left join (select distinct imei,max(id) over(partition by imei) as vtuid from\n" +
+                "    rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp  and  gps_fix::numeric =1 ) as a on dm.imei_no_1=a.imei\n" +
+                "    left join rdvts_oltp.vtu_location as b on a.vtuid=b.id\n" +
+
+                "  )) ";
         sqlParam.addValue("currentDateTime",currentDateTime);
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
