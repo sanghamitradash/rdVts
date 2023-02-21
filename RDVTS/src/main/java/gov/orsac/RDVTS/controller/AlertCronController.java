@@ -99,8 +99,13 @@ public class AlertCronController {
                             if (locationDto.getAccuracy() != null) {
                                 alertEntity.setAccuracy(Double.parseDouble(locationDto.getAccuracy()));
                             }
-
-                            alertEntity.setSpeed(Double.parseDouble(locationDto.getSpeed()));
+                            Double speed=0.0;
+                            try {
+                                speed = Double.parseDouble(locationDto.getSpeed());
+                            } catch (NumberFormatException e) {
+                                speed = 0.0;
+                            }
+                            alertEntity.setSpeed(speed);
                             alertEntity.setGpsDtm(currDtTimeParsed);
 
                             AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
