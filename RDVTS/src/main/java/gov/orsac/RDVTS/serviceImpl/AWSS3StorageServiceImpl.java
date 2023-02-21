@@ -8,6 +8,8 @@ import gov.orsac.RDVTS.service.AWSS3StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,12 +17,13 @@ import java.io.IOException;
 
 @Service
 @Slf4j
+
 public class AWSS3StorageServiceImpl implements AWSS3StorageService {
 
     @Value("${aws.s3.bucket}")
     private String bucketName;
     @Autowired
-    private AmazonS3 amazon;
+    private AmazonS3 amazonS3;
 
     @Override
     public boolean uploadIssueImages(MultipartFile files, String activityId, String keyName) {
@@ -38,7 +41,7 @@ public class AWSS3StorageServiceImpl implements AWSS3StorageService {
                 ObjectMetadata metadata = new ObjectMetadata();
                 metadata.setContentLength(files.getSize());
                 metadata.setContentType(files.getContentType());
-                PutObjectResult putObjectResult = amazon.putObject(bucketDestination, fileName, files.getInputStream(),metadata);
+                PutObjectResult putObjectResult = amazonS3.putObject(bucketDestination, fileName, files.getInputStream(),metadata);
                 result= Boolean.parseBoolean(putObjectResult.getContentMd5());
                 log.info("Issue Image upload is completed.");
                 return result;
