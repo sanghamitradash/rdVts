@@ -834,7 +834,14 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         LocationDto locationDto = null;
 
-        String qry = "select  * from rdvts_oltp.vtu_location  where imei=:imeiNo order by date_time desc limit 1 ";
+        //String qry = "select  * from rdvts_oltp.vtu_location  where imei=:imeiNo order by date_time desc limit 1 ";
+        // changes 21 feb sp
+        String qry = "   select b.*  from rdvts_oltp.vehicle_device_mapping as vdm " +
+                "        left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id " +
+                "        left join (select distinct imei,max(id) over(partition by imei) as vtuid from " +
+                "        rdvts_oltp.vtu_location as vtu where   gps_fix::numeric =1  and imei in (:imeiNo) ) as a on dm.imei_no_1=a.imei " +
+                "        left join rdvts_oltp.vtu_location as b on a.vtuid=b.id " +
+                "        where vdm.is_active=true and b.id is not null and b.gps_fix::numeric =1 order by b.date_time desc";
         sqlParam.addValue("imeiNo", imeiNo);
         try {
             locationDto = namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(LocationDto.class));
