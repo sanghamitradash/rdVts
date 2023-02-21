@@ -136,8 +136,6 @@ public class AlertCronController {
 
         }
 
-
-
     }
 
     @Scheduled(cron = "0 */5 * * * *")
