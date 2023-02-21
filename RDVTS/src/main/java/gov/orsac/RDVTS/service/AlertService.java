@@ -47,4 +47,6 @@ public interface AlertService  {
     AlertTypeEntity getAlertTypeDetails(int i);
 
     List<VtuLocationDto> GeoFenceIntersectedRecords(String geom, List<VtuLocationDto> vtuLocationDto);
+
+    List<AlertCountDto> getVehicleAlertForReport(AlertFilterDto filterDto);
 }
