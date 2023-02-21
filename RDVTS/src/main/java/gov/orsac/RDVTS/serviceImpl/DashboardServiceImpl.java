@@ -9,6 +9,7 @@ import gov.orsac.RDVTS.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,7 +49,7 @@ public class DashboardServiceImpl implements DashboardService {
         List<Integer> totalInActiveIds = dashboardRepository.totalInactiveIds();
         List<DistrictWiseVehicleDto> activeCount=dashboardRepository.getDistrictWiseVehicleCount(totalActiveIds,userId);
         List<DistrictWiseVehicleDto> inActiveCount=dashboardRepository.getDistrictWiseVehicleCount(totalInActiveIds,userId);
-        Date date=cal.getTime();
+        Date date=new Date();
         for(int i=0;i<activeCount.size();i++) {
             DashboardCronEntity dw = dashboardRepositoryImpl.findDashBoardCronByAreaIdForDistrict(activeCount.get(i).getDistrictId(),1);
             dw.setActive(activeCount.get(i).getCount());
