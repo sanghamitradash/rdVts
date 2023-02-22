@@ -269,7 +269,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
     public List<DashboardDto> getDistrictWiseDashboardData() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select dashboard.id,dashboard.active as activeCount,dashboard.in_active as inActiveCount,dashboard.area_id as areaId,district.district_name as districtName " +
+        String qry = "select dashboard.id,dashboard.active as activeCount,dashboard.in_active as inActiveCount,dashboard.area_id as areaId,district.district_name as districtName,process_time as processTime " +
                 "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.district_boundary as district on district.dist_id=dashboard.area_id where dashboard.area_type_id=1";
 
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DashboardDto.class));

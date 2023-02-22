@@ -2,10 +2,8 @@ package gov.orsac.RDVTS.controller;
 
 
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.ActivityWorkMapping;
-import gov.orsac.RDVTS.entities.AlertEntity;
-import gov.orsac.RDVTS.entities.AlertTypeEntity;
-import gov.orsac.RDVTS.entities.DashboardCronEntity;
+import gov.orsac.RDVTS.entities.*;
+import gov.orsac.RDVTS.repository.WorkCronRepository;
 import gov.orsac.RDVTS.repositoryImpl.DashboardRepositoryImpl;
 import gov.orsac.RDVTS.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +35,9 @@ public class AlertCronController {
 
     @Autowired
     public AlertService alertService;
+
+    @Autowired
+    public WorkCronRepository workCronRepository;
 
     @Autowired
     public WorkService workService;
@@ -397,7 +398,7 @@ public class AlertCronController {
         }
         return response;
     }
-@PostMapping("/getDashboardData")
+/*@PostMapping("/getDashboardData")
 public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer typeId) {
     RDVTSResponse response = new RDVTSResponse();
     Map<String, Object> result = new HashMap<>();
@@ -431,7 +432,99 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
                 result);
     }
     return response;
-}
+}*/
+
+
+    @Scheduled(cron = "0 */1 * * * *")
+    public RDVTSResponse getVehicleLocationCornForWork() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            int userId=1;
+            Date startDate1 = null;
+            Date endDate1 = null;
+            Date vehicleStartDate = null;
+            Date vehicleEndDate = null;
+
+
+
+            List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(-1);
+            List<WorkCronEntity> workList=new ArrayList<>();
+                //int i = 0;
+                for (DeviceDto imei : getImeiList) {
+                    Double todayDistance=0.0;
+                    Double totalDistance = 0.0;
+                    Double totalSpeedWork=0.0;
+                    Double avgSpeedToday=0.0;
+                    Integer totalActiveVehicle=0;
+                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1,null, null);
+                    totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, null, null);
+                    totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, null, null);
+                    todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, null, null);
+                    // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+                    List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, null, null);
+                    int i=0;
+                    for (VtuLocationDto vtuobj : vtuLocationDto) {
+                        i++;
+                        try{
+                            totalSpeedWork+= Double.parseDouble(vtuobj.getSpeed()) ;
+
+                        }catch(Exception e){
+                            totalSpeedWork+= 0.0 ;
+                        }
+
+
+                    }
+                    totalSpeedWork=totalSpeedWork/i;
+                    int j=0;
+                    for (VtuLocationDto vtuTodaySpeedObj:vtuAvgSpeedToday) {
+                        j++;
+                        avgSpeedToday+=Double.parseDouble(vtuTodaySpeedObj.getSpeed()) ;
+                    }
+                    avgSpeedToday=avgSpeedToday/j;
+                    WorkCronEntity work=new WorkCronEntity();
+                    work.setTotalSpeedWork(totalSpeedWork);
+                    if(avgSpeedToday.isNaN()){
+                        work.setAvgSpeedToday(0.0);
+                    }
+                    else {
+                        work.setAvgSpeedToday(avgSpeedToday);
+                    }
+                    work.setImeiNo(imei.getImeiNo1());
+                    work.setTotalActiveVehicle(totalActiveVehicle);
+                    if(todayDistance.isNaN()){
+                        work.setTodayDistance(0.0);
+                    }
+                    else {
+                        work.setTodayDistance(totalDistance);
+                    }
+                    if(todayDistance.isNaN()){
+                        work.setTodayDistance(0.0);
+                    }
+                    else {
+                        work.setTodayDistance(todayDistance);
+                    }
+
+                    workList.add(work);
+                }
+             workCronRepository.saveAll(workList);
+
+            System.out.println("TRUE Work");
+
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("All WorkData");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
 
 }

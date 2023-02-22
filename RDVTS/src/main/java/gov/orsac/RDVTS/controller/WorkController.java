@@ -143,7 +143,7 @@ public class WorkController {
             Date startDate1 = null;
             Date endDate1 = null;
             Date vehicleStartDate = null;
-            Date vehicleendDate = null;
+            Date vehicleEndDate = null;
             Double todayDistance=0.0;
             Double totalDistance = 0.0;
             Double totalSpeedWork=0.0;
