@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.repository.WorkCronRepository;
 import gov.orsac.RDVTS.repositoryImpl.DashboardRepositoryImpl;
+import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,8 @@ public class AlertCronController {
     DashboardService dashboardService;
     @Autowired
     private DashboardRepositoryImpl dashboardRepositoryImpl;
+    @Autowired
+    private VehicleRepositoryImpl vehicleRepository;
 
     @Autowired
     public LocationService locationService;
@@ -530,6 +533,23 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
         }
         return response;
     }
+
+
+
+
+//}
+
+ @Scheduled(cron = "0 */15 * * * *")
+    @PostMapping("/setDashboardData")
+    public RDVTSResponse setPoolingStatus() {
+        try {
+           vehicleRepository.saveVehiclePoolingStatus();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+      return null;
+    }
+
 
 
 }
