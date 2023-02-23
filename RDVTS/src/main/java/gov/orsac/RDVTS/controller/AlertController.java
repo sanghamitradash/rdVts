@@ -149,7 +149,7 @@ public class AlertController {
     }
 
     @RequestMapping("/generateRotationAlert")
-
+//incomplete
     public RDVTSResponse generateRotationAlert() {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();

@@ -34,6 +34,7 @@ public class VehicleController {
     private VehicleOwnerMappingRepository vehicleOwnerMappingRepository;
     @Autowired
     private VehicleRepositoryImpl vehicleRepositoryImpl;
+
     @Autowired
     private DeviceRepositoryImpl deviceRepositoryImpl;
 
@@ -144,7 +145,9 @@ public class VehicleController {
             if(activityId!=null && activityId>0) {
                work= vehicleService.getVehicleWorkMapping(activityId);
             }
-            LocationDto location=vehicleService.getLocation(vehicleId);
+         //   LocationDto location=vehicleService.getLocation(vehicleId);
+            //changes by sp 21feb
+            LocationDto location=new LocationDto();
 
             //alert pagination
             List<AlertDto> alertPageList=vehicleService.getAlert(alertFiler, vehicleId);

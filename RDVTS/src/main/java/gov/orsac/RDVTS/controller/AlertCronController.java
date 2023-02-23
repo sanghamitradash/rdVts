@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
 import gov.orsac.RDVTS.repository.WorkCronRepository;
 import gov.orsac.RDVTS.repositoryImpl.DashboardRepositoryImpl;
+import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,8 @@ public class AlertCronController {
     DashboardService dashboardService;
     @Autowired
     private DashboardRepositoryImpl dashboardRepositoryImpl;
+    @Autowired
+    private VehicleRepositoryImpl vehicleRepository;
 
     @Autowired
     public LocationService locationService;
@@ -110,8 +113,13 @@ public class AlertCronController {
                             if (locationDto.getAccuracy() != null) {
                                 alertEntity.setAccuracy(Double.parseDouble(locationDto.getAccuracy()));
                             }
-
-                            alertEntity.setSpeed(Double.parseDouble(locationDto.getSpeed()));
+                            Double speed=0.0;
+                            try {
+                                speed = Double.parseDouble(locationDto.getSpeed());
+                            } catch (NumberFormatException e) {
+                                speed = 0.0;
+                            }
+                            alertEntity.setSpeed(speed);
                             alertEntity.setGpsDtm(currDtTimeParsed);
 
                             AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
@@ -127,8 +135,6 @@ public class AlertCronController {
             }
 
         }
-
-
 
     }
 
@@ -526,4 +532,53 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
     }
 
 
+
+
+//}
+
+ @Scheduled(cron = "0 */10 * * * *")
+    public RDVTSResponse setPoolingStatus() {
+        try {
+           vehicleRepository.saveVehiclePoolingStatus();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+      return null;
+    }
+
+
+
 }
+
+
+
+//Query
+//SELECT COUNT(*) from (
+//        select * from
+//        (
+//        SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,
+//        vm.model, vm.chassis_no,vm.engine_no,vm.is_active as active,
+//        device.device_id as deviceId,
+//        vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,dam.dist_id, dam.division_id,
+//        owner.user_id as userId, owner.user_id as userByVehicleId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,
+//        owner.contractor_id ,   contractor.name as contractorName,am.id  as activityId,case when vdCount.vehicleCount>0 then true else false end as deviceAssigned,
+//        case when vtuLocation.pooling_status IS NOT NULL then vtuLocation.pooling_status else false end ,case when actCount.activityCount>0 then true else false end as activityAssigned
+//        FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id
+//        left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true
+//        left join rdvts_oltp.device_area_mapping as dam on dam.device_id = device.device_id and dam.is_active =true
+//        left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true
+//        left join rdvts_oltp.activity_m as am on am.id = activity.activity_id
+//        left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id
+//        left join rdvts_oltp.work_m as work on work.id = awm.work_id
+//        left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id
+//        left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id
+//        left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id
+//        left join rdvts_oltp.device_m as dm on dm.id=device.device_id
+//        left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping
+//        where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id
+//        left join rdvts_oltp.vehicle_pooling_status as vtuLocation on vtuLocation.vehicle_id=vm.id
+//        left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id
+//        from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount on actCount.vehicle_id=activity.vehicle_id
+//        ) as vehicleList
+//        ) as t
+//        Order by id
