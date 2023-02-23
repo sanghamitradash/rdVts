@@ -835,6 +835,113 @@ public class AlertRepositoryImpl {
         return vtuLocationDto1;
     }
 
+    public List<AlertCountDto> getVehicleAlertForReport(AlertFilterDto filterDto) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select imei,alert.id as alertId, alert_type_id,type.alert_type as alertType,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, \n" +
+                " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser, count(alert.id) over (partition by alert.alert_type_id)    \n" +
+                " from  rdvts_oltp.alert_data  as alert  \n" +
+                " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id and type.is_active=true   \n" +
+                " left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by and userM.is_active=true    \n" +
+                " left join rdvts_oltp.device_m as dm on dm.imei_no_1=alert.imei and dm.is_active=true \n" +
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id and vdm.is_active=true \n" +
+                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id and vam.is_active=true \n" +
+                " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  and awm.is_active=true \n" +
+                "  left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  where alert.is_active=true   " ;
+//        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
+//            qry += " and gm.block_id=:blockIds ";
+//            sqlParam.addValue("blockId", filterDto.getBlockId());
+//        }
+
+        if (filterDto.getVehicleId() != null && filterDto.getVehicleId() > 0) {
+            qry += " and vdm.vehicle_id=:vehicleId ";
+            sqlParam.addValue("vehicleId", filterDto.getVehicleId());
+        }
+
+        if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
+            qry += " AND gm.work_id = :workId";
+            sqlParam.addValue("workId", filterDto.getWorkId());
+        }
+        if (filterDto.getRoadId() != null && filterDto.getRoadId() > 0) {
+            qry += " AND gm.road_id = :roadId";
+            sqlParam.addValue("roadId", filterDto.getRoadId());
+        }
+        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
+            qry += " AND alert.alert_type_id=:alertTypeId ";
+            sqlParam.addValue("alertTypeId", filterDto.getAlertTypeId());
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        if (filterDto.getStartDate() != null && !filterDto.getStartDate().isEmpty()) {
+            qry += " AND date(alert.gps_dtm) >= :startDate ";
+            Date startDate = null;
+            try {
+                startDate = format.parse(filterDto.getStartDate());
+            } catch (Exception exception) {
+                log.info("From Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("startDate", startDate, Types.DATE);
+        }
+        if (filterDto.getEndDate() != null && !filterDto.getEndDate().isEmpty()) {
+            qry += " AND date(alert.gps_dtm) <= :endDate ";
+            Date endDate = null;
+            try {
+                endDate = format.parse(filterDto.getEndDate());
+            } catch (Exception exception) {
+                log.info("To Date Parsing exception : {}", exception.getMessage());
+            }
+            sqlParam.addValue("endDate", endDate, Types.DATE);
+        }
+        UserInfoDto user = userRepositoryImpl.getUserByUserId(filterDto.getUserId());
+        if (user.getUserLevelId() == 5) {
+            qry += " AND gm.contractor_id=:contractorId ";
+            sqlParam.addValue("contractorId", user.getUserLevelId());
+        }
+
+        else if (user.getUserLevelId() == 2) {
+            List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(filterDto.getUserId());
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
+            List<Integer> vehicleIds = masterRepositoryImpl.getVehicleIdsByBlockAndDivision(blockIds, divisionIds, distIds);
+            if (qry != null && qry.length() > 0) {
+                qry += " AND  vdm.vehicle_id in(:vehicleIds) ";
+                sqlParam.addValue("vehicleIds", vehicleIds);
+            } else {
+                qry += " where vdm.vehicle_id in(:vehicleIds) ";
+                sqlParam.addValue("vehicleIds", vehicleIds);
+            }
+        }
+
+        else if(user.getUserLevelId()==3){
+            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
+            List<Integer> vehicleId = masterRepositoryImpl.getVehicleIdsByBlockIds(blockIds);
+            if(vehicleId != null && vehicleId.size() > 0) {
+                if(qry != null && qry.length() > 0){
+                    qry += " AND vdm.vehicle_id in(:vehicleIds) ";
+                    sqlParam.addValue("vehicleIds",vehicleId);
+                } else {
+                    qry += " where vdm.vehicle_id in(:vehicleIds) ";
+                    sqlParam.addValue("vehicleIds",vehicleId);
+                }
+            }
+        }
+
+        else if(user.getUserLevelId()==4){
+            List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(filterDto.getUserId());
+            List<Integer> vehicleIds = userRepositoryImpl.getVehicleIdByDivisionId(divisionIds);
+            if(vehicleIds != null && vehicleIds.size() > 0){
+                if(qry != null && qry.length() > 0){
+                    qry += " AND vdm.vehicle_id in(:vehicleIds) ";
+                    sqlParam.addValue("vehicleIds", vehicleIds);
+                } else {
+                    qry += " where vdm.vehicle_id in(:vehicleIds) ";
+                    sqlParam.addValue("vehicleIds", vehicleIds);
+                }
+            }
+        }
+
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+
+    }
+
 //    public List<AlertCountDto> getTotalAlertToday(int id) {
 //    }
 }
