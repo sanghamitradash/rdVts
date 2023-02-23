@@ -36,4 +36,7 @@ public class WorkCronEntity {
     @Column(name = "today_distance")
     private Double todayDistance;
 
+    @Column(name = "work_id")
+    private Integer workId;
+
 }

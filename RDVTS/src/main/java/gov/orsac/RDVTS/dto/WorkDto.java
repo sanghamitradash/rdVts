@@ -52,6 +52,7 @@ public class WorkDto {
     private Integer draw;
     private Integer slNo;
 
+
     private Integer gWorkId;
 
 }
