@@ -538,7 +538,6 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
 //}
 
  @Scheduled(cron = "0 */10 * * * *")
-    @PostMapping("/setDashboardData")
     public RDVTSResponse setPoolingStatus() {
         try {
            vehicleRepository.saveVehiclePoolingStatus();
