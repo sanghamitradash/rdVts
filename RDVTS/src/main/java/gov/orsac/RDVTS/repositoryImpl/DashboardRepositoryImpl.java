@@ -298,7 +298,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
     public ActiveInactiveDto getActiveInactiveVehicle(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT sum(active) as active ,sum(in_active) as inactive,sum(active+in_active) as total from rdvts_oltp.dashboard_cron where area_type_id=1";
+        String qry = "SELECT sum(active) as active ,sum(in_active) as inactive,sum(active+in_active) as total from rdvts_oltp.dashboard_cron where area_type_id=2";
 
         return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(ActiveInactiveDto.class));
     }
