@@ -396,7 +396,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "owner.user_id as userId, owner.user_id as userByVehicleId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id ,   " +
                 "contractor.name as contractorName,am.id  as activityId," +
                 "case when vdCount.vehicleCount>0 then true else false end as deviceAssigned," +
-                "case when vtuLocation.imeiCount>0 then true else false end as trackingStatus," +
+                " case when vtuLocation.pooling_status IS NOT NULL then vtuLocation.pooling_status else false end as trackingStatus, " +
                 "case when actCount.activityCount>0 then true else false end as activityAssigned " +
                 "FROM rdvts_oltp.vehicle_m as vm " +
                 "left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id  " +
@@ -412,8 +412,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "left join rdvts_oltp.device_m as dm on dm.id=device.device_id " +
                 "left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping " +
                 " where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id " +
-                "left join (select count(id) over (partition by imei) as imeiCount,imei from rdvts_oltp.vtu_location where date_time >=:currentDateTime::timestamp ) as vtuLocation " +
-                "on vtuLocation.imei=dm.imei_no_1 " +
+                " left join rdvts_oltp.vehicle_pooling_status as vtuLocation on vtuLocation.vehicle_id=vm.id " +
                 "left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount " +
                 "on actCount.vehicle_id=activity.vehicle_id) as vehicleList ";
 
@@ -1199,20 +1198,17 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
 
     public void saveVehiclePoolingStatus() {
-
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
-
         currentDateTime = currentDateTime + " 00:00:00";
-
-
         String qry = "select * from (SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,vm.model, vm.chassis_no," +
                 " vm.engine_no,vm.is_active as active,device.device_id as deviceId, vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,dam.dist_id, dam.division_id,   " +
                 " owner.user_id as userId, owner.user_id as userByVehicleId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id ,   " +
                 " contractor.name as contractorName,am.id  as activityId," +
                 " case when vdCount.vehicleCount>0 then true else false end as deviceAssigned," +
-                " case when vtuLocation.pooling_status IS NOT NULL then vtuLocation.pooling_status else false end , " +
+                "case when vtuLocation.imeiCount>0 then true else false end as trackingStatus," +
+
                 " case when actCount.activityCount>0 then true else false end as activityAssigned " +
                 " FROM rdvts_oltp.vehicle_m as vm " +
                 " left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id  " +
@@ -1228,7 +1224,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 " left join rdvts_oltp.device_m as dm on dm.id=device.device_id " +
                 " left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping " +
                 " where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id " +
-                " left join rdvts_oltp.vehicle_pooling_status as vtuLocation on vtuLocation.vehicle_id=vm.id " +
+                "left join (select count(id) over (partition by imei) as imeiCount,imei from rdvts_oltp.vtu_location where date_time >=:currentDateTime::timestamp ) as vtuLocation " +
+                "on vtuLocation.imei=dm.imei_no_1 " +
+
                 " left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount " +
                 " on actCount.vehicle_id=activity.vehicle_id) as vehicleList ";
         sqlParam.addValue("currentDateTime", currentDateTime);
