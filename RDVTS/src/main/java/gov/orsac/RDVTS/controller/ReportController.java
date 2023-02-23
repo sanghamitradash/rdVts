@@ -31,7 +31,7 @@ public class ReportController {
     public AlertService alertService;
 
     @PostMapping("/getVehicleInfoById")
-    public Object getVehicleInfoById(@RequestParam(name = "vehicleId")  Integer vehicleId,@RequestParam(name = "userId")  Integer userId){
+    public RDVTSListResponse getVehicleInfoById(@RequestParam(name = "vehicleId")  Integer vehicleId,@RequestParam(name = "userId")  Integer userId){
         AlertFilterDto alertFiler = new AlertFilterDto();
 
         RDVTSListResponse response = new RDVTSListResponse();
@@ -103,6 +103,7 @@ public class ReportController {
         RDVTSAlertResponse response = new RDVTSAlertResponse();
         Map<String, Object> result = new HashMap<>();
         AlertFilterDto filterDto = new AlertFilterDto();
+
         filterDto.setUserId(userId);
         filterDto.setRoadId(roadId);
         filterDto.setVehicleId(vehicleId);
@@ -113,8 +114,23 @@ public class ReportController {
 
 
 try{
-    List<AlertCountDto> vehicleAlertList = alertService.getVehicleAlertForReport(filterDto);
-    result.put("vehicleAlert", vehicleAlertList);
+    List<VehicleMasterDto> result1 = new ArrayList<>();
+
+
+    if (vehicleId !=null){
+       // VehicleMasterDto vehicleMasterDto=new VehicleMasterDto();
+
+        VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
+        vehicle.setAlertCountDTos(alertService.getVehicleAlertForReport(filterDto));
+        result1.add(vehicle);
+    } else if (workId !=null) {
+
+    } else if (roadId !=null) {
+
+    }
+
+
+    result.put("vehicleAlert", result1);
     response.setData(result);
     response.setStatus(1);
     } catch (Exception e) {

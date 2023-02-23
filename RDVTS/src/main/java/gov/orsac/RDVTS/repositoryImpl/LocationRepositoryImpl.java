@@ -378,8 +378,8 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("createdOn", deviceVehicleCreatedOn);
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
-            qry += "and imei=:imei2 and gps_fix::numeric =1   and longitude::numeric between 81 and 88  " +
-                    "  and latitude::numeric between 17 and 23   order by date_time desc )";
+            qry += "and imei=:imei2 and gps_fix::numeric =1   and regexp_replace(longitude,'[^0-9.]+', '','g')::numeric between 81 and 88  " +
+                    "  and regexp_replace(latitude,'[^0-9.]+', '','g')::numeric between 17 and 23   order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             return namedJdbc.queryForObject(qry, sqlParam, Double.class);
@@ -402,8 +402,8 @@ public class LocationRepositoryImpl {
             }
 
 
-            qry += "and imei=:imei1 and gps_fix::numeric =1 and longitude::numeric between 81 and 88 " +
-                    " and latitude::numeric between 17 and 23 order by date_time desc ) ";
+            qry += "and imei=:imei1 and gps_fix::numeric =1 and regexp_replace(longitude,'[^0-9.]+', '','g')::numeric between 81 and 88 " +
+                    " and regexp_replace(latitude,'[^0-9.]+', '','g')::numeric between 17 and 23 order by date_time desc ) ";
             sqlParam.addValue("imei1", imei1);
             qry += "select round(st_length(st_transform(st_makeline(c.geomPoint),26986))::numeric,3) from c";
             if (namedJdbc.queryForObject(qry, sqlParam, Double.class) == null) {
@@ -439,7 +439,7 @@ public class LocationRepositoryImpl {
                 sqlParam.addValue("deactivationDate", deviceVehicleDeactivationDate);
             }
 
-            qry += "and imei=:imei2 and  date_time >=:currentDateTime::timestamp  and gps_fix::numeric=1  /*and longitude::numeric between 81 and 88 and latitude::numeric between 17 and 23*/  " +
+            qry += "and imei=:imei2 and  date_time >=:currentDateTime::timestamp  and gps_fix::numeric=1  /*and regexp_replace(longitude,'[^0-9.]+', '','g')::numeric between 81 and 88 and regexp_replace(latitude,'[^0-9.]+', '','g')::numeric between 17 and 23*/  " +
                     "order by date_time desc )";
             sqlParam.addValue("imei2", imei2);
             sqlParam.addValue("currentDateTime",currentDateTime);
