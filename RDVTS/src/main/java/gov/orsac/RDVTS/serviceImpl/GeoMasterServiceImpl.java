@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.GeoMasterDto;
+import gov.orsac.RDVTS.dto.RoadMasterDto;
 import gov.orsac.RDVTS.entities.GeoMasterEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.GeoMasterRepository;
@@ -47,6 +48,11 @@ public class GeoMasterServiceImpl implements GeoMasterService {
     @Override
     public List<GeoMasterDto> getAllGeoMasterByAllId(int id, int geoWorkId, int geoDistId, int geoBlockId, int geoPiuId, int geoContractorId, int workId, int piuId, int distId, int blockId, int roadId) {
         return geoMasterRepositoryImpl.getAllGeoMasterByAllId(id,geoWorkId,geoDistId,geoBlockId,geoPiuId,geoContractorId,workId,piuId,distId,blockId,roadId);
+    }
+
+    @Override
+    public List<RoadMasterDto> getRoadByPackageId(Integer packageId) {
+       return geoMasterRepositoryImpl.getRoadByPackageId(packageId);
     }
 
 
