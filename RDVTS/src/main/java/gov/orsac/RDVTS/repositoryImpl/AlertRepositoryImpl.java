@@ -333,6 +333,13 @@ public class AlertRepositoryImpl {
         return namedJdbc.queryForObject(qry, sqlParam,new BeanPropertyRowMapper<>(AlertTypeEntity.class));
     }
 
+
+    public List<AlertTypeEntity> getAlertTypeDetails() {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        String qry = "SELECT * FROM rdvts_oltp.alert_type_m where is_active=true " ;
+        return namedJdbc.query(qry, sqlParam,new BeanPropertyRowMapper<>(AlertTypeEntity.class));
+    }
+
     public Page<AlertCountDto> getAlertToday(AlertFilterDto filterDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");

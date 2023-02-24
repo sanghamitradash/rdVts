@@ -1,6 +1,7 @@
 package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.GeoMasterDto;
+import gov.orsac.RDVTS.dto.RoadMasterDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -78,4 +79,16 @@ public class GeoMasterRepositoryImpl {
         return namedJdbc.queryForList(qry,sqlParam,Integer.class);
     }
 
+    public List<RoadMasterDto> getRoadByPackageId(Integer packageId ) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select g_road_id as groadId from rdvts_oltp.geo_construction_m where true ";
+        if (packageId >0){
+           qry +=" and  package_id =:packageId";
+            sqlParam.addValue("packageId",packageId);
+
+        }
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
+
+
+    }
 }
