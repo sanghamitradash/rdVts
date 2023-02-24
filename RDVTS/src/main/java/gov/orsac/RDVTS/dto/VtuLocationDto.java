@@ -99,6 +99,8 @@ public class VtuLocationDto {
     private Date createdOn;
     private Integer updatedBy;
     private Date updatedOn;
+    private Double speedOfVehicle;
+
 
 
 
