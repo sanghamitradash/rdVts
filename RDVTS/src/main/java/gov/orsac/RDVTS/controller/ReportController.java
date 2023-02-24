@@ -6,6 +6,10 @@ import gov.orsac.RDVTS.entities.AlertTypeEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.*;
+import gov.orsac.RDVTS.service.AlertService;
+import gov.orsac.RDVTS.service.RoadService;
+import gov.orsac.RDVTS.service.VehicleService;
+import gov.orsac.RDVTS.service.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -30,6 +34,7 @@ public class ReportController {
 
     @Autowired
     private WorkService workService;
+
 @Autowired
 private GeoMasterService geoMasterService;
     @Autowired
