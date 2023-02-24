@@ -1,10 +1,13 @@
 package gov.orsac.RDVTS.controller;
 
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.AlertService;
+import gov.orsac.RDVTS.service.RoadService;
 import gov.orsac.RDVTS.service.VehicleService;
+import gov.orsac.RDVTS.service.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -28,7 +31,14 @@ public class ReportController {
     private VehicleRepositoryImpl vehicleRepositoryImpl;
 
     @Autowired
+    private WorkService workService;
+
+    @Autowired
     public AlertService alertService;
+
+    @Autowired
+    private RoadService roadService;
+
 
     @PostMapping("/getVehicleInfoById")
     public RDVTSListResponse getVehicleInfoById(@RequestParam(name = "vehicleId")  Integer vehicleId,@RequestParam(name = "userId")  Integer userId){
@@ -117,20 +127,42 @@ try{
     List<VehicleMasterDto> result1 = new ArrayList<>();
 
 
-    if (vehicleId !=null){
-       // VehicleMasterDto vehicleMasterDto=new VehicleMasterDto();
+    if (roadId !=null) {
+        List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(roadId);
+        for (GeoMasterDto item : workByRoad) {
+            List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(item.getWorkId());
+            for (ActivityWorkMapping activityId : activityDtoList) {
+                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                for (VehicleActivityMappingDto vehicleObj : veActMapDto) {
+                    VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleObj.getVehicleId());
+                    vehicle.setAlertList(alertService.getVehicleAlertForReport(filterDto));
+                    result1.add(vehicle);
+                }
 
+            }
+        }
+    }
+    else if (workId !=null) {
+            List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workId);
+            for (ActivityDto activityId : activityDtoList) {
+                List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                for (VehicleActivityMappingDto vehicleObj : veActMapDto) {
+                    VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleObj.getVehicleId());
+                    vehicle.setAlertList(alertService.getVehicleAlertForReport(filterDto));
+                    result1.add(vehicle);
+                }
+
+            }
+
+    }
+    else if (vehicleId !=null){
         VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
-        vehicle.setAlertCountDTos(alertService.getVehicleAlertForReport(filterDto));
+        vehicle.setAlertList(alertService.getVehicleAlertForReport(filterDto));
         result1.add(vehicle);
-    } else if (workId !=null) {
-
-    } else if (roadId !=null) {
-
     }
 
 
-    result.put("vehicleAlert", result1);
+    result.put("vehicle", result1);
     response.setData(result);
     response.setStatus(1);
     } catch (Exception e) {
