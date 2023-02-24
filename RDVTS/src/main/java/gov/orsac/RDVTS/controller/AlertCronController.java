@@ -515,9 +515,22 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
                 }
                 work.setWorkId(workitem.getId());
                 work.setTodayDistance(todayDistance);
-                work.setTotalSpeedWork(totalSpeedWork);
+                if(Double.isNaN(totalSpeedWork)){
+                    work.setTotalSpeedWork(0.0);
+                }
+                else{
+                    work.setTotalSpeedWork(totalSpeedWork);
+                }
+                if(Double.isNaN(totalSpeedWork)){
+                    work.setAvgSpeedToday(0.0);
+                }
+                else{
+                    work.setAvgSpeedToday(avgSpeedToday);
+                }
+
+
                 work.setTotalActiveVehicle(totalActiveVehicle);
-                work.setAvgSpeedToday(avgSpeedToday);
+
                 work.setTotalDistance(totalDistance);
                 workList.add(work);
              System.out.println(data++);
