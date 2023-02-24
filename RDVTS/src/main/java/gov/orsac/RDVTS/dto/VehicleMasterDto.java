@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -50,5 +51,6 @@ public class VehicleMasterDto {
     private Integer activityWorkMapId;
     private Integer userByVehicleId;
     private boolean contractor;
+    List<AlertCountDto> alertCountDTos;
 
 }
