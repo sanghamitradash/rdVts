@@ -2,8 +2,10 @@ package gov.orsac.RDVTS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
+import gov.orsac.RDVTS.entities.WorkCronEntity;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
+import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
 import gov.orsac.RDVTS.service.*;
 //import javafx.scene.control.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,9 @@ public class WorkController {
 
     @Autowired
     private AlertService alertService;
+
+    @Autowired
+    private AlertRepositoryImpl alertRepositoryImpl;
 
 
     @Autowired
@@ -152,6 +157,12 @@ public class WorkController {
 
             //distance and speed API
             for (WorkDto workitem : workDto) {
+               /* WorkCronEntity workData=alertRepositoryImpl.getWorkCronByWorkId(workitem.getId());
+                totalDistance=workData.getTotalDistance();
+                todayDistance=workData.getTodayDistance();
+                totalActiveVehicle=workData.getTotalActiveVehicle();
+                totalSpeedWork=workData.getTotalSpeedWork();
+                avgSpeedToday=workData.getAvgSpeedToday();*/
                 List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
                 for (ActivityDto activityId : activityDtoList) {
 
