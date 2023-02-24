@@ -128,10 +128,13 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public AlertTypeEntity getAlertTypeDetails(int i) {
+    public AlertTypeEntity getAlertTypeDetails(Integer i) {
         return  alertRepositoryImpl.getAlertTypeDetails(i);
     }
-
+    @Override
+    public List<AlertTypeEntity> getAlertTypeDetails() {
+        return  alertRepositoryImpl.getAlertTypeDetails();
+    }
     @Override
     public List<VtuLocationDto> GeoFenceIntersectedRecords(String geom, List<VtuLocationDto> vtuLocationDto) {
          return alertRepositoryImpl.GeoFenceIntersectedRecords(geom,vtuLocationDto);
