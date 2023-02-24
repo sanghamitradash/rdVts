@@ -380,30 +380,30 @@ public class AlertCronController {
         return true;
     }
 
-   @Scheduled(cron = "0 */5 * * * *")
-    public RDVTSResponse getActiveAndInactiveVehicleCron() {
-        RDVTSResponse response = new RDVTSResponse();
-        Map<String, Object> result = new HashMap<>();
-        try {
-             int userId=1;
-            List<DashboardCronEntity>  vehicle = dashboardService.getActiveAndInactiveVehicleCron(userId);
-            System.out.println("TRUE");
-
-            result.put("vehicle", vehicle);
-            response.setData(result);
-            response.setStatus(1);
-            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-            response.setMessage("All vehicleData");
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            response = new RDVTSResponse(0,
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                    ex.getMessage(),
-                    result);
-        }
-        return response;
-    }
+//   @Scheduled(cron = "0 */5 * * * *")
+//    public RDVTSResponse getActiveAndInactiveVehicleCron() {
+//        RDVTSResponse response = new RDVTSResponse();
+//        Map<String, Object> result = new HashMap<>();
+//        try {
+//             int userId=1;
+//            List<DashboardCronEntity>  vehicle = dashboardService.getActiveAndInactiveVehicleCron(userId);
+//            System.out.println("TRUE");
+//
+//            result.put("vehicle", vehicle);
+//            response.setData(result);
+//            response.setStatus(1);
+//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+//            response.setMessage("All vehicleData");
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            response = new RDVTSResponse(0,
+//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+//                    ex.getMessage(),
+//                    result);
+//        }
+//        return response;
+//    }
 /*@PostMapping("/getDashboardData")
 public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer typeId) {
     RDVTSResponse response = new RDVTSResponse();
@@ -446,9 +446,11 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
+            int data=0;
             List<WorkCronEntity> workList=new ArrayList<>();
 
             List<WorkDto> workDto = workService.getWorkById(-1);
+            System.out.println(workDto.size());
 
             for (WorkDto workitem : workDto) {
                 Date startDate1 = null;
@@ -465,7 +467,7 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
                 List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
                 for (ActivityDto activityId : activityDtoList) {
                     //Vehicle By ActivityId
-                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), -1);
+                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), -1,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                          //Device By VehicleId
                         List<VehicleDeviceMappingDto> getDeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),null);
@@ -487,13 +489,22 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
                                 int i=0;
                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
                                     i++;
-                                    totalSpeedWork+= Double.parseDouble(vtuobj.getSpeed()) ;
+                                    if(Double.isNaN(Double.valueOf(vtuobj.getSpeed()))){
+                                        totalSpeedWork+=0.0;
+                                    }
+                                    else {
+                                        totalSpeedWork += Double.parseDouble(vtuobj.getSpeed());
+                                    }
                                 }
                                 totalSpeedWork=totalSpeedWork/i;
                                 int j=0;
                                 for (VtuLocationDto vtuTodaySpeedObj:vtuAvgSpeedToday) {
                                     j++;
-                                    avgSpeedToday+=Double.parseDouble(vtuTodaySpeedObj.getSpeed()) ;
+                                    if (Double.isNaN(Double.valueOf(vtuTodaySpeedObj.getSpeed()))) {
+                                        avgSpeedToday += 0.0;
+                                    } else {
+                                        avgSpeedToday += Double.parseDouble(vtuTodaySpeedObj.getSpeed());
+                                    }
                                 }
                                 avgSpeedToday=avgSpeedToday/j;
 
@@ -509,10 +520,11 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
                 work.setAvgSpeedToday(avgSpeedToday);
                 work.setTotalDistance(totalDistance);
                 workList.add(work);
-
+             System.out.println(data++);
             }
-
-             workCronRepository.saveAll(workList);
+            System.out.println("saveAll");
+            workCronRepository.saveAll(workList);
+          //  alertService.save(workList);
 
             System.out.println("TRUE Work");
 
@@ -536,15 +548,15 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
 
 //}
 
- @Scheduled(cron = "0 */10 * * * *")
-    public RDVTSResponse setPoolingStatus() {
-        try {
-           vehicleRepository.saveVehiclePoolingStatus();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-      return null;
-    }
+// @Scheduled(cron = "0 */10 * * * *")
+//    public RDVTSResponse setPoolingStatus() {
+//        try {
+//           vehicleRepository.saveVehiclePoolingStatus();
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//      return null;
+//    }
 
 
 

@@ -5,6 +5,7 @@ import java.util.List;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertEntity;
 import gov.orsac.RDVTS.entities.AlertTypeEntity;
+import gov.orsac.RDVTS.entities.WorkCronEntity;
 import org.springframework.data.domain.Page;
 
 
@@ -49,4 +50,5 @@ public interface AlertService  {
     List<VtuLocationDto> GeoFenceIntersectedRecords(String geom, List<VtuLocationDto> vtuLocationDto);
 
     List<AlertCountDto> getVehicleAlertForReport(AlertFilterDto filterDto);
+    List<WorkCronEntity> save(List<WorkCronEntity> work);
 }

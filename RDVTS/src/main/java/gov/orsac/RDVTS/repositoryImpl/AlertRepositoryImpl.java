@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertTypeEntity;
+import gov.orsac.RDVTS.entities.WorkCronEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -939,6 +940,19 @@ public class AlertRepositoryImpl {
         }
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+
+    }
+
+
+    public WorkCronEntity getWorkCronByWorkId(Integer workId) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = "SELECT id, imei_no, total_speed_work, avg_speed_today, total_active_vehicle, total_distance, today_distance, work_id " +
+                "FROM rdvts_oltp.work_cron where work_id=:workId " ;
+        sqlParam.addValue("workId",workId);
+
+
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(WorkCronEntity.class));
 
     }
 

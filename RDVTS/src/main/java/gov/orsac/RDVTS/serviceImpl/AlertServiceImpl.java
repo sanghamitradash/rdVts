@@ -3,8 +3,10 @@ package gov.orsac.RDVTS.serviceImpl;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertEntity;
 import gov.orsac.RDVTS.entities.AlertTypeEntity;
+import gov.orsac.RDVTS.entities.WorkCronEntity;
 import gov.orsac.RDVTS.repository.AlertRepository;
 import gov.orsac.RDVTS.repository.AlertTypeRepository;
+import gov.orsac.RDVTS.repository.WorkCronRepository;
 import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
 import gov.orsac.RDVTS.service.AlertService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,9 @@ import java.util.*;
 
 @Service
 public class AlertServiceImpl implements AlertService {
+
+    @Autowired
+    public WorkCronRepository workCronRepository;
 
     @Autowired
     private AlertRepositoryImpl alertRepositoryImpl;
@@ -135,6 +140,35 @@ public class AlertServiceImpl implements AlertService {
     @Override
     public List<AlertCountDto> getVehicleAlertForReport(AlertFilterDto filterDto) {
         return alertRepositoryImpl.getVehicleAlertForReport(filterDto);
+    }
+
+    @Override
+    public List<WorkCronEntity> save(List<WorkCronEntity> work) {
+        List<WorkCronEntity> workList=new ArrayList<>();
+        for(int i=0;i<work.size();i++){
+            WorkCronEntity w=alertRepositoryImpl.getWorkCronByWorkId(work.get(i).getId());
+            if(w!=null) {
+                w.setTotalDistance(work.get(i).getTotalDistance());
+                w.setTodayDistance(work.get(i).getTodayDistance());
+                w.setAvgSpeedToday(work.get(i).getAvgSpeedToday());
+                w.setTotalSpeedWork(work.get(i).getTotalSpeedWork());
+                w.setTotalActiveVehicle(work.get(i).getTotalActiveVehicle());
+                workList.add(w);
+                workCronRepository.save(w);
+            }
+            else{
+                WorkCronEntity w1=new WorkCronEntity();
+                w.setWorkId(work.get(i).getId());
+                w.setTotalDistance(work.get(i).getTotalDistance());
+                w.setTodayDistance(work.get(i).getTodayDistance());
+                w.setAvgSpeedToday(work.get(i).getAvgSpeedToday());
+                w.setTotalSpeedWork(work.get(i).getTotalSpeedWork());
+                w.setTotalActiveVehicle(work.get(i).getTotalActiveVehicle());
+                workList.add(w1);
+                workCronRepository.save(w1);
+            }
+        }
+        return workList;
     }
 
 
