@@ -89,7 +89,8 @@ public class LocationController {
                     }
 
 
-                } else if (vehicleId != null && !vehicleId.isEmpty()) {
+                }
+                else if (vehicleId != null && !vehicleId.isEmpty()) {
 
                     for (Integer vehicleitem : vehicleId) {
                         List<RoadMasterDto> veActMapDto = vehicleService.getRoadDetailByVehicleId(vehicleitem);
