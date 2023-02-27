@@ -146,7 +146,7 @@ try{
 
     }
 
-    if (roadId !=null && roadId>0) {
+    else if (roadId !=null && roadId>0) {
         List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(roadId);
         for (GeoMasterDto item : workByRoad) {
             List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(item.getWorkId());
@@ -174,7 +174,7 @@ try{
             }
 
     }
-    else if (vehicleId !=null && workId>0){
+    else if (vehicleId !=null && vehicleId>0){
         VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
         vehicle.setAlertList(alertService.getVehicleAlertForReport(filterDto));
         result1.add(vehicle);
