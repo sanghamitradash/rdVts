@@ -1,25 +1,29 @@
 package gov.orsac.RDVTS.controller;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.ActivityWorkMapping;
-import gov.orsac.RDVTS.entities.AlertEntity;
-import gov.orsac.RDVTS.entities.AlertTypeEntity;
+import gov.orsac.RDVTS.entities.*;
+import gov.orsac.RDVTS.repository.GeoDistrictMasterRepository;
+import gov.orsac.RDVTS.repository.GeoMasterLogRepository;
 import gov.orsac.RDVTS.service.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @CrossOrigin("*")
 @RestController
@@ -40,6 +44,12 @@ public class AlertController {
 
     @Autowired
     public WorkService workService;
+
+    @Autowired
+    public GeoMasterLogRepository geoMasterLogRepository;
+
+    @Autowired
+    public GeoDistrictMasterRepository geoDistrictMasterRepository;
 
     @Autowired
     public VehicleService vehicleService;
@@ -172,17 +182,17 @@ public class AlertController {
                                     List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                     for (DeviceDto imei : getImeiList) {
                                         //get Location By Imei
-                                        List<VtuLocationDto> vtuLocationDto = locationService.getLocationRecordListWithGeofence(imei.getImeiNo1(), imei.getImeiNo2(), vehicleid.getCreatedOn(), vehicleid.getDeactivationDate(),road.get(0).getId());
-                                        Integer rotate=0;
-                                        Double distance=0.0;
+                                        List<VtuLocationDto> vtuLocationDto = locationService.getLocationRecordListWithGeofence(imei.getImeiNo1(), imei.getImeiNo2(), vehicleid.getCreatedOn(), vehicleid.getDeactivationDate(), road.get(0).getId());
+                                        Integer rotate = 0;
+                                        Double distance = 0.0;
 
-                                        for (int i=0;i<=vtuLocationDto.size();i++){
-                                            if (i+1<vtuLocationDto.size()){
-                                                AlertDegreeDistanceDto degreeDistanceDto= locationService.getRotationDetails(vtuLocationDto.get(i).getLongitude(),vtuLocationDto.get(i).getLatitude(),vtuLocationDto.get(i+1).getLongitude(),vtuLocationDto.get(i+1).getLatitude());
-                                                distance+=degreeDistanceDto.getStDistance();
-                                                if (degreeDistanceDto.getDegrees()!=null && degreeDistanceDto.getDegrees()>90.0){
+                                        for (int i = 0; i <= vtuLocationDto.size(); i++) {
+                                            if (i + 1 < vtuLocationDto.size()) {
+                                                AlertDegreeDistanceDto degreeDistanceDto = locationService.getRotationDetails(vtuLocationDto.get(i).getLongitude(), vtuLocationDto.get(i).getLatitude(), vtuLocationDto.get(i + 1).getLongitude(), vtuLocationDto.get(i + 1).getLatitude());
+                                                distance += degreeDistanceDto.getStDistance();
+                                                if (degreeDistanceDto.getDegrees() != null && degreeDistanceDto.getDegrees() > 90.0) {
                                                     rotate++;
-                                                   // distance+=degreeDistanceDto.getStDistance();
+                                                    // distance+=degreeDistanceDto.getStDistance();
                                                 }
                                             }
 
@@ -650,15 +660,15 @@ public class AlertController {
 //            response.setRoadRecordsFiltered(roadAlertList.getTotalElements());
 //            response.setRoadRecordsTotal(roadAlertList.getTotalElements());
 
-            if(alertListTotal != null ){
+            if (alertListTotal != null) {
                 response.setRecordsFiltered(alertListTotal.getTotalElements());
                 response.setRecordsTotal(alertListTotal.getTotalElements());
             }
-            if(vehicleAlertList != null ){
+            if (vehicleAlertList != null) {
                 response.setRecordsFiltered(vehicleAlertList.getTotalElements());
                 response.setRecordsTotal(vehicleAlertList.getTotalElements());
             }
-            if(roadAlertList != null ){
+            if (roadAlertList != null) {
                 response.setRecordsFiltered(roadAlertList.getTotalElements());
                 response.setRecordsTotal(roadAlertList.getTotalElements());
             }
@@ -685,6 +695,131 @@ public class AlertController {
         }
         return true;
     }
+
+
+    //
+    @GetMapping("/makeApiCall")
+    public Object makeApiCall() throws IOException {
+        ResponseEntity<String> responseEntity = null;
+        try {
+//            final String uri = "http://omms.nic.in//api/VTS/VTSAPI";
+//            RestTemplate restTemplate = new RestTemplate();
+//            HttpHeaders header = new HttpHeaders();
+//            header.set("key", "b3ce5bed5effb926301302b76d3bd98bb22bfc5d6da18b2e5c7017138ca431e9");
+//            header.set("value", "2ae3ca745c75ba0ac2bc00ef4dfbf709bf281fd6edd846e5536e4f9cad02162d");
+//            header.set("state", "26");
+//
+//            HttpEntity<String> requestEntity = new HttpEntity<String>("body",header);
+//            responseEntity = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+//
+//            Object response = responseEntity.getBody();
+//
+//          return  null;
+
+
+            final String uri = "http://omms.nic.in//api/VTS/VTSAPI";
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders header = new HttpHeaders();
+            header.set("key", "b3ce5bed5effb926301302b76d3bd98bb22bfc5d6da18b2e5c7017138ca431e9");
+            header.set("value", "2ae3ca745c75ba0ac2bc00ef4dfbf709bf281fd6edd846e5536e4f9cad02162d");
+            header.set("state", "26");
+
+            HttpEntity<String> requestEntity = new HttpEntity<String>("body", header);
+            ResponseEntity<List<ResponseDto>> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<List<ResponseDto>>() {
+            });
+
+            List<ResponseDto> result = response.getBody();
+            List<ResponseDto> result1 = new ArrayList<>();
+            result.forEach(t->{
+                if (t.getDistrictName()==null){
+                    result1.add(t);
+                 //   System.out.println(t);
+                }
+            });
+            return result1;
+
+//            List<GeoMasterLogEntity> geoMasterLogEntities= result.stream().map(
+//                    i -> new GeoMasterLogEntity(i.getStateName(),i.getDistrictName(),i.getPiuName(),
+//                            i.getRoadCode(),i.getRoadName(),i.getContractorName(),i.getPackageNo(),
+//                            i.getSanctionLength(),i.getCompletedRoadLength(),i.getSanctionDate(),
+//                            i.getAwardDate(),i.getCompletionDate(),i.getPMisFinalizeDate(),
+//                            i.getActivityName(),i.getActivityQuantity(),i.getActivityStartDate(),
+//                            i.getActivityCompletionDate(),i.getActualActivityStartDate(),
+//                            i.getActualActivityCompletionDate(),i.getExecutedQuantity()))
+//                    .collect(Collectors.toList());
+
+//    List<GeoMasterLogEntity> savedMasterLogEntities =geoMasterLogRepository.saveAll(geoMasterLogEntities);
+//            result.forEach(t->{
+//                GeoMasterLogEntity geoMasterLogEntity=new GeoMasterLogEntity();
+//                geoMasterLogEntity.setStateName(t.getStateName());
+//                geoMasterLogEntity.setDistrictName(t.getDistrictName());
+//                geoMasterLogEntity.setPiuName(t.getPiuName());
+//                geoMasterLogEntity.setRoadCode(t.getRoadCode());
+//                geoMasterLogEntity.setRoadName(t.getRoadName());
+//                geoMasterLogEntity.setContractorName(t.getContractorName());
+//                geoMasterLogEntity.setStateName(t.getStateName());
+//                geoMasterLogEntity.setPackageNo(t.getPackageNo());
+//                geoMasterLogEntity.setSanctionLength(t.getSanctionLength());
+//                geoMasterLogEntity.setSanctionDate(t.getSanctionDate());
+//                geoMasterLogEntity.setAwardDate(t.getAwardDate());
+//                geoMasterLogEntity.setCompletionDate(t.getCompletionDate());
+//                geoMasterLogEntity.setPMisFinalizeDate(t.getPMisFinalizeDate());
+//                geoMasterLogEntity.setActivityName(t.getActivityName());
+//                geoMasterLogEntity.setActivityStartDate(t.getActivityStartDate());
+//                geoMasterLogEntity.setActivityCompletionDate(t.getActivityCompletionDate());
+//                geoMasterLogEntity.setActualActivityStartDate(t.getActualActivityStartDate());
+//                geoMasterLogEntity.setActualActivityCompletionDate(t.getActualActivityCompletionDate());
+//                geoMasterLogEntity.setExecutedQuantity(t.getExecutedQuantity());
+//
+//                geoMasterLogRepository.save(geoMasterLogEntity);
+//            });
+           // return null;
+
+
+
+
+
+           // return savedMasterLogEntities;
+
+//            List<GeoMasterLogEntity> geoMasterLogEntities=
+//                    result.stream()
+//                    .map(dto -> new GeoMasterLogEntity(dto.getStateName(),dto.getDistrictName()))
+//                    .collect(Collectors.toList());
+
+
+
+//
+////
+//            result.stream().filter(item->item.getDistrictName()!=null).map(f->geoDistrictMasterRepository.existsBygDistrictName(f.getDistrictName()));
+//            for (ResponseDto item:result) {
+////                if (item.getDistrictName()==null){
+////                    System.out.println(item.getRoadName());
+////                }
+//                if(item.getDistrictName()!=null){
+//                    GeoDistrictMasterEntity geoDistrictMasterEntity=new GeoDistrictMasterEntity();
+//                    geoDistrictMasterEntity=geoDistrictMasterRepository.existsBygDistrictName(item.getDistrictName());
+//                    if (geoDistrictMasterEntity == null){
+//
+//                        geoDistrictMasterEntity.setGDistrictName(item.getDistrictName());
+//                        //   geoDistrictMasterEntity= geoDistrictMasterRepository.save(geoDistrictMasterEntity);
+//
+//                    }
+//                    geoDistrictMasterEntity.getId();
+//                }
+//
+//            }
+
+       //     return result;
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return new ResponseEntity<Object>("Please try again later", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }
 
 

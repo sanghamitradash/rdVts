@@ -958,8 +958,12 @@ public class AlertRepositoryImpl {
                 "FROM rdvts_oltp.work_cron where work_id=:workId " ;
         sqlParam.addValue("workId",workId);
 
+        try {
+            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(WorkCronEntity.class));
+        } catch (Exception exception) {
+            return null;
+        }
 
-        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(WorkCronEntity.class));
 
     }
 

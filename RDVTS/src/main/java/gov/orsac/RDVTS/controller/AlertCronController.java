@@ -440,126 +440,126 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
     return response;
 }*/
 
-    //WorkByIdCron
-//    @Scheduled(cron = "0 */5 * * * *")
-//    public RDVTSResponse getVehicleLocationCornForWork() {
-//        RDVTSResponse response = new RDVTSResponse();
-//        Map<String, Object> result = new HashMap<>();
-//        try {
-//            int data=0;
-//            List<WorkCronEntity> workList=new ArrayList<>();
-//
-//            List<WorkDto> workDto = workService.getWorkById(-1);
-//            System.out.println(workDto.size());
-//
-//            for (WorkDto workitem : workDto) {
-//                Date startDate1 = null;
-//                Date endDate1 = null;
-//                Date vehicleStartDate = null;
-//                Date vehicleEndDate = null;
-//                Double todayDistance=0.0;
-//                Double totalDistance = 0.0;
-//                Double totalSpeedWork=0.0;
-//                Double avgSpeedToday=0.0;
-//                Integer totalActiveVehicle=0;
-//                WorkCronEntity work=new WorkCronEntity();
-//                //Activity By WorkId
-//                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
-//                for (ActivityDto activityId : activityDtoList) {
-//                    //Vehicle By ActivityId
-//                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), -1,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
-//                    for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-//                         //Device By VehicleId
-//                        List<VehicleDeviceMappingDto> getDeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),null);
-//                        for (VehicleDeviceMappingDto deviceListItem : getDeviceList) {
-//                            //Imei By DeviceId
-//                            List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceListItem.getDeviceId());
-//
-//                            for (DeviceDto imei : getImeiList) {
-//                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(),
-//                                        vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-//                                totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(),
-//                                        vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-//                                totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(),
-//                                        vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-//                                todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(),
-//                                        vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-//                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(),
-//                                        vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-//                                int i=0;
-//                                for (VtuLocationDto vtuobj : vtuLocationDto) {
-//                                    i++;
-//                                    if(Double.isNaN(Double.valueOf(vtuobj.getSpeedOfVehicle()))){
-//                                        totalSpeedWork+=0.0;
-//                                    }
-//                                    else {
-//                                        totalSpeedWork += vtuobj.getSpeedOfVehicle();
-//                                    }
-//                                }
-//                                totalSpeedWork=totalSpeedWork/i;
-//                                int j=0;
-//                                for (VtuLocationDto vtuTodaySpeedObj:vtuAvgSpeedToday) {
-//                                    j++;
-//                                    if (Double.isNaN(Double.valueOf(vtuTodaySpeedObj.getSpeed()))) {
-//                                        avgSpeedToday += 0.0;
-//                                    } else {
-//                                        avgSpeedToday += Double.parseDouble(vtuTodaySpeedObj.getSpeed());
-//                                    }
-//                                }
-//                                avgSpeedToday=avgSpeedToday/j;
-//
-//                            }
-//                        }
-//                    }
-//
-//                }
-//                work.setWorkId(workitem.getId());
-//                work.setTodayDistance(todayDistance);
-//                if(Double.isNaN(totalSpeedWork)){
-//                    work.setTotalSpeedWork(0.0);
-//                }
-//                else{
-//                    work.setTotalSpeedWork(totalSpeedWork);
-//                }
-//                if(Double.isNaN(totalSpeedWork)){
-//                    work.setAvgSpeedToday(0.0);
-//                }
-//                else{
-//                    work.setAvgSpeedToday(avgSpeedToday);
-//                }
-//
-//
-//                work.setTotalActiveVehicle(totalActiveVehicle);
-//
-//                work.setTotalDistance(totalDistance);
-//                workList.add(work);
-//             System.out.println(data++);
-//            }
-//            System.out.println("saveAll");
-//            workCronRepository.saveAll(workList);
-//          //  alertService.save(workList);
-//
-//            System.out.println("TRUE Work");
-//
-//            response.setData(result);
-//            response.setStatus(1);
-//            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-//            response.setMessage("All WorkData");
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            response = new RDVTSResponse(0,
-//                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-//                    ex.getMessage(),
-//                    result);
-//        }
-//        return response;
-//    }
+   // WorkByIdCron
+    @Scheduled(cron = "0 */5 * * * *")
+    public RDVTSResponse getVehicleLocationCornForWork() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            int data=0;
+            List<WorkCronEntity> workList=new ArrayList<>();
+
+            List<WorkDto> workDto = workService.getWorkById(-1);
+            System.out.println(workDto.size());
+
+            for (WorkDto workitem : workDto) {
+                Date startDate1 = null;
+                Date endDate1 = null;
+                Date vehicleStartDate = null;
+                Date vehicleEndDate = null;
+                Double todayDistance=0.0;
+                Double totalDistance = 0.0;
+                Double totalSpeedWork=0.0;
+                Double avgSpeedToday=0.0;
+                Integer totalActiveVehicle=0;
+                WorkCronEntity work=new WorkCronEntity();
+                //Activity By WorkId
+                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
+                for (ActivityDto activityId : activityDtoList) {
+                    //Vehicle By ActivityId
+                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), -1,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                    for (VehicleActivityMappingDto vehicleList : veActMapDto) {
+                         //Device By VehicleId
+                        List<VehicleDeviceMappingDto> getDeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),null);
+                        for (VehicleDeviceMappingDto deviceListItem : getDeviceList) {
+                            //Imei By DeviceId
+                            List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceListItem.getDeviceId());
+
+                            for (DeviceDto imei : getImeiList) {
+                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(),
+                                        vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+                                totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(),
+                                        vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+                                totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(),
+                                        vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+                                todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(),
+                                        vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(),
+                                        vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+                                int i=0;
+                                for (VtuLocationDto vtuobj : vtuLocationDto) {
+                                    i++;
+                                    if(Double.isNaN(Double.valueOf(vtuobj.getSpeedOfVehicle()))){
+                                        totalSpeedWork+=0.0;
+                                    }
+                                    else {
+                                        totalSpeedWork += vtuobj.getSpeedOfVehicle();
+                                    }
+                                }
+                                totalSpeedWork=totalSpeedWork/i;
+                                int j=0;
+                                for (VtuLocationDto vtuTodaySpeedObj:vtuAvgSpeedToday) {
+                                    j++;
+                                    if (Double.isNaN(Double.valueOf(vtuTodaySpeedObj.getSpeed()))) {
+                                        avgSpeedToday += 0.0;
+                                    } else {
+                                        avgSpeedToday += Double.parseDouble(vtuTodaySpeedObj.getSpeed());
+                                    }
+                                }
+                                avgSpeedToday=avgSpeedToday/j;
+
+                            }
+                        }
+                    }
+
+                }
+                work.setWorkId(workitem.getId());
+                work.setTodayDistance(todayDistance);
+                if(Double.isNaN(totalSpeedWork)){
+                    work.setTotalSpeedWork(0.0);
+                }
+                else{
+                    work.setTotalSpeedWork(totalSpeedWork);
+                }
+                if(Double.isNaN(totalSpeedWork)){
+                    work.setAvgSpeedToday(0.0);
+                }
+                else{
+                    work.setAvgSpeedToday(avgSpeedToday);
+                }
+
+
+                work.setTotalActiveVehicle(totalActiveVehicle);
+
+                work.setTotalDistance(totalDistance);
+                workList.add(work);
+             System.out.println(data++);
+            }
+           // System.out.println("saveAll");
+           // workCronRepository.saveAll(workList);
+           alertService.save(workList);
+
+          //  System.out.println("TRUE Work");
+
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("All WorkData");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
 
 
 
 
-//}
+
 
  @Scheduled(cron = "0 */10 * * * *")
     public RDVTSResponse setPoolingStatus() {
@@ -607,3 +607,6 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
 //        ) as vehicleList
 //        ) as t
 //        Order by id
+
+
+

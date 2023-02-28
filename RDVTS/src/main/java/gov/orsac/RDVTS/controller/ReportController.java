@@ -111,6 +111,7 @@ private GeoMasterService geoMasterService;
                                @RequestParam(name = "startDate", required = false) String startDate,
                                @RequestParam(name = "alertTypeId") Integer alertTypeId,
                                @RequestParam(name = "endDate", required = false) String endDate){
+
         RDVTSAlertResponse response = new RDVTSAlertResponse();
         Map<String, Object> result = new HashMap<>();
         AlertFilterDto filterDto = new AlertFilterDto();
