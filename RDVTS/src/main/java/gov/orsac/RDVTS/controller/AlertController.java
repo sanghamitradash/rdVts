@@ -5,8 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
-import gov.orsac.RDVTS.repository.GeoDistrictMasterRepository;
-import gov.orsac.RDVTS.repository.GeoMasterLogRepository;
+import gov.orsac.RDVTS.repository.*;
+import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
+import gov.orsac.RDVTS.repositoryImpl.CronRepositoryImpl;
 import gov.orsac.RDVTS.service.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -51,6 +52,19 @@ public class AlertController {
     @Autowired
     public GeoDistrictMasterRepository geoDistrictMasterRepository;
 
+    @Autowired
+    public CronRepositoryImpl cronRepository;
+
+    @Autowired
+    public RoadRepository roadRepository;
+
+    @Autowired
+    public WorkRepository workRepository;
+
+    @Autowired
+    public PiuRepository piuRepository;
+    @Autowired
+    public ContractorMasterRepository contractorMasterRepository;
     @Autowired
     public VehicleService vehicleService;
     final Integer OVER_SPEED_ALERT_ID = 1;//NO_DATA_ALERT_ID For Alert TYpe Stored in DB
@@ -702,21 +716,6 @@ public class AlertController {
     public Object makeApiCall() throws IOException {
         ResponseEntity<String> responseEntity = null;
         try {
-//            final String uri = "http://omms.nic.in//api/VTS/VTSAPI";
-//            RestTemplate restTemplate = new RestTemplate();
-//            HttpHeaders header = new HttpHeaders();
-//            header.set("key", "b3ce5bed5effb926301302b76d3bd98bb22bfc5d6da18b2e5c7017138ca431e9");
-//            header.set("value", "2ae3ca745c75ba0ac2bc00ef4dfbf709bf281fd6edd846e5536e4f9cad02162d");
-//            header.set("state", "26");
-//
-//            HttpEntity<String> requestEntity = new HttpEntity<String>("body",header);
-//            responseEntity = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
-//
-//            Object response = responseEntity.getBody();
-//
-//          return  null;
-
-
             final String uri = "http://omms.nic.in//api/VTS/VTSAPI";
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders header = new HttpHeaders();
@@ -729,26 +728,82 @@ public class AlertController {
             });
 
             List<ResponseDto> result = response.getBody();
-            List<ResponseDto> result1 = new ArrayList<>();
-            result.forEach(t->{
-                if (t.getDistrictName()==null){
-                    result1.add(t);
-                 //   System.out.println(t);
+            List<RoadEntity> result1 = new ArrayList<>();
+            for (ResponseDto item : result) {
+                WorkEntity workEntity1 = workRepository.findByPackageName(item.getPackageNo());
+
+                WorkEntity workEntity = new WorkEntity();
+                if (workEntity1 != null) {
+                    workEntity.setId(workEntity1.getId());
                 }
-            });
-            return result1;
+                Date awardDate = item.getAwardDate() == "" ? null : convertDateFormat(item.getAwardDate());
+                Date completionDate = item.getCompletionDate() == "" ? null : convertDateFormat(item.getCompletionDate());
+                Date pMisFinalizeDate = item.getPMisFinalizeDate() == "" ? null : convertDateFormat(item.getPMisFinalizeDate());
+                workEntity.setAwardDate(awardDate);
+                workEntity.setCompletionDate(completionDate);
+                workEntity.setPmisFinalizeDate(pMisFinalizeDate);
+                workEntity.setGeoWorkName(item.getRoadName());
+                workEntity.setPackageName(item.getPackageNo());
+                workRepository.save(workEntity);
 
-//            List<GeoMasterLogEntity> geoMasterLogEntities= result.stream().map(
-//                    i -> new GeoMasterLogEntity(i.getStateName(),i.getDistrictName(),i.getPiuName(),
-//                            i.getRoadCode(),i.getRoadName(),i.getContractorName(),i.getPackageNo(),
-//                            i.getSanctionLength(),i.getCompletedRoadLength(),i.getSanctionDate(),
-//                            i.getAwardDate(),i.getCompletionDate(),i.getPMisFinalizeDate(),
-//                            i.getActivityName(),i.getActivityQuantity(),i.getActivityStartDate(),
-//                            i.getActivityCompletionDate(),i.getActualActivityStartDate(),
-//                            i.getActualActivityCompletionDate(),i.getExecutedQuantity()))
-//                    .collect(Collectors.toList());
 
-//    List<GeoMasterLogEntity> savedMasterLogEntities =geoMasterLogRepository.saveAll(geoMasterLogEntities);
+
+                RoadEntity roadEntity1 = roadRepository.findByPackageName(item.getPackageNo());
+                RoadEntity roadEntity = new RoadEntity();
+                if (roadEntity1 != null) {
+                    roadEntity.setId(roadEntity1.getId());
+                }
+                Date initDate = new SimpleDateFormat("dd/MM/yyyy").parse(item.getSanctionDate());
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String parsedDate = formatter.format(initDate);
+                Date sanctionDate = new SimpleDateFormat("yyyy-MM-dd").parse(parsedDate);
+
+                roadEntity.setRoadCode(item.getRoadCode());
+                roadEntity.setRoadName(item.getRoadName());
+                roadEntity.setRoadLength(item.getSanctionLength());
+                roadEntity.setPackageName(item.getPackageNo());
+                roadEntity.setCompletedRoadLength(item.getCompletedRoadLength());
+                roadEntity.setSanctionDate(sanctionDate);
+                roadRepository.save(roadEntity);
+
+                //PIU
+                PiuEntity piuEntity = piuRepository.findByName(item.getPiuName());
+                Date sanctionDate1 = item.getSanctionDate() == "" ? null : convertDateFormat(item.getSanctionDate());
+                PiuEntity piuEntity1 = new PiuEntity();
+                if (piuEntity != null) {
+                    piuEntity1.setId(piuEntity.getId());
+                }
+                piuEntity1.setName(item.getPiuName());
+                piuEntity1.setSanctionDate(sanctionDate1);
+                piuRepository.save(piuEntity1);
+
+                //Work
+//                WorkEntity workEntity1=workRepository.findByPackageName(item.getPackageNo());
+//                WorkEntity workEntity=new WorkEntity();
+//                if (workEntity1!=null) {
+//                    workEntity.setId(workEntity1.getId());
+//                } else {
+//                    Date awardDate=item.getAwardDate()=="" ?  null : convertDateFormat(item.getAwardDate());
+//                    Date completionDate=item.getCompletionDate()=="" ?  null : convertDateFormat(item.getCompletionDate()) ;
+//                    Date pMisFinalizeDate=item.getPMisFinalizeDate() =="" ? null : convertDateFormat(item.getPMisFinalizeDate());
+//                    workEntity.setAwardDate(awardDate);
+//                    workEntity.setCompletionDate(completionDate);
+//                    workEntity.setPmisFinalizeDate(pMisFinalizeDate);
+//                    workEntity.setGeoWorkName(item.getRoadName());
+//                    workEntity.setPackageName(item.getPackageNo());
+//                }
+//                workRepository.save(workEntity);
+
+
+                ContractorEntity contractorEntity1 = contractorMasterRepository.findByName(item.getContractorName());
+                ContractorEntity contractorEntity = new ContractorEntity();
+                if (contractorEntity1 == null) {
+                    contractorEntity.setId(contractorEntity1.getId());
+                }
+                contractorEntity.setName(item.getContractorName());
+                contractorMasterRepository.save(contractorEntity);
+            }
+
 //            result.forEach(t->{
 //                GeoMasterLogEntity geoMasterLogEntity=new GeoMasterLogEntity();
 //                geoMasterLogEntity.setStateName(t.getStateName());
@@ -770,46 +825,9 @@ public class AlertController {
 //                geoMasterLogEntity.setActualActivityStartDate(t.getActualActivityStartDate());
 //                geoMasterLogEntity.setActualActivityCompletionDate(t.getActualActivityCompletionDate());
 //                geoMasterLogEntity.setExecutedQuantity(t.getExecutedQuantity());
-//
 //                geoMasterLogRepository.save(geoMasterLogEntity);
 //            });
-           // return null;
-
-
-
-
-
-           // return savedMasterLogEntities;
-
-//            List<GeoMasterLogEntity> geoMasterLogEntities=
-//                    result.stream()
-//                    .map(dto -> new GeoMasterLogEntity(dto.getStateName(),dto.getDistrictName()))
-//                    .collect(Collectors.toList());
-
-
-
-//
-////
-//            result.stream().filter(item->item.getDistrictName()!=null).map(f->geoDistrictMasterRepository.existsBygDistrictName(f.getDistrictName()));
-//            for (ResponseDto item:result) {
-////                if (item.getDistrictName()==null){
-////                    System.out.println(item.getRoadName());
-////                }
-//                if(item.getDistrictName()!=null){
-//                    GeoDistrictMasterEntity geoDistrictMasterEntity=new GeoDistrictMasterEntity();
-//                    geoDistrictMasterEntity=geoDistrictMasterRepository.existsBygDistrictName(item.getDistrictName());
-//                    if (geoDistrictMasterEntity == null){
-//
-//                        geoDistrictMasterEntity.setGDistrictName(item.getDistrictName());
-//                        //   geoDistrictMasterEntity= geoDistrictMasterRepository.save(geoDistrictMasterEntity);
-//
-//                    }
-//                    geoDistrictMasterEntity.getId();
-//                }
-//
-//            }
-
-       //     return result;
+            return result1;
 
 
         } catch (Exception e) {
@@ -817,6 +835,16 @@ public class AlertController {
 
             return new ResponseEntity<Object>("Please try again later", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+
+    }
+
+    public Date convertDateFormat(String mydate) throws ParseException {
+        Date initDate = new SimpleDateFormat("dd/MM/yyyy").parse(mydate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String parsedDate = formatter.format(initDate);
+        Date finalDate = new SimpleDateFormat("yyyy-MM-dd").parse(parsedDate);
+        return finalDate;
     }
 
 
