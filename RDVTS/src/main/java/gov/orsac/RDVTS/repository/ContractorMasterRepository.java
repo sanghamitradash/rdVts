@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ContractorMasterRepository extends JpaRepository<ContractorEntity,Integer> {
     boolean existsByMobile(Long mobile);
+    ContractorEntity findByName(String name);
 }

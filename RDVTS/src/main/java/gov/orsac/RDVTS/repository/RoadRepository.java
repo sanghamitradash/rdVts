@@ -7,4 +7,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoadRepository extends JpaRepository<RoadEntity, Integer> {
+    RoadEntity findByPackageName(String packageName);
 }

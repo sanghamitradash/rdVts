@@ -334,6 +334,13 @@ public class AlertRepositoryImpl {
         return namedJdbc.queryForObject(qry, sqlParam,new BeanPropertyRowMapper<>(AlertTypeEntity.class));
     }
 
+
+    public List<AlertTypeEntity> getAlertTypeDetails() {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        String qry = "SELECT * FROM rdvts_oltp.alert_type_m where is_active=true " ;
+        return namedJdbc.query(qry, sqlParam,new BeanPropertyRowMapper<>(AlertTypeEntity.class));
+    }
+
     public Page<AlertCountDto> getAlertToday(AlertFilterDto filterDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -951,8 +958,12 @@ public class AlertRepositoryImpl {
                 "FROM rdvts_oltp.work_cron where work_id=:workId " ;
         sqlParam.addValue("workId",workId);
 
+        try {
+            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(WorkCronEntity.class));
+        } catch (Exception exception) {
+            return null;
+        }
 
-        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(WorkCronEntity.class));
 
     }
 

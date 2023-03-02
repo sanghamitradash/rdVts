@@ -157,46 +157,46 @@ public class WorkController {
 
             //distance and speed API
             for (WorkDto workitem : workDto) {
-               /* WorkCronEntity workData=alertRepositoryImpl.getWorkCronByWorkId(workitem.getId());
+               WorkCronEntity workData=alertRepositoryImpl.getWorkCronByWorkId(workitem.getId());
                 totalDistance=workData.getTotalDistance();
                 todayDistance=workData.getTodayDistance();
                 totalActiveVehicle=workData.getTotalActiveVehicle();
                 totalSpeedWork=workData.getTotalSpeedWork();
-                avgSpeedToday=workData.getAvgSpeedToday();*/
-                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
-                for (ActivityDto activityId : activityDtoList) {
-
-                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
-                    for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-
-                        List<VehicleDeviceMappingDto> getDeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
-                        for (VehicleDeviceMappingDto deviceListItem : getDeviceList) {
-                            List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceListItem.getDeviceId());
-                            //int i = 0;
-                            for (DeviceDto imei : getImeiList) {
-                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-                                totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-                                totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-                                todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-                               // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
-                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-                                int i=0;
-                                for (VtuLocationDto vtuobj : vtuLocationDto) {
-                                    i++;
-                                    totalSpeedWork+= Double.parseDouble(vtuobj.getSpeed()) ;
-                                }
-                                totalSpeedWork=totalSpeedWork/i;
-                                int j=0;
-                                for (VtuLocationDto vtuTodaySpeedObj:vtuAvgSpeedToday) {
-                                    j++;
-                                    avgSpeedToday+=Double.parseDouble(vtuTodaySpeedObj.getSpeed()) ;
-                                }
-                                avgSpeedToday=avgSpeedToday/j;
-
-                            }
-                        }
-                    }
-                }
+                avgSpeedToday=workData.getAvgSpeedToday();
+//                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
+//                for (ActivityDto activityId : activityDtoList) {
+//
+//                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId);
+//                    for (VehicleActivityMappingDto vehicleList : veActMapDto) {
+//
+//                        List<VehicleDeviceMappingDto> getDeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),userId);
+//                        for (VehicleDeviceMappingDto deviceListItem : getDeviceList) {
+//                            List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceListItem.getDeviceId());
+//                            //int i = 0;
+//                            for (DeviceDto imei : getImeiList) {
+//                                List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+//                                totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+//                                totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+//                                todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+//                               // totalSpeed += locationService.getspeed(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate());
+//                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(), startDate1, endDate1, deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
+//                                int i=0;
+//                                for (VtuLocationDto vtuobj : vtuLocationDto) {
+//                                    i++;
+//                                    totalSpeedWork+= Double.parseDouble(vtuobj.getSpeed()) ;
+//                                }
+//                                totalSpeedWork=totalSpeedWork/i;
+//                                int j=0;
+//                                for (VtuLocationDto vtuTodaySpeedObj:vtuAvgSpeedToday) {
+//                                    j++;
+//                                    avgSpeedToday+=Double.parseDouble(vtuTodaySpeedObj.getSpeed()) ;
+//                                }
+//                                avgSpeedToday=avgSpeedToday/j;
+//
+//                            }
+//                        }
+//                    }
+//                }
             }
             //Active Inactive vehicle
             List<LocationDto> locationList=new ArrayList<>();

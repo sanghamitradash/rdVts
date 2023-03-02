@@ -33,6 +33,9 @@ public class WorkEntity {
     @Column(name = "completion_date")
     private Date completionDate;
 
+    @Column(name = "package_name")
+    private String packageName;
+
     @Column(name = "pmis_finalize_date")
     private Date pmisFinalizeDate;
 

@@ -128,10 +128,13 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public AlertTypeEntity getAlertTypeDetails(int i) {
+    public AlertTypeEntity getAlertTypeDetails(Integer i) {
         return  alertRepositoryImpl.getAlertTypeDetails(i);
     }
-
+    @Override
+    public List<AlertTypeEntity> getAlertTypeDetails() {
+        return  alertRepositoryImpl.getAlertTypeDetails();
+    }
     @Override
     public List<VtuLocationDto> GeoFenceIntersectedRecords(String geom, List<VtuLocationDto> vtuLocationDto) {
          return alertRepositoryImpl.GeoFenceIntersectedRecords(geom,vtuLocationDto);
@@ -158,12 +161,12 @@ public class AlertServiceImpl implements AlertService {
             }
             else{
                 WorkCronEntity w1=new WorkCronEntity();
-                w.setWorkId(work.get(i).getId());
-                w.setTotalDistance(work.get(i).getTotalDistance());
-                w.setTodayDistance(work.get(i).getTodayDistance());
-                w.setAvgSpeedToday(work.get(i).getAvgSpeedToday());
-                w.setTotalSpeedWork(work.get(i).getTotalSpeedWork());
-                w.setTotalActiveVehicle(work.get(i).getTotalActiveVehicle());
+                w1.setWorkId(work.get(i).getId());
+                w1.setTotalDistance(work.get(i).getTotalDistance());
+                w1.setTodayDistance(work.get(i).getTodayDistance());
+                w1.setAvgSpeedToday(work.get(i).getAvgSpeedToday());
+                w1.setTotalSpeedWork(work.get(i).getTotalSpeedWork());
+                w1.setTotalActiveVehicle(work.get(i).getTotalActiveVehicle());
                 workList.add(w1);
                 workCronRepository.save(w1);
             }
