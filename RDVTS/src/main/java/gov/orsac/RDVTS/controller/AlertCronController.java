@@ -387,7 +387,7 @@ public class AlertCronController {
         try {
              int userId=1;
             List<DashboardCronEntity>  vehicle = dashboardService.getActiveAndInactiveVehicleCron(userId);
-            System.out.println("TRUE");
+           // System.out.println("TRUE");
 
             result.put("vehicle", vehicle);
             response.setData(result);
@@ -450,7 +450,7 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
             List<WorkCronEntity> workList=new ArrayList<>();
 
             List<WorkDto> workDto = workService.getWorkById(-1);
-            System.out.println(workDto.size());
+            //System.out.println(workDto.size());
 
             for (WorkDto workitem : workDto) {
                 Date startDate1 = null;
@@ -533,7 +533,7 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
 
                 work.setTotalDistance(totalDistance);
                 workList.add(work);
-             System.out.println(data++);
+            // System.out.println(data++);
             }
            // System.out.println("saveAll");
            // workCronRepository.saveAll(workList);
