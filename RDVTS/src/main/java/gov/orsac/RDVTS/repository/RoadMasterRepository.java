@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoadMasterRepository extends JpaRepository <RoadMasterEntity, Integer> {
 
-    PackageMasterEntity findByPackageNo(String Number) ;
+    RoadMasterEntity findByRoadName(String name) ;
 
 }

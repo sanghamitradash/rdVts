@@ -50,6 +50,9 @@ public class AlertController {
     public WorkService workService;
 
     @Autowired
+    public RoadMasterRepository roadMasterRepository;
+
+    @Autowired
     public GeoMasterLogRepository geoMasterLogRepository;
 
     @Autowired
@@ -742,79 +745,98 @@ public class AlertController {
             });
 
             List<ResponseDto> result = response.getBody();
-
-           // Set<String> uniqueRoads = result.stream().map(a -> a.getRoadName()).collect(Collectors.toSet());
-            final List<ResponseDto> distinctRoadList = distinctList(result, ResponseDto::getRoadCode, ResponseDto::getRoadName,ResponseDto::getSanctionDate);
-            System.out.println(distinctRoadList);
-            distinctRoadList.forEach(a->{
-                RoadMasterEntity roadMasterEntity=new RoadMasterEntity();
+            result.forEach(b->{
 
             });
 
+            Set<String> uniqueRoadName = result.stream().map(a -> a.getRoadName()).collect(Collectors.toSet());
+            final List<ResponseDto> uniqueRName = distinctList(result,ResponseDto::getRoadName);
+            final List<ResponseDto> uniqueRCode = distinctList(result,ResponseDto::getRoadCode);
+            final List<ResponseDto> uniqueSanctionDate = distinctList(result,ResponseDto::getSanctionDate);
+
+            final List<ResponseDto> distinctRoadList = distinctList(result, ResponseDto::getRoadCode, ResponseDto::getRoadName);
 
 
-            Set<String> uniqueStateNames = result.stream().map(a -> a.getDistrictName()).collect(Collectors.toSet());
-            for (String items:uniqueStateNames ) {
-                GeoDistrictMasterEntity geoDistrictMasterEntity= new GeoDistrictMasterEntity();
-                GeoDistrictMasterEntity geoDistrictMasterEntity1= geoDistrictMasterRepository.existsBygDistrictName(items);
-                geoDistrictMasterEntity.setGDistrictName(items);
-                if (geoDistrictMasterEntity1 != null){
-                    geoDistrictMasterEntity.setId(geoDistrictMasterEntity1.getId());
+
+            System.out.println(distinctRoadList);
+            for (ResponseDto a:distinctRoadList) {
+                RoadMasterEntity roadMasterEntity=new RoadMasterEntity();
+
+                RoadMasterEntity roadMasterEntity1= roadMasterRepository.findByRoadName(a.getRoadName());
+                roadMasterEntity.setRoadName(a.getRoadName());
+                roadMasterEntity.setRoadCode(a.getRoadCode());
+                roadMasterEntity.setSanctionDate(a.getSanctionDate() == "" ? null : convertDateFormat(a.getSanctionDate()));
+                roadMasterEntity.setSanctionLength(a.getSanctionLength());
+                if (roadMasterEntity1 != null){
+                    roadMasterEntity.setId(roadMasterEntity1.getId());
                 }
-                geoDistrictMasterRepository.save(geoDistrictMasterEntity);
+                roadMasterRepository.save(roadMasterEntity);
             }
 
 
-            Set<String> uniqueContractorNames = result.stream().map(a -> a.getContractorName()).collect(Collectors.toSet());
 
-
-            for (String items:uniqueContractorNames ) {
-                ContractorEntity contractorEntity = new ContractorEntity();
-                ContractorEntity contractorEntity1 = contractorMasterRepository.findByName(items);
-                if (contractorEntity1 != null) {
-                    contractorEntity.setId(contractorEntity1.getId());
-                }
-                contractorEntity.setName(items);
-                contractorMasterRepository.save(contractorEntity);
-            }
-
-            Set<String> uniquePackageNos = result.stream().map(a -> a.getPackageNo()).collect(Collectors.toSet());
-            for (String items:uniquePackageNos ) {
-              PackageMasterEntity packageMasterEntity=new PackageMasterEntity();
-                PackageMasterEntity packageMasterEntity1=  packageMasterRepository.findByPackageNo(items);
-                if (packageMasterEntity1 != null) {
-                    packageMasterEntity.setId(packageMasterEntity1.getId());
-                }
-                packageMasterEntity.setPackageNo(items);
-                packageMasterRepository.save(packageMasterEntity);
-            }
-
-
-            Set<String> uniquePiuNames = result.stream().map(a -> a.getPiuName()).collect(Collectors.toSet());
-            for (String items:uniquePiuNames ) {
-                PiuEntity piuEntity=new PiuEntity();
-                PiuEntity piuEntity1=piuRepository.findByName(items);
-                if (piuEntity1 != null) {
-                    piuEntity.setId(piuEntity1.getId());
-                }
-                piuEntity.setName(items);
-                piuRepository.save(piuEntity);
-            }
+//            Set<String> uniqueStateNames = result.stream().map(a -> a.getDistrictName()).collect(Collectors.toSet());
+//            for (String items:uniqueStateNames ) {
+//                GeoDistrictMasterEntity geoDistrictMasterEntity= new GeoDistrictMasterEntity();
+//                GeoDistrictMasterEntity geoDistrictMasterEntity1= geoDistrictMasterRepository.existsBygDistrictName(items);
+//                geoDistrictMasterEntity.setGDistrictName(items);
+//                if (geoDistrictMasterEntity1 != null){
+//                    geoDistrictMasterEntity.setId(geoDistrictMasterEntity1.getId());
+//                }
+//                geoDistrictMasterRepository.save(geoDistrictMasterEntity);
+//            }
 //
-            Set<String> uniqueActivityNames = result.stream().map(a -> a.getActivityName()).collect(Collectors.toSet());
-            for (String items:uniqueActivityNames ) {
-                ActivityEntity activityEntity=new ActivityEntity();
-                ActivityEntity activityEntity1=activityMasterRepository.findByActivityName(items);
+//
+//            Set<String> uniqueContractorNames = result.stream().map(a -> a.getContractorName()).collect(Collectors.toSet());
+//
+//
+//            for (String items:uniqueContractorNames ) {
+//                ContractorEntity contractorEntity = new ContractorEntity();
+//                ContractorEntity contractorEntity1 = contractorMasterRepository.findByName(items);
+//                if (contractorEntity1 != null) {
+//                    contractorEntity.setId(contractorEntity1.getId());
+//                }
+//                contractorEntity.setName(items);
+//                contractorMasterRepository.save(contractorEntity);
+//            }
+//
+//            Set<String> uniquePackageNos = result.stream().map(a -> a.getPackageNo()).collect(Collectors.toSet());
+//            for (String items:uniquePackageNos ) {
+//              PackageMasterEntity packageMasterEntity=new PackageMasterEntity();
+//                PackageMasterEntity packageMasterEntity1=  packageMasterRepository.findByPackageNo(items);
+//                if (packageMasterEntity1 != null) {
+//                    packageMasterEntity.setId(packageMasterEntity1.getId());
+//                }
+//                packageMasterEntity.setPackageNo(items);
+//                packageMasterRepository.save(packageMasterEntity);
+//            }
+//
+//
+//            Set<String> uniquePiuNames = result.stream().map(a -> a.getPiuName()).collect(Collectors.toSet());
+//            for (String items:uniquePiuNames ) {
+//                PiuEntity piuEntity=new PiuEntity();
+//                PiuEntity piuEntity1=piuRepository.findByName(items);
+//                if (piuEntity1 != null) {
+//                    piuEntity.setId(piuEntity1.getId());
+//                }
+//                piuEntity.setName(items);
+//                piuRepository.save(piuEntity);
+//            }
+////
+//            Set<String> uniqueActivityNames = result.stream().map(a -> a.getActivityName()).collect(Collectors.toSet());
+//            for (String items:uniqueActivityNames ) {
+//                ActivityEntity activityEntity=new ActivityEntity();
+//                ActivityEntity activityEntity1=activityMasterRepository.findByActivityName(items);
+//
+//                if (activityEntity1 != null) {
+//                    activityEntity.setId(activityEntity1.getId());
+//                }
+//                activityEntity.setActivityName(items);
+//                activityMasterRepository.save(activityEntity);
+//            }
+//
 
-                if (activityEntity1 != null) {
-                    activityEntity.setId(activityEntity1.getId());
-                }
-                activityEntity.setActivityName(items);
-                activityMasterRepository.save(activityEntity);
-            }
-
-
-
+///END
 
 
 
