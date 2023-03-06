@@ -63,9 +63,8 @@ public class RoadMasterEntity {
     @Column(name = "updated_on")
     @UpdateTimestamp
     private Date updatedOn;
-    @Temporal(TemporalType.TIMESTAMP)
+
     @Column(name = "sanction_date")
-    @UpdateTimestamp
     private Date sanctionDate;
 
     @Column(name = "road_code")

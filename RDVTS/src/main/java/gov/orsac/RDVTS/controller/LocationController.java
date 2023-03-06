@@ -92,10 +92,10 @@ public class LocationController {
                 }
                 else if (vehicleId != null && !vehicleId.isEmpty()) {
 
-                    for (Integer vehicleitem : vehicleId) {
-                        List<RoadMasterDto> veActMapDto = vehicleService.getRoadDetailByVehicleId(vehicleitem);
+                    for (Integer vehicleIds : vehicleId) {
+                        List<RoadMasterDto> roadDetailByVehicleId = vehicleService.getRoadDetailByVehicleId(vehicleIds);
                                /// System.out.println(veActMapDto.size());
-                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate,userId);
+                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleIds, null, null,userId);
                         //System.out.println(getdeviceList.size());
                         for (VehicleDeviceMappingDto deviceObj : getdeviceList) {
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceObj.getDeviceId());
@@ -110,7 +110,7 @@ public class LocationController {
                                 }
                                 Map<String, Object> itemVal = new HashMap<>();
                                 itemVal.put("vtuLocation", vtuLocationDto);
-                                itemVal.put("road", veActMapDto);
+                                itemVal.put("road", roadDetailByVehicleId);
                                 result.add(itemVal);
 //                            Map<String, Object> itemVal = new HashMap<>();
 //                            itemVal.put("imeiNo", imei.getImeiNo1());
@@ -448,13 +448,6 @@ public class LocationController {
             List<Map<String, Object>> result = new ArrayList<>();
             Map<Integer, Object> device = new HashMap<>();
             //Get All Device Ids
-            List<Integer> vehicleIds = new ArrayList<>();
-            List<Integer> deviceIds = new ArrayList<>();
-            List<Date> deviceCreatedDate = new ArrayList<>();
-            List<Date> deviceDeactivationDate = new ArrayList<>();
-
-            List<Long> imeiArray1 = new ArrayList<>();
-            List<Long> imeiArray2 = new ArrayList<>();
             Date startDate = null;
             Date endDate = null;
             Date vehicleStartDate = null;
@@ -486,7 +479,7 @@ public class LocationController {
                 else if (vehicleId != null && !vehicleId.isEmpty()) {
 
                     for (Integer vehicleitem : vehicleId) {
-                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, vehicleStartDate, vehicleendDate, userId);
+                        List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleitem, null, null, userId);
                         if (getdeviceList.size()>0){
                             List<VtuLocationDto> vtuLocationDto = locationService.getLastLocationRecordList(getdeviceList, startDate, endDate);
                             Map<String, Object> itemVal = new HashMap<>();
