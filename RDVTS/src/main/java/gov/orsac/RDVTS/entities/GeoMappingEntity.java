@@ -26,7 +26,7 @@ public class GeoMappingEntity {
     private Integer packageId;
 
     @Column(name = "piu_id")
-    private Integer workId;
+    private Integer piuId;
 
     @Column(name = "road_id")
     private Integer roadId;
@@ -80,6 +80,11 @@ public class GeoMappingEntity {
 
     @Column(name = "award_date")
     private Date awardDate;
+
+
+    @Column(name = "sanction_date")
+    private Date sanctionDate;
+
 
 
     @Column(name = "is_active", nullable = false)

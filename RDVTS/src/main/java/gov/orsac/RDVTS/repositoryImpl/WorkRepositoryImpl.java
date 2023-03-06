@@ -270,7 +270,7 @@ public class WorkRepositoryImpl {
 
     public List<GeoConstructionDto> getPackageDD(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select package_id,package_name from rdvts_oltp.geo_construction_m where is_active = true ";
+        String qry = "select package_id as ,package_name from rdvts_oltp.geo_construction_m where is_active = true ";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoConstructionDto.class));
     }
 }
