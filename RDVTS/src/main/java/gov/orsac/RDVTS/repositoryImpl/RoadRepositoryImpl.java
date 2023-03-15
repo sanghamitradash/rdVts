@@ -97,14 +97,26 @@ public class RoadRepositoryImpl {
 
         int resultCount = 0;
 
-        String queryString = "SELECT DISTINCT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width, road.g_road_id as groadId, " +
-                "road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, geom.g_work_id as workIds, geom.contractor_id as contractIds, road.completed_road_length, " +
-                "road.sanction_date, road.road_code, road.road_status, road.approval_status, road.approved_by, " +
-                " case when (road.geom is not null) then TRUE else FALSE end as geomPresent  " +
-                "FROM rdvts_oltp.geo_construction_m AS road " +
-                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id and geom.is_active = true " +
-                "LEFT JOIN rdvts_oltp.work_m as wm on wm.id=geom.work_id and wm.is_active = true " +
-                "WHERE road.is_active = true    ";
+//        String queryString = "SELECT DISTINCT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width, road.g_road_id as groadId, " +
+//                "road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, geom.g_work_id as workIds, geom.contractor_id as contractIds, road.completed_road_length, " +
+//                "road.sanction_date, road.road_code, road.road_status, road.approval_status, road.approved_by, " +
+//                " case when (road.geom is not null) then TRUE else FALSE end as geomPresent  " +
+//                "FROM rdvts_oltp.geo_construction_m AS road " +
+//                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id and geom.is_active = true " +
+//                "LEFT JOIN rdvts_oltp.work_m as wm on wm.id=geom.work_id and wm.is_active = true " +
+//                "WHERE road.is_active = true    ";
+
+        String queryString = "select DISTINCT road.id, pm.package_no as package_name, " +
+                "        road.road_name, road.sanction_length as road_length, road.road_location, road.road_allignment, road.road_width, road.g_road_id as groadId, " +
+                "        road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, " +
+                "                road.sanction_date, road.road_code, road.road_status, road.approval_status, road.approved_by, " +
+                "        case when (road.geom is not null) then TRUE else FALSE end as geomPresent   from rdvts_oltp.road_m  as road " +
+                "        left join rdvts_oltp.geo_mapping gm on gm.road_id=road.id\n" +
+                "        left join rdvts_oltp.package_m as pm on pm.id=gm.package_id WHERE road.is_active = true  ";
+
+
+
+
 
 //        String subQuery = "";
 
