@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.DashboardCronEntity;
+import gov.orsac.RDVTS.entities.PackageMasterEntity;
 import gov.orsac.RDVTS.repository.DashboardCron;
 import gov.orsac.RDVTS.repository.DashboardRepository;
 import gov.orsac.RDVTS.repositoryImpl.DashboardRepositoryImpl;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -78,9 +81,22 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public CompletedAndNotCompletedWorkDto getStatusWiseWorkCount(Integer userId) {
-        Integer totalWork=dashboardRepository.getTotalWork();
-        Integer totalCompleted=dashboardRepository.getCompletedWork();
-        Integer totalIncomplete=totalWork-totalCompleted;
+//        Integer totalWork=dashboardRepository.getTotalWork();
+//        Integer totalCompleted=dashboardRepository.getCompletedWork();
+//        Integer totalIncomplete=totalWork-totalCompleted;
+//        Double completedPercentage= (Double.valueOf(totalCompleted)/Double.valueOf(totalWork))*100;
+//        Double inCompletedPercentage= (Double.valueOf(totalIncomplete)/Double.valueOf(totalWork))*100;
+//        CompletedAndNotCompletedWorkDto work=new CompletedAndNotCompletedWorkDto();
+//        work.setTotalWork(totalWork);
+//        work.setTotalCompletedWork(totalCompleted);
+//        work.setTotalInCompletedWork(totalIncomplete);
+//        work.setCompletedPercentage(completedPercentage);
+//        work.setInCompletedPercentage(inCompletedPercentage);
+       // return work;
+
+        Integer totalWork=dashboardRepositoryImpl.getPackageById(-1).size();
+        int totalIncomplete= dashboardRepositoryImpl.getPackageIncompled();
+        Integer totalCompleted=totalWork-totalIncomplete;
         Double completedPercentage= (Double.valueOf(totalCompleted)/Double.valueOf(totalWork))*100;
         Double inCompletedPercentage= (Double.valueOf(totalIncomplete)/Double.valueOf(totalWork))*100;
         CompletedAndNotCompletedWorkDto work=new CompletedAndNotCompletedWorkDto();
@@ -89,6 +105,8 @@ public class DashboardServiceImpl implements DashboardService {
         work.setTotalInCompletedWork(totalIncomplete);
         work.setCompletedPercentage(completedPercentage);
         work.setInCompletedPercentage(inCompletedPercentage);
+
+
         return work;
     }
 
