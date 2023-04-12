@@ -247,20 +247,45 @@ public class LocationRepositoryImpl {
         currentDateTime = currentDateTime + " 00:00:00";
 
 
-        List<Long> imeiList = new ArrayList<>();
+//        List<Long> imeiList = new ArrayList<>();
+//        for (VehicleDeviceMappingDto item : deviceDetails) {
+//            imeiList.add(item.getImeiNo1());
+//        }
+
+        List<Integer> deviceIdList = new ArrayList<>();
         for (VehicleDeviceMappingDto item : deviceDetails) {
-            imeiList.add(item.getImeiNo1());
+            deviceIdList.add(item.getDeviceId());
         }
 
 
-        String qry = "select b.*,vdm.vehicle_id as vehicleId from rdvts_oltp.vehicle_device_mapping as vdm"+
-        " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id"+
-        " left join (select distinct imei,max(id) over(partition by imei) as vtuid from"+
-        " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp and  gps_fix::numeric =1  and imei in (:imei2) ) as a on dm.imei_no_1=a.imei"+
-        " left join rdvts_oltp.vtu_location as b on a.vtuid=b.id"+
-        " where vdm.is_active=true and b.id is not null and b.gps_fix::numeric =1 order by b.date_time desc";
+
+
+//        String qry = "select b.*,vdm.vehicle_id as vehicleId from rdvts_oltp.vehicle_device_mapping as vdm"+
+//        " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id"+
+//        " left join (select distinct imei,max(id) over(partition by imei) as vtuid from"+
+//        " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp and  gps_fix::numeric =1  and imei in (:imei2) ) as a on dm.imei_no_1=a.imei"+
+//        " left join rdvts_oltp.vtu_location as b on a.vtuid=b.id"+
+//        " where vdm.is_active=true and b.id is not null and b.gps_fix::numeric =1 order by b.date_time desc";
+
+        String qry = "select vdm.vehicle_id as vehicleId,b.latitude,b.longitude,b.ignition,b.date_time  from \n" +
+                " rdvts_oltp.vehicle_device_mapping as vdm \n" +
+                " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id \n" +
+                " left join (select distinct imei,max(id) over(partition by imei) as vtuid from \n" +
+                " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp and  \n" +
+                " gps_fix::numeric =1) as a on dm.imei_no_1=a.imei\n" +
+                " left join rdvts_oltp.vtu_location as b on a.vtuid=b.id\n" +
+                " where vdm.is_active=true and dm.is_active=true \n" +
+                " and date_time >=:currentDateTime::timestamp and gps_fix::numeric =1\n" +
+                " and b.id is not null \n";
+
+
         sqlParam.addValue("currentDateTime",currentDateTime);
-        sqlParam.addValue("imei2", imeiList);
+//        sqlParam.addValue("imei2", imeiList);
+        if (deviceIdList.size() > 0){
+            qry+=" and vdm.device_id in (:deviceIdList)";
+            sqlParam.addValue("deviceIdList", deviceIdList);
+        }
+        qry +="  order by b.date_time desc";
 
 
 
@@ -703,12 +728,23 @@ public class LocationRepositoryImpl {
 
         currentDateTime = currentDateTime + " 00:00:00";
 
-        String qry = "select b.*,vdm.vehicle_id as vehicleId,dm.id as deviceId from rdvts_oltp.vehicle_device_mapping as vdm" +
-                " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id" +
-                " left join (select distinct imei,max(id) over(partition by imei) as vtuid from" +
-                " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp and  gps_fix::numeric =1 ) as a on dm.imei_no_1=a.imei" +
-                " left join rdvts_oltp.vtu_location as b on a.vtuid=b.id" +
-                " where vdm.is_active=true and dm.is_active=true and b.id is not null and b.gps_fix::numeric =1  ";
+//        String qry = "select b.*,vdm.vehicle_id as vehicleId,dm.id as deviceId from rdvts_oltp.vehicle_device_mapping as vdm" +
+//                " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id" +
+//                " left join (select distinct imei,max(id) over(partition by imei) as vtuid from" +
+//                " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp and  gps_fix::numeric =1 ) as a on dm.imei_no_1=a.imei" +
+//                " left join rdvts_oltp.vtu_location as b on a.vtuid=b.id" +
+//                " where vdm.is_active=true and dm.is_active=true and b.id is not null and b.gps_fix::numeric =1  ";
+
+        String qry = "select vdm.vehicle_id as vehicleId,b.latitude,b.longitude,b.ignition,b.date_time  from \n" +
+                " rdvts_oltp.vehicle_device_mapping as vdm \n" +
+                " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id \n" +
+                " left join (select distinct imei,max(id) over(partition by imei) as vtuid from \n" +
+                " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp and  \n" +
+                " gps_fix::numeric =1) as a on dm.imei_no_1=a.imei\n" +
+                " left join rdvts_oltp.vtu_location as b on a.vtuid=b.id\n" +
+                " where vdm.is_active=true and dm.is_active=true \n" +
+                " and date_time >='2023-04-12 00:00:00'::timestamp and gps_fix::numeric =1\n" +
+                " and b.id is not null ";
         sqlParam.addValue("currentDateTime",currentDateTime);
 
         if (IdList.get(0) > 0) {
