@@ -89,7 +89,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 //                "(select distinct imei from rdvts_oltp.vtu_location where date_time >=:currentDateTime::timestamp )) ";
 
         String qry = " select device_id from rdvts_oltp.vehicle_device_mapping    " +
-                "where is_active=true and device_id in(select distinct id from rdvts_oltp.device_m where imei_no_1   in   " +
+                "where is_active=true and device_id in(select distinct id from rdvts_oltp.device_m where imei_no_1 not  in   " +
                 " (  " +
                 " select distinct imei from  " +
                 " rdvts_oltp.vtu_location as vtu where date_time >=:currentDateTime::timestamp  and  gps_fix::numeric =1  " +
