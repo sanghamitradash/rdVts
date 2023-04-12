@@ -243,9 +243,9 @@ public class LocationRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
-
         currentDateTime = currentDateTime + " 00:00:00";
 
+        List<Long> imeiList = new ArrayList<>();
 
 //        List<Long> imeiList = new ArrayList<>();
 //        for (VehicleDeviceMappingDto item : deviceDetails) {
