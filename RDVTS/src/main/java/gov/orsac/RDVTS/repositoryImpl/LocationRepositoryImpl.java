@@ -254,7 +254,7 @@ public class LocationRepositoryImpl {
 
         List<Integer> deviceIdList = new ArrayList<>();
         for (VehicleDeviceMappingDto item : deviceDetails) {
-            deviceIdList.add(item.getDeviceId());
+            imeiList.add(item.getImeiNo1());
         }
 
 
