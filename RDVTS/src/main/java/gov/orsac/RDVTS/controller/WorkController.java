@@ -68,8 +68,7 @@ public class WorkController {
     }
 
     @PostMapping("/getWorkList")
-    public RDVTSListResponse getWorkList(@RequestParam(name = "id", required = false) Integer id,
-                                         @RequestParam(name = "userId") Integer userId,
+    public RDVTSListResponse getWorkList(@RequestParam(name = "userId") Integer userId,
                                          @RequestParam(name = "activityId", required = false) Integer activityId,
                                          @RequestParam(name = "workStatus", required = false) Integer workStatus,
                                          @RequestParam(name = "distId", required = false) Integer distId,
@@ -80,7 +79,7 @@ public class WorkController {
                                          @RequestParam(name = "draw") Integer draw,
                                          @RequestParam(name = "packageId", required = false) Integer packageId ) {
         WorkDto workDto = new WorkDto();
-        workDto.setId(id);
+//        workDto.setId(id);
         workDto.setUserId(userId);
         workDto.setActivityId(activityId);
         workDto.setWorkStatus(workStatus);
