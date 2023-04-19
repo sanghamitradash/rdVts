@@ -76,19 +76,25 @@ public class WorkRepositoryImpl {
         Sort.Order order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0): new Sort.Order(Sort.Direction.DESC,"id");
 
         int resultCount = 0;
-        String qry = "select distinct  wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
-                " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
-                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name, geo.contractor_id,wsm.name as work_status_name " +
-                " from rdvts_oltp.work_m as wm " +
-                " left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
-                " left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
-                " left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
-                " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true " +
-                " where wm.is_active = true ";
-        if (workDto.getId() > 0) {
-            qry += " and wm.id = :id";
-            sqlParam.addValue("id", workDto.getId());
-        }
+//        String qry = "select distinct  wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
+//                " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
+//                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name, geo.contractor_id,wsm.name as work_status_name " +
+//                " from rdvts_oltp.work_m as wm " +
+//                " left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
+//                " left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
+//                " left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
+//                " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true " +
+//                " where wm.is_active = true ";
+
+
+        String qry = "select  distinct package_id,piu.name as piu,pm.package_no as packageName from rdvts_oltp.geo_mapping gm"+
+        "LEFT join rdvts_oltp.package_m pm on pm.id = gm.package_id "+
+        "LEFT join rdvts_oltp.piu_id piu on piu.id = gm.piu_id" ;
+
+//        if (workDto.getId() > 0) {
+//            qry += " and wm.id = :id";
+//            sqlParam.addValue("id", workDto.getId());
+//        }
         if (workDto.getWorkStatus() != null && workDto.getWorkStatus() > 0) {
             qry += " and wm.work_status = :work_status";
             sqlParam.addValue("work_status", workDto.getWorkStatus());
@@ -117,7 +123,7 @@ public class WorkRepositoryImpl {
 
         UserInfoDto user=userRepositoryImpl.getUserByUserId(workDto.getUserId());
 
-         if(user.getUserLevelId() == 2){
+        if(user.getUserLevelId() == 2){
             List<Integer> distIdList=userRepositoryImpl.getDistIdByUserId(workDto.getUserId());
             List<Integer> workIds = getWorkIdByDistId(distIdList);
             qry+=" and wm.id in (:workIds) ";
@@ -270,7 +276,7 @@ public class WorkRepositoryImpl {
 
     public List<GeoConstructionDto> getPackageDD(Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select package_id as ,package_name from rdvts_oltp.geo_construction_m where is_active = true ";
+        String qry = "select package_id ,package_name from rdvts_oltp.geo_construction_m where is_active = true ";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoConstructionDto.class));
     }
 }
