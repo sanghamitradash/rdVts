@@ -775,16 +775,12 @@ public class LocationRepositoryImpl {
     public Boolean getLocationExistOrNot(List<Integer> vehicleId, Date startDate, Date endDate) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String selectQry = "\t \t select case when count(*) >0 then true else false  end as bool    from \n" +
-                "rdvts_oltp.vehicle_device_mapping as vdm \n" +
-                "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id \n" +
-                "left join (select distinct imei,max(id) over(partition by imei) as vtuid from \n" +
-                "           rdvts_oltp.vtu_location as vtu where date_time between :startDate::timestamp and  :endDate::timestamp  and  \n" +
-                "           gps_fix::numeric =1) as a on dm.imei_no_1=a.imei\n" +
-                "left join rdvts_oltp.vtu_location as b on a.vtuid=b.id\n" +
-                "where vdm.is_active=true and dm.is_active=true \n" +
-                "and date_time between :startDate::timestamp and  :endDate::timestamp  and gps_fix::numeric =1\n" +
-                "and b.id is not NULL  and   vdm.vehicle_id IN(:vehicleId)\n";
+        String selectQry = " select case when count(*) >0 then true else false  end as bool  from \n" +
+                "rdvts_oltp.vtu_location as vtu " +
+                "left join rdvts_oltp.device_m as dm on dm.imei_no_1=vtu.imei and dm.is_active = true\n" +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id and  vdm.is_active=true\n" +
+                "where vtu.date_time between :startDate::timestamp and  :endDate::timestamp \n" +
+                "and vdm.vehicle_id IN(:vehicleId) LIMIT 1";
         sqlParam.addValue("vehicleId", vehicleId);
         sqlParam.addValue("startDate", startDate);
         sqlParam.addValue("endDate", endDate);

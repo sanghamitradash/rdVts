@@ -59,8 +59,8 @@ public class LocationController {
             Date vehicleStartDate = null;
             Date vehicleendDate = null;
             if (startTime != null && endTime != null) {
-                startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(startTime);
-                endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(endTime);
+                startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startTime);
+                endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime);
             }
 
             try {
@@ -94,15 +94,11 @@ public class LocationController {
                     if (locationService.getLocationExistOrNot(vehicleId,startDate,endDate)){
                         for (Integer vehicleIds : vehicleId) {
                             List<RoadMasterDto> roadDetailByVehicleId = vehicleService.getRoadDetailByVehicleId(vehicleIds);
-                            /// System.out.println(veActMapDto.size());
                             List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleIds, null, null, userId);
-                            //System.out.println(getdeviceList.size());
                             for (VehicleDeviceMappingDto deviceObj : getdeviceList) {
                                 List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceObj.getDeviceId());
-                                // System.out.println(getImeiList.size());
                                 for (DeviceDto imei : getImeiList) {
                                     List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, deviceObj.getCreatedOn(), deviceObj.getDeactivationDate());
-                                    // System.out.println(vtuLocationDto.size());
                                     for (VtuLocationDto vtuobj : vtuLocationDto) {
                                         vtuobj.setDeviceId(imei.getId());
                                         vtuobj.setVehicleId(deviceObj.getVehicleId());
