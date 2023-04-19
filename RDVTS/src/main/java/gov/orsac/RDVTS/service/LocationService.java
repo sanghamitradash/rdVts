@@ -33,4 +33,6 @@ public interface LocationService {
 
 
     AlertDegreeDistanceDto getRotationDetails(String longitude, String latitude, String longitude1, String latitude1);
+
+    Boolean getLocationExistOrNot(List<Integer> vehicleId, Date startDate, Date endDate);
 }

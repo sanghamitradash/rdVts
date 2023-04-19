@@ -829,6 +829,29 @@ public class LocationRepositoryImpl {
 
     }
 
+    public Boolean getLocationExistOrNot(List<Integer> vehicleId, Date startDate, Date endDate) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String selectQry = "\t \t select case when count(*) >0 then true else false  end as bool    from \n" +
+                "rdvts_oltp.vehicle_device_mapping as vdm \n" +
+                "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id \n" +
+                "left join (select distinct imei,max(id) over(partition by imei) as vtuid from \n" +
+                "           rdvts_oltp.vtu_location as vtu where date_time between :startDate::timestamp and  :endDate::timestamp  and  \n" +
+                "           gps_fix::numeric =1) as a on dm.imei_no_1=a.imei\n" +
+                "left join rdvts_oltp.vtu_location as b on a.vtuid=b.id\n" +
+                "where vdm.is_active=true and dm.is_active=true \n" +
+                "and date_time between :startDate::timestamp and  :endDate::timestamp  and gps_fix::numeric =1\n" +
+                "and b.id is not NULL  and   vdm.vehicle_id IN(:vehicleId)\n";
+        sqlParam.addValue("vehicleId", vehicleId);
+        sqlParam.addValue("startDate", startDate);
+        sqlParam.addValue("endDate", endDate);
+
+        return  namedJdbc.queryForObject(selectQry, sqlParam, (Boolean.class));
+
+        }
+
+    }
+
 //    public List<VtuLocationDto> getLastLocationRecordListByDevice(List<DeviceAreaMappingDto> deviceAreaMappingDtoList) {
 //        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 //        String qry = "select b.*,vdm.vehicle_id as vehicleId from rdvts_oltp.vehicle_device_mapping as vdm"+
@@ -842,4 +865,3 @@ public class LocationRepositoryImpl {
 //
 //        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
 //    }
-}

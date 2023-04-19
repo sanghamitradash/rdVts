@@ -120,6 +120,11 @@ public class LocationServiceImpl implements LocationService {
         return  locationRepository.getRotationDetails(longitude,latitude,longitude1,latitude1);
     }
 
+    @Override
+    public Boolean getLocationExistOrNot(List<Integer> vehicleId, Date startDate, Date endDate) {
+
+        return locationRepository.getLocationExistOrNot(vehicleId,startDate,endDate);
+    }
 
 
 }

@@ -1202,15 +1202,15 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
         currentDateTime = currentDateTime + " 00:00:00";
-        String qry = "select * from (SELECT distinct vm.id, " +
-                " case when vtuLocation.imeiCount>0 then true else false end as trackingStatus " +
-                " FROM rdvts_oltp.vehicle_m as " +
-                " vm " +
-                " left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true " +
-                " left join rdvts_oltp.device_m as dm on dm.id=device.device_id left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id  " +
-                " from  rdvts_oltp.vehicle_device_mapping  where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id  " +
-                " left join (select count(id) over (partition by imei) as imeiCount,imei from rdvts_oltp.vtu_location where date_time >=:currentDateTime::timestamp ) as vtuLocation  " +
-                " on vtuLocation.imei=dm.imei_no_1) as v";
+        String qry = "select * from (SELECT distinct vm.id,vtuLocation.imei,\n" +
+                "     case when vtuLocation.imeiCount>0 then true else false end as trackingStatus \n" +
+                "     FROM rdvts_oltp.vehicle_m as \n" +
+                "     vm \n" +
+                "     left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true \n" +
+                "     left join rdvts_oltp.device_m as dm on dm.id=device.device_id left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id  \n" +
+                "     from  rdvts_oltp.vehicle_device_mapping  where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id  \n" +
+                "     left join ( select distinct imei, max(id) over (partition by imei) as imeiCount from rdvts_oltp.vtu_location where date_time >='2023-04-17'::timestamp and gps_fix::numeric =1 ) as vtuLocation  \n" +
+                "     on vtuLocation.imei=dm.imei_no_1 where vm.is_active=true ) as v";
         sqlParam.addValue("currentDateTime", currentDateTime);
         List<VehicleMasterDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
         for (VehicleMasterDto item : list) {
@@ -1231,7 +1231,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             }
 
         }
-        System.out.println("h");
+       // System.out.println("h");
     }
 }
 

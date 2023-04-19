@@ -285,14 +285,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public List<DashboardDto> getDistrictWiseDashboardData() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select dashboard.id,dashboard.active as activeCount,dashboard.in_active as inActiveCount,dashboard.area_id as areaId,district.district_name as districtName,process_time as processTime " +
-                "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.district_boundary as district on district.dist_id=dashboard.area_id where dashboard.area_type_id=1";
+                "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.district_boundary as district on district.dist_id=dashboard.area_id where dashboard.area_type_id=1 order by district.district_name";
 
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DashboardDto.class));
     }
     public List<DashboardDto> getDivisionWiseDashboardData() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select dashboard.id,dashboard.active as activeCount,dashboard.in_active as inActiveCount,dashboard.area_id as areaId,division.division_name as divisionName " +
-                "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.division_m as division on division.division_id=dashboard.area_id where dashboard.area_type_id=2";
+                "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.division_m as division on division.division_id=dashboard.area_id where dashboard.area_type_id=2 order by division_name";
 
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DashboardDto.class));
     }
