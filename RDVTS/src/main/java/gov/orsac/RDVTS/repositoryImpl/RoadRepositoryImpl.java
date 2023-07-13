@@ -114,7 +114,8 @@ public class RoadRepositoryImpl {
 //                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id and geom.is_active = true " +
 //                "LEFT JOIN rdvts_oltp.work_m as wm on wm.id=geom.work_id and wm.is_active = true " +
 //                "WHERE road.is_active = true    ";
-        String queryString = "select distinct road.id ,road.road_name, pm.package_no as package_name, road.sanction_length as road_length from rdvts_oltp.road_m as road\n" +
+        String queryString = "select distinct road.id ,road.road_name, pm.package_no as package_name, road.sanction_length as road_length,case when (road.geom is not null) then TRUE else FALSE end as geomPresent  " +
+                "from rdvts_oltp.road_m as road\n" +
                 " left join rdvts_oltp.geo_mapping as gm on road.id = gm.road_id " +
                 " left join rdvts_oltp.package_m as pm on gm.package_id = pm.id " +
                 " where road.is_active = 't' and gm.is_active = 't' and pm.is_active = 't' ";
