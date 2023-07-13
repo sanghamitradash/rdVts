@@ -528,7 +528,8 @@ public class MasterRepositoryImpl implements MasterRepository {
 
     public List<Integer> getRoadIdsByBlockAndDivision(List<Integer> blockIds, List<Integer> divisionIds, List<Integer> distIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select DISTINCT road_id from rdvts_oltp.geo_master where block_id in (:blockIds) or division_id in (:divisionIds) or dist_id in (:distIds)";
+//        String qry = "select DISTINCT road_id from rdvts_oltp.geo_master where block_id in (:blockIds) or division_id in (:divisionIds) or dist_id in (:distIds)";
+        String qry = "select DISTINCT road_id from rdvts_oltp.geo_mapping where dist_id in (:distIds)";
         sqlParam.addValue("blockIds",blockIds);
         sqlParam.addValue("divisionIds",divisionIds);
         sqlParam.addValue("distIds",distIds);
