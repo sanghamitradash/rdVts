@@ -43,13 +43,22 @@ public class RoadRepositoryImpl {
     public List<RoadMasterDto> getRoadById(Integer roadId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
-        String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
-                "road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, " +
-                "road.road_status, road.approval_status, road.approved_by , piu.name as piuName " +
-                "FROM rdvts_oltp.geo_construction_m AS road " +
-                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id and geom.is_active=true " +
-                "LEFT JOIN rdvts_oltp.piu_id as piu on piu.id=geom.piu_id and piu.is_active=true " +
-                "WHERE road.is_active=true ";
+//        String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
+//                "road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, " +
+//                "road.road_status, road.approval_status, road.approved_by , piu.name as piuName " +
+//                "FROM rdvts_oltp.geo_construction_m AS road " +
+//                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id and geom.is_active=true " +
+//                "LEFT JOIN rdvts_oltp.piu_id as piu on piu.id=geom.piu_id and piu.is_active=true " +
+//                "WHERE road.is_active=true ";
+        String qry ="SELECT distinct road.id, road.road_name, pm.id as package_id, pm.package_no as package_name, road.sanction_length as road_length, road.road_location, road.road_allignment, \n" +
+                "ST_AsGeoJSON(road.geom) as geom, road.road_width,road.g_road_id as groadId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on,\n" +
+                "gm.completed_road_length, gm.sanction_date, road.road_code, road.road_status, road.approval_status, road.approved_by , pium.name as piuName \n" +
+                "from rdvts_oltp.road_m as road\n" +
+                "left join rdvts_oltp.geo_mapping as gm on gm.road_id = road.id and gm.is_active=true \n" +
+                "left join rdvts_oltp.package_m as pm on pm.id = gm.package_id and pm.is_active=true \n" +
+                "left join rdvts_oltp.piu_id as pium on pium.id = gm.piu_id and pium.is_active=true \n" +
+                "where road.is_active=true ";
+
         if (roadId > 0) {
             qry += " AND road.id=:roadId";
         }
@@ -105,18 +114,11 @@ public class RoadRepositoryImpl {
 //                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id and geom.is_active = true " +
 //                "LEFT JOIN rdvts_oltp.work_m as wm on wm.id=geom.work_id and wm.is_active = true " +
 //                "WHERE road.is_active = true    ";
-
-        String queryString = "select DISTINCT road.id, pm.package_no as package_name, " +
-                "        road.road_name, road.sanction_length as road_length, road.road_location, road.road_allignment, road.road_width, road.g_road_id as groadId, " +
-                "        road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, " +
-                "                road.sanction_date, road.road_code, road.road_status, road.approval_status, road.approved_by, " +
-                "        case when (road.geom is not null) then TRUE else FALSE end as geomPresent   from rdvts_oltp.road_m  as road " +
-                "        left join rdvts_oltp.geo_mapping gm on gm.road_id=road.id\n" +
-                "        left join rdvts_oltp.package_m as pm on pm.id=gm.package_id WHERE road.is_active = true  ";
-
-
-
-
+        String queryString = "select distinct road.id ,road.road_name, pm.package_no as package_name, road.sanction_length as road_length,case when (road.geom is not null) then TRUE else FALSE end as geomPresent  " +
+                "from rdvts_oltp.road_m as road\n" +
+                " left join rdvts_oltp.geo_mapping as gm on road.id = gm.road_id " +
+                " left join rdvts_oltp.package_m as pm on gm.package_id = pm.id " +
+                " where road.is_active = 't' and gm.is_active = 't' and pm.is_active = 't' ";
 
 //        String subQuery = "";
 
@@ -130,25 +132,25 @@ public class RoadRepositoryImpl {
             sqlParam.addValue("roadName", roadFilterDto.getRoadName());
         }
 
-        if (roadFilterDto.getRoadLength() != null && roadFilterDto.getRoadLength() > 0) {
-            queryString += " AND road.road_length=:roadLength ";
-            sqlParam.addValue("roadLength", roadFilterDto.getRoadLength());
-        }
+//        if (roadFilterDto.getRoadLength() != null && roadFilterDto.getRoadLength() > 0) {
+//            queryString += " AND road.road_length=:roadLength ";
+//            sqlParam.addValue("roadLength", roadFilterDto.getRoadLength());
+//        }
 
-        if (roadFilterDto.getRoadLocation() != null && roadFilterDto.getRoadLocation() > 0) {
-            queryString += " AND road.road_location=:roadLocation ";
-            sqlParam.addValue("roadLocation", roadFilterDto.getRoadLocation());
-        }
+//        if (roadFilterDto.getRoadLocation() != null && roadFilterDto.getRoadLocation() > 0) {
+//            queryString += " AND road.road_location=:roadLocation ";
+//            sqlParam.addValue("roadLocation", roadFilterDto.getRoadLocation());
+//        }
 
-        if (roadFilterDto.getWorkIds() != null && !roadFilterDto.getWorkIds().isEmpty()) {
-            queryString += " AND geom.g_work_id IN (:workIds)";
-            sqlParam.addValue("workIds", roadFilterDto.getWorkIds());
-        }
+//        if (roadFilterDto.getWorkIds() != null && !roadFilterDto.getWorkIds().isEmpty()) {
+//            queryString += " AND geom.g_work_id IN (:workIds)";
+//            sqlParam.addValue("workIds", roadFilterDto.getWorkIds());
+//        }
 
-        if (roadFilterDto.getContractIds() != null && !roadFilterDto.getContractIds().isEmpty()) {
-            queryString += " AND geom.contractor_id IN (:contractIds)";
-            sqlParam.addValue("contractIds", roadFilterDto.getContractIds());
-        }
+//        if (roadFilterDto.getContractIds() != null && !roadFilterDto.getContractIds().isEmpty()) {
+//            queryString += " AND geom.contractor_id IN (:contractIds)";
+//            sqlParam.addValue("contractIds", roadFilterDto.getContractIds());
+//        }
 
         if (roadFilterDto.getActivityIds() != null && !roadFilterDto.getActivityIds().isEmpty()) {
             queryString += " AND am.id IN (:activityids)";
@@ -156,18 +158,24 @@ public class RoadRepositoryImpl {
         }
 
         if (roadFilterDto.getDistIds() != null && !roadFilterDto.getDistIds().isEmpty()) {
-            queryString += " AND geom.dist_id IN (:distIds)";
+//            queryString += " AND geom.dist_id IN (:distIds)";
+            queryString += " AND gm.dist_id IN (:distIds)";
             sqlParam.addValue("distIds", roadFilterDto.getDistIds());
         }
 
-        if (roadFilterDto.getDivisionIds() != null && !roadFilterDto.getDivisionIds().isEmpty()) {
-            queryString += " AND geom.division_id IN (:divisionIds)";
-            sqlParam.addValue("divisionIds", roadFilterDto.getDivisionIds());
-        }
+//        if (roadFilterDto.getDivisionIds() != null && !roadFilterDto.getDivisionIds().isEmpty()) {
+//            queryString += " AND geom.division_id IN (:divisionIds)";
+//            sqlParam.addValue("divisionIds", roadFilterDto.getDivisionIds());
+//        }
 
         UserInfoDto user = userRepositoryImpl.getUserByUserId(roadFilterDto.getUserId());
         if (user.getUserLevelId() == 5) {
-                queryString += " AND geom.contractor_id=:contractorId ";
+//                queryString += " AND geom.contractor_id=:contractorId ";
+                queryString += " AND road.id in (select gm.road_id from  rdvts_oltp.geo_mapping as gm\n" +
+                        "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id\n" +
+                        "left join rdvts_oltp.vehicle_owner_mapping as vom on vam.vehicle_id = vom.vehicle_id\n" +
+                        "left join rdvts_oltp.contractor_m as cm on cm.id = vom.contractor_id\n" +
+                        "where vom.contractor_id = :contractorId)";
                 sqlParam.addValue("contractorId", user.getUserLevelId());
         }
 
@@ -461,7 +469,10 @@ public class RoadRepositoryImpl {
 
     public int updateGeom(Integer roadId, String geom, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "UPDATE rdvts_oltp.geo_construction_m " +
+//        String qry = "UPDATE rdvts_oltp.geo_construction_m " +
+//                "SET geom=st_setsrid(ST_GeomFromGeoJSON('" + geom + "'),4326)  " +
+//                "WHERE id=:roadId and is_active=true ;";
+        String qry = "UPDATE rdvts_oltp.road_m " +
                 "SET geom=st_setsrid(ST_GeomFromGeoJSON('" + geom + "'),4326)  " +
                 "WHERE id=:roadId and is_active=true ;";
         sqlParam.addValue("roadId", roadId);
@@ -494,7 +505,8 @@ public class RoadRepositoryImpl {
             }
             str = str.substring(0, str.length() - 1);
             str += ")";
-            update = "UPDATE rdvts_oltp.geo_construction_m set geom = ST_GeomFromText('" + str + "',4326)  where id=" + roadId + "";
+//            update = "UPDATE rdvts_oltp.geo_construction_m set geom = ST_GeomFromText('" + str + "',4326)  where id=" + roadId + "";
+            update = "UPDATE rdvts_oltp.road_m set geom = ST_GeomFromText('" + str + "',4326)  where id=" + roadId + "";
             sqlParam.addValue("userId", userId);
             namedJdbc.update(update, sqlParam);
         }
@@ -502,7 +514,8 @@ public class RoadRepositoryImpl {
     }
     public Integer saveLength(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "UPDATE rdvts_oltp.geo_construction_m set gis_length=ST_Length(ST_Transform(geom,26986))/1000 where id=:roadId";
+//        String qry = "UPDATE rdvts_oltp.geo_construction_m set gis_length=ST_Length(ST_Transform(geom,26986))/1000 where id=:roadId";
+        String qry = "UPDATE rdvts_oltp.road_m set gis_length=ST_Length(ST_Transform(geom,26986))/1000 where id=:roadId";
         sqlParam.addValue("roadId", roadId);
         sqlParam.addValue("userId", userId);
         namedJdbc.update(qry, sqlParam);
