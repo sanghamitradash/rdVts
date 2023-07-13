@@ -2,7 +2,9 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.DashboardCronEntity;
+import gov.orsac.RDVTS.entities.PackageMasterEntity;
 import gov.orsac.RDVTS.repository.DashboardRepository;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +60,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
     }
 
+    @Override
     public List<Integer> totalActiveIds() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -281,14 +285,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public List<DashboardDto> getDistrictWiseDashboardData() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select dashboard.id,dashboard.active as activeCount,dashboard.in_active as inActiveCount,dashboard.area_id as areaId,district.district_name as districtName,process_time as processTime " +
-                "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.district_boundary as district on district.dist_id=dashboard.area_id where dashboard.area_type_id=1";
+                "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.district_boundary as district on district.dist_id=dashboard.area_id where dashboard.area_type_id=1 order by district.district_name";
 
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DashboardDto.class));
     }
     public List<DashboardDto> getDivisionWiseDashboardData() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select dashboard.id,dashboard.active as activeCount,dashboard.in_active as inActiveCount,dashboard.area_id as areaId,division.division_name as divisionName " +
-                "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.division_m as division on division.division_id=dashboard.area_id where dashboard.area_type_id=2";
+                "from rdvts_oltp.dashboard_cron as dashboard left join rdvts_oltp.division_m as division on division.division_id=dashboard.area_id where dashboard.area_type_id=2 order by division_name";
 
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(DashboardDto.class));
     }
@@ -314,4 +318,26 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(ActiveInactiveDto.class));
     }
 
+
+
+    public Integer getPackageById() {
+
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " SELECT count(distinct package_id) FROM rdvts_oltp.geo_mapping ";
+//        if (i>0){
+//            qry += "and id=:id";
+//            sqlParam.addValue("id",i);
+//        }
+
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+    }
+
+
+    public Integer getPackageIncompled() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " SELECT count(distinct package_id) FROM rdvts_oltp.geo_mapping WHERE completion_date is null  ";
+         return   namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+
+
+    }
 }

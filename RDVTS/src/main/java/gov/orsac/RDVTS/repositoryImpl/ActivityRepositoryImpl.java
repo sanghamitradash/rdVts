@@ -246,7 +246,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
                  "and awm.id=:activityWorkMapId " ;
         sqlParam.addValue("activityId",activityId);
         sqlParam.addValue("userId",userId);
-       // sqlParam.addValue("activityWorkMapId",activityWorkMapId);
+//        sqlParam.addValue("activityWorkMapId",activityWorkMapId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
     }
 

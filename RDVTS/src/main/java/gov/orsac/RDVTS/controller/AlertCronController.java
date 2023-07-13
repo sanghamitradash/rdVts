@@ -380,7 +380,7 @@ public class AlertCronController {
         return true;
     }
 
-   @Scheduled(cron = "0 */5 * * * *")
+   @Scheduled(cron = "0 */1 * * * *")
     public RDVTSResponse getActiveAndInactiveVehicleCron() {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
@@ -441,7 +441,7 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
 }*/
 
    // WorkByIdCron
-    @Scheduled(cron = "0 */5 * * * *")
+   @Scheduled(cron = "0 */5 * * * *")
     public RDVTSResponse getVehicleLocationCornForWork() {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
@@ -561,7 +561,7 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
 
 
 
- @Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public RDVTSResponse setPoolingStatus() {
         try {
            vehicleRepository.saveVehiclePoolingStatus();
