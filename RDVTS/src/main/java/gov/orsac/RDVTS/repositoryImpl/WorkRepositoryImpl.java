@@ -87,9 +87,11 @@ public class WorkRepositoryImpl {
 //                " where wm.is_active = true ";
 
 
-        String qry = "select  distinct package_id,piu.name as piu,pm.package_no as packageName from rdvts_oltp.geo_mapping gm"+
-        "LEFT join rdvts_oltp.package_m pm on pm.id = gm.package_id "+
-        "LEFT join rdvts_oltp.piu_id piu on piu.id = gm.piu_id" ;
+        String qry = "select  distinct package_id as packageId,piu.name as piuName,pm.package_no as packageName," +
+                " (case when (completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName" +
+                " from rdvts_oltp.geo_mapping gm "+
+                "LEFT join rdvts_oltp.package_m pm on pm.id = gm.package_id "+
+                "LEFT join rdvts_oltp.piu_id piu on piu.id = gm.piu_id where true " ;
 
 //        if (workDto.getId() > 0) {
 //            qry += " and wm.id = :id";
@@ -100,19 +102,19 @@ public class WorkRepositoryImpl {
             sqlParam.addValue("work_status", workDto.getWorkStatus());
         }
         if (workDto.getDistId() != null && workDto.getDistId() > 0){
-            qry += " and geo.dist_id = :distId";
+            qry += " and gm.dist_id = :distId";
             sqlParam.addValue("distId", workDto.getDistId());
         }
-        if (workDto.getDivisionId() != null && workDto.getDivisionId() > 0){
-            qry += " and geo.division_id = :divisionId";
-            sqlParam.addValue("divisionId", workDto.getDivisionId());
-        }
-        if (workDto.getCircleId() != null && workDto.getCircleId() > 0){
-            qry += " and geo.circle_id = :circleId";
-            sqlParam.addValue("circleId", workDto.getCircleId());
-        }
+//        if (workDto.getDivisionId() != null && workDto.getDivisionId() > 0){
+//            qry += " and geo.division_id = :divisionId";
+//            sqlParam.addValue("divisionId", workDto.getDivisionId());
+//        }
+//        if (workDto.getCircleId() != null && workDto.getCircleId() > 0){
+//            qry += " and geo.circle_id = :circleId";
+//            sqlParam.addValue("circleId", workDto.getCircleId());
+//        }
         if (workDto.getPackageId() != null && workDto.getPackageId() > 0  ){
-            qry += " and gcm.package_id = :packageId ";
+            qry += " and gm.package_id = :packageId ";
             sqlParam.addValue("packageId", workDto.getPackageId());
         }
 //        if (workDto.getActivityId() > 0) {
@@ -125,30 +127,30 @@ public class WorkRepositoryImpl {
 
         if(user.getUserLevelId() == 2){
             List<Integer> distIdList=userRepositoryImpl.getDistIdByUserId(workDto.getUserId());
-            List<Integer> workIds = getWorkIdByDistId(distIdList);
-            qry+=" and wm.id in (:workIds) ";
-            sqlParam.addValue("workIds",workIds);
+            List<Integer> packageId = getPackageIdByDistId(distIdList);
+            qry+=" and gm.package_id in (:packageId) ";
+            sqlParam.addValue("packageId",packageId);
         }
-        else if(user.getUserLevelId()==3){
-            List<Integer> blockIdList=userRepositoryImpl.getBlockIdByUserId(workDto.getUserId());
-            List<Integer> workIds = getWorkIdByBlockId(blockIdList);
-            qry+=" and wm.id in (:workIds) ";
-            sqlParam.addValue("workIds",workIds);
-        }
-        else if(user.getUserLevelId() == 4){
-            List<Integer> divisionIds=userRepositoryImpl.getDivisionByUserId(workDto.getUserId());
-            List<Integer> workIds = getWorkIdByDivisionId(divisionIds);
-            qry+=" and wm.id in (:workIds) ";
-            sqlParam.addValue("workIds",workIds);
-        }
+//        else if(user.getUserLevelId()==3){
+//            List<Integer> blockIdList=userRepositoryImpl.getBlockIdByUserId(workDto.getUserId());
+//            List<Integer> workIds = getWorkIdByBlockId(blockIdList);
+//            qry+=" and wm.id in (:workIds) ";
+//            sqlParam.addValue("workIds",workIds);
+//        }
+//        else if(user.getUserLevelId() == 4){
+//            List<Integer> divisionIds=userRepositoryImpl.getDivisionByUserId(workDto.getUserId());
+//            List<Integer> workIds = getWorkIdByDivisionId(divisionIds);
+//            qry+=" and wm.id in (:workIds) ";
+//            sqlParam.addValue("workIds",workIds);
+//        }
         else if(user.getUserLevelId()==5){
             List<Integer> contractorIds = userRepositoryImpl.getContractorByUserId(workDto.getUserId());
-            List<Integer> workIds = getWorkIdByContractorId(contractorIds);
-            qry+=" and wm.id=:workIds ";
-            sqlParam.addValue("workIds",workIds);
+            List<Integer> packageId = getPackageIdByContractorId(contractorIds);
+            qry+=" and gm.package_id=:packageId ";
+            sqlParam.addValue("packageId", packageId);
         }
 
-        qry+= " order by wm.id DESC ";
+        qry+= " order by gm.package_id DESC ";
 
         resultCount = count(qry, sqlParam);
         if (workDto.getLimit() > 0) {
@@ -157,6 +159,25 @@ public class WorkRepositoryImpl {
 
         List<WorkDto> workDtoList = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
         return new PageImpl<>(workDtoList, pageable, resultCount);
+    }
+
+    private List<Integer> getPackageIdByContractorId(List<Integer> contractorIds) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct gm.package_id from rdvts_oltp.geo_mapping as gm\n" +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id\n" +
+                "left join rdvts_oltp.vehicle_owner_mapping as vom on vam.vehicle_id = vom.vehicle_id\n" +
+                "left join rdvts_oltp.contractor_m as cm on cm.id = vom.contractor_id\n" +
+                "where vom.contractor_id in(:contractorIds)  ";
+        sqlParam.addValue("contractorIds", contractorIds);
+        return namedJdbc.queryForList(qry, sqlParam, (Integer.class));
+    }
+
+    private List<Integer> getPackageIdByDistId(List<Integer> distIdList) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "  select package_id from rdvts_oltp.geo_mapping where dist_id in(:dist_id) ";
+        sqlParam.addValue("dist_id", distIdList);
+        return namedJdbc.queryForList(qry, sqlParam, (Integer.class));
+
     }
 
 

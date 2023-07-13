@@ -320,23 +320,23 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
 
 
-    public List<PackageMasterEntity> getPackageById(Integer i) {
+    public Integer getPackageById() {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT * from rdvts_oltp.package_m where is_active='t' ";
-        if (i>0){
-            qry += "and id=:id";
-            sqlParam.addValue("id",i);
-        }
+        String qry = " SELECT count(distinct package_id) FROM rdvts_oltp.geo_mapping ";
+//        if (i>0){
+//            qry += "and id=:id";
+//            sqlParam.addValue("id",i);
+//        }
 
-        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(PackageMasterEntity.class));
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
     }
 
 
     public Integer getPackageIncompled() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT DISTINCT package_id FROM rdvts_oltp.geo_mapping  WHERE  activity_completion_date > date(now()) ";
-         return   namedJdbc.queryForList(qry,sqlParam,Integer.class).size();
+        String qry = " SELECT count(distinct package_id) FROM rdvts_oltp.geo_mapping WHERE completion_date is null  ";
+         return   namedJdbc.queryForObject(qry,sqlParam,Integer.class);
 
 
     }

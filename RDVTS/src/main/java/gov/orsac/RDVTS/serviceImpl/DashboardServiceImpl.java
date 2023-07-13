@@ -94,7 +94,7 @@ public class DashboardServiceImpl implements DashboardService {
 //        work.setInCompletedPercentage(inCompletedPercentage);
        // return work;
 
-        Integer totalWork=dashboardRepositoryImpl.getPackageById(-1).size();
+        Integer totalWork=dashboardRepositoryImpl.getPackageById();
         int totalIncomplete= dashboardRepositoryImpl.getPackageIncompled();
         Integer totalCompleted=totalWork-totalIncomplete;
         Double completedPercentage= (Double.valueOf(totalCompleted)/Double.valueOf(totalWork))*100;
