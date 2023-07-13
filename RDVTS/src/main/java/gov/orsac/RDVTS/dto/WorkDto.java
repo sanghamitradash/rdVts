@@ -54,5 +54,8 @@ public class WorkDto {
 
 
     private Integer gWorkId;
+    private String activityStatus;
+    private String activityName;
+    private String roadName;
 
 }

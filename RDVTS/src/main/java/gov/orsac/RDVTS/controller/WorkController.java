@@ -139,6 +139,7 @@ public class WorkController {
         try {
 //            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
             List<WorkDto> workDto = workService.getWorkById(id);
+//            List<WorkDto> asignedActivities = workService.getAsignedActivityDetails(id);
             List<VehicleMasterDto> vehicle = vehicleService.getVehicleHistoryList(id);
           //  List<LocationDto> location = vehicleService.getLocationArray(id);
 //            List<AlertDto> alertDtoList = vehicleService.getAlertArray(id);
@@ -269,9 +270,10 @@ public class WorkController {
 
             result.put("contractorDto", contractorDtoList);
             result.put("workDto", workDto);
+//            result.put("asignedActivities", asignedActivities);
             result.put("vehicleArray", vehicle);
             result.put("locationArray", locationList);
-            result.put("roadArray", roadMasterDtoList);
+//            result.put("roadArray", roadMasterDtoList);
 //            result.put("totalAlertToday", alertList1);
 //            result.put("totalAlertWork", alertList2);
             response.setData(result);

@@ -97,18 +97,25 @@ public class ContractorRepositoryImpl implements ContractorRepository {
     }
 
     //Swarup
-    public List<ContractorDto> getContractorByWorkId(Integer workId) {
+    public List<ContractorDto> getContractorByWorkId(Integer packageId) {
         List<ContractorDto> contractor;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on, cm.updated_by,cm.updated_on,gm.work_id from rdvts_oltp.contractor_m as cm  " +
-                "left join rdvts_oltp.geo_master as gm on gm.contractor_id = cm.id and gm.is_active = true " +
-                "where cm.is_active = true ";
+//        String qry = "SELECT cm.id,cm.name,cm.mobile,cm.address,cm.g_contractor_id,cm.created_by,cm.created_on, cm.updated_by,cm.updated_on,gm.work_id from rdvts_oltp.contractor_m as cm  " +
+//                "left join rdvts_oltp.geo_master as gm on gm.contractor_id = cm.id and gm.is_active = true " +
+//                "where cm.is_active = true ";
 
-        if(workId > 0){
-            qry+=" AND gm.work_id= :workId";
+        String qry = " select distinct cm.id, cm.name, cm.mobile as mobile, cm.address as address, cm.is_active as isActive \n" +
+                "from rdvts_oltp.vehicle_activity_mapping as vam  \n" +
+                "left join rdvts_oltp.geo_mapping as gm on vam.geo_mapping_id = gm.id\n" +
+                "left join rdvts_oltp.vehicle_owner_mapping as vom on vam.vehicle_id = vom.vehicle_id\n" +
+                "left join rdvts_oltp.contractor_m as cm on cm.id = vom.contractor_id\n" +
+                "where true  ";
+
+        if(packageId > 0){
+            qry+=" and  gm.package_id = :packageId";
         }
-        sqlParam.addValue("workId", workId);
+        sqlParam.addValue("packageId", packageId);
 
         try {
             contractor = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ContractorDto.class));

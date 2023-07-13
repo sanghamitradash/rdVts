@@ -55,9 +55,9 @@ public class ContractorServiceImpl implements ContractorService {
     }
 
     @Override
-    public List<ContractorDto> getContractorByWorkId(Integer workId) {
+    public List<ContractorDto> getContractorByWorkId(Integer packageId) {
 //        List<ContractorDto> contractorDtoList = new ArrayList<>();
-        return contractorRepository.getContractorByWorkId(workId);
+        return contractorRepository.getContractorByWorkId(packageId);
     }
 
     @Override

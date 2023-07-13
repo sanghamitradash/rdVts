@@ -65,4 +65,7 @@ public class VehicleActivityMappingEntity {
 
     @Column(name = "g_activity_id")
     private Integer gActivityId;
+
+    @Column(name = "geo_mapping_id")
+    private Integer geoMappingId;
 }

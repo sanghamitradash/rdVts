@@ -44,6 +44,7 @@ public class ActivityDto {
     private Date resolvedDate;
     private Integer resolvedBy;
     private String issueImage;
+    private Integer geoMappingId;
 
 
     List<VehicleActivityMappingEntity> vehicleActivity;
