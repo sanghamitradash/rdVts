@@ -114,7 +114,7 @@ public class ActivityController {
 
     @PostMapping("/updateActivity")
 
-    public RDVTSResponse updateActivity(@RequestParam Integer activityId,@RequestParam Integer workId,
+    public RDVTSResponse updateActivity(@RequestParam Integer activityId,@RequestParam Integer geoMappingId,
                                         @RequestParam Integer userId,
                                         @RequestParam(name = "data") String data,
                                         @RequestParam (name = "issue",required = false)String  issue,
@@ -125,18 +125,18 @@ public class ActivityController {
             ObjectMapper mapper = new ObjectMapper();
             ActivityWorkMappingDto activityData = mapper.readValue(data, ActivityWorkMappingDto.class);
             IssueDto issueData=mapper.readValue(issue,IssueDto.class);
-            ActivityWorkMapping activity = activityService.getActivity(activityId,workId);
+//            ActivityWorkMapping activity = activityService.getActivity(activityId,geoMappingId);
 
-            if (activity != null){
-                Integer update = activityService.updateActivity(activity.getId(), activityData);
+//            if (activity != null){
+                Integer update = activityService.updateActivity(activityId, activityData, geoMappingId);
 
                 if (issueImages != null ) {
-                IssueEntity issueImage = activityService.saveIssueImage(issueData, activity.getId(), issueImages);
+                IssueEntity issueImage = activityService.saveIssueImage(issueData, activityId, issueImages);
                 //issueImage.setIssueImage( issueImages.getOriginalFilename());
-                boolean saveIssueImage = awss3StorageService.uploadIssueImages(issueImages, String.valueOf(activity.getId()), issueImages.getOriginalFilename());
+                boolean saveIssueImage = awss3StorageService.uploadIssueImages(issueImages, String.valueOf(activityId), issueImages.getOriginalFilename());
 
             }
-        }
+//        }
                     result.put("updateActivity", activityData);
                     response.setData(result);
                     response.setStatus(1);
@@ -378,7 +378,7 @@ public class ActivityController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            Boolean res = activityService.activityVehicleDeassign(vehicleActivityDto.getVehicleId(), vehicleActivityDto.getActivityId());
+            Boolean res = activityService.activityVehicleDeassign(vehicleActivityDto.getVehicleId(), vehicleActivityDto.getGeoMappingId());
             response.setData(res);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

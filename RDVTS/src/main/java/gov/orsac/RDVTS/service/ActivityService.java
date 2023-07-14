@@ -14,7 +14,7 @@ public interface ActivityService {
 
     List<ActivityDto> getActivityById(Integer activityId, Integer userId);
 
-    Integer updateActivity(Integer id, ActivityWorkMappingDto activityData);
+    Integer updateActivity(Integer id, ActivityWorkMappingDto activityData, Integer geoMappingId);
     ActivityWorkMapping getActivity(Integer activityId, Integer workId);
 
     List<ActivityEntity> getAllActivity(Integer userId);
@@ -41,7 +41,7 @@ public interface ActivityService {
 
     List<ActivityDto> unassignedActivity(Integer userId, Integer workId);
 
-    Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId);
+    Boolean activityVehicleDeassign(Integer vehicleId, Integer geoMappingId);
 
     List<ActivityStatusDto> activityStatusDD(Integer userId);
 

@@ -65,19 +65,19 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Integer updateActivity(Integer id, ActivityWorkMappingDto activityData) {
+    public Integer updateActivity(Integer id, ActivityWorkMappingDto activityData, Integer geoMappingId) {
         /*ActivityWorkMapping existingActivity = activityRepositoryImpl.findByActivityId(id);
         existingActivity.setActivityStatus(activityData.getActivityStatus());
         existingActivity.setActivityStartDate(activityData.getActivityStartDate());
         existingActivity.setActivityCompletionDate(activityData.getActivityCompletionDate());
         ActivityWorkMapping save = activityWorkMappingRepository.save(existingActivity);*/
-        Integer update=activityRepositoryImpl.updateActivity(id,activityData);
+        Integer update=activityRepositoryImpl.updateActivity(id,activityData, geoMappingId);
         return update;
     }
 
     @Override
     public ActivityWorkMapping getActivity(Integer activityId, Integer workId) {
-        return activityRepositoryImpl.getActivity(activityId,workId);
+        return activityRepositoryImpl.getActivity(activityId, workId);
     }
 
 
@@ -169,8 +169,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId) {
-        return activityRepositoryImpl.activityVehicleDeassign(vehicleId, activityId);
+    public Boolean activityVehicleDeassign(Integer vehicleId, Integer geoMappingId) {
+        return activityRepositoryImpl.activityVehicleDeassign(vehicleId, geoMappingId);
     }
 
     @Override
