@@ -75,14 +75,22 @@ public class RoadRepositoryImpl {
     public List<RoadMasterDto> getRoadWorkById(Integer workId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
-        String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width,road.geom ,road.g_road_id as groadId,wm.id as work_id, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, " +
-                "road.road_status, road.approval_status, road.approved_by  " +
-                "FROM rdvts_oltp.geo_construction_m AS road " +
-                "LEFT JOIN rdvts_oltp.geo_master AS gm ON gm.road_id=road.id " +
-                "left join rdvts_oltp.work_m as wm on wm.id=gm.work_id " +
-                "WHERE road.is_active=true  ";
+//        String qry = "SELECT road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, road.road_width,road.geom ,road.g_road_id as groadId,wm.id as work_id, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date, road.road_code, " +
+//                "road.road_status, road.approval_status, road.approved_by  " +
+//                "FROM rdvts_oltp.geo_construction_m AS road " +
+//                "LEFT JOIN rdvts_oltp.geo_master AS gm ON gm.road_id=road.id " +
+//                "left join rdvts_oltp.work_m as wm on wm.id=gm.work_id " +
+//                "WHERE road.is_active=true  ";
+        String qry = " select road.id ,gm.package_id , pm.package_no as package_name, road.road_name , road.sanction_length as road_length,road.road_location, road.road_allignment, \n" +
+                " road.road_width,road.geom ,road.g_road_id as groadId, gm.package_id as work_id, road.is_active, road.created_by, road.created_on, road.updated_by,\n" +
+                " road.updated_on, gm.completed_road_length, road.sanction_date, road.road_code, road.road_status, road.approval_status, road.approved_by \n" +
+                " from rdvts_oltp.road_m as road \n" +
+                " left join rdvts_oltp.geo_mapping as gm on gm.road_id = road.id and gm.is_active ='true'\n" +
+                " left join rdvts_oltp.package_m as pm on pm.id = gm.package_id and pm.is_active ='true'\n" +
+                " where road.is_active = 'true' ";
         if (workId > 0) {
-            qry += " and wm.id= :id";
+//            qry += " and wm.id= :id";
+            qry += " and pm.id =:id";
         }
         sqlParam.addValue("id", workId);
         try {
@@ -151,6 +159,10 @@ public class RoadRepositoryImpl {
 //            queryString += " AND geom.contractor_id IN (:contractIds)";
 //            sqlParam.addValue("contractIds", roadFilterDto.getContractIds());
 //        }
+        if (roadFilterDto.getWorkIds() != null && !roadFilterDto.getWorkIds().isEmpty()) {
+            queryString += " AND gm.package_id  IN (:workIds)";
+            sqlParam.addValue("packageIds", roadFilterDto.getWorkIds());
+        }
 
         if (roadFilterDto.getActivityIds() != null && !roadFilterDto.getActivityIds().isEmpty()) {
             queryString += " AND am.id IN (:activityids)";
@@ -402,24 +414,32 @@ public class RoadRepositoryImpl {
 
     public List<Integer> getRoadIdsByVehicleIdsForFilter(List<Integer> vehicleIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct road_id from rdvts_oltp.geo_master where work_id in (select distinct work_id from rdvts_oltp.activity_m where id in \n" +
-                " (select distinct activity_id from rdvts_oltp.vehicle_activity_mapping where vehicle_id in (:vehicleIds) and is_active=true))";
+//        String qry = "select distinct road_id from rdvts_oltp.geo_master where work_id in (select distinct work_id from rdvts_oltp.activity_m where id in \n" +
+//                " (select distinct activity_id from rdvts_oltp.vehicle_activity_mapping where vehicle_id in (:vehicleIds) and is_active=true))";
+        String qry = "SELECT distinct gm.road_id from rdvts_oltp.geo_mapping gm\n" +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id and vam.is_active= 'true'\n" +
+                "where gm.is_active = 'true' and vam.vehicle_id in(:vehicleIds)";
         sqlParam.addValue("vehicleIds", vehicleIds);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 
     public List<Integer> getRoadIdsByActivityIdsForFilter(List<Integer> activityIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " select distinct road_id from rdvts_oltp.geo_master where work_id in (select distinct work_id from rdvts_oltp.activity_m where id in (:activityIds)) ";
+//        String qry = " select distinct road_id from rdvts_oltp.geo_master where work_id in (select distinct work_id from rdvts_oltp.activity_m where id in (:activityIds)) ";
+        String qry = " select distinct road_id from rdvts_oltp.geo_mapping where activity_id in(:activityIds) and is_active = 'true'";
         sqlParam.addValue("activityIds", activityIds);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 
     public List<Integer> getRoadIdsByDeviceIdsForFilter(List<Integer> deviceIds) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " select distinct road_id from rdvts_oltp.geo_master where work_id in (select distinct work_id from rdvts_oltp.activity_m where is_active=true and id in " +
-                "(select distinct activity_id from rdvts_oltp.vehicle_activity_mapping where is_active=true and vehicle_id in " +
-                " (select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping where device_id in(:deviceIds)) and is_active=true)) ";
+//        String qry = " select distinct road_id from rdvts_oltp.geo_master where work_id in (select distinct work_id from rdvts_oltp.activity_m where is_active=true and id in " +
+//                "(select distinct activity_id from rdvts_oltp.vehicle_activity_mapping where is_active=true and vehicle_id in " +
+//                " (select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping where device_id in(:deviceIds)) and is_active=true)) ";
+        String qry = " SELECT distinct gm.road_id from rdvts_oltp.geo_mapping gm\n" +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id and vam.is_active= 'true'\n" +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id = vam.vehicle_id and vdm.is_active ='true'\n" +
+                "where gm.is_active = 'true' and vdm.device_id in (:deviceIds))  ";
         sqlParam.addValue("deviceIds", deviceIds);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
