@@ -235,7 +235,7 @@ public class WorkRepositoryImpl {
 //                "where am.is_active = true " ;
         String qry = " select distinct am.id as activityId, am.activity_name as activityName, am.is_active as isActive, gm.activity_start_date as activityStartDate, " +
                 "  gm.activity_completion_date as activityCompletionDate," +
-                " (case when (gm.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as activityStatusName, gm.id \n" +
+                " (case when (gm.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as activityStatusName, gm.id as geo_mapping_id\n" +
                 "from rdvts_oltp.geo_mapping as gm \n" +
                 "left join rdvts_oltp.activity_m as am on gm.activity_id=am.id\n" +
                 "where true\n";

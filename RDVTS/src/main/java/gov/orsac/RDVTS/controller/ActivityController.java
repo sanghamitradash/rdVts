@@ -63,17 +63,17 @@ public class ActivityController {
 
       public RDVTSResponse getActivityByIdAndWorkId(@RequestParam(name = "activityId") Integer activityId,
                                                     @RequestParam(name = "userId") Integer userId,
-                                                    @RequestParam(name = "workId") Integer workId ){
+                                                    @RequestParam(name = "geoMappingId") Integer geoMappingId ){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
 
-            List<ActivityWorkMappingDto> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,workId);
+            List<ActivityDto> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,geoMappingId);
 
 //            List<IssueDto> issue = activityService.getIssueByWorkId(activityWork.get(0).getWorkId(), activityWork.get(0).getActivityId());
             List<IssueDto> issue = new ArrayList<>();
 
-            List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(activityWork.get(0).getActivityId(), userId);
+            List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(geoMappingId, userId);
             result.put("activity", activityWork);
             result.put("issue",issue);
             result.put("vehicle", vehicle);

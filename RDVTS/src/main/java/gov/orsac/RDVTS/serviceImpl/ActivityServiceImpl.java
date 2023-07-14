@@ -179,8 +179,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId) {
-        return activityRepositoryImpl.getVehicleByActivityId(activityId,userId);
+    public List<VehicleMasterDto> getVehicleByActivityId(Integer geoMappingId, Integer userId) {
+        return activityRepositoryImpl.getVehicleByActivityId(geoMappingId,userId);
     }
 
     @Override
@@ -198,8 +198,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId) {
-        return activityRepositoryImpl.getActivityByIdAndWorkId(activityId,userId,workId);
+    public List<ActivityDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer geoMappingId) {
+        return activityRepositoryImpl.getActivityByIdAndWorkId(activityId,userId,geoMappingId);
     }
 
     @Override

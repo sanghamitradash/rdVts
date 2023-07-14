@@ -45,13 +45,13 @@ public interface ActivityService {
 
     List<ActivityStatusDto> activityStatusDD(Integer userId);
 
-    List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId);
+    List<VehicleMasterDto> getVehicleByActivityId(Integer geoMappingId, Integer userId);
 
     List<ResolvedStatusDto> resolvedStatusDD(Integer userId);
 
     IssueEntity saveIssueImage(IssueDto issue, Integer id, MultipartFile issueImages);
 
-    List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId);
+    List<ActivityDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer geoMappingId);
 
     List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId);
 

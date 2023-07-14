@@ -468,7 +468,9 @@ public class AlertCronController {
                 Integer totalActiveVehicle = 0;
                 WorkCronEntity work = new WorkCronEntity();
                 //Activity By WorkId
-                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
+                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getPackageId());
+
+
                 for (ActivityDto activityId : activityDtoList) {
                     //Vehicle By ActivityId
                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), -1, activityId.getActivityStartDate(), activityId.getActivityCompletionDate());
@@ -534,13 +536,9 @@ public class AlertCronController {
 
                 work.setTotalDistance(totalDistance);
                 workList.add(work);
-                // System.out.println(data++);
             }
-            // System.out.println("saveAll");
-            // workCronRepository.saveAll(workList);
-            alertService.save(workList);
 
-            //  System.out.println("TRUE Work");
+            alertService.save(workList);
 
             response.setData(result);
             response.setStatus(1);
