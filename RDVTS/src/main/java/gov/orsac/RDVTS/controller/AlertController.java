@@ -281,60 +281,80 @@ public class AlertController {
             AlertTypeEntity alertTypeEntity = alertService.getAlertTypeDetails(NO_MOVEMENT_ALERT_ID);
             //Get Imei
             List<Long> imei = alertService.getImeiForNoMovement(); //get today all imei
+            WorkDto packageID = new WorkDto();
             if (imei.size() > 0) {
                 for (Long item : imei) {
                     Integer recordLimit = NO_MOVEMENT_TIME_GAP * LOCATION_DATA_FREQUENCY;
-                    List<VtuLocationDto> vtuLocationDto = alertService.getLocationRecordByFrequency(item, recordLimit);
-                    //Create buffer of First First Point
-                    Integer outsideCount = 0;
-                    for (VtuLocationDto vtuItem : vtuLocationDto) {
-                        Boolean b = alertService.checkIntersected(vtuLocationDto.get(0).getLongitude(), vtuLocationDto.get(0).getLatitude(), vtuItem.getLongitude(), vtuItem.getLatitude());
-                        if (b == false) {
-                            outsideCount++;
-                        }
+
+                    Integer deviceId =  deviceService.getDeviceByImei(item);
+                    if (deviceId != null) {
+                        Integer vehicleId = deviceService.getvehicleBydevice(deviceId);
+                        if (vehicleId != null) {
+                            int packageCount = workService.getPackageByvehicleIdCount(vehicleId);
+                            if (packageCount > 0) {
+                                packageID = workService.getPackageByvehicleId(vehicleId);
+                                if (packageID.getStartTime() != null && packageID.getEndTime() != null) {
 
 
-                    }
+                                    List<VtuLocationDto> vtuLocationDto = alertService.getLocationRecordByFrequency(item, recordLimit, packageID.getStartTime(), packageID.getEndTime());
+                                    //Create buffer of First First Point
+                                    Integer outsideCount = 0;
+                                    for (VtuLocationDto vtuItem : vtuLocationDto) {
+                                        Boolean b = alertService.checkIntersected(vtuLocationDto.get(0).getLongitude(), vtuLocationDto.get(0).getLatitude(), vtuItem.getLongitude(), vtuItem.getLatitude());
+                                        if (b == false) {
+                                            outsideCount++;
+                                        }
 
-                    if (outsideCount >= OUTSIDE_POINT_COUNT) {
-                        //resolve if there is any unresolve no-movement alert present
 
-                        Boolean updateResolve = alertService.updateResolve(item, NO_MOVEMENT_ALERT_ID);
-                        //break;
+                                    }
+
+                                    if (outsideCount >= OUTSIDE_POINT_COUNT) {
+                                        //resolve if there is any unresolve no-movement alert present
+
+                                        Boolean updateResolve = alertService.updateResolve(item, NO_MOVEMENT_ALERT_ID);
+                                        //break;
 //                        if (!updateResolve) {
 //                            break;
 ////                            return true;
 //                        }
 
-                    }
+                                    }
 
-                    if (outsideCount < OUTSIDE_POINT_COUNT) {
-                        Boolean alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
-                        if (!alertExists) {
-                            AlertEntity alertEntity = new AlertEntity();
-                            alertEntity.setImei(item);
-                            alertEntity.setAlertTypeId(NO_MOVEMENT_ALERT_ID);
-                            if (vtuLocationDto.get(0).getLatitude() != null) {
-                                alertEntity.setLatitude(Double.parseDouble(vtuLocationDto.get(0).getLatitude()));
-                            }
-                            if (vtuLocationDto.get(0).getLongitude() != null) {
-                                alertEntity.setLongitude(Double.parseDouble(vtuLocationDto.get(0).getLongitude()));
-                            }
-                            if (vtuLocationDto.get(0).getAltitude() != null) {
-                                alertEntity.setAltitude(Double.parseDouble(vtuLocationDto.get(0).getAltitude()));
-                            }
-                            if (vtuLocationDto.get(0).getAccuracy() != null) {
-                                alertEntity.setAccuracy(Double.parseDouble(vtuLocationDto.get(0).getAccuracy()));
-                            }
+                                    if (outsideCount < OUTSIDE_POINT_COUNT) {
+                                        Boolean alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
+                                        if (!alertExists) {
+                                            AlertEntity alertEntity = new AlertEntity();
+                                            alertEntity.setImei(item);
+                                            alertEntity.setAlertTypeId(NO_MOVEMENT_ALERT_ID);
+                                            if (vtuLocationDto.get(0).getLatitude() != null) {
+                                                alertEntity.setLatitude(Double.parseDouble(vtuLocationDto.get(0).getLatitude()));
+                                            }
+                                            if (vtuLocationDto.get(0).getLongitude() != null) {
+                                                alertEntity.setLongitude(Double.parseDouble(vtuLocationDto.get(0).getLongitude()));
+                                            }
+                                            if (vtuLocationDto.get(0).getAltitude() != null) {
+                                                alertEntity.setAltitude(Double.parseDouble(vtuLocationDto.get(0).getAltitude()));
+                                            }
+                                            if (vtuLocationDto.get(0).getAccuracy() != null) {
+                                                alertEntity.setAccuracy(Double.parseDouble(vtuLocationDto.get(0).getAccuracy()));
+                                            }
 
-                            alertEntity.setSpeed(Double.parseDouble(vtuLocationDto.get(0).getSpeed()));
-                            alertEntity.setGpsDtm(new Date());
+                                            alertEntity.setSpeed(Double.parseDouble(vtuLocationDto.get(0).getSpeed()));
+                                            alertEntity.setGpsDtm(new Date());
 
-                            AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+                                            AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
 
+                                        }
+
+                                    }
+
+
+                                }
+                            }
                         }
-
                     }
+
+                }
 //                    List<BufferDto> bufferDto = alertService.getBuffer(item);
 
 //                    for (BufferDto bfd : bufferDto) {
@@ -397,7 +417,7 @@ public class AlertController {
 //
 //                    }
 
-                }
+
 
             }
 
@@ -550,56 +570,78 @@ public class AlertController {
         try {
 
             List<AlertDto> alertDto = alertService.getAllDeviceByVehicle();
+            WorkDto packageID = new WorkDto();
             for (AlertDto alertDtoItem : alertDto) {
-                List<VtuLocationDto> vtuLocationDto = alertService.getAlertLocationOverSpeed(alertDtoItem.getImei(), alertDtoItem.getSpeedLimit());
-                if (vtuLocationDto != null) {
 
-                    if (vtuLocationDto.size() > 0) {
-                        Boolean checkSpeedStatus = false;
-                        for (VtuLocationDto item : vtuLocationDto) {
-                            Boolean checkIsNumeric = isNumeric(item.getSpeed());
-                            if (checkIsNumeric) {
-                                if (Double.parseDouble(item.getSpeed()) > alertDtoItem.getSpeedLimit()) {
-                                    Boolean alertExists = alertService.checkAlertExists(item.getImei(), OVER_SPEED_ALERT_ID); //Check If alert Exist Or Not
-                                    if (!alertExists) {
+                Integer deviceId =  deviceService.getDeviceByImei(alertDtoItem.getImei());
+                if (deviceId != null) {
+                    Integer vehicleId = deviceService.getvehicleBydevice(deviceId);
+                    if (vehicleId != null) {
+                        int packageCount = workService.getPackageByvehicleIdCount(vehicleId);
+                        if (packageCount > 0) {
+                            packageID = workService.getPackageByvehicleId(vehicleId);
+                            if (packageID.getStartTime() != null && packageID.getEndTime() != null) {
 
-                                        AlertEntity alertEntity = new AlertEntity();
-                                        alertEntity.setImei(item.getImei());
-                                        alertEntity.setAlertTypeId(OVER_SPEED_ALERT_ID);
-                                        if (item.getLatitude() != null) {
-                                            alertEntity.setLatitude(Double.parseDouble(item.getLatitude()));
+                                List<VtuLocationDto> vtuLocationDto = alertService.getAlertLocationOverSpeed(alertDtoItem.getImei(), alertDtoItem.getSpeedLimit(), packageID.getStartTime(), packageID.getEndTime());
+                                if (vtuLocationDto != null) {
+
+                                    if (vtuLocationDto.size() > 0) {
+                                        Boolean checkSpeedStatus = false;
+                                        for (VtuLocationDto item : vtuLocationDto) {
+
+
+
+                                            Boolean checkIsNumeric = isNumeric(item.getSpeed());
+                                            if (checkIsNumeric) {
+                                                if (Double.parseDouble(item.getSpeed()) > alertDtoItem.getSpeedLimit()) {
+                                                    Boolean alertExists = alertService.checkAlertExists(item.getImei(), OVER_SPEED_ALERT_ID); //Check If alert Exist Or Not
+                                                    if (!alertExists) {
+
+                                                        AlertEntity alertEntity = new AlertEntity();
+                                                        alertEntity.setImei(item.getImei());
+                                                        alertEntity.setAlertTypeId(OVER_SPEED_ALERT_ID);
+                                                        if (item.getLatitude() != null) {
+                                                            alertEntity.setLatitude(Double.parseDouble(item.getLatitude()));
+                                                        }
+                                                        if (item.getLongitude() != null) {
+                                                            alertEntity.setLongitude(Double.parseDouble(item.getLongitude()));
+                                                        }
+                                                        if (item.getAltitude() != null) {
+                                                            alertEntity.setAltitude(Double.parseDouble(item.getAltitude()));
+                                                        }
+                                                        if (item.getAccuracy() != null) {
+                                                            alertEntity.setAccuracy(Double.parseDouble(item.getAccuracy()));
+                                                        }
+
+                                                        alertEntity.setSpeed(Double.parseDouble(item.getSpeed()));
+                                                        alertEntity.setGpsDtm(new Date());
+
+                                                        AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+
+
+                                                    }
+                                                    checkSpeedStatus = true;
+                                                    break;
+                                                }
+                                            }
+
                                         }
-                                        if (item.getLongitude() != null) {
-                                            alertEntity.setLongitude(Double.parseDouble(item.getLongitude()));
+                                        if (checkSpeedStatus == false) {
+                                            Boolean updateResolve = alertService.updateResolve(vtuLocationDto.get(0).getImei(), OVER_SPEED_ALERT_ID);
                                         }
-                                        if (item.getAltitude() != null) {
-                                            alertEntity.setAltitude(Double.parseDouble(item.getAltitude()));
-                                        }
-                                        if (item.getAccuracy() != null) {
-                                            alertEntity.setAccuracy(Double.parseDouble(item.getAccuracy()));
-                                        }
-
-                                        alertEntity.setSpeed(Double.parseDouble(item.getSpeed()));
-                                        alertEntity.setGpsDtm(new Date());
-
-                                        AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
-
 
                                     }
-                                    checkSpeedStatus = true;
-                                    break;
+
+
                                 }
+
                             }
-
                         }
-                        if (checkSpeedStatus == false) {
-                            Boolean updateResolve = alertService.updateResolve(vtuLocationDto.get(0).getImei(), OVER_SPEED_ALERT_ID);
-                        }
-
                     }
-
-
                 }
+
+
+
 
             }
 
