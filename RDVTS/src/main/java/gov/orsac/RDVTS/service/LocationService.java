@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.service;
 import gov.orsac.RDVTS.dto.*;
+import org.joda.time.DateTime;
 
 import java.util.Date;
 import java.util.List;
@@ -20,7 +21,7 @@ public interface LocationService {
 
     Double getspeed(Long imei1,Long imei2,Date startDate,Date endDate,Date deviceVehicleCreatedOn,Date deviceVehicleDeactivationDate);
 
-    VtuLocationDto getLastLocationByImei(Long imei1);
+    VtuLocationDto getLastLocationByImei(Long imei1, Date startTime, Date endTime);
 
 
     List<VtuLocationDto> getLocationrecordList(Long imeiNo1, Long imeiNo2, Date startDate, Date endDate, Date createdOn, Date deactivationDate, Integer recordLimit);

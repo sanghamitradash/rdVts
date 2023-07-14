@@ -834,6 +834,25 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
     }
 
 
+    public Integer getvehicleBydevice(Integer deviceId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct vehicle_id from rdvts_oltp.vehicle_device_mapping where is_active=true and device_id in(:deviceId) ";
+        sqlParam.addValue("deviceId", deviceId);
+        Integer res=0;
+        try{
+            res =  namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+        } catch (Exception e){
+            return res;
+        }
+        return res;
+    }
+
+    public Integer getDeviceByImei(Long imei) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "  ";
+        sqlParam.addValue("imei", imei);
+        return namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+    }
 }
 
 

@@ -4,6 +4,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.repositoryImpl.LocationRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.LocationService;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -93,8 +94,8 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public VtuLocationDto  getLastLocationByImei(Long imei1){
-        return locationRepository.getLastLocationByImei(imei1);
+    public VtuLocationDto  getLastLocationByImei(Long imei1, Date startTime, Date endTime){
+        return locationRepository.getLastLocationByImei(imei1, startTime, endTime);
 
     }
 

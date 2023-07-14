@@ -197,7 +197,7 @@ public class WorkRepositoryImpl {
 //                " where wm.is_active = true ";
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
         String qry = " select distinct pm.id as packageId, pm.package_no as geoWorkName, gm.completion_date as completionDate, gm.award_date as awardDate, gm.pmis_finalize_date as pmisFinalizeDate, gm.activity_status as activityStatus,\n" +
-                "(case when (gm.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName, rm.road_name as roadName, piu.id as piuId, piu.name as piuName  \n" +
+                "(case when (gm.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName, rm.road_name as roadName, piu.id as piuId, piu.name as piuName  " +
                 "from rdvts_oltp.package_m as pm \n" +
                 "left join rdvts_oltp.geo_mapping as gm on gm.package_id=pm.id " +
                 "  left join rdvts_oltp.road_m as rm on rm.id=gm.road_id " +
@@ -326,5 +326,20 @@ public class WorkRepositoryImpl {
                 "and gm.package_id=:id order by am.id ";
         sqlParam.addValue("id", id);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
+    }
+
+    public WorkDto getPackageByvehicleId(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "  select distinct gm.package_id, gm.activity_id, gm.activity_start_date, gm.activity_completion_date, vam.start_date, vam.end_date\n" +
+                "from rdvts_oltp.geo_mapping as gm\n" +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=gm.activity_id\n" +
+                "where true and vam.vehicle_id in(:vehicleId) ";
+        sqlParam.addValue("vehicleId", vehicleId);
+        try{
+            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
+        } catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

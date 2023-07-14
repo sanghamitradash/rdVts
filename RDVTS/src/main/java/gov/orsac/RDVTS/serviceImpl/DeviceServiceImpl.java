@@ -82,6 +82,15 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceRepositoryImpl.getVehicleDeviceMappingDDByDeviceId(deviceId,userId);
     }
 
+    @Override
+    public Integer getvehicleBydevice(Integer deviceId) {
+        return deviceRepositoryImpl.getvehicleBydevice(deviceId);
+    }
+
+    @Override
+    public Integer getDeviceByImei(Long imei) {
+        return deviceRepositoryImpl.getDeviceByImei(imei);
+    }
 
 
     @Override

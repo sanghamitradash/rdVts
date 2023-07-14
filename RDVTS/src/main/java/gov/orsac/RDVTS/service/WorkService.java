@@ -26,4 +26,6 @@ public interface WorkService {
     List<GeoConstructionDto> getPackageDD(Integer userId);
 
     List<WorkDto> getAsignedActivityDetails(Integer id);
+
+    WorkDto getPackageByvehicleId(Integer vehicleId);
 }

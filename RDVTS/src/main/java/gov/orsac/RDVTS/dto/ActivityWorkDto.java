@@ -36,7 +36,7 @@ public class ActivityWorkDto {
 
     private Integer activityStatus;
 
-    List<VehicleActivityMappingEntity> vehicle;
+    List<VehicleActivityDto> vehicle;
 
     private Integer vehicleTypeId;
     private String vehicleNo;

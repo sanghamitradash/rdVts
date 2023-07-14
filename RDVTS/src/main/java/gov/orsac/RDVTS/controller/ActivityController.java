@@ -70,7 +70,8 @@ public class ActivityController {
 
             List<ActivityWorkMappingDto> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,workId);
 
-            List<IssueDto> issue = activityService.getIssueByWorkId(activityWork.get(0).getWorkId(), activityWork.get(0).getActivityId());
+//            List<IssueDto> issue = activityService.getIssueByWorkId(activityWork.get(0).getWorkId(), activityWork.get(0).getActivityId());
+            List<IssueDto> issue = new ArrayList<>();
 
             List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(activityWork.get(0).getActivityId(), userId);
             result.put("activity", activityWork);
@@ -277,8 +278,11 @@ public class ActivityController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(), activityWork.getActivityId(), activityWork.getUserId());
+            List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(),
+                    activityWork.getActivityId(), activityWork.getUserId());
+
             Integer res = activityService.saveContractorId(activityWork.getContractorId(), activityWork.getActivityId() );
+
             result.put("VehicleActivityMapping", VehicleActivityMapping);
             response.setData(result);
             response.setStatus(1);

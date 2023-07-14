@@ -14,7 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -104,14 +106,25 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer geoMappingId,Integer userId) {
+    public List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityDto> vehicleActivityMapping, Integer geoMappingId,Integer userId) {
         List<VehicleActivityMappingEntity> vehicleActivity = new ArrayList<>();
         for (int j = 0; j < vehicleActivityMapping.size(); j++) {
             VehicleActivityMappingEntity vehicleActivityMappingEntity = new VehicleActivityMappingEntity();
             vehicleActivityMappingEntity.setGeoMappingId(geoMappingId);
             vehicleActivityMappingEntity.setVehicleId(vehicleActivityMapping.get(0).getVehicleId());
-            vehicleActivityMappingEntity.setStartTime(vehicleActivityMapping.get(0).getStartTime());
-            vehicleActivityMappingEntity.setEndTime(vehicleActivityMapping.get(0).getEndTime());
+
+            try{
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            Date parsedDate = dateFormat.parse(vehicleActivityMapping.get(0).getStartTime());
+                Date startDate = dateFormat.parse(vehicleActivityMapping.get(0).getStartTime());
+                Date endDate = dateFormat.parse(vehicleActivityMapping.get(0).getEndTime());
+                vehicleActivityMappingEntity.setStartTime(startDate);
+                vehicleActivityMappingEntity.setEndTime(endDate);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             vehicleActivityMappingEntity.setStartDate(vehicleActivityMapping.get(0).getStartDate());
             vehicleActivityMappingEntity.setEndDate(vehicleActivityMapping.get(0).getEndDate());
             vehicleActivityMappingEntity.setIsActive(true);

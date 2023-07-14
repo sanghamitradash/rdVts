@@ -56,4 +56,7 @@ public interface DeviceService {
     List<VehicleDeviceMappingDto> getVehicleDeviceMappingDDByDeviceId(Integer deviceId, Integer userId);
 
 
+    Integer getvehicleBydevice(Integer deviceId);
+
+    Integer getDeviceByImei(Long imei);
 }
