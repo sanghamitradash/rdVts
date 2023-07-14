@@ -849,9 +849,15 @@ public class DeviceRepositoryImpl implements DeviceMasterRepository {
 
     public Integer getDeviceByImei(Long imei) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "  ";
+        String qry = " select distinct id from rdvts_oltp.device_m where is_active=true and imei_no_1=:imei ";
         sqlParam.addValue("imei", imei);
-        return namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+        Integer res=0;
+        try{
+            res =  namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+        } catch (Exception e){
+            return res;
+        }
+        return res;
     }
 }
 
