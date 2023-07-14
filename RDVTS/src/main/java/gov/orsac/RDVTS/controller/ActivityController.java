@@ -63,16 +63,17 @@ public class ActivityController {
 
       public RDVTSResponse getActivityByIdAndWorkId(@RequestParam(name = "activityId") Integer activityId,
                                                     @RequestParam(name = "userId") Integer userId,
-                                                    @RequestParam(name = "workId") Integer workId ){
+                                                    @RequestParam(name = "geoMappingId") Integer geoMappingId ){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
 
-            List<ActivityWorkMappingDto> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,workId);
+            List<ActivityDto> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,geoMappingId);
 
-            List<IssueDto> issue = activityService.getIssueByWorkId(activityWork.get(0).getWorkId(), activityWork.get(0).getActivityId());
+//            List<IssueDto> issue = activityService.getIssueByWorkId(activityWork.get(0).getWorkId(), activityWork.get(0).getActivityId());
+            List<IssueDto> issue = new ArrayList<>();
 
-            List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(activityWork.get(0).getActivityId(), userId);
+            List<VehicleMasterDto> vehicle = activityService.getVehicleByActivityId(geoMappingId, userId);
             result.put("activity", activityWork);
             result.put("issue",issue);
             result.put("vehicle", vehicle);
@@ -113,7 +114,7 @@ public class ActivityController {
 
     @PostMapping("/updateActivity")
 
-    public RDVTSResponse updateActivity(@RequestParam Integer activityId,@RequestParam Integer workId,
+    public RDVTSResponse updateActivity(@RequestParam Integer activityId,@RequestParam Integer geoMappingId,
                                         @RequestParam Integer userId,
                                         @RequestParam(name = "data") String data,
                                         @RequestParam (name = "issue",required = false)String  issue,
@@ -124,18 +125,18 @@ public class ActivityController {
             ObjectMapper mapper = new ObjectMapper();
             ActivityWorkMappingDto activityData = mapper.readValue(data, ActivityWorkMappingDto.class);
             IssueDto issueData=mapper.readValue(issue,IssueDto.class);
-            ActivityWorkMapping activity = activityService.getActivity(activityId,workId);
+//            ActivityWorkMapping activity = activityService.getActivity(activityId,geoMappingId);
 
-            if (activity != null){
-                Integer update = activityService.updateActivity(activity.getId(), activityData);
+//            if (activity != null){
+                Integer update = activityService.updateActivity(activityId, activityData, geoMappingId);
 
                 if (issueImages != null ) {
-                IssueEntity issueImage = activityService.saveIssueImage(issueData, activity.getId(), issueImages);
+                IssueEntity issueImage = activityService.saveIssueImage(issueData, activityId, issueImages);
                 //issueImage.setIssueImage( issueImages.getOriginalFilename());
-                boolean saveIssueImage = awss3StorageService.uploadIssueImages(issueImages, String.valueOf(activity.getId()), issueImages.getOriginalFilename());
+                boolean saveIssueImage = awss3StorageService.uploadIssueImages(issueImages, String.valueOf(activityId), issueImages.getOriginalFilename());
 
             }
-        }
+//        }
                     result.put("updateActivity", activityData);
                     response.setData(result);
                     response.setStatus(1);
@@ -277,8 +278,11 @@ public class ActivityController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(), activityWork.getActivityId(), activityWork.getUserId());
+            List<VehicleActivityMappingEntity> VehicleActivityMapping = activityService.saveVehicleActivityMapping(activityWork.getVehicle(),
+                    activityWork.getActivityId(), activityWork.getUserId());
+
             Integer res = activityService.saveContractorId(activityWork.getContractorId(), activityWork.getActivityId() );
+
             result.put("VehicleActivityMapping", VehicleActivityMapping);
             response.setData(result);
             response.setStatus(1);
@@ -374,7 +378,7 @@ public class ActivityController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            Boolean res = activityService.activityVehicleDeassign(vehicleActivityDto.getVehicleId(), vehicleActivityDto.getActivityId());
+            Boolean res = activityService.activityVehicleDeassign(vehicleActivityDto.getVehicleId(), vehicleActivityDto.getGeoMappingId());
             response.setData(res);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

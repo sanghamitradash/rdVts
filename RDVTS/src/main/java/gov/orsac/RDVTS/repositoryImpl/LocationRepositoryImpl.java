@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -132,9 +133,14 @@ public class LocationRepositoryImpl {
     public List<VtuLocationDto> getLocationrecordList(Long imei1, Long imei2, Date startDate, Date endDate, Date deviceVehicleCreatedOn, Date deviceVehicleDeactivationDate) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         if (imei1 == null) {
-            String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, is_active, created_by, created_on, updated_by, updated_on,CAST(speed as DECIMAL(4,2)) as speedOfVehicle " +
+            String qry = "SELECT id,  imei, vehicle_reg, gps_fix, date_time, latitude, latitude_dir, longitude, " +
+                    "longitude_dir, speed, heading, no_of_satellites, altitude, pdop, hdop, network_operator_name, ignition, main_power_status, " +
+                    "main_input_voltage, internal_battery_voltage, emergency_status, tamper_alert, gsm_signal_strength, mcc, mnc, lac, cell_id, lac1, " +
+                    "cell_id1, cell_id_sig1, lac2, cell_id2, cell_id_sig2, lac3, cell_id3, cell_id_sig3, lac4, cell_id4, cell_id_sig4, digital_input1, " +
+                    "digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, " +
+                    "is_active, created_by, created_on, updated_by, updated_on,CAST(speed as DECIMAL(4,2)) as speedOfVehicle " +
                     "    FROM rdvts_oltp.vtu_location where is_active=true  ";
-            qry += " and imei =:imei2 and gps_fix::numeric =1  ";
+            qry += " and imei =:imei2 and gps_fix::numeric =1 and pakcet_type = 'NR' order by date_time ASC ";
             sqlParam.addValue("imei2", imei2);
 
 //            if (deviceVehicleDeactivationDate == null) {
@@ -612,17 +618,26 @@ public class LocationRepositoryImpl {
     }
 
 
-    public VtuLocationDto getLastLocationByImei(Long imeiNo) {
+    public VtuLocationDto getLastLocationByImei(Long imeiNo, Date startTime, Date endTime) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         VtuLocationDto locationDto = null;
 
-        String qry = "select dm.id,b.* from rdvts_oltp.vehicle_device_mapping as vdm " +
-                "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id " +
-                "left join (select distinct imei,max(id) over(partition by imei) as vtuid from " +
-                "rdvts_oltp.vtu_location as vtu  where imei=:imeiNo and gps_fix::numeric=1 order by imei ) as a on dm.imei_no_1=a.imei\n" +
-                "left join rdvts_oltp.vtu_location as b on a.vtuid=b.id " +
-                "where vdm.is_active=true and b.id is not null";
+        String qry = "select dm.id, loc.* from rdvts_oltp.vtu_location as loc" +
+                "left join rdvts_oltp.device_m as dm on dm.imei_no_1=loc.imei " +
+                "where imei=:imeiNo and gps_fix::numeric=1 and date_time between :startTime and :endTime" +
+                "order by date_time DESC limit 1";
+
+
+
+//        String qry = "select dm.id,b.* from rdvts_oltp.vehicle_device_mapping as vdm " +
+//                "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id " +
+//                "left join (select distinct imei,max(id) over(partition by imei) as vtuid from " +
+//                "rdvts_oltp.vtu_location as vtu  where imei=:imeiNo and gps_fix::numeric=1 order by imei ) as a on dm.imei_no_1=a.imei\n" +
+//                "left join rdvts_oltp.vtu_location as b on a.vtuid=b.id " +
+//                "where vdm.is_active=true and b.id is not null";
         sqlParam.addValue("imeiNo",imeiNo);
+        sqlParam.addValue("startTime",startTime);
+        sqlParam.addValue("endTime",endTime);
 
         try {
             locationDto = namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));

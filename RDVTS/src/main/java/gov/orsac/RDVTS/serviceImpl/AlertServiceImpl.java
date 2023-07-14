@@ -94,8 +94,8 @@ public class AlertServiceImpl implements AlertService {
         return alertRepositoryImpl.getImeiForNoMovement();
     }
 
-    public List<VtuLocationDto> getLocationRecordByFrequency(Long imei1, Integer recordLimit){
-        return alertRepositoryImpl.getLocationRecordByFrequency(imei1,recordLimit);
+    public List<VtuLocationDto> getLocationRecordByFrequency(Long imei1, Integer recordLimit, Date startTime, Date endTime){
+        return alertRepositoryImpl.getLocationRecordByFrequency(imei1,recordLimit, startTime, endTime);
     }
     public List<BufferDto> getBuffer(Long item){
         return alertRepositoryImpl.getBuffer(item);
@@ -123,8 +123,8 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit) {
-        return alertRepositoryImpl.getAlertLocationOverSpeed(imei,speedLimit);
+    public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Date startTime, Date endTime) {
+        return alertRepositoryImpl.getAlertLocationOverSpeed(imei,speedLimit, startTime, endTime);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package gov.orsac.RDVTS.service;
 
+import java.util.Date;
 import java.util.List;
 
 import gov.orsac.RDVTS.dto.*;
@@ -16,7 +17,7 @@ public interface AlertService  {
 
     List<Long> getImeiForNoMovement();
 
-    List<VtuLocationDto> getLocationRecordByFrequency(Long imei1, Integer recordLimit);
+    List<VtuLocationDto> getLocationRecordByFrequency(Long imei1, Integer recordLimit, Date startTime, Date endTime);
 
     List<BufferDto> getBuffer(Long item);
 
@@ -31,7 +32,7 @@ public interface AlertService  {
 
 
 
-    List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit);
+    List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Date startTime, Date endTime);
 
     List<AlertCountDto> getTotalAlertToday(/*AlertFilterDto filterDto, */Integer id, Integer userId);
 

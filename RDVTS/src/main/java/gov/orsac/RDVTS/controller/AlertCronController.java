@@ -68,72 +68,82 @@ public class AlertCronController {
         //get all device
         List<DeviceDto> device = deviceService.getAllDeviceDD(deviceId, null);
         Map<String, Integer> map = new HashMap<>();
+        WorkDto packageID = new WorkDto();
         for (DeviceDto item : device) {
             //get Last location of the Current Date
-            VtuLocationDto locationDto = locationService.getLastLocationByImei(item.getImeiNo1());
-            if (locationDto != null) {
-                Integer noDataAlertStatus = 0;
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date();
-                String currDtTime = dateFormat.format(date);//Date to String Convert
-                if (locationDto.getDateTime() != null && !locationDto.getDateTime().toString().isEmpty()) {
-                    String lastLocTime = dateFormat.format(locationDto.getDateTime());
+            Integer vehicleId = deviceService.getvehicleBydevice(item.getId());
+            if (vehicleId != null) {
+                //package
+                //activity Start and End time
 
-                    Date currDtTimeParsed = null;
-                    Date lastLocTimeParsed = null;
-                    try {
-                        currDtTimeParsed = dateFormat.parse(currDtTime);//String To date Convert
-                        lastLocTimeParsed = dateFormat.parse(lastLocTime);//String To date Convert
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    long diff = currDtTimeParsed.getTime() - lastLocTimeParsed.getTime();//get difference of last Location Date and current date
-                    long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diff);//Convert the Difference in minutes
-                    //long diffMinutes = diff / (60 * 1000) % 60;
-                    if (diffInMinutes > noDataAlertTimeSpan) {
-                        noDataAlertStatus = 1;
-                    }
+                int packageCount = workService.getPackageByvehicleIdCount(vehicleId);
+                if (packageCount > 0) {
+                    packageID = workService.getPackageByvehicleId(vehicleId);
+                    if (packageID != null) {
+                        if (packageID.getStartTime() != null && packageID.getEndTime() != null) {
+                            VtuLocationDto locationDto = locationService.getLastLocationByImei(item.getImeiNo1(), packageID.getStartTime(), packageID.getEndTime());
+                            if (locationDto != null) {
+                                Integer noDataAlertStatus = 0;
+                                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                Date date = new Date();
+                                String currDtTime = dateFormat.format(date);//Date to String Convert
+                                if (locationDto.getDateTime() != null && !locationDto.getDateTime().toString().isEmpty()) {
+                                    String lastLocTime = dateFormat.format(locationDto.getDateTime());
+
+                                    Date currDtTimeParsed = null;
+                                    Date lastLocTimeParsed = null;
+                                    try {
+                                        currDtTimeParsed = dateFormat.parse(currDtTime);//String To date Convert
+                                        lastLocTimeParsed = dateFormat.parse(lastLocTime);//String To date Convert
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                    long diff = currDtTimeParsed.getTime() - lastLocTimeParsed.getTime();//get difference of last Location Date and current date
+                                    long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diff);//Convert the Difference in minutes
+                                    //long diffMinutes = diff / (60 * 1000) % 60;
+                                    if (diffInMinutes > noDataAlertTimeSpan) {
+                                        noDataAlertStatus = 1;
+                                    }
 //                        System.out.println(noDataAlertStatus);
-                    if (noDataAlertStatus == 1) {
-                        Boolean alertExists = alertService.checkAlertExists(item.getImeiNo1(), NO_DATA_ALERT_ID); //Check If alert Exist Or Not
-                        if (!alertExists) {
+                                    if (noDataAlertStatus == 1) {
+                                        Boolean alertExists = alertService.checkAlertExists(item.getImeiNo1(), NO_DATA_ALERT_ID); //Check If alert Exist Or Not
+                                        if (!alertExists) {
 
-                            AlertEntity alertEntity = new AlertEntity();
-                            alertEntity.setImei(locationDto.getImei());
-                            alertEntity.setAlertTypeId(NO_DATA_ALERT_ID);
-                            if (locationDto.getLatitude() != null) {
-                                alertEntity.setLatitude(Double.parseDouble(locationDto.getLatitude()));
-                            }
-                            if (locationDto.getLongitude() != null) {
-                                alertEntity.setLongitude(Double.parseDouble(locationDto.getLongitude()));
-                            }
-                            if (locationDto.getAltitude() != null) {
-                                alertEntity.setAltitude(Double.parseDouble(locationDto.getAltitude()));
-                            }
-                            if (locationDto.getAccuracy() != null) {
-                                alertEntity.setAccuracy(Double.parseDouble(locationDto.getAccuracy()));
-                            }
-                            Double speed=0.0;
-                            try {
-                                speed = Double.parseDouble(locationDto.getSpeed());
-                            } catch (NumberFormatException e) {
-                                speed = 0.0;
-                            }
-                            alertEntity.setSpeed(speed);
-                            alertEntity.setGpsDtm(currDtTimeParsed);
+                                            AlertEntity alertEntity = new AlertEntity();
+                                            alertEntity.setImei(locationDto.getImei());
+                                            alertEntity.setAlertTypeId(NO_DATA_ALERT_ID);
+                                            if (locationDto.getLatitude() != null) {
+                                                alertEntity.setLatitude(Double.parseDouble(locationDto.getLatitude()));
+                                            }
+                                            if (locationDto.getLongitude() != null) {
+                                                alertEntity.setLongitude(Double.parseDouble(locationDto.getLongitude()));
+                                            }
+                                            if (locationDto.getAltitude() != null) {
+                                                alertEntity.setAltitude(Double.parseDouble(locationDto.getAltitude()));
+                                            }
+                                            if (locationDto.getAccuracy() != null) {
+                                                alertEntity.setAccuracy(Double.parseDouble(locationDto.getAccuracy()));
+                                            }
+                                            Double speed = 0.0;
+                                            try {
+                                                speed = Double.parseDouble(locationDto.getSpeed());
+                                            } catch (NumberFormatException e) {
+                                                speed = 0.0;
+                                            }
+                                            alertEntity.setSpeed(speed);
+                                            alertEntity.setGpsDtm(currDtTimeParsed);
 
-                            AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
-
-
+                                            AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+                                        }
+                                    } else {
+                                        alertService.updateResolve(item.getImeiNo1(), NO_DATA_ALERT_ID);//set is_resolve True
+                                    }
+                                }
+                            }
                         }
-                    } else {
-                        alertService.updateResolve(item.getImeiNo1(), NO_DATA_ALERT_ID);//set is_resolve True
                     }
-
                 }
-
             }
-
         }
 
     }
@@ -143,71 +153,87 @@ public class AlertCronController {
 
 
 //        System.out.println("generateNoMovementAlert");
-
-
-        AlertTypeEntity alertTypeEntity=alertService.getAlertTypeDetails(NO_MOVEMENT_ALERT_ID);
+        AlertTypeEntity alertTypeEntity = alertService.getAlertTypeDetails(NO_MOVEMENT_ALERT_ID);
         //Get Imei
         List<Long> imei = alertService.getImeiForNoMovement(); //get today all imei
+        WorkDto packageID = new WorkDto();
         if (imei.size() > 0) {
             for (Long item : imei) {
-                Integer recordLimit = NO_MOVEMENT_TIME_GAP * LOCATION_DATA_FREQUENCY;
-                List<VtuLocationDto> vtuLocationDto = alertService.getLocationRecordByFrequency(item, recordLimit);
-                //Create buffer of First First Point
-                Integer outsideCount = 0;
-                for (VtuLocationDto vtuItem : vtuLocationDto) {
-                    Boolean b = alertService.checkIntersected(vtuLocationDto.get(0).getLongitude(), vtuLocationDto.get(0).getLatitude(), vtuItem.getLongitude(), vtuItem.getLatitude());
-                    if (b == false) {
-                        outsideCount++;
-                    }
+
+                Integer deviceId =  deviceService.getDeviceByImei(item);
+                if (deviceId != null) {
+                    Integer vehicleId = deviceService.getvehicleBydevice(deviceId);
+                    if (vehicleId != null) {
+                        int packageCount = workService.getPackageByvehicleIdCount(vehicleId);
+                        if(packageCount>0) {
+                            packageID = workService.getPackageByvehicleId(vehicleId);
+                            if (packageID.getStartTime() != null && packageID.getEndTime() != null){
+
+                                Integer recordLimit = NO_MOVEMENT_TIME_GAP * LOCATION_DATA_FREQUENCY;
+                                List<VtuLocationDto> vtuLocationDto = alertService.getLocationRecordByFrequency(item, recordLimit, packageID.getStartTime(), packageID.getEndTime());
+                                //Create buffer of First First Point
+                                Integer outsideCount = 0;
+                                for (VtuLocationDto vtuItem : vtuLocationDto) {
+                                    Boolean b = alertService.checkIntersected(vtuLocationDto.get(0).getLongitude(), vtuLocationDto.get(0).getLatitude(), vtuItem.getLongitude(), vtuItem.getLatitude());
+                                    if (b == false) {
+                                        outsideCount++;
+                                    }
 
 
-                }
+                                }
 
-                if (outsideCount >= OUTSIDE_POINT_COUNT) {
-                    //resolve if there is any unresolve no-movement alert present
+                                if (outsideCount >= OUTSIDE_POINT_COUNT) {
+                                    //resolve if there is any unresolve no-movement alert present
 
-                    Boolean updateResolve = alertService.updateResolve(item, NO_MOVEMENT_ALERT_ID);
-                    //break;
+                                    Boolean updateResolve = alertService.updateResolve(item, NO_MOVEMENT_ALERT_ID);
+                                    //break;
 //                        if (!updateResolve) {
 //                            break;
 ////                            return true;
 //                        }
 
-                }
+                                }
 
-                if (outsideCount < OUTSIDE_POINT_COUNT) {
-                    Boolean alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
-                    if (!alertExists) {
-                        AlertEntity alertEntity = new AlertEntity();
-                        alertEntity.setImei(item);
-                        alertEntity.setAlertTypeId(NO_MOVEMENT_ALERT_ID);
-                        if (vtuLocationDto.get(0).getLatitude() != null) {
-                            alertEntity.setLatitude(Double.parseDouble(vtuLocationDto.get(0).getLatitude()));
-                        }
-                        if (vtuLocationDto.get(0).getLongitude() != null) {
-                            alertEntity.setLongitude(Double.parseDouble(vtuLocationDto.get(0).getLongitude()));
-                        }
-                        if (vtuLocationDto.get(0).getAltitude() != null) {
-                            alertEntity.setAltitude(Double.parseDouble(vtuLocationDto.get(0).getAltitude()));
-                        }
-                        if (vtuLocationDto.get(0).getAccuracy() != null) {
-                            alertEntity.setAccuracy(Double.parseDouble(vtuLocationDto.get(0).getAccuracy()));
-                        }
+                                if (outsideCount < OUTSIDE_POINT_COUNT) {
+                                    Boolean alertExists = alertService.checkAlertExists(item, NO_MOVEMENT_ALERT_ID); //Check If alert Exist Or Not
+                                    if (!alertExists) {
+                                        AlertEntity alertEntity = new AlertEntity();
+                                        alertEntity.setImei(item);
+                                        alertEntity.setAlertTypeId(NO_MOVEMENT_ALERT_ID);
+                                        if (vtuLocationDto.get(0).getLatitude() != null) {
+                                            alertEntity.setLatitude(Double.parseDouble(vtuLocationDto.get(0).getLatitude()));
+                                        }
+                                        if (vtuLocationDto.get(0).getLongitude() != null) {
+                                            alertEntity.setLongitude(Double.parseDouble(vtuLocationDto.get(0).getLongitude()));
+                                        }
+                                        if (vtuLocationDto.get(0).getAltitude() != null) {
+                                            alertEntity.setAltitude(Double.parseDouble(vtuLocationDto.get(0).getAltitude()));
+                                        }
+                                        if (vtuLocationDto.get(0).getAccuracy() != null) {
+                                            alertEntity.setAccuracy(Double.parseDouble(vtuLocationDto.get(0).getAccuracy()));
+                                        }
 
-                        alertEntity.setSpeed(Double.parseDouble(vtuLocationDto.get(0).getSpeed()));
-                        alertEntity.setGpsDtm(new Date());
+                                        alertEntity.setSpeed(Double.parseDouble(vtuLocationDto.get(0).getSpeed()));
+                                        alertEntity.setGpsDtm(new Date());
 
-                        AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+                                        AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
 
+                                    }
+
+                                }
+
+
+
+                            }
+                        }
                     }
-
                 }
+
 
 
             }
 
         }
-
 
 
     }
@@ -218,7 +244,7 @@ public class AlertCronController {
 
         List<WorkDto> workDto = workService.getWorkById(-1);
 
-        Integer userId=1;
+        Integer userId = 1;
         //Foreach Work Get Vehicle
         //Foreach Vechicle get Device
         //Foreach device get Imei
@@ -227,19 +253,17 @@ public class AlertCronController {
         for (WorkDto Work : workDto) {
             //Foreach work get Road Geom
             List<RoadMasterDto> road = roadService.getRoadByWorkId(Work.getId());
-            //Foreach Work Get Vehicle
-            //Foreach Vechicle get Device
-            //Foreach device get Imei
-            //Foreach Imei Get location Record list
-            if ( road.size()>0 && road.get(0).getGeom() != null) {
-                List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
-                for (ActivityWorkMapping activityId : activityDtoList) {
-                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
+            //Foreach Work Get Activities
+            if (road.size() > 0 && road.get(0).getGeom() != null) {
+                List<GeoMappingEntity> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
+                for (GeoMappingEntity activityId : activityDtoList) {
+                    //Each activity get vehicles
+                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(),
+                            userId, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
+
                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                         List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(), userId);
                         if (getdeviceList.size() > 0) {
-
-
                             for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                 List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                 //int i = 0;
@@ -248,7 +272,8 @@ public class AlertCronController {
                                     Date endDate = null;
                                     Integer recordLimit = NO_MOVEMENT_TIME_GAP * LOCATION_DATA_FREQUENCY;
 
-                                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate(), recordLimit);
+                                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate,
+                                            vehicleid.getCreatedOn(), vehicleid.getDeactivationDate(), recordLimit);
                                     // Integer outsideCount=0;
                                     for (VtuLocationDto vtuItem : vtuLocationDto) {
 //                                            if (road.size() > 0 && road.get(0).getGeom() != null) {
@@ -285,89 +310,103 @@ public class AlertCronController {
                                             Boolean updateResolve = alertService.updateResolve(vtuItem.getImei(), GEO_FENCE_ALERT_ID);
 
                                         }
-
-
 //                                            }
-
-
                                     }
-
-
                                 }
-
-
                             }
                         }
                     }
-
                 }
             }
+
+
+
+            //Foreach Vehicle get Device
+            //Foreach device get Imei
+            //Foreach Imei Get location Record list
+
         }
-
-
     }
 
     @Scheduled(cron = "0 */5 * * * *")
     public void generateOverSpeedAlert() throws ParseException {
 //        System.out.println("generateOverSpeedAlert");
 
-        List<AlertDto> alertDto= alertService.getAllDeviceByVehicle();
+        List<AlertDto> alertDto = alertService.getAllDeviceByVehicle();
+        WorkDto packageID = new WorkDto();
         for (AlertDto alertDtoItem : alertDto) {
-            List<VtuLocationDto> vtuLocationDto=alertService.getAlertLocationOverSpeed(alertDtoItem.getImei(),alertDtoItem.getSpeedLimit());
-            if (vtuLocationDto !=null){
 
-                if (vtuLocationDto.size()>0){
-                    Boolean checkSpeedStatus=false;
-                    for (VtuLocationDto item: vtuLocationDto) {
-                        Boolean checkIsNumeric=isNumeric(item.getSpeed());
-                        if (checkIsNumeric){
-                            if (Double.parseDouble(item.getSpeed())>alertDtoItem.getSpeedLimit()){
-                                Boolean alertExists = alertService.checkAlertExists(item.getImei(), OVER_SPEED_ALERT_ID); //Check If alert Exist Or Not
-                                if (!alertExists) {
+            Integer deviceId =  deviceService.getDeviceByImei(alertDtoItem.getImei());
+            if (deviceId != null) {
+                Integer vehicleId = deviceService.getvehicleBydevice(deviceId);
+                if (vehicleId != null) {
+                    int packageCount = workService.getPackageByvehicleIdCount(vehicleId);
+                    if (packageCount > 0) {
+                        packageID = workService.getPackageByvehicleId(vehicleId);
+                        if (packageID.getStartTime() != null && packageID.getEndTime() != null) {
 
-                                    AlertEntity alertEntity = new AlertEntity();
-                                    alertEntity.setImei(item.getImei());
-                                    alertEntity.setAlertTypeId(OVER_SPEED_ALERT_ID);
-                                    if (item.getLatitude() != null) {
-                                        alertEntity.setLatitude(Double.parseDouble(item.getLatitude()));
+
+                            List<VtuLocationDto> vtuLocationDto = alertService.getAlertLocationOverSpeed(alertDtoItem.getImei(), alertDtoItem.getSpeedLimit(), packageID.getStartTime(), packageID.getEndTime());
+                            if (vtuLocationDto != null) {
+
+                                if (vtuLocationDto.size() > 0) {
+                                    Boolean checkSpeedStatus = false;
+                                    for (VtuLocationDto item : vtuLocationDto) {
+                                        Boolean checkIsNumeric = isNumeric(item.getSpeed());
+                                        if (checkIsNumeric) {
+                                            if (Double.parseDouble(item.getSpeed()) > alertDtoItem.getSpeedLimit()) {
+                                                Boolean alertExists = alertService.checkAlertExists(item.getImei(), OVER_SPEED_ALERT_ID); //Check If alert Exist Or Not
+                                                if (!alertExists) {
+
+                                                    AlertEntity alertEntity = new AlertEntity();
+                                                    alertEntity.setImei(item.getImei());
+                                                    alertEntity.setAlertTypeId(OVER_SPEED_ALERT_ID);
+                                                    if (item.getLatitude() != null) {
+                                                        alertEntity.setLatitude(Double.parseDouble(item.getLatitude()));
+                                                    }
+                                                    if (item.getLongitude() != null) {
+                                                        alertEntity.setLongitude(Double.parseDouble(item.getLongitude()));
+                                                    }
+                                                    if (item.getAltitude() != null) {
+                                                        alertEntity.setAltitude(Double.parseDouble(item.getAltitude()));
+                                                    }
+                                                    if (item.getAccuracy() != null) {
+                                                        alertEntity.setAccuracy(Double.parseDouble(item.getAccuracy()));
+                                                    }
+
+                                                    alertEntity.setSpeed(Double.parseDouble(item.getSpeed()));
+                                                    alertEntity.setGpsDtm(new Date());
+
+                                                    AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+
+
+                                                }
+                                                checkSpeedStatus = true;
+                                                break;
+                                            }
+                                        }
+
                                     }
-                                    if (item.getLongitude() != null) {
-                                        alertEntity.setLongitude(Double.parseDouble(item.getLongitude()));
+                                    if (checkSpeedStatus == false) {
+                                        Boolean updateResolve = alertService.updateResolve(vtuLocationDto.get(0).getImei(), OVER_SPEED_ALERT_ID);
                                     }
-                                    if (item.getAltitude() != null) {
-                                        alertEntity.setAltitude(Double.parseDouble(item.getAltitude()));
-                                    }
-                                    if (item.getAccuracy() != null) {
-                                        alertEntity.setAccuracy(Double.parseDouble(item.getAccuracy()));
-                                    }
-
-                                    alertEntity.setSpeed(Double.parseDouble(item.getSpeed()));
-                                    alertEntity.setGpsDtm(new Date());
-
-                                    AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
-
-
 
                                 }
-                                checkSpeedStatus=true;
-                                break;
+
+
                             }
+
                         }
 
-                    }
-                    if (checkSpeedStatus==false){
-                        Boolean updateResolve = alertService.updateResolve(vtuLocationDto.get(0).getImei(), OVER_SPEED_ALERT_ID);
-                    }
 
+                        }
+                    }
                 }
-
-
             }
-
-        }
 
 
     }
+
     public static boolean isNumeric(String strNum) {
         if (strNum == null) {
             return false;
@@ -380,14 +419,14 @@ public class AlertCronController {
         return true;
     }
 
-   @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public RDVTSResponse getActiveAndInactiveVehicleCron() {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-             int userId=1;
-            List<DashboardCronEntity>  vehicle = dashboardService.getActiveAndInactiveVehicleCron(userId);
-           // System.out.println("TRUE");
+            int userId = 1;
+            List<DashboardCronEntity> vehicle = dashboardService.getActiveAndInactiveVehicleCron(userId);
+            // System.out.println("TRUE");
 
             result.put("vehicle", vehicle);
             response.setData(result);
@@ -404,50 +443,15 @@ public class AlertCronController {
         }
         return response;
     }
-/*@PostMapping("/getDashboardData")
-public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer typeId) {
-    RDVTSResponse response = new RDVTSResponse();
-    Map<String, Object> result = new HashMap<>();
 
-    try {
-        List<DashboardDto> dashboardData = dashboardService.getDashboardData(typeId);
-        Integer active=dashboardRepositoryImpl.getActiveData();
-        Integer inActive=dashboardRepositoryImpl.getInActiveData();
-        Integer total=dashboardRepositoryImpl.getTotalData();
-        Double activePercentage=(Double.valueOf(active)/Double.valueOf(total))*100;
-        Double inActivePercentage=(Double.valueOf(inActive)/Double.valueOf(total))*100;
-
-
-        result.put("dashboardData",dashboardData);
-        result.put("active",active);
-        result.put("inActive",inActive);
-        result.put("total",total);
-        result.put("activePercentage",activePercentage);
-        result.put("inActivePercentage",inActivePercentage);
-
-        response.setData(result);
-        response.setStatus(1);
-        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-        response.setMessage("Dashboard Data");
-
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        response = new RDVTSResponse(0,
-                new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                ex.getMessage(),
-                result);
-    }
-    return response;
-}*/
-
-   // WorkByIdCron
-   @Scheduled(cron = "0 */5 * * * *")
+    // WorkByIdCron
+    @Scheduled(cron = "0 */5 * * * *")
     public RDVTSResponse getVehicleLocationCornForWork() {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            int data=0;
-            List<WorkCronEntity> workList=new ArrayList<>();
+            int data = 0;
+            List<WorkCronEntity> workList = new ArrayList<>();
 
             List<WorkDto> workDto = workService.getWorkById(-1);
             //System.out.println(workDto.size());
@@ -457,20 +461,22 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
                 Date endDate1 = null;
                 Date vehicleStartDate = null;
                 Date vehicleEndDate = null;
-                Double todayDistance=0.0;
+                Double todayDistance = 0.0;
                 Double totalDistance = 0.0;
-                Double totalSpeedWork=0.0;
-                Double avgSpeedToday=0.0;
-                Integer totalActiveVehicle=0;
-                WorkCronEntity work=new WorkCronEntity();
+                Double totalSpeedWork = 0.0;
+                Double avgSpeedToday = 0.0;
+                Integer totalActiveVehicle = 0;
+                WorkCronEntity work = new WorkCronEntity();
                 //Activity By WorkId
-                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
+                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getPackageId());
+
+
                 for (ActivityDto activityId : activityDtoList) {
                     //Vehicle By ActivityId
-                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), -1,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), -1, activityId.getActivityStartDate(), activityId.getActivityCompletionDate());
                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
-                         //Device By VehicleId
-                        List<VehicleDeviceMappingDto> getDeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(),null);
+                        //Device By VehicleId
+                        List<VehicleDeviceMappingDto> getDeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(), null);
                         for (VehicleDeviceMappingDto deviceListItem : getDeviceList) {
                             //Imei By DeviceId
                             List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(deviceListItem.getDeviceId());
@@ -478,27 +484,26 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
                             for (DeviceDto imei : getImeiList) {
                                 List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(),
                                         vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-                                totalActiveVehicle+=locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(),
+                                totalActiveVehicle += locationService.getActiveVehicle(imei.getImeiNo1(), imei.getImeiNo2(),
                                         vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
                                 totalDistance += locationService.getDistance(imei.getImeiNo1(), imei.getImeiNo2(),
                                         vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
                                 todayDistance += locationService.getTodayDistance(imei.getImeiNo1(), imei.getImeiNo2(),
                                         vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-                                List<VtuLocationDto> vtuAvgSpeedToday=locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(),
+                                List<VtuLocationDto> vtuAvgSpeedToday = locationService.getAvgSpeedToday(imei.getImeiNo1(), imei.getImeiNo2(),
                                         vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
-                                int i=0;
+                                int i = 0;
                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
                                     i++;
-                                    if(Double.isNaN(Double.valueOf(vtuobj.getSpeedOfVehicle()))){
-                                        totalSpeedWork+=0.0;
-                                    }
-                                    else {
+                                    if (Double.isNaN(Double.valueOf(vtuobj.getSpeedOfVehicle()))) {
+                                        totalSpeedWork += 0.0;
+                                    } else {
                                         totalSpeedWork += vtuobj.getSpeedOfVehicle();
                                     }
                                 }
-                                totalSpeedWork=totalSpeedWork/i;
-                                int j=0;
-                                for (VtuLocationDto vtuTodaySpeedObj:vtuAvgSpeedToday) {
+                                totalSpeedWork = totalSpeedWork / i;
+                                int j = 0;
+                                for (VtuLocationDto vtuTodaySpeedObj : vtuAvgSpeedToday) {
                                     j++;
                                     if (Double.isNaN(Double.valueOf(vtuTodaySpeedObj.getSpeed()))) {
                                         avgSpeedToday += 0.0;
@@ -506,7 +511,7 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
                                         avgSpeedToday += Double.parseDouble(vtuTodaySpeedObj.getSpeed());
                                     }
                                 }
-                                avgSpeedToday=avgSpeedToday/j;
+                                avgSpeedToday = avgSpeedToday / j;
 
                             }
                         }
@@ -515,16 +520,14 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
                 }
                 work.setWorkId(workitem.getId());
                 work.setTodayDistance(todayDistance);
-                if(Double.isNaN(totalSpeedWork)){
+                if (Double.isNaN(totalSpeedWork)) {
                     work.setTotalSpeedWork(0.0);
-                }
-                else{
+                } else {
                     work.setTotalSpeedWork(totalSpeedWork);
                 }
-                if(Double.isNaN(totalSpeedWork)){
+                if (Double.isNaN(totalSpeedWork)) {
                     work.setAvgSpeedToday(0.0);
-                }
-                else{
+                } else {
                     work.setAvgSpeedToday(avgSpeedToday);
                 }
 
@@ -533,13 +536,9 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
 
                 work.setTotalDistance(totalDistance);
                 workList.add(work);
-            // System.out.println(data++);
             }
-           // System.out.println("saveAll");
-           // workCronRepository.saveAll(workList);
-           alertService.save(workList);
 
-          //  System.out.println("TRUE Work");
+            alertService.save(workList);
 
             response.setData(result);
             response.setStatus(1);
@@ -557,56 +556,17 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
     }
 
 
-
-
-
-
     @Scheduled(cron = "0 */5 * * * *")
     public RDVTSResponse setPoolingStatus() {
         try {
-           vehicleRepository.saveVehiclePoolingStatus();
+            vehicleRepository.saveVehiclePoolingStatus();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-      return null;
+        return null;
     }
 
-
-
 }
-
-
-
-//Query
-//SELECT COUNT(*) from (
-//        select * from
-//        (
-//        SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,
-//        vm.model, vm.chassis_no,vm.engine_no,vm.is_active as active,
-//        device.device_id as deviceId,
-//        vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,dam.dist_id, dam.division_id,
-//        owner.user_id as userId, owner.user_id as userByVehicleId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,
-//        owner.contractor_id ,   contractor.name as contractorName,am.id  as activityId,case when vdCount.vehicleCount>0 then true else false end as deviceAssigned,
-//        case when vtuLocation.pooling_status IS NOT NULL then vtuLocation.pooling_status else false end ,case when actCount.activityCount>0 then true else false end as activityAssigned
-//        FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id
-//        left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true
-//        left join rdvts_oltp.device_area_mapping as dam on dam.device_id = device.device_id and dam.is_active =true
-//        left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true
-//        left join rdvts_oltp.activity_m as am on am.id = activity.activity_id
-//        left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id
-//        left join rdvts_oltp.work_m as work on work.id = awm.work_id
-//        left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id
-//        left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id
-//        left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id
-//        left join rdvts_oltp.device_m as dm on dm.id=device.device_id
-//        left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping
-//        where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id
-//        left join rdvts_oltp.vehicle_pooling_status as vtuLocation on vtuLocation.vehicle_id=vm.id
-//        left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id
-//        from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount on actCount.vehicle_id=activity.vehicle_id
-//        ) as vehicleList
-//        ) as t
-//        Order by id
 
 
 

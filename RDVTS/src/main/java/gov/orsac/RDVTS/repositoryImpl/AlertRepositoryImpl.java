@@ -229,12 +229,16 @@ public class AlertRepositoryImpl {
         return namedJdbc.queryForList(qry, sqlParam,Long.class);
     }
 
-    public List<VtuLocationDto> getLocationRecordByFrequency(Long imei1,Integer recordLimit) {
+    public List<VtuLocationDto> getLocationRecordByFrequency(Long imei1,Integer recordLimit, Date startTime, Date endTime) {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
         String qry = "SELECT * FROM rdvts_oltp.vtu_location where imei =:imei1  and gps_fix::numeric=1" +
-                "                                ORDER BY date_time ASC limit :recordLimit" ;
+                "     and date_time between :startTime and :endTime ORDER BY date_time ASC limit :recordLimit" ;
+
         sqlParam.addValue("imei1", imei1);
         sqlParam.addValue("recordLimit", recordLimit);
+        sqlParam.addValue("startTime", startTime);
+        sqlParam.addValue("endTime", endTime);
+
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
     }
 
@@ -292,7 +296,7 @@ public class AlertRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
     }
 
-    public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit) {
+    public List<VtuLocationDto> getAlertLocationOverSpeed(Long imei, double speedLimit, Date startTime, Date endTime) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -311,13 +315,16 @@ public class AlertRepositoryImpl {
         Date currentDate=new Date();
 
 
-        qry += "   AND date_time >=:currentDateTime::timestamp AND  date_time BETWEEN :currentDateMinus AND :currentDate  order by date_time ASC ";
+        qry += "   AND date_time BETWEEN :startTime AND :startTime  order by date_time ASC ";
         sqlParam.addValue("imei1", imei);
         sqlParam.addValue("currentDateTime",currentDateTime);
 
         sqlParam.addValue("currentDateMinus", currentDateMinus);
         sqlParam.addValue("speedLimit", speedLimit);
         sqlParam.addValue("currentDate", currentDate);
+        sqlParam.addValue("startTime", startTime);
+        sqlParam.addValue("endTime", endTime);
+
 
         List<VtuLocationDto> vtuLocationDtoList= namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
       return vtuLocationDtoList;
