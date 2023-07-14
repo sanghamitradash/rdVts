@@ -3,6 +3,7 @@ package gov.orsac.RDVTS.controller;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.AlertTypeEntity;
+import gov.orsac.RDVTS.entities.GeoMappingEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.*;
@@ -134,8 +135,8 @@ try{
         for (RoadMasterDto road:roadMasterDtoList) {
             List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(road.getGroadId());
             for (GeoMasterDto item : workByRoad) {
-                List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(item.getWorkId());
-                for (ActivityWorkMapping activityId : activityDtoList) {
+                List<GeoMappingEntity> activityDtoList = workService.getActivityDetailsByWorkId(item.getWorkId());
+                for (GeoMappingEntity activityId : activityDtoList) {
                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                     for (VehicleActivityMappingDto vehicleObj : veActMapDto) {
                         VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleObj.getVehicleId());
@@ -152,8 +153,8 @@ try{
     else if (roadId !=null && roadId>0) {
         List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(roadId);
         for (GeoMasterDto item : workByRoad) {
-            List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(item.getWorkId());
-            for (ActivityWorkMapping activityId : activityDtoList) {
+            List<GeoMappingEntity> activityDtoList = workService.getActivityDetailsByWorkId(item.getWorkId());
+            for (GeoMappingEntity activityId : activityDtoList) {
                 List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
                 for (VehicleActivityMappingDto vehicleObj : veActMapDto) {
                     VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleObj.getVehicleId());

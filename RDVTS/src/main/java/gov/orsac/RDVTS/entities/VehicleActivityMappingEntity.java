@@ -29,9 +29,11 @@ public class VehicleActivityMappingEntity {
     @Column(name = "activity_id")
     private Integer activityId;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "start_time")
     private Date startTime;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "end_time")
     private Date endTime;
 

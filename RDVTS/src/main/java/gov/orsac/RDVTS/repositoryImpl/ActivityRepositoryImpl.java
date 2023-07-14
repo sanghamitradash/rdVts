@@ -213,12 +213,12 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
     }
 
-    public Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId) {
+    public Boolean activityVehicleDeassign(Integer vehicleId, Integer geoMappingId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "update rdvts_oltp.vehicle_activity_mapping  " +
                 "set is_active=false  " +
-                "where  activity_id=(SELECT id from rdvts_oltp.activity_work_mapping where is_active=true and  activity_id=:activityId) and vehicle_id=:vehicleId ";
-        sqlParam.addValue("activityId", activityId);
+                "where  geo_mapping_id=:geoMappingId and vehicle_id=:vehicleId ";
+        sqlParam.addValue("geoMappingId", geoMappingId);
         sqlParam.addValue("vehicleId", vehicleId);
         int update = namedJdbc.update(qry, sqlParam);
         Boolean result = false;
@@ -235,16 +235,15 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityStatusDto.class));
     }
 
-    public List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId) {
+    public List<VehicleMasterDto> getVehicleByActivityId(Integer geoMappingId, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT distinct vm.id,vm.vehicle_no,vm.vehicle_type_id,type.name as vehicleTypeName,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no  " +
                 "from rdvts_oltp.vehicle_m as vm  " +
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vm.id and vam.is_active = true " +
-                "left join rdvts_oltp.activity_work_mapping as awm on vam.activity_id = awm.id " +
                 "left join rdvts_oltp.vehicle_type as type on type.id = vm.vehicle_type_id  " +
-                "WHERE vm.is_active = true AND  awm.activity_id=:activityId " +
-                 "and awm.id=:activityWorkMapId " ;
-        sqlParam.addValue("activityId",activityId);
+                "WHERE vm.is_active = true AND vam.geo_mapping_id=:geoMappingId";
+
+        sqlParam.addValue("geoMappingId",geoMappingId);
         sqlParam.addValue("userId",userId);
 //        sqlParam.addValue("activityWorkMapId",activityWorkMapId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
@@ -257,20 +256,19 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ResolvedStatusDto.class));
     }
 
-    public List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId, Integer workId) {
+    public List<ActivityDto> getActivityByIdAndWorkId(Integer activityId, Integer userId, Integer geoMappingId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry =" SELECT am.id,am.activity_name,gm.package_id,gm.activity_quantity,gm.activity_start_date,gm.activity_completion_date,   " +
+                "gm.actual_activity_start_date,gm.actual_activity_completion_date,gm.executed_quantity, " +
+                " (case when (gm.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as activityStatusName, gm.id as geo_mapping_id, gm.activity_status " +
+                " from rdvts_oltp.activity_m as am  " +
+                "left join rdvts_oltp.geo_mapping as gm on gm.activity_id = am.id  " +
+                "Where gm.id =:geoMappingId and am.is_active = true ";
 
-        String qry = " SELECT distinct aw.activity_id,am.activity_name,aw.work_id,aw.activity_quantity,aw.activity_start_date,aw.activity_completion_date,   " +
-                "aw.actual_activity_start_date,aw.actual_activity_completion_date,aw.executed_quantity,aw.activity_status,status.name as activityStatusName,  " +
-                "aw.g_activity_id,aw.g_work_id from rdvts_oltp.activity_work_mapping as aw  " +
-                "left join rdvts_oltp.activity_m as am on am.id = aw.activity_id AND aw.is_active = true  " +
-                "left join rdvts_oltp.activity_status_m as status on status.id = aw.activity_status  " +
-                "Where aw.work_id =:workId AND aw.activity_id =:activityId and aw.is_active = true ";
-                
-        sqlParam.addValue("activityId", activityId);
-        sqlParam.addValue("workId",workId);
+
+        sqlParam.addValue("geoMappingId",geoMappingId);
         sqlParam.addValue("userId",userId);
-        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ActivityWorkMappingDto.class));
+        return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ActivityDto.class));
 
     }
 
@@ -302,15 +300,20 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(ActivityWorkMapping.class));
     }
 
-    public Integer updateActivity(Integer id,ActivityWorkMappingDto activityData) {
+    public Integer updateActivity(Integer id,ActivityWorkMappingDto activityData, Integer geoMappingId) {
         MapSqlParameterSource sqlParam  = new MapSqlParameterSource();
-        String qry = " UPDATE rdvts_oltp.activity_work_mapping SET actual_activity_start_date=:actualActivityStartDate ,actual_activity_completion_date=:actualActivityCompletionDate,  " +
-                     " activity_status=:activityStatus  WHERE is_active = true  AND id=:id         ";
+//        String qry = " UPDATE rdvts_oltp.geo_mapping SET actual_activity_start_date=:actualActivityStartDate ,actual_activity_completion_date=:actualActivityCompletionDate,  " +
+//                     " activity_status=:activityStatus  WHERE is_active = true  AND id=:id         ";
        // sqlParam.addValue("id",activityData.getActivityId());
+        String qry = " UPDATE rdvts_oltp.geo_mapping SET \n" +
+                "completion_date = case when completion_date is null then :actualActivityCompletionDate  else completion_date end, \n" +
+                "actual_activity_start_date=:actualActivityStartDate ,actual_activity_completion_date=:actualActivityCompletionDate,   \n" +
+                "activity_status=:activityStatus WHERE is_active = true  AND id=:id ";
         sqlParam.addValue("id",id);
         sqlParam.addValue("actualActivityStartDate",activityData.getActualActivityStartDate());
         sqlParam.addValue("actualActivityCompletionDate",activityData.getActualActivityCompletionDate());
         sqlParam.addValue("activityStatus",activityData.getActivityStatus());
+        sqlParam.addValue("id", geoMappingId);
         return namedJdbc.update(qry,sqlParam);
 
     }

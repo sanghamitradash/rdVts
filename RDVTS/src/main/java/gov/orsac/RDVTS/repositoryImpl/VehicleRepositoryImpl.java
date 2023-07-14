@@ -1183,19 +1183,20 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public List<VehicleActivityMappingDto> getVehicleByActivityId(Integer activityId, Integer userId, Date actualActivityStartDate, Date actualActivityCompletionDate) {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = " SELECT id, vehicle_id, activity_id, start_time, end_time, start_date, end_date, is_active, created_by, created_on, updated_by, updated_on, deactivation_date, g_activity_id " +
+        String qry = " SELECT id, vehicle_id, activity_id, start_time, end_time, " +
+                "start_date, end_date, is_active, created_by, created_on, updated_by, updated_on, deactivation_date, g_activity_id,geo_mapping_id " +
                 " FROM rdvts_oltp.vehicle_activity_mapping where is_active=true  ";
-        if (actualActivityCompletionDate == null) {
-            actualActivityCompletionDate = new Date();
-        }
+//        if (actualActivityCompletionDate == null) {
+//            actualActivityCompletionDate = new Date();
+//        }
 
-        if (actualActivityStartDate != null && actualActivityCompletionDate != null) {
-            qry += " AND  created_on BETWEEN :activityStartDate AND :activityCompletionDate ";
-            sqlParam.addValue("activityStartDate", actualActivityStartDate);
-            sqlParam.addValue("activityCompletionDate", actualActivityCompletionDate);
-        }
+//        if (actualActivityStartDate != null && actualActivityCompletionDate != null) {
+//            qry += " AND  created_on BETWEEN :activityStartDate AND :activityCompletionDate ";
+//            sqlParam.addValue("activityStartDate", actualActivityStartDate);
+//            sqlParam.addValue("activityCompletionDate", actualActivityCompletionDate);
+//        }
         if (activityId != null && activityId > 0) {
-            qry += " AND activity_id=:activityId ";
+            qry += " AND geo_mapping_id=:activityId ";
             sqlParam.addValue("activityId", activityId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleActivityMappingDto.class));

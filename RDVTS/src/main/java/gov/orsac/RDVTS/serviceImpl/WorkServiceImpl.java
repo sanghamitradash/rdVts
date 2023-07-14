@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityWorkMapping;
+import gov.orsac.RDVTS.entities.GeoMappingEntity;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.VehicleRepository;
@@ -10,6 +11,7 @@ import gov.orsac.RDVTS.repositoryImpl.UserRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.WorkRepositoryImpl;
 import gov.orsac.RDVTS.service.HelperService;
 import gov.orsac.RDVTS.service.WorkService;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -111,7 +113,7 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public List<ActivityWorkMapping> getActivityDetailsByWorkId(Integer workId) {
+    public List<GeoMappingEntity> getActivityDetailsByWorkId(Integer workId) {
         return workRepositoryImpl.getActivityDetailsByWorkId(workId);
     }
 
@@ -128,6 +130,16 @@ public class WorkServiceImpl implements WorkService {
     @Override
     public List<WorkDto> getAsignedActivityDetails(Integer id) {
         return workRepositoryImpl.getAsignedActivityDetails(id);
+    }
+
+    @Override
+    public WorkDto getPackageByvehicleId(Integer vehicleId) {
+        return workRepositoryImpl.getPackageByvehicleId(vehicleId);
+    }
+
+    @Override
+    public Integer getPackageByvehicleIdCount(Integer vehicleId) {
+        return workRepositoryImpl.getPackageByvehicleIdCount(vehicleId);
     }
 
     public Integer deactivateVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {

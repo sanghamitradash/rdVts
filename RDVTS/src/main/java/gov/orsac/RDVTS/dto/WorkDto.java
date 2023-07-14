@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.joda.time.DateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Temporal;
@@ -57,5 +58,9 @@ public class WorkDto {
     private String activityStatus;
     private String activityName;
     private String roadName;
+    private Date startDate;
+    private Date endDate;
+    private Date startTime;
+    private Date endTime;
 
 }

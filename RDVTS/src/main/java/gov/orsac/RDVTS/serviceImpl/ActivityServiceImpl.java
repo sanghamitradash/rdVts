@@ -14,7 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -63,19 +65,19 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Integer updateActivity(Integer id, ActivityWorkMappingDto activityData) {
+    public Integer updateActivity(Integer id, ActivityWorkMappingDto activityData, Integer geoMappingId) {
         /*ActivityWorkMapping existingActivity = activityRepositoryImpl.findByActivityId(id);
         existingActivity.setActivityStatus(activityData.getActivityStatus());
         existingActivity.setActivityStartDate(activityData.getActivityStartDate());
         existingActivity.setActivityCompletionDate(activityData.getActivityCompletionDate());
         ActivityWorkMapping save = activityWorkMappingRepository.save(existingActivity);*/
-        Integer update=activityRepositoryImpl.updateActivity(id,activityData);
+        Integer update=activityRepositoryImpl.updateActivity(id,activityData, geoMappingId);
         return update;
     }
 
     @Override
     public ActivityWorkMapping getActivity(Integer activityId, Integer workId) {
-        return activityRepositoryImpl.getActivity(activityId,workId);
+        return activityRepositoryImpl.getActivity(activityId, workId);
     }
 
 
@@ -104,14 +106,25 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer geoMappingId,Integer userId) {
+    public List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityDto> vehicleActivityMapping, Integer geoMappingId,Integer userId) {
         List<VehicleActivityMappingEntity> vehicleActivity = new ArrayList<>();
         for (int j = 0; j < vehicleActivityMapping.size(); j++) {
             VehicleActivityMappingEntity vehicleActivityMappingEntity = new VehicleActivityMappingEntity();
             vehicleActivityMappingEntity.setGeoMappingId(geoMappingId);
             vehicleActivityMappingEntity.setVehicleId(vehicleActivityMapping.get(0).getVehicleId());
-            vehicleActivityMappingEntity.setStartTime(vehicleActivityMapping.get(0).getStartTime());
-            vehicleActivityMappingEntity.setEndTime(vehicleActivityMapping.get(0).getEndTime());
+
+            try{
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            Date parsedDate = dateFormat.parse(vehicleActivityMapping.get(0).getStartTime());
+                Date startDate = dateFormat.parse(vehicleActivityMapping.get(0).getStartTime());
+                Date endDate = dateFormat.parse(vehicleActivityMapping.get(0).getEndTime());
+                vehicleActivityMappingEntity.setStartTime(startDate);
+                vehicleActivityMappingEntity.setEndTime(endDate);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             vehicleActivityMappingEntity.setStartDate(vehicleActivityMapping.get(0).getStartDate());
             vehicleActivityMappingEntity.setEndDate(vehicleActivityMapping.get(0).getEndDate());
             vehicleActivityMappingEntity.setIsActive(true);
@@ -156,8 +169,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Boolean activityVehicleDeassign(Integer vehicleId, Integer activityId) {
-        return activityRepositoryImpl.activityVehicleDeassign(vehicleId, activityId);
+    public Boolean activityVehicleDeassign(Integer vehicleId, Integer geoMappingId) {
+        return activityRepositoryImpl.activityVehicleDeassign(vehicleId, geoMappingId);
     }
 
     @Override
@@ -166,8 +179,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<VehicleMasterDto> getVehicleByActivityId(Integer activityId, Integer userId) {
-        return activityRepositoryImpl.getVehicleByActivityId(activityId,userId);
+    public List<VehicleMasterDto> getVehicleByActivityId(Integer geoMappingId, Integer userId) {
+        return activityRepositoryImpl.getVehicleByActivityId(geoMappingId,userId);
     }
 
     @Override
@@ -185,8 +198,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityWorkMappingDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer workId) {
-        return activityRepositoryImpl.getActivityByIdAndWorkId(activityId,userId,workId);
+    public List<ActivityDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer geoMappingId) {
+        return activityRepositoryImpl.getActivityByIdAndWorkId(activityId,userId,geoMappingId);
     }
 
     @Override
