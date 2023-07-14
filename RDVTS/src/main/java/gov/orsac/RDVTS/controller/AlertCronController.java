@@ -257,7 +257,10 @@ public class AlertCronController {
             if (road.size() > 0 && road.get(0).getGeom() != null) {
                 List<GeoMappingEntity> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
                 for (GeoMappingEntity activityId : activityDtoList) {
-                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
+                    //Each activity get vehicles
+                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(),
+                            userId, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
+
                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                         List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(), userId);
                         if (getdeviceList.size() > 0) {
@@ -269,7 +272,8 @@ public class AlertCronController {
                                     Date endDate = null;
                                     Integer recordLimit = NO_MOVEMENT_TIME_GAP * LOCATION_DATA_FREQUENCY;
 
-                                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate, vehicleid.getCreatedOn(), vehicleid.getDeactivationDate(), recordLimit);
+                                    List<VtuLocationDto> vtuLocationDto = locationService.getLocationrecordList(imei.getImeiNo1(), imei.getImeiNo2(), startDate, endDate,
+                                            vehicleid.getCreatedOn(), vehicleid.getDeactivationDate(), recordLimit);
                                     // Integer outsideCount=0;
                                     for (VtuLocationDto vtuItem : vtuLocationDto) {
 //                                            if (road.size() > 0 && road.get(0).getGeom() != null) {
