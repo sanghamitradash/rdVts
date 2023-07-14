@@ -77,10 +77,10 @@ public class AlertCronController {
                 //activity Start and End time
 
                 int packageCount = workService.getPackageByvehicleIdCount(vehicleId);
-                if(packageCount>0){
+                if (packageCount > 0) {
                     packageID = workService.getPackageByvehicleId(vehicleId);
                     if (packageID != null) {
-                        if (packageID.getStartTime() != null && packageID.getEndTime() != null){
+                        if (packageID.getStartTime() != null && packageID.getEndTime() != null) {
                             VtuLocationDto locationDto = locationService.getLastLocationByImei(item.getImeiNo1(), packageID.getStartTime(), packageID.getEndTime());
                             if (locationDto != null) {
                                 Integer noDataAlertStatus = 0;
@@ -158,8 +158,7 @@ public class AlertCronController {
         List<Long> imei = alertService.getImeiForNoMovement(); //get today all imei
         if (imei.size() > 0) {
             for (Long item : imei) {
-
-                Integer deviceId =  deviceService.getDeviceByImei(item);
+                Integer deviceId = deviceService.getDeviceByImei(item);
 //                if (vehicleId != null) {
 //
 //                }
@@ -300,26 +299,15 @@ public class AlertCronController {
                                             Boolean updateResolve = alertService.updateResolve(vtuItem.getImei(), GEO_FENCE_ALERT_ID);
 
                                         }
-
-
 //                                            }
-
-
                                     }
-
-
                                 }
-
-
                             }
                         }
                     }
-
                 }
             }
         }
-
-
     }
 
     @Scheduled(cron = "0 */5 * * * *")
@@ -419,41 +407,6 @@ public class AlertCronController {
         }
         return response;
     }
-/*@PostMapping("/getDashboardData")
-public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer typeId) {
-    RDVTSResponse response = new RDVTSResponse();
-    Map<String, Object> result = new HashMap<>();
-
-    try {
-        List<DashboardDto> dashboardData = dashboardService.getDashboardData(typeId);
-        Integer active=dashboardRepositoryImpl.getActiveData();
-        Integer inActive=dashboardRepositoryImpl.getInActiveData();
-        Integer total=dashboardRepositoryImpl.getTotalData();
-        Double activePercentage=(Double.valueOf(active)/Double.valueOf(total))*100;
-        Double inActivePercentage=(Double.valueOf(inActive)/Double.valueOf(total))*100;
-
-
-        result.put("dashboardData",dashboardData);
-        result.put("active",active);
-        result.put("inActive",inActive);
-        result.put("total",total);
-        result.put("activePercentage",activePercentage);
-        result.put("inActivePercentage",inActivePercentage);
-
-        response.setData(result);
-        response.setStatus(1);
-        response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-        response.setMessage("Dashboard Data");
-
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        response = new RDVTSResponse(0,
-                new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
-                ex.getMessage(),
-                result);
-    }
-    return response;
-}*/
 
     // WorkByIdCron
     @Scheduled(cron = "0 */5 * * * *")
@@ -579,40 +532,7 @@ public RDVTSResponse getDashboardData(@RequestParam(name = "typeId")Integer type
         return null;
     }
 
-
 }
-
-
-//Query
-//SELECT COUNT(*) from (
-//        select * from
-//        (
-//        SELECT distinct vm.id, vm.vehicle_no, vm.vehicle_type_id as vehicleTypeId,vt.name as vehicleTypeName,
-//        vm.model, vm.chassis_no,vm.engine_no,vm.is_active as active,
-//        device.device_id as deviceId,
-//        vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ,dam.dist_id, dam.division_id,
-//        owner.user_id as userId, owner.user_id as userByVehicleId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,
-//        owner.contractor_id ,   contractor.name as contractorName,am.id  as activityId,case when vdCount.vehicleCount>0 then true else false end as deviceAssigned,
-//        case when vtuLocation.pooling_status IS NOT NULL then vtuLocation.pooling_status else false end ,case when actCount.activityCount>0 then true else false end as activityAssigned
-//        FROM rdvts_oltp.vehicle_m as vm left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id
-//        left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true
-//        left join rdvts_oltp.device_area_mapping as dam on dam.device_id = device.device_id and dam.is_active =true
-//        left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true
-//        left join rdvts_oltp.activity_m as am on am.id = activity.activity_id
-//        left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id
-//        left join rdvts_oltp.work_m as work on work.id = awm.work_id
-//        left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id
-//        left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id
-//        left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id
-//        left join rdvts_oltp.device_m as dm on dm.id=device.device_id
-//        left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id from  rdvts_oltp.vehicle_device_mapping
-//        where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id
-//        left join rdvts_oltp.vehicle_pooling_status as vtuLocation on vtuLocation.vehicle_id=vm.id
-//        left join (select count(id) over (partition by vehicle_id) as activityCount,vehicle_id
-//        from rdvts_oltp.vehicle_activity_mapping where is_active=true) as actCount on actCount.vehicle_id=activity.vehicle_id
-//        ) as vehicleList
-//        ) as t
-//        Order by id
 
 
 

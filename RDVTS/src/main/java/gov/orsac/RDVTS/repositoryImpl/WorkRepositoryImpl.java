@@ -345,10 +345,9 @@ public class WorkRepositoryImpl {
 
     public Integer getPackageByvehicleIdCount(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select count(gm.package_id)\n" +
-                "from rdvts_oltp.geo_mapping as gm\n" +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=gm.activity_id\n" +
-                "where true and vam.vehicle_id in(:vehicleId) ";
+        String qry = "select count(gm.package_id) " +
+                " from rdvts_oltp.vehicle_activity_mapping as vam " +
+                "left join rdvts_oltp.geo_mapping as gm on gm.id = vam.geo_mapping_id where vam.vehicle_id in(:vehicleId) and vam.is_active = true ";
         sqlParam.addValue("vehicleId", vehicleId);
         try {
             return namedJdbc.queryForObject(qry, sqlParam, Integer.class);
