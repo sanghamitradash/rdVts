@@ -10,6 +10,7 @@ import gov.orsac.RDVTS.repositoryImpl.UserRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.WorkRepositoryImpl;
 import gov.orsac.RDVTS.service.HelperService;
 import gov.orsac.RDVTS.service.WorkService;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -133,6 +134,11 @@ public class WorkServiceImpl implements WorkService {
     @Override
     public WorkDto getPackageByvehicleId(Integer vehicleId) {
         return workRepositoryImpl.getPackageByvehicleId(vehicleId);
+    }
+
+    @Override
+    public Integer getPackageByvehicleIdCount(Integer vehicleId) {
+        return workRepositoryImpl.getPackageByvehicleIdCount(vehicleId);
     }
 
     public Integer deactivateVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {

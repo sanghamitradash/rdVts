@@ -75,65 +75,69 @@ public class AlertCronController {
             if (vehicleId != null) {
                 //package
                 //activity Start and End time
-                packageID = workService.getPackageByvehicleId(vehicleId);
-                if (packageID != null) {
-                    if (packageID.getStartTime() != null && packageID.getEndTime() != null){
-                        VtuLocationDto locationDto = locationService.getLastLocationByImei(item.getImeiNo1(), packageID.getStartTime(), packageID.getEndTime());
-                        if (locationDto != null) {
-                            Integer noDataAlertStatus = 0;
-                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            Date date = new Date();
-                            String currDtTime = dateFormat.format(date);//Date to String Convert
-                            if (locationDto.getDateTime() != null && !locationDto.getDateTime().toString().isEmpty()) {
-                                String lastLocTime = dateFormat.format(locationDto.getDateTime());
 
-                                Date currDtTimeParsed = null;
-                                Date lastLocTimeParsed = null;
-                                try {
-                                    currDtTimeParsed = dateFormat.parse(currDtTime);//String To date Convert
-                                    lastLocTimeParsed = dateFormat.parse(lastLocTime);//String To date Convert
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-                                long diff = currDtTimeParsed.getTime() - lastLocTimeParsed.getTime();//get difference of last Location Date and current date
-                                long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diff);//Convert the Difference in minutes
-                                //long diffMinutes = diff / (60 * 1000) % 60;
-                                if (diffInMinutes > noDataAlertTimeSpan) {
-                                    noDataAlertStatus = 1;
-                                }
-//                        System.out.println(noDataAlertStatus);
-                                if (noDataAlertStatus == 1) {
-                                    Boolean alertExists = alertService.checkAlertExists(item.getImeiNo1(), NO_DATA_ALERT_ID); //Check If alert Exist Or Not
-                                    if (!alertExists) {
+                int packageCount = workService.getPackageByvehicleIdCount(vehicleId);
+                if(packageCount>0){
+                    packageID = workService.getPackageByvehicleId(vehicleId);
+                    if (packageID != null) {
+                        if (packageID.getStartTime() != null && packageID.getEndTime() != null){
+                            VtuLocationDto locationDto = locationService.getLastLocationByImei(item.getImeiNo1(), packageID.getStartTime(), packageID.getEndTime());
+                            if (locationDto != null) {
+                                Integer noDataAlertStatus = 0;
+                                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                Date date = new Date();
+                                String currDtTime = dateFormat.format(date);//Date to String Convert
+                                if (locationDto.getDateTime() != null && !locationDto.getDateTime().toString().isEmpty()) {
+                                    String lastLocTime = dateFormat.format(locationDto.getDateTime());
 
-                                        AlertEntity alertEntity = new AlertEntity();
-                                        alertEntity.setImei(locationDto.getImei());
-                                        alertEntity.setAlertTypeId(NO_DATA_ALERT_ID);
-                                        if (locationDto.getLatitude() != null) {
-                                            alertEntity.setLatitude(Double.parseDouble(locationDto.getLatitude()));
-                                        }
-                                        if (locationDto.getLongitude() != null) {
-                                            alertEntity.setLongitude(Double.parseDouble(locationDto.getLongitude()));
-                                        }
-                                        if (locationDto.getAltitude() != null) {
-                                            alertEntity.setAltitude(Double.parseDouble(locationDto.getAltitude()));
-                                        }
-                                        if (locationDto.getAccuracy() != null) {
-                                            alertEntity.setAccuracy(Double.parseDouble(locationDto.getAccuracy()));
-                                        }
-                                        Double speed = 0.0;
-                                        try {
-                                            speed = Double.parseDouble(locationDto.getSpeed());
-                                        } catch (NumberFormatException e) {
-                                            speed = 0.0;
-                                        }
-                                        alertEntity.setSpeed(speed);
-                                        alertEntity.setGpsDtm(currDtTimeParsed);
-
-                                        AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+                                    Date currDtTimeParsed = null;
+                                    Date lastLocTimeParsed = null;
+                                    try {
+                                        currDtTimeParsed = dateFormat.parse(currDtTime);//String To date Convert
+                                        lastLocTimeParsed = dateFormat.parse(lastLocTime);//String To date Convert
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
                                     }
-                                } else {
-                                    alertService.updateResolve(item.getImeiNo1(), NO_DATA_ALERT_ID);//set is_resolve True
+                                    long diff = currDtTimeParsed.getTime() - lastLocTimeParsed.getTime();//get difference of last Location Date and current date
+                                    long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diff);//Convert the Difference in minutes
+                                    //long diffMinutes = diff / (60 * 1000) % 60;
+                                    if (diffInMinutes > noDataAlertTimeSpan) {
+                                        noDataAlertStatus = 1;
+                                    }
+//                        System.out.println(noDataAlertStatus);
+                                    if (noDataAlertStatus == 1) {
+                                        Boolean alertExists = alertService.checkAlertExists(item.getImeiNo1(), NO_DATA_ALERT_ID); //Check If alert Exist Or Not
+                                        if (!alertExists) {
+
+                                            AlertEntity alertEntity = new AlertEntity();
+                                            alertEntity.setImei(locationDto.getImei());
+                                            alertEntity.setAlertTypeId(NO_DATA_ALERT_ID);
+                                            if (locationDto.getLatitude() != null) {
+                                                alertEntity.setLatitude(Double.parseDouble(locationDto.getLatitude()));
+                                            }
+                                            if (locationDto.getLongitude() != null) {
+                                                alertEntity.setLongitude(Double.parseDouble(locationDto.getLongitude()));
+                                            }
+                                            if (locationDto.getAltitude() != null) {
+                                                alertEntity.setAltitude(Double.parseDouble(locationDto.getAltitude()));
+                                            }
+                                            if (locationDto.getAccuracy() != null) {
+                                                alertEntity.setAccuracy(Double.parseDouble(locationDto.getAccuracy()));
+                                            }
+                                            Double speed = 0.0;
+                                            try {
+                                                speed = Double.parseDouble(locationDto.getSpeed());
+                                            } catch (NumberFormatException e) {
+                                                speed = 0.0;
+                                            }
+                                            alertEntity.setSpeed(speed);
+                                            alertEntity.setGpsDtm(currDtTimeParsed);
+
+                                            AlertEntity alertEntity1 = alertService.saveAlert(alertEntity);//If Not exist save alert in Alert Table
+                                        }
+                                    } else {
+                                        alertService.updateResolve(item.getImeiNo1(), NO_DATA_ALERT_ID);//set is_resolve True
+                                    }
                                 }
                             }
                         }

@@ -28,4 +28,6 @@ public interface WorkService {
     List<WorkDto> getAsignedActivityDetails(Integer id);
 
     WorkDto getPackageByvehicleId(Integer vehicleId);
+
+    Integer getPackageByvehicleIdCount(Integer vehicleId);
 }
