@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.serviceImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityWorkMapping;
+import gov.orsac.RDVTS.entities.GeoMappingEntity;
 import gov.orsac.RDVTS.entities.WorkEntity;
 import gov.orsac.RDVTS.exception.RecordNotFoundException;
 import gov.orsac.RDVTS.repository.VehicleRepository;
@@ -112,7 +113,7 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public List<ActivityWorkMapping> getActivityDetailsByWorkId(Integer workId) {
+    public List<GeoMappingEntity> getActivityDetailsByWorkId(Integer workId) {
         return workRepositoryImpl.getActivityDetailsByWorkId(workId);
     }
 

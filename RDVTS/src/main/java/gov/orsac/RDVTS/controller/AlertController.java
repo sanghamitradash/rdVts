@@ -213,8 +213,8 @@ public class AlertController {
             for (WorkDto Work : workDto) {
                 List<RoadMasterDto> road = roadService.getRoadByWorkId(Work.getId()); //get Road Details By WorkId
                 if (road.size() > 0 && road.get(0).getGeom() != null) {
-                    List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId()); //Get Activity BY WorkId
-                    for (ActivityWorkMapping activityId : activityDtoList) {
+                    List<GeoMappingEntity> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId()); //Get Activity BY WorkId
+                    for (GeoMappingEntity activityId : activityDtoList) {
                         //Get Vehicle By Activity
                         List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), null, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
                         for (VehicleActivityMappingDto vehicleList : veActMapDto) {
@@ -461,8 +461,8 @@ public class AlertController {
                 //Foreach device get Imei
                 //Foreach Imei Get location Record list
                 if (road.size() > 0 && road.get(0).getGeom() != null) {
-                    List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
-                    for (ActivityWorkMapping activityId : activityDtoList) {
+                    List<GeoMappingEntity> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
+                    for (GeoMappingEntity activityId : activityDtoList) {
                         List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
                         for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                             List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(), userId);

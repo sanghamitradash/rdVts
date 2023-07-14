@@ -253,19 +253,14 @@ public class AlertCronController {
         for (WorkDto Work : workDto) {
             //Foreach work get Road Geom
             List<RoadMasterDto> road = roadService.getRoadByWorkId(Work.getId());
-            //Foreach Work Get Vehicle
-            //Foreach Vechicle get Device
-            //Foreach device get Imei
-            //Foreach Imei Get location Record list
+            //Foreach Work Get Activities
             if (road.size() > 0 && road.get(0).getGeom() != null) {
-                List<ActivityWorkMapping> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
-                for (ActivityWorkMapping activityId : activityDtoList) {
+                List<GeoMappingEntity> activityDtoList = workService.getActivityDetailsByWorkId(Work.getId());
+                for (GeoMappingEntity activityId : activityDtoList) {
                     List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId, activityId.getActualActivityStartDate(), activityId.getActualActivityCompletionDate());
                     for (VehicleActivityMappingDto vehicleList : veActMapDto) {
                         List<VehicleDeviceMappingDto> getdeviceList = vehicleService.getdeviceListByVehicleId(vehicleList.getVehicleId(), vehicleList.getStartTime(), vehicleList.getEndTime(), userId);
                         if (getdeviceList.size() > 0) {
-
-
                             for (VehicleDeviceMappingDto vehicleid : getdeviceList) {
                                 List<DeviceDto> getImeiList = deviceService.getImeiListByDeviceId(vehicleid.getDeviceId());
                                 //int i = 0;
@@ -319,6 +314,13 @@ public class AlertCronController {
                     }
                 }
             }
+
+
+
+            //Foreach Vehicle get Device
+            //Foreach device get Imei
+            //Foreach Imei Get location Record list
+
         }
     }
 

@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.ActivityWorkMapping;
+import gov.orsac.RDVTS.entities.GeoMappingEntity;
 import gov.orsac.RDVTS.service.HelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -296,17 +297,16 @@ public class WorkRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkStatusDto.class));
     }
 
-    public List<ActivityWorkMapping> getActivityDetailsByWorkId(Integer workId) {
+    public List<GeoMappingEntity> getActivityDetailsByWorkId(Integer workId) {
 
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT id, activity_id, work_id, activity_quantity, activity_start_date, activity_completion_date, actual_activity_start_date, actual_activity_completion_date, " +
-                "executed_quantity, activity_status, g_activity_id, g_work_id, is_active, created_by, created_on, updated_by, updated_on " +
-                " FROM rdvts_oltp.activity_work_mapping where is_active=true   ";
+        String qry = "SELECT * " +
+                " FROM rdvts_oltp.geo_mapping where is_active=true";
         if (workId > 0) {
-            qry += " and work_id= :workId ";
+            qry += " and package_id= :workId ";
             sqlParam.addValue("workId", workId);
         }
-        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityWorkMapping.class));
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMappingEntity.class));
     }
 
     public List<GeoConstructionDto> getPackageDD(Integer userId) {
