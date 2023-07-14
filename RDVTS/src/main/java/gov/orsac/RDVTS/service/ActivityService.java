@@ -27,7 +27,7 @@ public interface ActivityService {
 
     ActivityEntity addActivity(ActivityDto activity);
 
-    List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer activityId, Integer userId);
+    List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer geoMappingId, Integer userId);
 
     Integer updateWorkId(Integer workId, Integer activityId, Integer userId);
 

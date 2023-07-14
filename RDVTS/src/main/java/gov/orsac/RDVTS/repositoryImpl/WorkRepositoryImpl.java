@@ -87,11 +87,13 @@ public class WorkRepositoryImpl {
 //                " where wm.is_active = true ";
 
 
-        String qry = "select  distinct package_id as packageId,piu.name as piuName,pm.package_no as packageName," +
-                " (case when (completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName" +
+        String qry = "select  distinct pm.id,piu.name as piuName,pm.package_no as packageName," +
+                " (case when (completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName, rm.road_name as roadName " +
                 " from rdvts_oltp.geo_mapping gm "+
                 "LEFT join rdvts_oltp.package_m pm on pm.id = gm.package_id "+
-                "LEFT join rdvts_oltp.piu_id piu on piu.id = gm.piu_id where true " ;
+                "LEFT join rdvts_oltp.piu_id piu on piu.id = gm.piu_id " +
+                " left join rdvts_oltp.road_m as rm on rm.id=gm.road_id " +
+                " where true " ;
 
 //        if (workDto.getId() > 0) {
 //            qry += " and wm.id = :id";
@@ -114,7 +116,7 @@ public class WorkRepositoryImpl {
 //            sqlParam.addValue("circleId", workDto.getCircleId());
 //        }
         if (workDto.getPackageId() != null && workDto.getPackageId() > 0  ){
-            qry += " and gm.package_id = :packageId ";
+            qry += " and pm.id = :packageId ";
             sqlParam.addValue("packageId", workDto.getPackageId());
         }
 //        if (workDto.getActivityId() > 0) {
@@ -150,7 +152,7 @@ public class WorkRepositoryImpl {
             sqlParam.addValue("packageId", packageId);
         }
 
-        qry+= " order by gm.package_id DESC ";
+        qry+= " order by pm.id DESC ";
 
         resultCount = count(qry, sqlParam);
         if (workDto.getLimit() > 0) {
@@ -183,19 +185,26 @@ public class WorkRepositoryImpl {
 
     public List<WorkDto> getWorkById(int id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct  wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
-                " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
-                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name,asm.name as approval_status_name,wsm.name as work_status_name " +
-                " from rdvts_oltp.work_m as wm " +
-                " left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
-                " left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
-                " left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
-                " left join rdvts_oltp.approval_status_m as asm on asm.id=wm.approval_status and asm.is_active = true " +
-                " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true " +
-                " where wm.is_active = true ";
+//        String qry = "select distinct  wm.id, wm.g_work_id as geoWorkId,wm.g_work_name as geoWorkName,wm.award_date,wm.completion_date,wm.pmis_finalize_date, " +
+//                " wm.work_status,wm.approval_status,wm.approved_by,wm.is_active,wm.created_by,wm.updated_by,wm.created_on,wm.updated_on, " +
+//                " geo.contractor_id, geo.piu_id, piu.name as piuName, gcm.package_id,gcm.package_name,asm.name as approval_status_name,wsm.name as work_status_name " +
+//                " from rdvts_oltp.work_m as wm " +
+//                " left join rdvts_oltp.geo_master as geo on geo.work_id=wm.id " +
+//                " left join rdvts_oltp.geo_construction_m as gcm on gcm.id=geo.road_id and gcm.is_active = true " +
+//                " left join rdvts_oltp.piu_id as piu on piu.id=geo.piu_id and piu.is_active = true " +
+//                " left join rdvts_oltp.approval_status_m as asm on asm.id=wm.approval_status and asm.is_active = true " +
+//                " left join rdvts_oltp.work_status_m as wsm on wsm.id = wm.work_status and wsm.is_active = true " +
+//                " where wm.is_active = true ";
 //        UserInfoDto user=userRepositoryImpl.getUserByUserId(userId);
+        String qry = " select distinct pm.id as packageId, pm.package_no as geoWorkName, gm.completion_date as completionDate, gm.award_date as awardDate, gm.pmis_finalize_date as pmisFinalizeDate, gm.activity_status as activityStatus,\n" +
+                "(case when (gm.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName, rm.road_name as roadName, piu.id as piuId, piu.name as piuName  \n" +
+                "from rdvts_oltp.package_m as pm \n" +
+                "left join rdvts_oltp.geo_mapping as gm on gm.package_id=pm.id " +
+                "  left join rdvts_oltp.road_m as rm on rm.id=gm.road_id " +
+                " LEFT join rdvts_oltp.piu_id piu on piu.id = gm.piu_id  \n" +
+                " where true ";
         if (id > 0) {
-            qry += " and wm.id = :id ";
+            qry += " and pm.id = :id ";
             sqlParam.addValue("id", id);
         }
 //         else {
@@ -211,20 +220,27 @@ public class WorkRepositoryImpl {
 //            }
 //        }
 
-        qry+=" order by geoWorkName";
+        qry+=" order by pm.id ";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
 
     public List<ActivityDto> getActivityByWorkId(int id){
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select am.activity_name , awm.*,asm.name as activity_status_name from rdvts_oltp.activity_m as am " +
-                "left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id and awm.is_active = true " +
-                "left join rdvts_oltp.activity_status_m as asm on asm.id = awm.activity_status and asm.is_active = true " +
-                "where am.is_active = true " ;
+//        String qry = "select am.activity_name , awm.*,asm.name as activity_status_name from rdvts_oltp.activity_m as am " +
+//                "left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id and awm.is_active = true " +
+//                "left join rdvts_oltp.activity_status_m as asm on asm.id = awm.activity_status and asm.is_active = true " +
+//                "where am.is_active = true " ;
+        String qry = " select distinct am.id as activityId, am.activity_name as activityName, am.is_active as isActive, gm.activity_start_date as activityStartDate, " +
+                "  gm.activity_completion_date as activityCompletionDate," +
+                " (case when (gm.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as activityStatusName, gm.id \n" +
+                "from rdvts_oltp.geo_mapping as gm \n" +
+                "left join rdvts_oltp.activity_m as am on gm.activity_id=am.id\n" +
+                "where true\n" ;
         if (id > 0){
-            qry +=" and awm.work_id= :id " ;
+            qry +=" and gm.package_id= :id " ;
             sqlParam.addValue("id", id);
         }
+        qry += "  order by am.id ";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
     }
 
@@ -299,5 +315,16 @@ public class WorkRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select package_id ,package_name from rdvts_oltp.geo_construction_m where is_active = true ";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoConstructionDto.class));
+    }
+
+    public List<WorkDto> getAsignedActivityDetails(Integer id) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "  select distinct am.id as activityId, am.activity_name as activityName, am.is_active as isActive\n" +
+                "from rdvts_oltp.geo_mapping as gm \n" +
+                "left join rdvts_oltp.activity_m as am on gm.activity_id=am.id\n" +
+                "where true\n" +
+                "and gm.package_id=:id order by am.id ";
+        sqlParam.addValue("id", id);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
 }

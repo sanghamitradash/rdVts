@@ -104,11 +104,11 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer workActivityMapId,Integer userId) {
+    public List<VehicleActivityMappingEntity> saveVehicleActivityMapping(List<VehicleActivityMappingEntity> vehicleActivityMapping, Integer geoMappingId,Integer userId) {
         List<VehicleActivityMappingEntity> vehicleActivity = new ArrayList<>();
         for (int j = 0; j < vehicleActivityMapping.size(); j++) {
             VehicleActivityMappingEntity vehicleActivityMappingEntity = new VehicleActivityMappingEntity();
-            vehicleActivityMappingEntity.setActivityId(workActivityMapId);
+            vehicleActivityMappingEntity.setGeoMappingId(geoMappingId);
             vehicleActivityMappingEntity.setVehicleId(vehicleActivityMapping.get(0).getVehicleId());
             vehicleActivityMappingEntity.setStartTime(vehicleActivityMapping.get(0).getStartTime());
             vehicleActivityMappingEntity.setEndTime(vehicleActivityMapping.get(0).getEndTime());
