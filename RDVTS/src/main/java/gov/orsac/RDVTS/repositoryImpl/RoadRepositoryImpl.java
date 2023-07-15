@@ -175,6 +175,10 @@ public class RoadRepositoryImpl {
             queryString += " AND gm.dist_id IN (:distIds)";
             sqlParam.addValue("distIds", roadFilterDto.getDistIds());
         }
+        if (roadFilterDto.getPackageIds() != null && !roadFilterDto.getPackageIds().isEmpty()) {
+            queryString += " AND gm.package_id  IN (:packageIds)";
+            sqlParam.addValue("packageIds", roadFilterDto.getPackageIds());
+        }
 
 //        if (roadFilterDto.getDivisionIds() != null && !roadFilterDto.getDivisionIds().isEmpty()) {
 //            queryString += " AND geom.division_id IN (:divisionIds)";
@@ -540,9 +544,9 @@ public class RoadRepositoryImpl {
                 for (int j = 0; j < roadLocation.size(); j++) {
                     if (roadLocation.get(j).getRoadNo() == keyInt.get(i)) {
                         if (geoStrInt.length() > 0) {
-                            geoStrInt += "," + roadLocation.get(i).getLongitude() + " " + roadLocation.get(i).getLatitude();
+                            geoStrInt += "," + roadLocation.get(j).getLongitude() + " " + roadLocation.get(j).getLatitude();
                         }else {
-                            geoStrInt += roadLocation.get(i).getLongitude() + " " + roadLocation.get(i).getLatitude();
+                            geoStrInt += roadLocation.get(j).getLongitude() + " " + roadLocation.get(j).getLatitude();
                         }
                     }
                 }
@@ -552,6 +556,7 @@ public class RoadRepositoryImpl {
             str += "MULTILINESTRING(";
             str += geoStr;
             str += ")";
+            System.out.println(str);
             update = "UPDATE rdvts_oltp.road_m set geom = ST_GeomFromText('" + str + "',4326)  where id=" + roadId + "";
             sqlParam.addValue("userId", userId);
             namedJdbc.update(update, sqlParam);

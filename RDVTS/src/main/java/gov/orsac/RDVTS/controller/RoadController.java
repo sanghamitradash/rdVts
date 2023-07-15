@@ -143,6 +143,7 @@ public class RoadController {
         roadFilterDto.setRoadLength(roadLength);
         roadFilterDto.setRoadLocation(roadLocation);
         roadFilterDto.setWorkIds(workIds);
+        roadFilterDto.setPackageIds(packageId);
         roadFilterDto.setContractIds(contractIds);
         roadFilterDto.setActivityIds(activityids);
         roadFilterDto.setDistIds(distIds);
