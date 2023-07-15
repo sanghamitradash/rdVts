@@ -118,7 +118,7 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
-    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds, List<Integer> deviceIds, Integer userId) {
+    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds, List<Integer> deviceIds, Integer userId, List<Integer> packageId) {
         List<Integer> roadIdList = new ArrayList<>();
         List<Integer> workIdList = new ArrayList<>();
         List<Integer> distIdList = new ArrayList<>();
@@ -148,7 +148,7 @@ public class RoadServiceImpl implements RoadService {
         if(id!=null && id.size()>0) {
             roadIdList.addAll(id);
         }
-        return roadRepositoryImpl.getRoadByRoadIds(roadIdList, workIds, distIds, blockIds, vehicleIds, userId);
+        return roadRepositoryImpl.getRoadByRoadIds(roadIdList, workIds, distIds, blockIds, vehicleIds, userId, packageId);
     }
 //    @Override
 //    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> id, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, List<Integer> activityIds) {
@@ -171,18 +171,10 @@ public class RoadServiceImpl implements RoadService {
 
     @Override
     public List<RoadLocationEntity> addRoadLocation(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
-        List<RoadLocationEntity> roadLocationArray = new ArrayList<>();
-
         for (int j = 0; j < roadLocation.size(); j++) {
-            RoadLocationEntity roadLocationEntity = new RoadLocationEntity();
-            roadLocationEntity.setRoadId(roadId);
-            roadLocationEntity.setLatitude(roadLocation.get(0).getLatitude());
-            roadLocationEntity.setLongitude(roadLocation.get(0).getLongitude());
-            roadLocationEntity.setAltitude(roadLocation.get(0).getAltitude());
-            roadLocationEntity.setAccuracy(roadLocation.get(0).getAccuracy());
-            roadLocationArray.add(roadLocationEntity);
+            roadLocation.get(j).setRoadId(roadId);
         }
-        return roadLocationRepository.saveAll(roadLocationArray);
+        return roadLocationRepository.saveAll(roadLocation);
     }
 
     @Override
