@@ -26,6 +26,7 @@ public class RoadFilterDto {
     private Integer draw;
 
     List<Integer> workIds;
+    List<Integer> packageIds;
     List<Integer> contractIds;
     List<Integer> activityIds;
     List<Integer> divisionIds;

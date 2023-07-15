@@ -22,6 +22,9 @@ public class RoadLocationEntity {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "road_no")
+    private Integer roadNo;
+
     @Column(name = "road_id")
     private Integer roadId;
 

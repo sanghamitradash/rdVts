@@ -128,6 +128,7 @@ public class RoadController {
                                            @RequestParam(name = "roadLength",required = false) Double roadLength,
                                            @RequestParam(name = "roadLocation",required = false)Double roadLocation,
                                            @RequestParam(name = "workIds", required = false) List<Integer> workIds,
+                                           @RequestParam(name = "packageId", required = false) List<Integer> packageId,
                                            @RequestParam(name = "contractIds", required = false) List<Integer> contractIds,
                                            @RequestParam(name = "activityids", required = false) List<Integer> activityids,
                                            @RequestParam(name = "divisionIds", required = false) List<Integer> divisionIds,
@@ -142,6 +143,7 @@ public class RoadController {
         roadFilterDto.setRoadLength(roadLength);
         roadFilterDto.setRoadLocation(roadLocation);
         roadFilterDto.setWorkIds(workIds);
+        roadFilterDto.setPackageIds(packageId);
         roadFilterDto.setContractIds(contractIds);
         roadFilterDto.setActivityIds(activityids);
         roadFilterDto.setDistIds(distIds);
@@ -231,11 +233,12 @@ public class RoadController {
                                           @RequestParam(name = "vehicleIds", required = false) List<Integer> vehicleIds,
                                           @RequestParam(name = "activityIds", required = false) List<Integer> activityIds,
                                           @RequestParam(name = "deviceIds", required = false) List<Integer> deviceIds,
+                                          @RequestParam(name = "packageId",required = false) List<Integer>  packageId,
                                           @RequestParam(name = "userId", required = false) Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds, activityIds, deviceIds, userId);
+            List<RoadMasterDto> road = roadService.getRoadByRoadIds(id, workIds, distIds, blockIds, vehicleIds, activityIds, deviceIds, userId, packageId);
 //            result.put("road", road);
             response.setData(road);
             response.setStatus(1);
@@ -318,11 +321,14 @@ public class RoadController {
         Map<String, Object> result = new HashMap<>();
         try{
             ObjectMapper mapper = new ObjectMapper();
-            List<RoadLocationEntity> roadLocationEntities = roadService.addRoadLocation(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(), roadLocationDto.getUserId());
 
+            List<RoadLocationEntity> roadLocationEntities = roadService.addRoadLocation(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(),
+                    roadLocationDto.getUserId());
 
             Integer saveGeom = roadService.saveGeom(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(),roadLocationDto.getUserId());
+
             Integer saveLength = roadService.saveLength(roadLocationDto.getRoadId(), roadLocationDto.getRoadLocation(),roadLocationDto.getUserId());
+
             result.put("saveRoadLocation", roadLocationEntities);
             response.setData(result);
             response.setStatus(1);

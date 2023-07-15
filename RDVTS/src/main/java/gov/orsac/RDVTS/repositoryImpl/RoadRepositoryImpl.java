@@ -17,6 +17,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class RoadRepositoryImpl {
@@ -25,7 +27,6 @@ public class RoadRepositoryImpl {
     private NamedParameterJdbcTemplate namedJdbc;
     @Autowired
     private UserRepositoryImpl userRepositoryImpl;
-
 
 
     @Autowired
@@ -50,7 +51,7 @@ public class RoadRepositoryImpl {
 //                "LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id and geom.is_active=true " +
 //                "LEFT JOIN rdvts_oltp.piu_id as piu on piu.id=geom.piu_id and piu.is_active=true " +
 //                "WHERE road.is_active=true ";
-        String qry ="SELECT distinct road.id, road.road_name, pm.id as package_id, pm.package_no as package_name, road.sanction_length as road_length, road.road_location, road.road_allignment, \n" +
+        String qry = "SELECT distinct road.id, road.road_name, pm.id as package_id, pm.package_no as package_name, road.sanction_length as road_length, road.road_location, road.road_allignment, \n" +
                 "ST_AsGeoJSON(road.geom) as geom, road.road_width,road.g_road_id as groadId, road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on,\n" +
                 "gm.completed_road_length, gm.sanction_date, road.road_code, road.road_status, road.approval_status, road.approved_by , pium.name as piuName \n" +
                 "from rdvts_oltp.road_m as road\n" +
@@ -174,6 +175,10 @@ public class RoadRepositoryImpl {
             queryString += " AND gm.dist_id IN (:distIds)";
             sqlParam.addValue("distIds", roadFilterDto.getDistIds());
         }
+        if (roadFilterDto.getPackageIds() != null && !roadFilterDto.getPackageIds().isEmpty()) {
+            queryString += " AND gm.package_id  IN (:packageIds)";
+            sqlParam.addValue("packageIds", roadFilterDto.getPackageIds());
+        }
 
 //        if (roadFilterDto.getDivisionIds() != null && !roadFilterDto.getDivisionIds().isEmpty()) {
 //            queryString += " AND geom.division_id IN (:divisionIds)";
@@ -183,15 +188,13 @@ public class RoadRepositoryImpl {
         UserInfoDto user = userRepositoryImpl.getUserByUserId(roadFilterDto.getUserId());
         if (user.getUserLevelId() == 5) {
 //                queryString += " AND geom.contractor_id=:contractorId ";
-                queryString += " AND road.id in (select gm.road_id from  rdvts_oltp.geo_mapping as gm\n" +
-                        "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id\n" +
-                        "left join rdvts_oltp.vehicle_owner_mapping as vom on vam.vehicle_id = vom.vehicle_id\n" +
-                        "left join rdvts_oltp.contractor_m as cm on cm.id = vom.contractor_id\n" +
-                        "where vom.contractor_id = :contractorId)";
-                sqlParam.addValue("contractorId", user.getUserLevelId());
-        }
-
-        else if (user.getUserLevelId() == 2) {
+            queryString += " AND road.id in (select gm.road_id from  rdvts_oltp.geo_mapping as gm\n" +
+                    "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id\n" +
+                    "left join rdvts_oltp.vehicle_owner_mapping as vom on vam.vehicle_id = vom.vehicle_id\n" +
+                    "left join rdvts_oltp.contractor_m as cm on cm.id = vom.contractor_id\n" +
+                    "where vom.contractor_id = :contractorId)";
+            sqlParam.addValue("contractorId", user.getUserLevelId());
+        } else if (user.getUserLevelId() == 2) {
             List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(roadFilterDto.getUserId());
             List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
@@ -203,24 +206,20 @@ public class RoadRepositoryImpl {
                 queryString += " WHERE road.id in(:roadIds) ";
                 sqlParam.addValue("roadIds", roadIds);
             }
-        }
-
-        else if(user.getUserLevelId()==3){
-            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(roadFilterDto.getUserId());
-            List<Integer> roadIds  = masterRepositoryImpl.getRoadIdsByBlockIds(blockIds);
-            if(queryString != null && queryString.length() > 0){
+        } else if (user.getUserLevelId() == 3) {
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByUserId(roadFilterDto.getUserId());
+            List<Integer> roadIds = masterRepositoryImpl.getRoadIdsByBlockIds(blockIds);
+            if (queryString != null && queryString.length() > 0) {
                 queryString += " AND  road.id in(:roadIds) ";
-                sqlParam.addValue("roadIds",roadIds);
+                sqlParam.addValue("roadIds", roadIds);
             } else {
                 queryString += " WHERE  road.id in(:roadIds) ";
-                sqlParam.addValue("roadIds",roadIds);
+                sqlParam.addValue("roadIds", roadIds);
             }
-        }
-
-        else if(user.getUserLevelId()==4){
+        } else if (user.getUserLevelId() == 4) {
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(roadFilterDto.getUserId());
             List<Integer> roadIds = masterRepositoryImpl.getRoadIdsByDivisionId(divisionIds);
-            if(queryString != null && queryString.length() > 0){
+            if (queryString != null && queryString.length() > 0) {
                 queryString += " AND  road.id in(:roadIds) ";
                 sqlParam.addValue("roadIds", roadIds);
             } else {
@@ -444,32 +443,45 @@ public class RoadRepositoryImpl {
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 
-    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> roadIdList, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, Integer userId) {
+    public List<RoadMasterDto> getRoadByRoadIds(List<Integer> roadIdList, List<Integer> workIds, List<Integer> distIds, List<Integer> blockIds, List<Integer> vehicleIds, Integer userId, List<Integer> packageId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
-        String qry = "SELECT distinct road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
-                " road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date as sanctionDate, road.road_code, " +
-                " road.road_status, road.approval_status, road.approved_by, geom.work_id as workIds, geom.g_dist_id as distIds, geom.g_block_id as blockIds " +
-                " FROM rdvts_oltp.geo_construction_m AS road " +
-                " LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id " +
-                " LEFT JOIN rdvts_oltp.work_m as work on work.id = geom.work_id  " +
-                " WHERE road.is_active=true ";
+//        String qry = "SELECT distinct road.id, road.package_id, road.package_name, road.road_name, road.road_length, road.road_location, road.road_allignment, ST_AsGeoJSON(road.geom) as geom, road.road_width, road.g_road_id as groadId, " +
+//                " road.is_active, road.created_by, road.created_on, road.updated_by, road.updated_on, road.completed_road_length, road.sanction_date as sanctionDate, road.road_code, " +
+//                " road.road_status, road.approval_status, road.approved_by, geom.work_id as workIds, geom.g_dist_id as distIds, geom.g_block_id as blockIds " +
+//                " FROM rdvts_oltp.geo_construction_m AS road " +
+//                " LEFT JOIN rdvts_oltp.geo_master AS geom ON geom.road_id=road.id " +
+//                " LEFT JOIN rdvts_oltp.work_m as work on work.id = geom.work_id  " +
+//                " WHERE road.is_active=true ";
+        String qry = "select distinct road.id ,gm.package_id , pm.package_no as package_name, road.road_name , road.sanction_length as road_length, road.road_location, road.road_allignment, \n" +
+                " road.road_width,ST_AsGeoJSON(road.geom) as geom ,road.g_road_id as groadId, road.is_active, road.created_by, road.created_on, road.updated_by,\n" +
+                " road.updated_on, gm.completed_road_length, road.sanction_date as sanctionDate, road.road_code, road.road_status, road.approval_status, road.approved_by, gm.package_id as workIds, gm.dist_id as distIds\n" +
+                " from rdvts_oltp.road_m as road \n" +
+                " left join rdvts_oltp.geo_mapping as gm on gm.road_id = road.id and gm.is_active ='true'\n" +
+                " left join rdvts_oltp.package_m as pm on pm.id = gm.package_id and pm.is_active ='true'\n" +
+                " where road.is_active = 'true'  ";
 
         if (roadIdList != null && roadIdList.size() > 0 && !roadIdList.isEmpty()) {
-            qry += " AND road.id IN (:roadIdList)";
+//            qry += " AND road.id IN (:roadIdList)";
+            qry += " AND road.id IN (:roadIdList) ";
             sqlParam.addValue("roadIdList", roadIdList);
         }
         if (workIds != null && !workIds.isEmpty()) {
-            qry += " AND geom.work_id IN (:workIds)";
+//            qry += " AND geom.work_id IN (:workIds)";
+            qry += " AND gm.package_id IN (:workIds) ";
             sqlParam.addValue("workIds", workIds);
         }
         if (distIds != null && distIds.size() > 0) {
-            qry += " AND geom.g_dist_id IN (:distIds)";
+            qry += " AND gm.dist_id IN (:distIds) ";
             sqlParam.addValue("distIds", distIds);
         }
-        if (blockIds != null && blockIds.size() > 0) {
-            qry += " AND geom.g_block_id IN (:blockIds)";
-            sqlParam.addValue("blockIds", blockIds);
+//        if (blockIds != null && blockIds.size() > 0) {
+//            qry += " AND geom.g_block_id IN (:blockIds)";
+//            sqlParam.addValue("blockIds", blockIds);
+//        }
+        if (packageId != null && packageId.size() > 0) {
+            qry += " AND gm.package_id IN (:packageId) ";
+            sqlParam.addValue("packageId", packageId);
         }
         try {
             road = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
@@ -514,24 +526,44 @@ public class RoadRepositoryImpl {
         String qry = "";
         String geom_type = "";
         String str = "";
-
-
-        str += "LINESTRING(";
-        if (roadLocation.size()> 1) {
-
+        if (roadLocation.size() > 1) {
+            List<Integer> keyInt = new ArrayList<>();
             for (int i = 0; i < roadLocation.size(); i++) {
-                str += roadLocation.get(i).getLongitude() + " " + roadLocation.get(i).getLatitude() + ",";
-
+                if (!keyInt.contains(roadLocation.get(i).getRoadNo())) {
+                    keyInt.add(roadLocation.get(i).getRoadNo());
+                }
             }
-            str = str.substring(0, str.length() - 1);
+            String geoStr = "";
+            for (int i = 0; i < keyInt.size(); i++) {
+                if (geoStr.length() > 0) {
+                    geoStr = geoStr + ",(";
+                } else {
+                    geoStr = geoStr + "(";
+                }
+                String geoStrInt = "";
+                for (int j = 0; j < roadLocation.size(); j++) {
+                    if (roadLocation.get(j).getRoadNo() == keyInt.get(i)) {
+                        if (geoStrInt.length() > 0) {
+                            geoStrInt += "," + roadLocation.get(j).getLongitude() + " " + roadLocation.get(j).getLatitude();
+                        }else {
+                            geoStrInt += roadLocation.get(j).getLongitude() + " " + roadLocation.get(j).getLatitude();
+                        }
+                    }
+                }
+                geoStr += geoStrInt;
+                geoStr += ")";
+            }
+            str += "MULTILINESTRING(";
+            str += geoStr;
             str += ")";
-//            update = "UPDATE rdvts_oltp.geo_construction_m set geom = ST_GeomFromText('" + str + "',4326)  where id=" + roadId + "";
+            System.out.println(str);
             update = "UPDATE rdvts_oltp.road_m set geom = ST_GeomFromText('" + str + "',4326)  where id=" + roadId + "";
             sqlParam.addValue("userId", userId);
             namedJdbc.update(update, sqlParam);
         }
         return 1;
     }
+
     public Integer saveLength(Integer roadId, List<RoadLocationEntity> roadLocation, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 //        String qry = "UPDATE rdvts_oltp.geo_construction_m set gis_length=ST_Length(ST_Transform(geom,26986))/1000 where id=:roadId";
@@ -543,7 +575,7 @@ public class RoadRepositoryImpl {
     }
 
 
-        public List<GeoMasterDto> getWorkByCircleId(Integer circleObj) {
+    public List<GeoMasterDto> getWorkByCircleId(Integer circleObj) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, g_work_id, g_dist_id, g_block_id, g_piu_id, g_contractor_id, work_id, piu_id, dist_id, block_id, road_id, is_active, created_by, created_on, updated_by, updated_on\n" +
@@ -555,18 +587,19 @@ public class RoadRepositoryImpl {
         sqlParam.addValue("circleObj", circleObj);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMasterDto.class));
     }
+
     public List<AlertCountDto> getAlert(Integer roadId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-            String qry = " select distinct road.id as roadId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve,\n" +
-                    "ad.resolved_by, count(ad.id) over (partition by ad.alert_type_id,road.id)  " +
-                    "from rdvts_oltp.geo_construction_m as road " +
-                    "left join rdvts_oltp.geo_master as gm on gm.road_id=road.id " +
-                    "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=gm.work_id " +
-                    "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=awm.activity_id " +
-                    "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id = vam.vehicle_id " +
-                    "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id " +
-                    "left join rdvts_oltp.alert_data as ad on ad.imei=dm.imei_no_1 " +
-                    "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where gm.is_active=true and road.id=:roadId order by road.id ";
+        String qry = " select distinct road.id as roadId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve,\n" +
+                "ad.resolved_by, count(ad.id) over (partition by ad.alert_type_id,road.id)  " +
+                "from rdvts_oltp.geo_construction_m as road " +
+                "left join rdvts_oltp.geo_master as gm on gm.road_id=road.id " +
+                "left join rdvts_oltp.activity_work_mapping as awm on awm.work_id=gm.work_id " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id=awm.activity_id " +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id = vam.vehicle_id " +
+                "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id " +
+                "left join rdvts_oltp.alert_data as ad on ad.imei=dm.imei_no_1 " +
+                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where gm.is_active=true and road.id=:roadId order by road.id ";
         sqlParam.addValue("roadId", roadId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
     }
