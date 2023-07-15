@@ -9,12 +9,14 @@ import gov.orsac.RDVTS.repositoryImpl.DeviceRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.ActivityService;
 import gov.orsac.RDVTS.service.VehicleService;
+import gov.orsac.RDVTS.service.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.Inet4Address;
 import java.util.*;
 
 @RestController
@@ -115,6 +117,8 @@ public class VehicleController {
         return response;
     }
 
+    @Autowired
+    private WorkService workService;
     @PostMapping("/getVehicleByVId")
     public RDVTSListResponse getVehicleByVId(@RequestParam Integer vehicleId,
                                              @RequestParam Integer userId
@@ -137,13 +141,17 @@ public class VehicleController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            VehicleWorkMappingDto work=null;
-            List<VehicleWorkMappingDto> workHistory=new ArrayList<>();
+//            VehicleWorkMappingDto work=null;
+            List<WorkDto> workDetails=null;
+            List<WorkDto> workHistory=new ArrayList<>();
             VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleId);
             VehicleDeviceInfo device=vehicleService.getVehicleDeviceMapping(vehicleId);
             Integer activityId=vehicleRepositoryImpl.getActivityByVehicleId(vehicleId);
             if(activityId!=null && activityId>0) {
-               work= vehicleService.getVehicleWorkMapping(activityId);
+                Integer packageId = workService.getPackageByActivityId(activityId);
+                if(packageId != null && packageId > 0){
+                    workDetails= workService.getWorkById(packageId);
+                }
             }
          //   LocationDto location=vehicleService.getLocation(vehicleId);
             //changes by sp 21feb
@@ -159,16 +167,16 @@ public class VehicleController {
 //            }
 
             List<VehicleDeviceInfo> deviceHistory=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
-            List<Integer> activityIds=vehicleRepositoryImpl.getActivityIdsByVehicleId(vehicleId);
-            if(activityIds!=null && activityIds.size()>0) {
-            workHistory = vehicleService.getVehicleWorkMappingList(activityIds);
-            }
+//            List<Integer> activityIds=vehicleRepositoryImpl.getActivityIdsByVehicleId(vehicleId);
+//            if(activityIds!=null && activityIds.size()>0) {
+            workHistory = vehicleService.getPackageHistoryByVehicleId(vehicleId);
+//            }
             ActivityInfoDto activity=vehicleService.getLiveActivityByVehicleId(vehicleId);
             List<ActivityInfoDto> activityList=vehicleService.getActivityListByVehicleId(vehicleId);
 
             result.put("vehicle", vehicle);
             result.put("device",device);
-            result.put("work",work);
+            result.put("work",workDetails);
             result.put("location",location);
             result.put("alertList",alertPageList);
             result.put("deviceHistoryList",deviceHistory);
