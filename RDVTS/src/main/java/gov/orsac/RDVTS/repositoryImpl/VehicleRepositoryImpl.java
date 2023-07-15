@@ -403,7 +403,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true " +
                 "left join rdvts_oltp.device_area_mapping as dam on dam.device_id = device.device_id and dam.is_active =true  " +
                 "left join rdvts_oltp.vehicle_activity_mapping as activity on vm.id = activity.vehicle_id and activity.is_active=true " +
-                "left join rdvts_oltp.activity_m as am on am.id = activity.activity_id  " +
+                "left join rdvts_oltp.geo_mapping as gm on gm.id=activity.geo_mapping_id and gm.is_active=true " +
+                "left join rdvts_oltp.activity_m as am on am.id = gm.activity_id  " +
                 "left join rdvts_oltp.activity_work_mapping as awm on am.id = awm.activity_id  " +
                 "left join rdvts_oltp.work_m as work on work.id = awm.work_id  " +
                 "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id " +
@@ -1030,9 +1031,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public Integer getActivityByVehicleId(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct awm.activity_id from rdvts_oltp.vehicle_activity_mapping as vam " +
-                "left join rdvts_oltp.activity_work_mapping as awm on awm.id = vam.activity_id and awm.is_active = true " +
-                "where vam.is_active=true and vam.vehicle_id =:vehicleId";
+        String qry = "select distinct vam.geo_mapping_id from rdvts_oltp.vehicle_activity_mapping as vam where vam.is_active=true and vam.vehicle_id = :vehicleId";
         sqlParam.addValue("vehicleId", vehicleId);
         try {
             return namedJdbc.queryForObject(qry, sqlParam, Integer.class);
@@ -1043,9 +1042,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<Integer> getActivityIdsByVehicleId(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select distinct awm.activity_id from rdvts_oltp.vehicle_activity_mapping as vam " +
-                " left join rdvts_oltp.activity_work_mapping as awm on awm.id = vam.activity_id " +
-                " where vam.is_active=false and vam.vehicle_id =:vehicleId";
+        String qry = " select distinct activity_id from rdvts_oltp.vehicle_activity_mapping where is_active=false and vehicle_id=:vehicleId ";
         sqlParam.addValue("vehicleId", vehicleId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
@@ -1053,15 +1050,15 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public ActivityInfoDto getLiveActivityByVehicleId(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT am.id,am.activity_name as activityName,awm.activity_quantity as activityQuantity,awm.activity_start_date as startDate,awm.activity_completion_date as activityCompletionDate,awm.actual_activity_start_date as actualActivityStartDate,   " +
-                "awm.actual_activity_completion_date as actualActivityCompletionDate,awm.executed_quantity as executedQuantity,awm.activity_status as statusId,status.name as statusName from rdvts_oltp.activity_work_mapping as awm   " +
-                "left join rdvts_oltp.activity_m am on am.id = awm.activity_id  " +
-                "left join rdvts_oltp.activity_status_m as status on status.id=awm.activity_status  " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = awm.id   " +
-                "WHERE vam.is_active = true   ";
+        String qry = " select  am.activity_name, gm.activity_quantity, gm.activity_start_date, gm.activity_completion_date, gm.actual_activity_start_date, gm.actual_activity_completion_date,\n" +
+                "gm.executed_quantity, (case when (gm.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as statusName\n" +
+                "from rdvts_oltp.geo_mapping as gm\n" +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id=gm.id and vam.is_active=true\n" +
+                "left join rdvts_oltp.activity_m as am on am.id=gm.activity_id\n" +
+                "where gm.is_active=true  ";
 
         if (vehicleId > 0) {
-            qry += " AND vam.vehicle_id=:vehicleId ORDER by am.id desc LIMIT 1 ";
+            qry += " and vam.vehicle_id=:vehicleId  ";
         }
         sqlParam.addValue("vehicleId", vehicleId);
         try {
@@ -1073,17 +1070,22 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<ActivityInfoDto> getActivityListByVehicleId(Integer vehicleId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "SELECT am.id,am.activity_name as activityName,awm.activity_quantity as activityQuantity,awm.activity_start_date as startDate,  " +
-                "awm.activity_completion_date as activityCompletionDate,awm.actual_activity_start_date as actualActivityStartDate,  " +
-                "awm.actual_activity_completion_date as actualActivityCompletionDate,awm.executed_quantity as executedQuantity,  " +
-                "awm.activity_status as statusId,status.name as statusName from rdvts_oltp.activity_m as am   " +
-                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id = am.id  " +
-                "left join rdvts_oltp.activity_status_m as status on status.id=awm.activity_status  " +
-                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = am.id   " +
-                "WHERE vam.is_active =false  ";
-
+//        String qry = "SELECT am.id,am.activity_name as activityName,awm.activity_quantity as activityQuantity,awm.activity_start_date as startDate,  " +
+//                "awm.activity_completion_date as activityCompletionDate,awm.actual_activity_start_date as actualActivityStartDate,  " +
+//                "awm.actual_activity_completion_date as actualActivityCompletionDate,awm.executed_quantity as executedQuantity,  " +
+//                "awm.activity_status as statusId,status.name as statusName from rdvts_oltp.activity_m as am   " +
+//                "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id = am.id  " +
+//                "left join rdvts_oltp.activity_status_m as status on status.id=awm.activity_status  " +
+//                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = am.id   " +
+//                "WHERE vam.is_active =false  ";
+        String qry = "  select distinct am.id, am.activity_name, gm.activity_quantity, gm.activity_start_date, gm.activity_completion_date, gm.actual_activity_start_date, gm.actual_activity_completion_date,\n" +
+                "gm.executed_quantity, (case when (gm.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName\n" +
+                "from rdvts_oltp.geo_mapping as gm\n" +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id=gm.id \n" +
+                "left join rdvts_oltp.activity_m as am on am.id=gm.activity_id\n" +
+                "where vam.is_active=false  ";
         if (vehicleId > 0) {
-            qry += " AND vam.vehicle_id=:vehicleId";
+            qry += " and vam.vehicle_id=:vehicleId";
         }
         sqlParam.addValue("vehicleId", vehicleId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityInfoDto.class));
@@ -1223,7 +1225,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 "     left join rdvts_oltp.vehicle_device_mapping as device on device.vehicle_id=vm.id and device.is_active=true \n" +
                 "     left join rdvts_oltp.device_m as dm on dm.id=device.device_id left join (select count(id) over (partition by vehicle_id) as vehicleCount,vehicle_id  \n" +
                 "     from  rdvts_oltp.vehicle_device_mapping  where is_active=true and deactivation_date is null) as vdCount on vdCount.vehicle_id=device.vehicle_id  \n" +
-                "     left join ( select distinct imei, max(id) over (partition by imei) as imeiCount from rdvts_oltp.vtu_location where date_time >='2023-04-17'::timestamp and gps_fix::numeric =1 ) as vtuLocation  \n" +
+                "     left join ( select distinct imei, max(id) over (partition by imei) as imeiCount from rdvts_oltp.vtu_location where date_time >=:currentDateTime::timestamp and gps_fix::numeric =1 ) as vtuLocation  \n" +
                 "     on vtuLocation.imei=dm.imei_no_1 where vm.is_active=true ) as v";
         sqlParam.addValue("currentDateTime", currentDateTime);
         List<VehicleMasterDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
@@ -1246,6 +1248,20 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
         }
        // System.out.println("h");
+    }
+
+    public List<WorkDto> getPackageHistoryByVehicleId(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select  distinct pm.id,piu.name as piuName,pm.package_no as packageName, \n" +
+                "   (case when (completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName, rm.road_name as roadName \n" +
+                "  from rdvts_oltp.geo_mapping gm  \n" +
+                "  LEFT join rdvts_oltp.package_m pm on pm.id = gm.package_id  \n" +
+                "  LEFT join rdvts_oltp.piu_id piu on piu.id = gm.piu_id \n" +
+                "  left join rdvts_oltp.road_m as rm on rm.id=gm.road_id  " +
+                "  left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id=gm.id  \n" +
+                "  where vam.is_active=false and vam.vehicle_id=:vehicleId ";
+        sqlParam.addValue("vehicleId", vehicleId);
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
 }
 

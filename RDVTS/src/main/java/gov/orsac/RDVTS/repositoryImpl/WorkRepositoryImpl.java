@@ -356,4 +356,16 @@ public class WorkRepositoryImpl {
             return null;
         }
     }
+
+    public Integer getPackageByActivityId(Integer activityId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select package_id from rdvts_oltp.geo_mapping where is_active=true and id=:activityId \n ";
+        sqlParam.addValue("activityId", activityId);
+        try {
+            return namedJdbc.queryForObject(qry, sqlParam, Integer.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

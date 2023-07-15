@@ -31,4 +31,6 @@ public interface WorkService {
     WorkDto getPackageByvehicleId(Integer vehicleId);
 
     Integer getPackageByvehicleIdCount(Integer vehicleId);
+
+    Integer getPackageByActivityId(Integer activityId);
 }

@@ -73,4 +73,5 @@ public interface VehicleService {
     List<AlertDto> getAlert(AlertFilterDto alertFiler, Integer vehicleId) throws ParseException;
 
 
+    List<WorkDto> getPackageHistoryByVehicleId(Integer vehicleId);
 }

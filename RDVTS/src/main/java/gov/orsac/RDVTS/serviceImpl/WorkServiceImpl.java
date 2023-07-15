@@ -142,6 +142,11 @@ public class WorkServiceImpl implements WorkService {
         return workRepositoryImpl.getPackageByvehicleIdCount(vehicleId);
     }
 
+    @Override
+    public Integer getPackageByActivityId(Integer activityId) {
+        return workRepositoryImpl.getPackageByActivityId(activityId);
+    }
+
     public Integer deactivateVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {
         List<Integer> activityIds = new ArrayList<>();
         List<Integer> vehicleIds = new ArrayList<>();

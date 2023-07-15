@@ -303,6 +303,11 @@ public class VehicleServiceImpl implements VehicleService {
          return null;
        }
 
+    @Override
+    public List<WorkDto> getPackageHistoryByVehicleId(Integer vehicleId) {
+        return vehicleRepositoryimpl.getPackageHistoryByVehicleId(vehicleId);
+    }
+
 //       @Override
 //       public List<AlertDto> getAlertArray(int id) throws ParseException {
 //              List<AlertDto> alertList=new ArrayList<>();
