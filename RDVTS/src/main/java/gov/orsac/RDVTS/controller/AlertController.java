@@ -656,6 +656,21 @@ public class AlertController {
 
     }
 
+    @RequestMapping("/getLocationForWork")
+    public RDVTSResponse getAlert() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try{
+
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+            response = new RDVTSResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
+        }
+        return response;
+    }
+
     @RequestMapping("/getAlert")
     public RDVTSAlertResponse getAlert(@RequestParam(name = "userId") Integer userId,
                                        @RequestParam(name = "roadId", required = false) Integer roadId,

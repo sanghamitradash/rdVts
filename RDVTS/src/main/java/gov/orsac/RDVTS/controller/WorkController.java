@@ -157,16 +157,16 @@ public class WorkController {
             Integer totalActiveVehicle=0;
 
             //distance and speed API
-//            for (WorkDto workitem : workDto) {
-//                WorkCronEntity workData = alertRepositoryImpl.getWorkCronByWorkId(id);
-//                if (workData != null) {
-//                    totalDistance = workData.getTotalDistance();
-//                    todayDistance = workData.getTodayDistance();
-//                    totalActiveVehicle = workData.getTotalActiveVehicle();
-//                    totalSpeedWork = workData.getTotalSpeedWork();
-//                    avgSpeedToday = workData.getAvgSpeedToday();
-//                }
-//            }
+            for (WorkDto workitem : workDto) {
+                WorkCronEntity workData = alertRepositoryImpl.getWorkCronByWorkId(id);
+                if (workData != null) {
+                    totalDistance = workData.getTotalDistance();
+                    todayDistance = workData.getTodayDistance();
+                    totalActiveVehicle = workData.getTotalActiveVehicle();
+                    totalSpeedWork = workData.getTotalSpeedWork();
+                    avgSpeedToday = workData.getAvgSpeedToday();
+                }
+            }
 
 //                List<ActivityDto> activityDtoList = workService.getActivityByWorkId(workitem.getId());
 //                for (ActivityDto activityId : activityDtoList) {
