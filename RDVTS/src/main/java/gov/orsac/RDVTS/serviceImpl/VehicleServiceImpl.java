@@ -221,8 +221,14 @@ public class VehicleServiceImpl implements VehicleService {
 
         List<VehicleActivityMappingEntity> vehicleActivity=new ArrayList<>();
         for(VehicleActivityDto vehicleActivity1:activity){
+
+            Integer geoMappingId = vehicleRepositoryimpl.getGeoMappingIdByActivityId(vehicleActivity1.getActivityId(), vehicleActivity1.getPackageId());
+
+
             VehicleActivityMappingEntity vehicle1=new VehicleActivityMappingEntity();
             BeanUtils.copyProperties(vehicleActivity1,vehicle1);
+            vehicle1.setActivityId(null);
+            vehicle1.setGeoMappingId(geoMappingId);
             if(vehicleActivity1.getStartTime()!=null) {
                 Date startTime = formatter.parse(vehicleActivity1.getStartTime());
                 vehicle1.setStartTime(startTime);
