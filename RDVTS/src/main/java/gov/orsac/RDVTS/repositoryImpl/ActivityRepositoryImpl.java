@@ -256,17 +256,23 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ResolvedStatusDto.class));
     }
 
-    public List<ActivityDto> getActivityByIdAndWorkId(Integer activityId, Integer userId, Integer geoMappingId) {
+    public List<ActivityDto> getActivityByIdAndWorkId(Integer activityId, Integer userId, Integer geoMappingId, Integer packageId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry =" SELECT am.id,am.activity_name,gm.package_id,gm.activity_quantity,gm.activity_start_date,gm.activity_completion_date,   " +
                 "gm.actual_activity_start_date,gm.actual_activity_completion_date,gm.executed_quantity, " +
                 " (case when (gm.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as activityStatusName, gm.id as geo_mapping_id, gm.activity_status " +
                 " from rdvts_oltp.activity_m as am  " +
                 "left join rdvts_oltp.geo_mapping as gm on gm.activity_id = am.id  " +
-                "Where gm.id =:geoMappingId and am.is_active = true ";
-
-
-        sqlParam.addValue("geoMappingId",geoMappingId);
+                "Where  am.is_active = true ";
+        if(geoMappingId != null && geoMappingId > 0){
+            qry += " and gm.id =:geoMappingId ";
+            sqlParam.addValue("geoMappingId",geoMappingId);
+        }
+        if(packageId != null && packageId > 0 && activityId != null && activityId > 0){
+            qry += "  and gm.package_id=:packageId and am.id=:activityId ";
+            sqlParam.addValue("packageId",packageId);
+            sqlParam.addValue("activityId",activityId);
+        }
         sqlParam.addValue("userId",userId);
         return namedJdbc.query(qry,sqlParam,new BeanPropertyRowMapper<>(ActivityDto.class));
 
@@ -332,6 +338,20 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         sqlParam.addValue("activityId",activityId);
         sqlParam.addValue("contractorId",contractorId);
         return namedJdbc.update(qry,sqlParam);
+    }
+
+    public List<ActivityAnalysisDto> getActivityAnalysisByPkgId(Integer userId, Integer packageId) {
+        MapSqlParameterSource sqlParam  = new MapSqlParameterSource();
+        String qry = " select distinct am.id,am.activity_name as activityName,aa.geo_mapping_id as geoMappingId,coalesce(sum(aa.req_quantity),0.0) as reqQuantity,coalesce(sum(aa.executed_quantity),0.0) as executedQuantity\n" +
+                "from rdvts_oltp.activity_m as am\n" +
+                "left join rdvts_oltp.geo_mapping as gm on am.id=gm.activity_id and am.is_active=true\n" +
+                "left join rdvts_oltp.activity_analysis as aa on gm.id=aa.geo_mapping_id and gm.is_active=true\n" +
+                "where gm.package_id=:packageId\n" +
+                "group by am.id,am.activity_name,aa.geo_mapping_id\n" +
+                "order by am.activity_name ";
+        sqlParam.addValue("userId", userId);
+        sqlParam.addValue("packageId", packageId);
+        return namedJdbc.query(qry,sqlParam, new BeanPropertyRowMapper<>(ActivityAnalysisDto.class));
     }
 }
 

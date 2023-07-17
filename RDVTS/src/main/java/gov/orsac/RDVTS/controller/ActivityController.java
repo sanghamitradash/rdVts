@@ -63,12 +63,13 @@ public class ActivityController {
 
       public RDVTSResponse getActivityByIdAndWorkId(@RequestParam(name = "activityId") Integer activityId,
                                                     @RequestParam(name = "userId") Integer userId,
-                                                    @RequestParam(name = "geoMappingId") Integer geoMappingId ){
+                                                    @RequestParam(name = "geoMappingId", required = false) Integer geoMappingId,
+                                                    @RequestParam(name = "packageId", required = false) Integer packageId){
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
 
-            List<ActivityDto> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,geoMappingId);
+            List<ActivityDto> activityWork = activityService.getActivityByIdAndWorkId(activityId, userId,geoMappingId, packageId);
 
 //            List<IssueDto> issue = activityService.getIssueByWorkId(activityWork.get(0).getWorkId(), activityWork.get(0).getActivityId());
             List<IssueDto> issue = new ArrayList<>();
@@ -448,6 +449,37 @@ public class ActivityController {
             rdvtsResponse.setStatus(1);
             rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             rdvtsResponse.setMessage("Issue Updated Successfully");
+        } catch (Exception e) {
+            rdvtsResponse = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return rdvtsResponse;
+    }
+
+    @PostMapping("/getAnalysisByPkgId")
+    public RDVTSResponse getActivityAnalysisByPkgId(@RequestParam(name = "userId", required = false) Integer userId,
+                                     @RequestParam(name = "packageId", required = false) Integer packageId) {
+        RDVTSResponse rdvtsResponse = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<String> activityName=new ArrayList<>();
+            List<Double> reqQuantity=new ArrayList<>();
+            List<Double> executedQuantity=new ArrayList<>();
+            List<ActivityAnalysisDto> actAnalysis = activityService.getActivityAnalysisByPkgId(userId, packageId);
+            for (ActivityAnalysisDto data : actAnalysis) {
+                activityName.add(data.getActivityName());
+                reqQuantity.add(data.getReqQuantity());
+                executedQuantity.add(data.getExecutedQuantity());
+            }
+            result.put("activityName", activityName);
+            result.put("reqQuantity", reqQuantity);
+            result.put("executedQuantity", executedQuantity);
+            rdvtsResponse.setData(result);
+            rdvtsResponse.setStatus(1);
+            rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            rdvtsResponse.setMessage("Activity Analysis Details.");
         } catch (Exception e) {
             rdvtsResponse = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),

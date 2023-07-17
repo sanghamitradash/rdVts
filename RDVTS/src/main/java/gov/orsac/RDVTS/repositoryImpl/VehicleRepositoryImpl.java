@@ -1263,5 +1263,13 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         sqlParam.addValue("vehicleId", vehicleId);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
     }
+
+    public Integer getGeoMappingIdByActivityId(Integer activityId, Integer packageId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select id from rdvts_oltp.geo_mapping where is_active=true and activity_id=:activityId and package_id=:packageId  ";
+        sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("packageId", packageId);
+        return namedJdbc.queryForObject(qry, sqlParam,Integer.class);
+    }
 }
 
