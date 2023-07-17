@@ -51,13 +51,15 @@ public interface ActivityService {
 
     IssueEntity saveIssueImage(IssueDto issue, Integer id, MultipartFile issueImages);
 
-    List<ActivityDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer geoMappingId);
+    List<ActivityDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer geoMappingId, Integer packageId);
 
     List<IssueDto> getIssueByWorkId(Integer workId, Integer activityId);
 
     IssueEntity updateIssue(int id, IssueDto issueDto);
 
     Integer saveContractorId(Integer contractorId, Integer activityId);
+
+    List<ActivityAnalysisDto> getActivityAnalysisByPkgId(Integer userId, Integer packageId);
 }
 
 

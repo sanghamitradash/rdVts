@@ -25,4 +25,5 @@ public class VehicleActivityDto {
     private Date updatedOn;
     private Date deactivationDate;
     private Integer gActivityId;
+    private Integer geoMappingId;
 }

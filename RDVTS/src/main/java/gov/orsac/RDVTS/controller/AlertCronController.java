@@ -495,11 +495,13 @@ public class AlertCronController {
                                                         vehicleList.getStartDate(), vehicleList.getEndDate(), deviceListItem.getCreatedOn(), deviceListItem.getDeactivationDate());
                                                 int i = 0;
                                                 for (VtuLocationDto vtuobj : vtuLocationDto) {
-                                                    i++;
-                                                    if (Double.isNaN(Double.valueOf(vtuobj.getSpeedOfVehicle()))) {
-                                                        totalSpeedWork += 0.0;
-                                                    } else {
-                                                        totalSpeedWork += vtuobj.getSpeedOfVehicle();
+                                                    if(vtuobj.getSpeedOfVehicle() != null){
+                                                        i++;
+                                                        if (Double.isNaN(Double.valueOf(vtuobj.getSpeedOfVehicle()))) {
+                                                            totalSpeedWork += 0.0;
+                                                        } else {
+                                                            totalSpeedWork += vtuobj.getSpeedOfVehicle();
+                                                        }
                                                     }
                                                 }
                                                 totalSpeedWork = totalSpeedWork / i;
