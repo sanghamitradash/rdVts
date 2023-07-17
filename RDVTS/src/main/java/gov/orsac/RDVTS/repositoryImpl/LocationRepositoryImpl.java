@@ -140,7 +140,7 @@ public class LocationRepositoryImpl {
                     "digital_input2, digital_input3, digital_input4, digital_output_1, digital_output_2, frame_number, checksum, odo_meter, geofence_id, " +
                     "is_active, created_by, created_on, updated_by, updated_on,CAST(speed as DECIMAL(4,2)) as speedOfVehicle " +
                     "    FROM rdvts_oltp.vtu_location where is_active=true  ";
-            qry += " and imei =:imei2 and gps_fix::numeric =1 and pakcet_type = 'NR'  ";
+            qry += " and imei =:imei2 and gps_fix::numeric =1 and packet_type = 'NR'  ";
             sqlParam.addValue("imei2", imei2);
 
 //            if (deviceVehicleDeactivationDate == null) {

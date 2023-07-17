@@ -198,8 +198,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer geoMappingId) {
-        return activityRepositoryImpl.getActivityByIdAndWorkId(activityId,userId,geoMappingId);
+    public List<ActivityDto> getActivityByIdAndWorkId(Integer activityId, Integer userId,Integer geoMappingId, Integer packageId) {
+        return activityRepositoryImpl.getActivityByIdAndWorkId(activityId,userId,geoMappingId, packageId);
     }
 
     @Override
@@ -225,6 +225,20 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Integer saveContractorId(Integer contractorId, Integer activityId) {
         return activityRepositoryImpl.saveContractorId(contractorId,  activityId);
+    }
+
+    @Override
+    public List<ActivityAnalysisDto> getActivityAnalysisByPkgId(Integer userId, Integer packageId) {
+        List<ActivityAnalysisDto> responseDto = new ArrayList<>();
+        List<ActivityAnalysisDto> actAnalysis = activityRepositoryImpl.getActivityAnalysisByPkgId(userId, packageId);
+        for(int i = 0 ; i < actAnalysis.size() ; i++){
+            ActivityAnalysisDto ad = new ActivityAnalysisDto();
+            ad.setActivityName(actAnalysis.get(i).getActivityName());
+            ad.setReqQuantity(actAnalysis.get(i).getReqQuantity());
+            ad.setExecutedQuantity(actAnalysis.get(i).getExecutedQuantity());
+            responseDto.add(ad);
+        }
+        return responseDto;
     }
 
 
