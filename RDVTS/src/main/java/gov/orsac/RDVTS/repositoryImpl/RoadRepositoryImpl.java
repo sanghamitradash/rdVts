@@ -89,7 +89,7 @@ public class RoadRepositoryImpl {
                 " left join rdvts_oltp.geo_mapping as gm on gm.road_id = road.id and gm.is_active ='true'\n" +
                 " left join rdvts_oltp.package_m as pm on pm.id = gm.package_id and pm.is_active ='true'\n" +
                 " where road.is_active = 'true' ";
-        if (workId > 0) {
+        if (workId != null && workId > 0) {
 //            qry += " and wm.id= :id";
             qry += " and pm.id =:id";
         }
