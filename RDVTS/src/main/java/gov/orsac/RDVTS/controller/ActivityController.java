@@ -476,6 +476,7 @@ public class ActivityController {
             result.put("activityName", activityName);
             result.put("reqQuantity", reqQuantity);
             result.put("executedQuantity", executedQuantity);
+            result.put("actAnalysis", actAnalysis);
             rdvtsResponse.setData(result);
             rdvtsResponse.setStatus(1);
             rdvtsResponse.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
