@@ -407,12 +407,13 @@ public class WorkController {
     }
 
     @PostMapping("/getPackageDD")
-    public RDVTSResponse getPackageDD(@RequestParam(name = "userId") Integer userId) {
+    public RDVTSResponse getPackageDD(@RequestParam(name = "userId") Integer userId,
+                                      @RequestParam(name = "piuId", required = false) Integer piuId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
 //            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
-            List<GeoConstructionDto> geoConstructionDto = workService.getPackageDD(userId);
+            List<GeoConstructionDto> geoConstructionDto = workService.getPackageDD(userId, piuId);
 
             result.put("geoConstructionDto", geoConstructionDto);
             response.setData(result);
@@ -428,5 +429,29 @@ public class WorkController {
         return response;
 
     }
+
+    @PostMapping("/getPiuDD")
+    public RDVTSResponse getPiuDD(@RequestParam(name = "userId", required = false) Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+//            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
+            List<PiuDto> piuDto = workService.getPiuDD(userId);
+
+            result.put("piuDto", piuDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+
+    }
+
 
 }

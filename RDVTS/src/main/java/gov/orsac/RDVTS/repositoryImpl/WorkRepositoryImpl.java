@@ -309,9 +309,15 @@ public class WorkRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMappingEntity.class));
     }
 
-    public List<GeoConstructionDto> getPackageDD(Integer userId) {
+    public List<GeoConstructionDto> getPackageDD(Integer userId, Integer piuId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select package_id ,package_name from rdvts_oltp.geo_construction_m where is_active = true ";
+        String qry = "select pm.id as packageId ,pm.package_no as packageName from rdvts_oltp.package_m as pm " +
+                "left join rdvts_oltp.geo_mapping as gm on gm.piu_id=pm.id and gm.is_active=true " +
+                " where pm.is_active = true ";
+        if(piuId != null && piuId > 0){
+            qry += " and gm.piu_id=:piuId ";
+            sqlParam.addValue("piuId", piuId);
+        }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoConstructionDto.class));
     }
 
@@ -367,5 +373,11 @@ public class WorkRepositoryImpl {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<PiuDto> getPiuDD(Integer userId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select * from rdvts_oltp.piu_id where is_active=true\n ";
+        return namedJdbc.query(qry, sqlParam, new  BeanPropertyRowMapper<>(PiuDto.class));
     }
 }

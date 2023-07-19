@@ -123,8 +123,8 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public List<GeoConstructionDto> getPackageDD(Integer userId) {
-        return workRepositoryImpl.getPackageDD(userId);
+    public List<GeoConstructionDto> getPackageDD(Integer userId, Integer piuId) {
+        return workRepositoryImpl.getPackageDD(userId, piuId);
     }
 
     @Override
@@ -145,6 +145,11 @@ public class WorkServiceImpl implements WorkService {
     @Override
     public Integer getPackageByActivityId(Integer activityId) {
         return workRepositoryImpl.getPackageByActivityId(activityId);
+    }
+
+    @Override
+    public List<PiuDto> getPiuDD(Integer userId) {
+        return workRepositoryImpl.getPiuDD(userId);
     }
 
     public Integer deactivateVehicleActivity(List<VehicleActivityDto> activity) throws ParseException {

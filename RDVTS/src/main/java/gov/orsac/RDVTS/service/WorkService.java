@@ -24,7 +24,7 @@ public interface WorkService {
     List<GeoMappingEntity> getActivityDetailsByWorkId(Integer workId);
     List<WorkStatusDto> getWorkStatusDD(Integer userId);
 
-    List<GeoConstructionDto> getPackageDD(Integer userId);
+    List<GeoConstructionDto> getPackageDD(Integer userId, Integer piuId);
 
     List<WorkDto> getAsignedActivityDetails(Integer id);
 
@@ -33,4 +33,6 @@ public interface WorkService {
     Integer getPackageByvehicleIdCount(Integer vehicleId);
 
     Integer getPackageByActivityId(Integer activityId);
+
+    List<PiuDto> getPiuDD(Integer userId);
 }
