@@ -802,7 +802,7 @@ public class AlertController {
     public Object makeApiCall() throws IOException {
         ResponseEntity<String> responseEntity = null;
         try {
-            final String uri = "http://omms.nic.in//api/VTS/VTSAPI";
+            final String uri = "https://omms.nic.in//api/VTS/VTSAPI";
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders header = new HttpHeaders();
             header.set("key", "b3ce5bed5effb926301302b76d3bd98bb22bfc5d6da18b2e5c7017138ca431e9");
