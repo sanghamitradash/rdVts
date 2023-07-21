@@ -312,7 +312,7 @@ public class WorkRepositoryImpl {
     public List<GeoConstructionDto> getPackageDD(Integer userId, Integer piuId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select distinct pm.id as packageId ,pm.package_no as packageName from rdvts_oltp.package_m as pm " +
-                "left join rdvts_oltp.geo_mapping as gm on gm.piu_id=pm.id and gm.is_active=true " +
+                "left join rdvts_oltp.geo_mapping as gm on gm.package_id=pm.id and gm.is_active=true " +
                 " where pm.is_active = true ";
         if(piuId != null && piuId > 0){
             qry += " and gm.piu_id=:piuId ";
