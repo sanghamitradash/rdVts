@@ -309,7 +309,7 @@ public class WorkRepositoryImpl {
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoMappingEntity.class));
     }
 
-    public List<GeoConstructionDto> getPackageDD(Integer userId, Integer piuId) {
+    public List<GeoConstructionDto> getPackageDD(Integer userId, Integer piuId, Integer distId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select distinct pm.id as packageId ,pm.package_no as packageName from rdvts_oltp.package_m as pm " +
                 "left join rdvts_oltp.geo_mapping as gm on gm.package_id=pm.id and gm.is_active=true " +
@@ -317,6 +317,11 @@ public class WorkRepositoryImpl {
         if(piuId != null && piuId > 0){
             qry += " and gm.piu_id=:piuId ";
             sqlParam.addValue("piuId", piuId);
+        }
+
+        if(distId != null && distId > 0){
+            qry += " and gm.dist_id=:distId ";
+            sqlParam.addValue("distId", distId);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(GeoConstructionDto.class));
     }
@@ -379,5 +384,19 @@ public class WorkRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = " select * from rdvts_oltp.piu_id where is_active=true\n ";
         return namedJdbc.query(qry, sqlParam, new  BeanPropertyRowMapper<>(PiuDto.class));
+    }
+
+    public List<VehicleMasterDto> getVehicleByPackageId(Integer userId, Integer packageId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "select vm.id, vm.vehicle_no as vehicleNo from rdvts_oltp.vehicle_m as vm  " +
+                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id =vm.id and vam.is_active = true " +
+                " left join rdvts_oltp.geo_mapping as gm on gm.id = vam.geo_mapping_id  " +
+                " where gm.is_active = true";
+
+        if(packageId != null && packageId > 0){
+            qry += " and gm.package_id = :packageId ";
+            sqlParam.addValue("packageId", packageId);
+        }
+        return namedJdbc.query(qry, sqlParam, new  BeanPropertyRowMapper<>(VehicleMasterDto.class));
     }
 }
