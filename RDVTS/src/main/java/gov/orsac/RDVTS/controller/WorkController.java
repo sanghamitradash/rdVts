@@ -408,12 +408,13 @@ public class WorkController {
 
     @PostMapping("/getPackageDD")
     public RDVTSResponse getPackageDD(@RequestParam(name = "userId") Integer userId,
-                                      @RequestParam(name = "piuId", required = false) Integer piuId) {
+                                      @RequestParam(name = "piuId", required = false)Integer piuId,
+                                      @RequestParam(name = "distId", required = false) Integer distId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
 //            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
-            List<GeoConstructionDto> geoConstructionDto = workService.getPackageDD(userId, piuId);
+            List<GeoConstructionDto> geoConstructionDto = workService.getPackageDD(userId, piuId, distId);
 
             result.put("geoConstructionDto", geoConstructionDto);
             response.setData(result);
@@ -439,6 +440,29 @@ public class WorkController {
             List<PiuDto> piuDto = workService.getPiuDD(userId);
 
             result.put("piuDto", piuDto);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+
+    }
+    @PostMapping("/getVehicleByPackageDD")
+    public RDVTSResponse getVehicleByPackageDD(@RequestParam(name = "userId", required = false) Integer userId,
+                                               @RequestParam(name = "packageId", required = false) Integer packageId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+//            List<UserAreaMappingDto> userAreaMappingDto = userService.getUserAreaMappingByUserId(userId);
+            List<VehicleMasterDto> vehicleDto = workService.getVehicleByPackageId(userId, packageId);
+
+            result.put("vehicleDto", vehicleDto);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));

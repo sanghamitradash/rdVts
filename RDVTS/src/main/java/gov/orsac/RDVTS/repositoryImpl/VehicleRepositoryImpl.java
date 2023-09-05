@@ -686,16 +686,30 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public List<VehicleMasterDto> getVehicleById(Integer id, Integer userId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<VehicleMasterDto> vehicle = new ArrayList<>();
-        String qry = "SELECT ve.id, ve.vehicle_no, ve.vehicle_type_id, vt.name as vehicleTypeName , ve.model, ve.speed_limit, ve.chassis_no, ve.engine_no, ve.engine_no, ve.is_active, ve.is_active, ve.created_by, " +
-                "ve.created_on, ve.updated_by, ve.updated_on " +
-                "FROM rdvts_oltp.vehicle_m AS ve " +
-                "LEFT JOIN rdvts_oltp.vehicle_type AS vt ON vt.id=ve.vehicle_type_id " +
-                "WHERE ve.is_active = true";
-
+//        String qry = "SELECT ve.id, ve.vehicle_no, ve.vehicle_type_id, vt.name as vehicleTypeName , ve.model, ve.speed_limit, ve.chassis_no, ve.engine_no, ve.engine_no, ve.is_active, ve.is_active, ve.created_by, " +
+//                "ve.created_on, ve.updated_by, ve.updated_on " +
+//                "FROM rdvts_oltp.vehicle_m AS ve " +
+//                "LEFT JOIN rdvts_oltp.vehicle_type AS vt ON vt.id=ve.vehicle_type_id " +
+//                "WHERE ve.is_active = true";
+//
+//        if (id > 0) {
+//            qry += " AND ve.id=:id";
+//        }
+        String qry = "SELECT vm.id, vm.vehicle_no, vm.vehicle_type_id,vt.name as vehicleTypeName,vm.model,vm.speed_limit," +
+                "vm.chassis_no,vm.engine_no,vm.is_active as active," +
+                "vm.created_by,vm.created_on,vm.updated_by,vm.updated_on ," +
+                "owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName," +
+                "owner.contractor_id as contractorId,contractor.name as contractorName " +
+                "FROM rdvts_oltp.vehicle_m as vm " +
+                "left join rdvts_oltp.vehicle_type as vt on vm.vehicle_type_id=vt.id " +
+                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id " +
+                "left join rdvts_oltp.user_m as userM on  userM.id=owner.user_id " +
+                "left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id ";
         if (id > 0) {
-            qry += " AND ve.id=:id";
+            qry += " where vm.id=:vehicleId";
         }
-        sqlParam.addValue("id", id);
+        sqlParam.addValue("vehicleId", id);
+//        sqlParam.addValue("id", id);
         sqlParam.addValue("userId", userId);
         try {
             vehicle = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
