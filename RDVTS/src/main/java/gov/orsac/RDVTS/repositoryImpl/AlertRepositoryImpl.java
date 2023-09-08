@@ -860,8 +860,9 @@ public class AlertRepositoryImpl {
                 " left join rdvts_oltp.device_m as dm on dm.imei_no_1=alert.imei and dm.is_active=true \n" +
                 " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id and vdm.is_active=true \n" +
                 " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id and vam.is_active=true \n" +
-                " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  and awm.is_active=true \n" +
-                "  left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  where alert.is_active=true   " ;
+//                " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  and awm.is_active=true \n" +
+//                "  left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  where alert.is_active=true   " ;
+                " left join rdvts_oltp.geo_mapping as gm on gm.id=vam.geo_mapping_id  where alert.is_active=true ";
 //        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
 //            qry += " and gm.block_id=:blockIds ";
 //            sqlParam.addValue("blockId", filterDto.getBlockId());
@@ -952,6 +953,7 @@ public class AlertRepositoryImpl {
                 }
             }
         }
+        qry += " order by alert.alert_type_id , alert.gps_dtm desc ";
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
 
@@ -963,7 +965,7 @@ public class AlertRepositoryImpl {
 
         String qry = "SELECT id, imei_no, total_speed_work, avg_speed_today, total_active_vehicle, total_distance, today_distance, work_id " +
                 "FROM rdvts_oltp.work_cron where work_id=:workId " ;
-        sqlParam.addValue("workId",workId);
+        sqlParam.addValue("workId", workId);
 
         try {
             return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(WorkCronEntity.class));
