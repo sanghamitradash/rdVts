@@ -974,8 +974,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id\n" +
                 " left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id\n" +
                 " left join rdvts_oltp.user_m as userM on userM.id=owner.user_id" +
-                "left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id=vam.vehicle_id and vdm.is_active=true\n" +
-                "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id and dm.is_active=true " +
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id=vm.id and vdm.is_active=true\n" +
+                " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id and dm.is_active=true " +
                 " WHERE vm.is_active = true  ";
         if (id > 0) {
             qry += " and geoMapping.package_id= :id ";
