@@ -966,14 +966,16 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
         String qry =" select distinct vm.id,vm.vehicle_no,vm.vehicle_type_id,type.name as vehicleTypeName,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no," +
                 "  owner.is_contractor as contractor, owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id , \n" +
-                " contractor.name as contractorName \n" +
+                " contractor.name as contractorName, dm.imei_no_1 as imeiNo1 \n" +
                 "from  rdvts_oltp.vehicle_activity_mapping as vam\n" +
                 "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.id=vam.geo_mapping_id\n" +
                 "left join rdvts_oltp.vehicle_m as vm on vam.vehicle_id = vm.id and vam.is_active = true\n" +
                 "left join rdvts_oltp.vehicle_type as type on type.id = vm.vehicle_type_id\n" +
                 " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vm.id\n" +
                 " left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id\n" +
-                " left join rdvts_oltp.user_m as userM on userM.id=owner.user_id " +
+                " left join rdvts_oltp.user_m as userM on userM.id=owner.user_id" +
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id=vm.id and vdm.is_active=true\n" +
+                " left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id and dm.is_active=true " +
                 " WHERE vm.is_active = true  ";
         if (id > 0) {
             qry += " and geoMapping.package_id= :id ";
