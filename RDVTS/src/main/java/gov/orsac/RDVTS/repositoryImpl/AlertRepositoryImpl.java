@@ -852,7 +852,7 @@ public class AlertRepositoryImpl {
 
     public List<AlertCountDto> getVehicleAlertForReport(AlertFilterDto filterDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select imei,alert.id as alertId, alert_type_id,type.alert_type as alertType,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, \n" +
+        String qry = "select alert.imei,alert.id as alertId, alert_type_id,type.alert_type as alertType,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, \n" +
                 " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser, count(alert.id) over (partition by alert.alert_type_id)    \n" +
                 " from  rdvts_oltp.alert_data  as alert  \n" +
                 " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id and type.is_active=true   \n" +
@@ -872,7 +872,10 @@ public class AlertRepositoryImpl {
             qry += " and vdm.vehicle_id=:vehicleId ";
             sqlParam.addValue("vehicleId", filterDto.getVehicleId());
         }
-
+        if (filterDto.getPackageId() != null && filterDto.getPackageId() > 0) {
+            qry += " AND gm.package_id = :pkgId ";
+            sqlParam.addValue("pkgId", filterDto.getPackageId());
+        }
         if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
             qry += " AND gm.work_id = :workId";
             sqlParam.addValue("workId", filterDto.getWorkId());
@@ -953,7 +956,7 @@ public class AlertRepositoryImpl {
                 }
             }
         }
-        qry += " order by alert.alert_type_id , alert.gps_dtm desc ";
+        qry += " order by alert.alert_type_id, alert.imei, alert.gps_dtm desc ";
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
 

@@ -124,29 +124,65 @@ private GeoMasterService geoMasterService;
         filterDto.setStartDate(startDate);
         filterDto.setEndDate(endDate);
         filterDto.setAlertTypeId(alertTypeId);
+        filterDto.setPackageId(packageId);
 
 
 try{
     List<VehicleMasterDto> result1 = new ArrayList<>();
 
 
+//    if (packageId !=null && packageId>0) {
+//        List<RoadMasterDto> roadMasterDtoList = geoMasterService.getRoadByPackageId(packageId);
+//        for (RoadMasterDto road:roadMasterDtoList) {
+//            List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(road.getGroadId());
+//            for (GeoMasterDto item : workByRoad) {
+//                List<GeoMappingEntity> activityDtoList = workService.getActivityDetailsByWorkId(item.getWorkId());
+//                for (GeoMappingEntity activityId : activityDtoList) {
+//                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+//                    for (VehicleActivityMappingDto vehicleObj : veActMapDto) {
+//                        VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleObj.getVehicleId());
+//                        vehicle.setAlertList(alertService.getVehicleAlertForReport(filterDto));
+//                        result1.add(vehicle);
+//                    }
+//
+//                }
+//            }
+//        }
+//
+//    }
     if (packageId !=null && packageId>0) {
-        List<RoadMasterDto> roadMasterDtoList = geoMasterService.getRoadByPackageId(packageId);
-        for (RoadMasterDto road:roadMasterDtoList) {
-            List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(road.getGroadId());
-            for (GeoMasterDto item : workByRoad) {
-                List<GeoMappingEntity> activityDtoList = workService.getActivityDetailsByWorkId(item.getWorkId());
-                for (GeoMappingEntity activityId : activityDtoList) {
-                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
-                    for (VehicleActivityMappingDto vehicleObj : veActMapDto) {
-                        VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleObj.getVehicleId());
-                        vehicle.setAlertList(alertService.getVehicleAlertForReport(filterDto));
-                        result1.add(vehicle);
-                    }
 
-                }
-            }
-        }
+        List<WorkDto> workDto = new ArrayList<>();
+        List<RoadMasterDto> roadMasterDtoList = new ArrayList<>();
+        List<VehicleMasterDto> vehicleList = new ArrayList<>();
+        List<ActivityDto> activityList = new ArrayList<>();
+        List<AlertCountDto> alertList = new ArrayList<>();
+
+        workDto = workService.getWorkById(packageId);
+        roadMasterDtoList = vehicleService.getRoadArray(packageId);
+        vehicleList = vehicleService.getVehicleHistoryList(packageId);
+
+//        for (RoadMasterDto road:roadMasterDtoList) {
+//            List<GeoMasterDto> workByRoad = roadService.getWorkByroadIds(road.getRoadId());
+//            for (GeoMasterDto item : workByRoad) {
+        activityList = workService.getActivityByWorkId(packageId);
+        alertList = alertService.getVehicleAlertForReport(filterDto);
+//                for (ActivityDto activityId : activityDtoList) {
+//                    List<VehicleActivityMappingDto> veActMapDto = vehicleService.getVehicleByActivityId(activityId.getActivityId(), userId,activityId.getActivityStartDate(),activityId.getActivityCompletionDate());
+//                    for (VehicleMasterDto vehicleObj : vehicleList) {
+//                        VehicleMasterDto vehicle = vehicleService.getVehicleByVId(vehicleObj.getId());
+//                        vehicle.setAlertList(alertService.getVehicleAlertForReport(filterDto));
+//                        result1.add(vehicle);
+//                    }
+
+        result.put("workList", workDto);
+        result.put("roadList", roadMasterDtoList);
+        result.put("vehicleList", vehicleList);
+        result.put("activityList", activityList);
+        result.put("alertList", alertList);
+//                }
+//            }
+//        }
 
     }
 
@@ -183,7 +219,6 @@ try{
         vehicle.setAlertList(alertService.getVehicleAlertForReport(filterDto));
         result1.add(vehicle);
     }
-
 
     result.put("vehicle", result1);
     response.setData(result);
