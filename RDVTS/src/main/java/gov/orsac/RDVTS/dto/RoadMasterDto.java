@@ -75,4 +75,5 @@ public class RoadMasterDto {
     private Integer vehicleIds;
     private String piuName;
     private Boolean geomPresent;
+    private Integer roadId;
 }

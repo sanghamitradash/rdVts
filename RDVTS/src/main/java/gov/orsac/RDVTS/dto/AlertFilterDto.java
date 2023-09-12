@@ -31,4 +31,5 @@ public class AlertFilterDto {
 
     private Integer userId;
     private Integer alertId;
+    private Integer packageId;
 }

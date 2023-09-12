@@ -986,11 +986,11 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public List<RoadMasterDto> getRoadArray(int id) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
-        String qry = "select gcm.*,gm.work_id from rdvts_oltp.geo_construction_m as gcm " +
-                "left join rdvts_oltp.geo_master as gm on gm.road_id = gcm.id and gm.is_active = true " +
-                "where gcm.is_active = true ";
+        String qry = " select distinct gm.*, rm.road_name as roadName from rdvts_oltp.geo_mapping as gm " +
+                " left join rdvts_oltp.road_m as rm on gm.road_id = rm.id and rm.is_active = true " +
+                " where gm.is_active = true ";
         if (id > 0) {
-            qry += " and gm.work_id = :id ";
+            qry += " and gm.package_id = :id ";
             sqlParam.addValue("id", id);
         }
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
