@@ -345,7 +345,7 @@ public class WorkRepositoryImpl {
                 "left join rdvts_oltp.geo_mapping as gm on gm.id = vam.geo_mapping_id where vam.vehicle_id in(:vehicleId) and vam.is_active = true limit 1";
 
         sqlParam.addValue("vehicleId", vehicleId);
-        System.out.println(qry+vehicleId.toString());
+//        System.out.println(qry+vehicleId.toString());
         try {
             return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(WorkDto.class));
         } catch (Exception e) {
