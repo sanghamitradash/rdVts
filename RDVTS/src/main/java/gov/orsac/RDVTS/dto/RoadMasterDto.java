@@ -76,4 +76,5 @@ public class RoadMasterDto {
     private String piuName;
     private Boolean geomPresent;
     private Integer roadId;
+    private Double sanctionLength;
 }
