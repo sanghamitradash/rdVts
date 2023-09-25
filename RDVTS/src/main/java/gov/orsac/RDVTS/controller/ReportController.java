@@ -71,7 +71,8 @@ private GeoMasterService geoMasterService;
 
             List<VehicleDeviceInfo> deviceHistory=vehicleService.getVehicleDeviceMappingAssignedList(vehicleId);
             List<Integer> activityIds=vehicleRepositoryImpl.getActivityIdsByVehicleId(vehicleId);
-            if(activityIds!=null && activityIds.size()>0) {
+            if(activityIds!=null && activityIds.size()>0)
+            {
                 workHistory = vehicleService.getVehicleWorkMappingList(activityIds);
             }
             ActivityInfoDto activity=vehicleService.getLiveActivityByVehicleId(vehicleId);

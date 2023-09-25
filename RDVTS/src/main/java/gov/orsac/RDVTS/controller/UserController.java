@@ -205,7 +205,8 @@ public class UserController {
                         e.getMessage(),
                         result);
             }
-        } else {
+        }
+        else {
             Map<String, Object> result = new HashMap<>();
             rdvtsResponse = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.OK),
