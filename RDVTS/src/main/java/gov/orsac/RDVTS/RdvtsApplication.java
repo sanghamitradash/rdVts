@@ -11,7 +11,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
 @EnableScheduling
-public class RdvtsApplication {
+public class RdvtsApplication
+{
     public static void main(String[] args) {
         SpringApplication.run(RdvtsApplication.class, args);
     }

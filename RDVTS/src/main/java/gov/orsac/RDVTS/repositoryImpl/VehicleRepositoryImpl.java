@@ -27,6 +27,7 @@ import java.util.List;
 @Repository
 public class VehicleRepositoryImpl implements VehicleRepository {
 
+
     @Autowired
     private NamedParameterJdbcTemplate namedJdbc;
     @Autowired
