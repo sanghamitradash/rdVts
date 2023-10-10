@@ -57,6 +57,12 @@ public class RoadServiceImpl implements RoadService {
     }
 
     @Override
+    public List<RoadMasterDto> getRoadByPackageId(Integer packageId)
+    {
+        return roadRepositoryImpl.getRoadByPackageId(packageId);
+    }
+
+    @Override
     public RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto){
         RoadEntity existingId = roadRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("id", "id", id));
         existingId.setPackageId(roadMasterDto.getPackageId());

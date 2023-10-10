@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.AlertTypeEntity;
 import gov.orsac.RDVTS.entities.GeoMappingEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
+import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
 import gov.orsac.RDVTS.service.*;
 
@@ -35,6 +36,8 @@ public class ReportController {
 
 @Autowired
 private GeoMasterService geoMasterService;
+@Autowired
+private AlertRepositoryImpl alertRepositoryImpl;
     @Autowired
     public AlertService alertService;
 
@@ -243,6 +246,40 @@ try{
         try{
             List<AlertTypeEntity> alertTypeEntity = alertService.getAlertTypeDetails();
             response.setData(alertTypeEntity);
+            response.setStatus(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
+        }
+        return response;
+
+
+
+
+    }
+    @PostMapping("/getReportData")
+    public Object getPackage(@RequestBody AlertFilterDto filter){
+        RDVTSListResponse response=new RDVTSListResponse();
+        Map<String, Object> result = new HashMap<>();
+
+        try{
+            PackageDto pak = alertRepositoryImpl.getPackageData(filter);
+            if(pak!=null){
+                List<RoadMasterDto> road=roadService.getRoadByPackageId(filter.getPackageId());
+                if(road!=null){
+                    pak.setRoad(road);
+                }
+                List<VehicleMasterDto> vehicleData=alertRepositoryImpl.getVehicleByPackageIdAndFilter(filter);
+                for(VehicleMasterDto vehi:vehicleData){
+                    List<ActivityDto> activity=alertRepositoryImpl.getActivityByVehicleId(vehi.getId());
+                    vehi.setActivityList(activity);
+                    List<AlertDto> alert=alertRepositoryImpl.getAlertByVehicleId(vehi.getId());
+                    vehi.setAlertDataList(alert);
+                }
+                pak.setVehicle(vehicleData);
+            }
+            result.put("packageData",pak);
+            response.setData(result);
             response.setStatus(1);
         } catch (Exception e) {
             e.printStackTrace();

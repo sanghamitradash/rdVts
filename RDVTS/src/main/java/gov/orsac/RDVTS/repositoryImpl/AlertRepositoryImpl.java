@@ -854,7 +854,7 @@ public class AlertRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "select alert.imei,alert.id as alertId, alert_type_id,type.alert_type as alertType,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, \n" +
                 " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser, count(alert.id) over (partition by alert.alert_type_id)    \n" +
-                " from  rdvts_oltp.alert_data  as alert  \n" +
+                " from  rdvts_oltp.alert_data  as alert \n" +
                 " left join rdvts_oltp.alert_type_m as type on type.id=alert.alert_type_id and type.is_active=true   \n" +
                 " left join rdvts_oltp.user_m as userM on userM.id=alert.resolved_by and userM.is_active=true    \n" +
                 " left join rdvts_oltp.device_m as dm on dm.imei_no_1=alert.imei and dm.is_active=true \n" +
@@ -978,6 +978,76 @@ public class AlertRepositoryImpl {
 
 
     }
+    public PackageDto getPackageData(AlertFilterDto filter) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = "Select * from  rdvts_oltp.package_m where id=:packageId" ;
+        sqlParam.addValue("packageId", filter.getPackageId());
+
+        try {
+            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(PackageDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+    public List<Integer> getVehicleByPackageId(Integer packageId){
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = "select distinct vehicle_id from rdvts_oltp.vehicle_activity_mapping where geo_mapping_id in(select id from rdvts_oltp.geo_mapping where  package_id=:packageId)" ;
+        sqlParam.addValue("packageId", packageId);
+        return namedJdbc.queryForList(qry, sqlParam, Integer.class);
+    }
+
+
+    public List<VehicleMasterDto> getVehicleByPackageIdAndFilter(AlertFilterDto filter) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        List<Integer> vehicleId=null;
+        if(filter.getVehicleId()==null ) {
+             vehicleId = getVehicleByPackageId(filter.getPackageId());
+        }
+        String qry = "Select * from  rdvts_oltp.vehicle_m  where is_active=true " ;
+        if(vehicleId!=null){
+            qry+= " and id in(:vehicleIds) ";
+            sqlParam.addValue("vehicleIds", vehicleId);
+        }
+        else{
+            qry+= " and id=:vehicleId ";
+            sqlParam.addValue("vehicleId", filter.getVehicleId());
+        }
+
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public List<ActivityDto> getActivityByVehicleId(Integer  vehicleId) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = " select * from rdvts_oltp.activity_m where id in(select activity_id from rdvts_oltp.vehicle_activity_mapping where vehicle_id=:vehicleId)" ;
+        sqlParam.addValue("vehicleId", vehicleId);
+
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+    public List<AlertDto> getAlertByVehicleId(Integer  vehicleId) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = " select * from rdvts_oltp.alert_data where imei in\n" +
+                " (select imei_no_1 from rdvts_oltp.device_m where id in(select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id=:vehicleId ))" ;
+        sqlParam.addValue("vehicleId", vehicleId);
+
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
 
 //    public List<AlertCountDto> getTotalAlertToday(int id) {
 //    }

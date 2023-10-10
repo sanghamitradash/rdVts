@@ -65,7 +65,6 @@ public class WorkRepositoryImpl {
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
 
-
     public Page<WorkDto> getWorkList(WorkDto workDto) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 //        PageRequest pageable = null;

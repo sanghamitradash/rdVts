@@ -71,10 +71,12 @@ public class RoadMasterDto {
     private Integer approvalStatus;
     private Integer approvedBy;
 
-    private Integer activityIds;
-    private Integer vehicleIds;
+    private Integer activityId;
+    private Integer vehicleId;
     private String piuName;
     private Boolean geomPresent;
     private Integer roadId;
     private Double sanctionLength;
+
+    private String vehicleName;
 }

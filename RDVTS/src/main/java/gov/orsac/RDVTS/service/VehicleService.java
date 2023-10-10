@@ -74,4 +74,6 @@ public interface VehicleService {
 
 
     List<WorkDto> getPackageHistoryByVehicleId(Integer vehicleId);
+    List<RoadMasterDto> getVehicleByPackageId(Integer packageId);
+    List<RoadMasterDto> getVehicleByRoadId(Integer id, Integer packageId);
 }

@@ -314,6 +314,8 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleRepositoryimpl.getPackageHistoryByVehicleId(vehicleId);
     }
 
+
+
 //       @Override
 //       public List<AlertDto> getAlertArray(int id) throws ParseException {
 //              List<AlertDto> alertList=new ArrayList<>();
@@ -405,5 +407,15 @@ public class VehicleServiceImpl implements VehicleService {
               return vehicleRepository.getVehicleById(id, userId);
        }
 
+    @Override
+    public List<RoadMasterDto> getVehicleByPackageId(Integer packageId)
+    {
+        return vehicleRepositoryimpl.getVehicleByPackageId(packageId);
+    }
 
+    @Override
+    public List<RoadMasterDto> getVehicleByRoadId(Integer id, Integer packageId)
+    {
+        return vehicleRepositoryimpl.getVehicleByRoadId(id, packageId);
+    }
 }

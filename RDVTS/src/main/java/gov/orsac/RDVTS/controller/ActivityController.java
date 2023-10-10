@@ -257,13 +257,16 @@ public class ActivityController {
     public RDVTSResponse updateWorkActivity(@RequestBody ActivityWorkDto activityWork) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
-        try {
+        try
+        {
             Integer updateWorkId = activityService.updateWorkActivity(activityWork);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
             response.setMessage("Activity Assigned Successfully!!");
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),

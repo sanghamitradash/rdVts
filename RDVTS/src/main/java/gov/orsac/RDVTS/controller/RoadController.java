@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.RoadEntity;
 import gov.orsac.RDVTS.entities.RoadLocationEntity;
 import gov.orsac.RDVTS.service.RoadService;
+import gov.orsac.RDVTS.service.VehicleService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,9 @@ public class RoadController {
 
     @Autowired
     private RoadService roadService;
+
+    @Autowired
+    private VehicleService vehicleService;
 
     @PostMapping("/addRoad")
     public RDVTSResponse saveVTUVendor(@RequestParam String data) {
@@ -340,6 +344,57 @@ public class RoadController {
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
                     result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getRoadAndVehicleByPackageId")
+    public RDVTSResponse getRoadAndVehicleByPackageId(@RequestParam(name = "packageId") Integer packageId,
+                                                @RequestParam(name = "userId", required = false) Integer userId)
+       /* @RequestParam(name="id", required = false) Integer id)*/
+    {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<RoadMasterDto> road = roadService.getRoadByPackageId(packageId);
+            List<RoadMasterDto> vehicle = vehicleService.getVehicleByPackageId(packageId);
+            result.put("roadByPackage", road);
+            result.put("vehicleByPackage", vehicle);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Road And Vehicle By Package Id");
+        }
+        catch (Exception ex)
+        {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getVehicleByRoadId")
+    public RDVTSResponse getVehicleByRoadId(@RequestParam(name = "id") Integer id,
+                                            @RequestParam(name="packageId") Integer packageId)
+    {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try
+        {
+            List<RoadMasterDto> vehicleByRoadId = vehicleService.getVehicleByRoadId(id, packageId);
+//            result.put("road", road);
+            response.setData(vehicleByRoadId);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Vehicle Details By roadId");
+        }
+        catch (Exception e)
+        {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(), result);
         }
         return response;
     }

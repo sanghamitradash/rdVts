@@ -577,6 +577,13 @@ public class AlertCronController {
         return null;
     }
 
+    @Scheduled(cron = "*/10 * * * * *")
+    public Integer test() {
+     return  68;
+
+    }
+
+
 }
 
 

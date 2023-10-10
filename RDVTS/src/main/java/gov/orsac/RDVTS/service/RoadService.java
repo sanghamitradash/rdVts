@@ -17,6 +17,8 @@ public interface RoadService {
 
     List<RoadMasterDto> getRoadByWorkId(Integer workId);
 
+    List<RoadMasterDto> getRoadByPackageId(Integer packageId);
+
     RoadEntity updateRoad(Integer id, RoadMasterDto roadMasterDto);
     Page<RoadMasterDto> getRoadList(RoadFilterDto roadFilterDto);
 

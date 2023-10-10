@@ -3,9 +3,15 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    password: Rdvt5@123
-    url: jdbc:postgresql://10.150.2.15:5432/rdvts?currentSchema=rdvts_oltp,public
-    username: app_rdvts
+    password: Orsac@123
+    #Rdvt5@123
+    #postgres
+    url: jdbc:postgresql://rdvts-database.cgeqdp0cn10a.ap-south-1.rds.amazonaws.com:5432/rdvts?currentSchema=rdvts_oltp,public
+    #jdbc:postgresql://10.150.2.15:5432/rdvts?currentSchema=rdvts_oltp,public
+    #jdbc:postgresql://localhost:5432/rdvts_prod?currentSchema=rdvts_oltp,public
+    username: view_rdvts
+    #app_rdvts
+    #orsac
 
 
   servlet:

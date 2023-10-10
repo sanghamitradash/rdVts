@@ -1292,5 +1292,54 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         sqlParam.addValue("packageId", packageId);
         return namedJdbc.queryForObject(qry, sqlParam,Integer.class);
     }
+
+    public List<RoadMasterDto> getVehicleByPackageId(Integer packageId)
+    {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        List<RoadMasterDto> vehicle;
+        String query = "select  distinct vam.vehicle_id as vehicleId,vm.vehicle_no as vehicleName\n" +
+                "from rdvts_oltp.package_m as pm\n" +
+                "left join rdvts_oltp.geo_mapping as gm on gm.package_id = pm.id and gm.is_active ='true'\n" +
+                "left join rdvts_oltp.road_m as road on road.id = gm.road_id and road.is_active= 'true'\n" +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id and vam.is_active ='true'\n" +
+                "left join rdvts_oltp.vehicle_m as vm on vam.vehicle_id = vm.id and vm.is_active ='true'\n" +
+                "where road.is_active = 'true' and package_id = :packageId  and vam.vehicle_id is not null";
+
+        //sqlParam.addValue("packageId", packageId);
+        sqlParam.addValue("packageId", packageId);
+        try
+        {
+            vehicle = namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
+        }
+        catch (EmptyResultDataAccessException e)
+        {
+            return null;
+        }
+        return vehicle;
+    }
+
+    public List<RoadMasterDto> getVehicleByRoadId(Integer id ,Integer packageId)
+    {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        List<RoadMasterDto> vehicleByRoadId;
+        String query ="Select distinct pm.id as package_id,pm.package_no as package_name,rm.id as road_id,rm.road_name,vam.vehicle_id as vehicle_id,vm.vehicle_no as vehicle_name\n" +
+                "from rdvts_oltp.road_m as rm\n" +
+                "left join rdvts_oltp.geo_mapping as gm on gm.road_id = rm.id and gm.is_active ='true'\n" +
+                "left join rdvts_oltp.package_m as pm on pm.id = gm.package_id and gm.is_active ='true'\n" +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id and vam.is_active ='true'\n" +
+                "left join rdvts_oltp.vehicle_m as vm on vam.vehicle_id = vm.id and vm.is_active ='true'\n" +
+                "where package_id = :packageId and rm.id = :id and vam.vehicle_id is not null ";
+        sqlParam.addValue("id",id);
+        sqlParam.addValue("packageId", packageId);
+        try
+        {
+            vehicleByRoadId = namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
+        }
+        catch (EmptyResultDataAccessException emx)
+        {
+            return null;
+        }
+        return vehicleByRoadId;
+    }
 }
 

@@ -714,7 +714,7 @@ public class AlertController {
         try {
             Page<AlertCountDto> alertListToday = alertService.getAlertToday(filterDto);
             Page<AlertCountDto> alertListTotal = alertService.getWorkAlertTotal(filterDto);
-            Page<AlertCountDto> vehicleAlertList = alertService.getVehicleAlert(filterDto);
+            Page<AlertCountDto> vehicleAlertList = alertService.        getVehicleAlert(filterDto);
             Page<AlertCountDto> roadAlertList = alertService.getRoadAlert(filterDto);
 
             List<AlertCountDto> alertList1 = alertListToday.getContent();

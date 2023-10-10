@@ -77,7 +77,7 @@ public class WorkController {
                                          @RequestParam(name = "start") Integer start,
                                          @RequestParam(name = "length") Integer length,
                                          @RequestParam(name = "draw") Integer draw,
-                                         @RequestParam(name = "packageId", required = false) Integer packageId ) {
+                                         @RequestParam(name = "packageId", required = false) Integer packageId) {
         WorkDto workDto = new WorkDto();
 //        workDto.setId(id);
         workDto.setUserId(userId);
@@ -120,14 +120,14 @@ public class WorkController {
 
     @PostMapping("/getWorkById")
     public RDVTSListResponse getWorkById(@RequestParam Integer id,
-                                         @RequestParam(name = "userId" ) Integer userId/*,
+                                         @RequestParam(name = "userId") Integer userId/*,
                                          @RequestParam(name = "startDate", required = false) String startDate,
                                          @RequestParam (name = "endDate", required = false) String endDate,
                                          @RequestParam(name = "alertTypeId", required = false) Integer alertTypeId,
                                          @RequestParam(name = "start", required = false) Integer start,
                                          @RequestParam(name = "length", required = false) Integer length,
                                          @RequestParam(name = "draw", required = false) Integer draw*/) {
-        AlertFilterDto filterDto=new AlertFilterDto();
+        AlertFilterDto filterDto = new AlertFilterDto();
 //        filterDto.setStartDate(startDate);
 //        filterDto.setEndDate(endDate);
 //        filterDto.setAlertTypeId(alertTypeId);
@@ -141,7 +141,7 @@ public class WorkController {
             List<WorkDto> workDto = workService.getWorkById(id);
 //            List<WorkDto> asignedActivities = workService.getAsignedActivityDetails(id);
             List<VehicleMasterDto> vehicle = vehicleService.getVehicleHistoryList(id);
-          //  List<LocationDto> location = vehicleService.getLocationArray(id);
+            //  List<LocationDto> location = vehicleService.getLocationArray(id);
 //            List<AlertDto> alertDtoList = vehicleService.getAlertArray(id);
             List<RoadMasterDto> roadMasterDtoList = vehicleService.getRoadArray(id);
             List<ContractorDto> contractorDtoList = contractorService.getContractorByWorkId(id);
@@ -150,11 +150,11 @@ public class WorkController {
             Date endDate1 = null;
             Date vehicleStartDate = null;
             Date vehicleEndDate = null;
-            Double todayDistance=0.0;
+            Double todayDistance = 0.0;
             Double totalDistance = 0.0;
-            Double totalSpeedWork=0.0;
-            Double avgSpeedToday=0.0;
-            Integer totalActiveVehicle=0;
+            Double totalSpeedWork = 0.0;
+            Double avgSpeedToday = 0.0;
+            Integer totalActiveVehicle = 0;
 
             //distance and speed API
             for (WorkDto workitem : workDto) {
@@ -204,39 +204,36 @@ public class WorkController {
 //                }
 
             //Active Inactive vehicle
-            List<LocationDto> locationList=new ArrayList<>();
-            int totalVehicleCount=vehicle.size();
+            List<LocationDto> locationList = new ArrayList<>();
+            int totalVehicleCount = vehicle.size();
             Double avgDistance;
-            if(Double.isNaN(totalDistance/totalVehicleCount)){
-                avgDistance=0.0;
+            if (Double.isNaN(totalDistance / totalVehicleCount)) {
+                avgDistance = 0.0;
+            } else {
+                avgDistance = totalDistance / totalVehicleCount;
             }
-            else {
-                 avgDistance=totalDistance/totalVehicleCount;
-            }
-            Double todayAvgDistance=todayDistance/totalVehicleCount;
+            Double todayAvgDistance = todayDistance / totalVehicleCount;
             Double avgSpeedWork;
-            if(Double.isNaN(totalSpeedWork/totalVehicleCount)){
-                avgSpeedWork=0.0;
-            }
-            else {
-                avgSpeedWork=totalSpeedWork/totalVehicleCount;
+            if (Double.isNaN(totalSpeedWork / totalVehicleCount)) {
+                avgSpeedWork = 0.0;
+            } else {
+                avgSpeedWork = totalSpeedWork / totalVehicleCount;
             }
             Double percentageOfTotalActiveVehicle;
-            if(Double.isNaN((totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100)){
-                percentageOfTotalActiveVehicle=0.0;
-            }
-            else {
-                percentageOfTotalActiveVehicle = Double.valueOf(totalActiveVehicle)/Double.valueOf(totalVehicleCount)*100 ;
+            if (Double.isNaN((totalActiveVehicle) / Double.valueOf(totalVehicleCount) * 100)) {
+                percentageOfTotalActiveVehicle = 0.0;
+            } else {
+                percentageOfTotalActiveVehicle = Double.valueOf(totalActiveVehicle) / Double.valueOf(totalVehicleCount) * 100;
             }
 
-            LocationDto location=new LocationDto();
+            LocationDto location = new LocationDto();
             location.setTotalVehicleCount(totalVehicleCount);
             location.setDistanceTravelledTotal(totalDistance);
             location.setAvgDistanceTravelled(avgDistance);
             location.setDistanceTravelledToday(todayDistance);
             //location.setAvgDistanceTravelled(todayAvgDistance);
             //location.setSpeed(totalSpeed);
-            if (Double.isNaN(avgSpeedToday)){
+            if (Double.isNaN(avgSpeedToday)) {
                 location.setAvgSpeedToday(0.0);
             } else {
                 location.setAvgSpeedToday(avgSpeedToday);
@@ -259,9 +256,9 @@ public class WorkController {
 //            }
 //
             location.setTotalVehicleActive(totalActiveVehicle);
-            if (totalVehicleCount > 0 ){
-                location.setTotalInactiveVehicle(totalVehicleCount-totalActiveVehicle);
-            }else {
+            if (totalVehicleCount > 0) {
+                location.setTotalInactiveVehicle(totalVehicleCount - totalActiveVehicle);
+            } else {
                 location.setTotalInactiveVehicle(0);
             }
 
@@ -299,7 +296,7 @@ public class WorkController {
 
     @PostMapping("/getWorkDDById")
     public RDVTSResponse getWorkDDById(@RequestParam int id,
-                                       @RequestParam(name = "userId" ) Integer userId) {
+                                       @RequestParam(name = "userId") Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -368,7 +365,7 @@ public class WorkController {
 
     @PostMapping("/getActivityByWorkId")
     public RDVTSResponse getActivityByWorkId(@RequestParam int id,
-                                            @RequestParam int userId) {
+                                             @RequestParam int userId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -408,7 +405,7 @@ public class WorkController {
 
     @PostMapping("/getPackageDD")
     public RDVTSResponse getPackageDD(@RequestParam(name = "userId") Integer userId,
-                                      @RequestParam(name = "piuId", required = false)Integer piuId,
+                                      @RequestParam(name = "piuId", required = false) Integer piuId,
                                       @RequestParam(name = "distId", required = false) Integer distId) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
@@ -453,6 +450,7 @@ public class WorkController {
         return response;
 
     }
+
     @PostMapping("/getVehicleByPackageDD")
     public RDVTSResponse getVehicleByPackageDD(@RequestParam(name = "userId", required = false) Integer userId,
                                                @RequestParam(name = "packageId", required = false) Integer packageId) {
@@ -473,9 +471,27 @@ public class WorkController {
                     e.getMessage(),
                     result);
         }
+
         return response;
 
     }
 
+
+//    @PostMapping("/getPackageList")
+//    public RDVTSListResponse getPackageList(@RequestParam(name = "packageId") Integer packageId,
+//                                         @RequestParam(name = "packageNo", required = false) String packageNo,
+//                                         @RequestParam(name = "roadId", required = false) Integer roadId
+//    {
+//        PackageDto packageDto = new PackageDto();
+//        packageDto.setPackageId(packageId);
+//        packageDto.setPackageNo(packageNo);
+//        packageDto.setRoadId(roadId);
+//
+//        RDVTSListResponse response = new RDVTSListResponse();
+//        Map<String, Object> result = new HashMap<>();
+//
+//        Page<PackageDto> packageDtoPage = workService.getPackageList(packageDto);
+//       // List<WorkDto> workDtoList = workDtoPage.getContent();
+//    }
 
 }
