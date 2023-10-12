@@ -1149,7 +1149,7 @@ public class AlertRepositoryImpl {
                     " left join rdvts_oltp.vehicle_device_mapping as vehicleDevice on vehicleDevice.vehicle_id = vehicle.id" +
                     " left join rdvts_oltp.device_m as device on device.id = vehicleDevice.device_id" +
                     " where geoMapping.is_active=true" +
-                    " and geoMapping.package_id=:packageId and geoMapping.id=:activityId";
+                    " and geoMapping.package_id=:packageId and geoMapping.activity_id=:activityId";
         sqlParam.addValue("activityId", activity);
         sqlParam.addValue("packageId", packageId);
 
