@@ -20,6 +20,6 @@ public class PackageDto
     private Date createdOn;
     private Integer updatedBy;
     private Date updatedOn;
-    List<VehicleMasterDto> vehicle;
+    //List<VehicleMasterDto> vehicle;
     List<RoadMasterDto> road;
 }

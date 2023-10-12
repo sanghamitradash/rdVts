@@ -79,4 +79,5 @@ public class RoadMasterDto {
     private Double sanctionLength;
 
     private String vehicleName;
+    private List<VehicleMasterDto> vehicle;
 }

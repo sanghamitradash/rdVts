@@ -984,40 +984,59 @@ public class AlertRepositoryImpl {
         String qry = "Select * from  rdvts_oltp.package_m where id=:packageId" ;
         sqlParam.addValue("packageId", filter.getPackageId());
 
-        try {
+        try
+        {
             return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(PackageDto.class));
-        } catch (Exception exception) {
+        }
+        catch (Exception exception)
+        {
             return null;
         }
     }
-    public List<Integer> getVehicleByPackageId(Integer packageId){
+    public List<Integer> getVehicleByRoadId(Integer roadId){
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
 
-        String qry = "select distinct vehicle_id from rdvts_oltp.vehicle_activity_mapping where geo_mapping_id in(select id from rdvts_oltp.geo_mapping where  package_id=:packageId)" ;
-        sqlParam.addValue("packageId", packageId);
+        String qry = "Select distinct vam.vehicle_id \n" +
+                "from rdvts_oltp.road_m as rm\n" +
+                "left join rdvts_oltp.geo_mapping as gm on gm.road_id = rm.id and gm.is_active ='true'\n" +
+                "left join rdvts_oltp.package_m as pm on pm.id = gm.package_id and gm.is_active ='true'\n" +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id and vam.is_active ='true'\n" +
+                "left join rdvts_oltp.vehicle_m as vm on vam.vehicle_id = vm.id and vm.is_active ='true'\n" +
+                "where rm.id = :roadId and vam.vehicle_id is not null" ;
+        sqlParam.addValue("roadId", roadId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
-
-
-    public List<VehicleMasterDto> getVehicleByPackageIdAndFilter(AlertFilterDto filter) {
+    public List<VehicleMasterDto> getVehicleByPackageIdAndFilter(AlertFilterDto filter,Integer roadId) {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-        List<Integer> vehicleId=null;
-        if(filter.getVehicleId()==null ) {
-             vehicleId = getVehicleByPackageId(filter.getPackageId());
+        List<Integer> vehicleIdList= new ArrayList<>();
+        if(filter.getVehicleId()==null )
+        {
+          List<Integer> vehicle= getVehicleByRoadId(roadId);
+            vehicleIdList.addAll(vehicle);
         }
-        String qry = "Select * from  rdvts_oltp.vehicle_m  where is_active=true " ;
-        if(vehicleId!=null){
+        String qry = "Select * from  rdvts_oltp.vehicle_m  where is_active=true ";
+        if(vehicleIdList!=null && vehicleIdList.size()>0){
             qry+= " and id in(:vehicleIds) ";
-            sqlParam.addValue("vehicleIds", vehicleId);
+            sqlParam.addValue("vehicleIds", vehicleIdList);
         }
-        else{
+        else
+        {
+            if( filter.getVehicleId()!=null &&   filter.getVehicleId() >0)
+            {
+
             qry+= " and id=:vehicleId ";
             sqlParam.addValue("vehicleId", filter.getVehicleId());
+            }
+            else
+            {
+                qry+= "and id = 0 ";
+            }
         }
 
         try {
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
-        } catch (Exception exception) {
+        } catch (Exception exception)
+        {
             return null;
         }
     }
@@ -1034,13 +1053,18 @@ public class AlertRepositoryImpl {
             return null;
         }
     }
-    public List<AlertDto> getAlertByVehicleId(Integer  vehicleId) {
+    public List<AlertDto> getAlertByVehicleId(Integer  vehicleId, AlertFilterDto alert) {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
 
         String qry = " select * from rdvts_oltp.alert_data where imei in\n" +
                 " (select imei_no_1 from rdvts_oltp.device_m where id in(select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id=:vehicleId ))" ;
         sqlParam.addValue("vehicleId", vehicleId);
 
+        if(alert.getAlertTypeId()!=null && alert.getAlertTypeId()>0)
+        {
+            qry+= " and alert_type_id = :alertTypeId";
+            sqlParam.addValue("alertTypeId", alert.getAlertTypeId());
+        }
         try {
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
         } catch (Exception exception) {
