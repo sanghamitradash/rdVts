@@ -51,7 +51,7 @@ public class VehicleMasterDto {
     private Integer activityWorkMapId;
     private Integer userByVehicleId;
     private boolean contractor;
-    List<ActivityDto> activityList;
+    private Integer vehicleId;
     List<AlertCountDto> alertList;
     List<AlertDto> alertDataList;
 

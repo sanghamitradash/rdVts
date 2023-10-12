@@ -353,6 +353,27 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         sqlParam.addValue("packageId", packageId);
         return namedJdbc.query(qry,sqlParam, new BeanPropertyRowMapper<>(ActivityAnalysisDto.class));
     }
+    public List<ActivityDto> getActivityByRoadId(Integer  roadId,Integer packageId) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = " select distinct activity.id as activityId,activity.activity_name,activityStatus.name as status,activity_start_date,\n" +
+                "activity_completion_date,actual_activity_start_date,actual_activity_completion_date from rdvts_oltp.activity_m as activity\n" +
+                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.activity_id=activity.id\n" +
+                "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
+                "where geoMapping.road_id=:roadId " ;
+        sqlParam.addValue("roadId", roadId);
+        if(packageId!=null && packageId>0){
+            qry+=" and geoMapping.package_id=:packageId ";
+            sqlParam.addValue("packageId", packageId);
+        }
+
+
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
 }
 
 

@@ -261,7 +261,7 @@ try{
 
 
     }
-    @PostMapping("/getReportData")
+  /*  @PostMapping("/getReportData")
     public Object getPackage(@RequestBody AlertFilterDto filter)
     {
         RDVTSListResponse response=new RDVTSListResponse();
@@ -292,6 +292,54 @@ try{
                     }
                     pak.setRoad(road);
                 }
+            }
+//            if(pak!=null) {
+//                List<RoadMasterDto> vehicle = vehicleService.getVehicleByRoadId(filter.getRoadId());
+//                if (vehicle!= null)
+//                {
+//                    vehicle.setVehicle(vehicle);
+//                }
+            result.put("packageData",pak);
+            response.setData(result);
+            response.setStatus(1);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
+        }
+        return response;
+    }*/
+    @PostMapping("/getReportData1")
+    public Object getPackage1(@RequestBody AlertFilterDto filter)
+    {
+        RDVTSListResponse response=new RDVTSListResponse();
+        Map<String, Object> result = new HashMap<>();
+
+        try{
+            PackageDto pak = alertRepositoryImpl.getPackageData(filter);
+            if(pak!=null){
+                List<RoadMasterDto> road=roadRepositoryImpl.getRoadByPackageIdAndRoadId(filter.getPackageId(),filter.getRoadId());
+                if(road!=null) {
+                    for (RoadMasterDto roadDto : road) {
+                      List<ActivityDto> activity=alertRepositoryImpl.getActivityByRoadId(pak.getPackageId(),roadDto.getId(),filter.getActivityId());
+                      if(activity!=null){
+                          for(ActivityDto act:activity) {
+                              List<VehicleMasterDto> vehicle = alertRepositoryImpl.getVehicleByActivityId(pak.getPackageId(),act.getId(),filter.getVehicleId());
+                              if(vehicle!=null && vehicle.size()>0){
+                                  for(VehicleMasterDto vehi:vehicle) {
+                                      List<AlertDto> alert = alertRepositoryImpl.getAlertByVehicleId(vehi.getVehicleId(), filter.getAlertTypeId());
+                                      vehi.setAlertDataList(alert);
+                                  }
+                              }
+                              act.setVehicleList(vehicle);
+                          }
+                      }
+                     roadDto.setActivityList(activity);
+                    }
+                    pak.setRoad(road);
+                }
+                //to cheeck the status of the package
+
             }
 //            if(pak!=null) {
 //                List<RoadMasterDto> vehicle = vehicleService.getVehicleByRoadId(filter.getRoadId());

@@ -77,7 +77,11 @@ public class RoadMasterDto {
     private Boolean geomPresent;
     private Integer roadId;
     private Double sanctionLength;
+    private Date awardDate;
+    private Date pmisFinalizeDate;
+    private Date completionDate;
+    private String workStatusName;
 
     private String vehicleName;
-    private List<VehicleMasterDto> vehicle;
+    private List<ActivityDto> activityList;
 }

@@ -630,16 +630,13 @@ public class RoadRepositoryImpl {
     {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
-        String query = "select distinct road.id as road_id,road.road_name, road.sanction_length as road_length\n" +
-                "from rdvts_oltp.package_m as pm\n" +
-                "left join rdvts_oltp.geo_mapping as gm on gm.package_id = pm.id and gm.is_active ='true'\n" +
-                "left join rdvts_oltp.road_m as road on road.id = gm.road_id and road.is_active= 'true'\n" +
-                "where road.is_active = 'true' and pm.id =:packageId ";
+        String query = "select distinct road.id as id,road_name as roadName,road.sanction_date as sanctionDate,road.sanction_length as sanctionLength,geoMapping.award_date,pmis_finalize_date,completion_date,(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName  from rdvts_oltp.road_m as road \n" +
+                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.road_id=road.id where geoMapping.package_id=:packageId ";
 
         sqlParam.addValue("packageId", packageId);
         if (roadId!=null && roadId>0)
         {
-            query+= " And road.id = :roadId";
+            query+= " and road.id = :roadId";
             sqlParam.addValue("roadId", roadId);
         }
         try

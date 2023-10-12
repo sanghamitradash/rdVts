@@ -20,6 +20,11 @@ public class PackageDto
     private Date createdOn;
     private Integer updatedBy;
     private Date updatedOn;
+    private String piuName;
+    private Date awardDate;
+    private Date pmisFinalizeDate;
+    private Date completionDate;
+    private String workStatusName;
     //List<VehicleMasterDto> vehicle;
     List<RoadMasterDto> road;
 }

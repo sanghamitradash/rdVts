@@ -4,6 +4,8 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
+import gov.orsac.RDVTS.repositoryImpl.ActivityRepositoryImpl;
+import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
 import gov.orsac.RDVTS.service.AWSS3StorageService;
 import gov.orsac.RDVTS.service.ActivityService;
 import gov.orsac.RDVTS.serviceImpl.AWSS3StorageServiceImpl;
@@ -27,9 +29,14 @@ public class ActivityController {
 
     @Autowired
     private AWSS3StorageService awss3StorageService;
+    @Autowired
+    private AlertRepositoryImpl alertRepositoryImpl;
+
 
     @Autowired
     private AWSS3StorageServiceImpl awsS3StorageServiceImpl;
+    @Autowired
+    private ActivityRepositoryImpl activityRepositoryImpl;
 
     @Autowired
     private ActivityService activityService;
@@ -491,6 +498,34 @@ public class ActivityController {
                     result);
         }
         return rdvtsResponse;
+    }
+    @PostMapping("/getActivityByRoadId")
+    public RDVTSResponse getActivityByRoadId(@RequestParam(name = "roadId") Integer roadId,
+                                             @RequestParam(name = "packageId") Integer packageId,
+
+                                                      @RequestParam(name = "userId", required = false) Integer userId)
+
+    {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<ActivityDto> activity=activityRepositoryImpl.getActivityByRoadId(roadId,packageId);
+
+            result.put("activity", activity);
+
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Activity BY Road Id");
+        }
+        catch (Exception ex)
+        {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
     }
 
 

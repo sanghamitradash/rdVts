@@ -46,6 +46,8 @@ public class ActivityDto {
     private String issueImage;
     private Integer geoMappingId;
 
+    private List<VehicleMasterDto> vehicleList;
+
 
     List<VehicleActivityMappingEntity> vehicleActivity;
 }
