@@ -318,25 +318,25 @@ try{
         try{
             PackageDto pak = alertRepositoryImpl.getPackageData(filter);
             if(pak!=null){
-                List<RoadMasterDto> road=roadRepositoryImpl.getRoadByPackageIdAndRoadId(filter.getPackageId(),filter.getRoadId());
-                if(road!=null) {
-                    for (RoadMasterDto roadDto : road) {
-                      List<ActivityDto> activityDtoList=alertRepositoryImpl.getActivityByRoadId(pak.getPackageId(),roadDto.getId(),filter.getActivityId());
+                List<RoadMasterDto> roadMasterDtoList=roadRepositoryImpl.getRoadByPackageIdAndRoadId(filter.getPackageId(),filter.getRoadId());
+                if(roadMasterDtoList!=null && !roadMasterDtoList.isEmpty()) {
+                    for (RoadMasterDto road : roadMasterDtoList) {
+                      List<ActivityDto> activityDtoList=alertRepositoryImpl.getActivityByRoadId(pak.getPackageId(),road.getId(),filter.getActivityId());
                       if(activityDtoList!=null && !activityDtoList.isEmpty()){
-                          for(ActivityDto act:activityDtoList) {
-                              List<VehicleMasterDto> vehicleMasterDtoList = alertRepositoryImpl.getVehicleByActivityId(pak.getPackageId(),act.getId(),filter.getVehicleId());
+                          for(ActivityDto activity:activityDtoList) {
+                              List<VehicleMasterDto> vehicleMasterDtoList = alertRepositoryImpl.getVehicleByActivityId(pak.getPackageId(),activity.getId(),filter.getVehicleId());
                               if(vehicleMasterDtoList!=null && !vehicleMasterDtoList.isEmpty()){
                                   for(VehicleMasterDto vehicle:vehicleMasterDtoList) {
                                       List<AlertDto> alert = alertRepositoryImpl.getAlertByVehicleId(vehicle.getVehicleId(), filter.getAlertTypeId());
                                       vehicle.setAlertDataList(alert);
                                   }
                               }
-                              act.setVehicleList(vehicleMasterDtoList);
+                              activity.setVehicleList(vehicleMasterDtoList);
                           }
                       }
-                     roadDto.setActivityList(activityDtoList);
+                     road.setActivityList(activityDtoList);
                     }
-                    pak.setRoad(road);
+                    pak.setRoad(roadMasterDtoList);
                 }
                 //to cheeck the status of the package
 
@@ -352,7 +352,7 @@ try{
             response.setStatus(1);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
             response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
         }
         return response;
