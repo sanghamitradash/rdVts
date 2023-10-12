@@ -321,20 +321,20 @@ try{
                 List<RoadMasterDto> road=roadRepositoryImpl.getRoadByPackageIdAndRoadId(filter.getPackageId(),filter.getRoadId());
                 if(road!=null) {
                     for (RoadMasterDto roadDto : road) {
-                      List<ActivityDto> activity=alertRepositoryImpl.getActivityByRoadId(pak.getPackageId(),roadDto.getId(),filter.getActivityId());
-                      if(activity!=null){
-                          for(ActivityDto act:activity) {
-                              List<VehicleMasterDto> vehicle = alertRepositoryImpl.getVehicleByActivityId(pak.getPackageId(),act.getId(),filter.getVehicleId());
-                              if(vehicle!=null && vehicle.size()>0){
-                                  for(VehicleMasterDto vehi:vehicle) {
-                                      List<AlertDto> alert = alertRepositoryImpl.getAlertByVehicleId(vehi.getVehicleId(), filter.getAlertTypeId());
-                                      vehi.setAlertDataList(alert);
+                      List<ActivityDto> activityDtoList=alertRepositoryImpl.getActivityByRoadId(pak.getPackageId(),roadDto.getId(),filter.getActivityId());
+                      if(activityDtoList!=null && !activityDtoList.isEmpty()){
+                          for(ActivityDto act:activityDtoList) {
+                              List<VehicleMasterDto> vehicleMasterDtoList = alertRepositoryImpl.getVehicleByActivityId(pak.getPackageId(),act.getId(),filter.getVehicleId());
+                              if(vehicleMasterDtoList!=null && !vehicleMasterDtoList.isEmpty()){
+                                  for(VehicleMasterDto vehicle:vehicleMasterDtoList) {
+                                      List<AlertDto> alert = alertRepositoryImpl.getAlertByVehicleId(vehicle.getVehicleId(), filter.getAlertTypeId());
+                                      vehicle.setAlertDataList(alert);
                                   }
                               }
-                              act.setVehicleList(vehicle);
+                              act.setVehicleList(vehicleMasterDtoList);
                           }
                       }
-                     roadDto.setActivityList(activity);
+                     roadDto.setActivityList(activityDtoList);
                     }
                     pak.setRoad(road);
                 }
