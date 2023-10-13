@@ -318,7 +318,7 @@ try{
         return response;
     }*/
     @PostMapping("/getReportData1")
-    public Object getPackage1(@RequestBody AlertFilterDto filter)
+    public Object getReportData(@RequestBody AlertFilterDto filter)
     {
         RDVTSListResponse response=new RDVTSListResponse();
         Map<String, Object> result = new HashMap<>();
