@@ -1122,7 +1122,8 @@ public class AlertRepositoryImpl {
             return null;
         }
     }
-    public List<VehicleMasterDto> getVehicleByActivityId(Integer packageId, Integer  activity, Integer vehicleId) {
+    public List<VehicleMasterDto> getVehicleByActivityId(Integer packageId, Integer roadId, Integer  activity, Integer vehicleId)
+    {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
 
 //        String qry = " select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no,model,device.imei_no_1 as imeiNo1 from rdvts_oltp.vehicle_m as vehicle\n" +
@@ -1136,22 +1137,39 @@ public class AlertRepositoryImpl {
 //                " where  vehicle.is_active=true and vehicleActivity.is_active=true and type.is_active=true \n" +
 //                " and owner.is_active=true and contractor.is_active=true and vehicleDevice.is_active=true and device.is_active=true \n" +
 //                " and gm.activityId=:activityId and gm.packageId=:packageId" ;
-        String qry = "select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no," +
-                    "model,device.imei_no_1 as imeiNo1" +
-                    " from rdvts_oltp.geo_mapping as geoMapping" +
-                    " left join rdvts_oltp.activity_m as am on geoMapping.activity_id = am.id" +
-                    " left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id = geoMapping.activity_status" +
-                    " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = geoMapping.activity_id" +
-                    " left join rdvts_oltp.vehicle_m as vehicle on vam.vehicle_id = vehicle.id" +
-                    " left join rdvts_oltp.vehicle_type as type on type.id = vehicle.vehicle_type_id" +
-                    " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id = vehicle.id" +
-                    " left join rdvts_oltp.contractor_m as contractor on contractor.id = owner.contractor_id" +
-                    " left join rdvts_oltp.vehicle_device_mapping as vehicleDevice on vehicleDevice.vehicle_id = vehicle.id" +
-                    " left join rdvts_oltp.device_m as device on device.id = vehicleDevice.device_id" +
-                    " where geoMapping.is_active=true" +
-                    " and geoMapping.package_id=:packageId and geoMapping.activity_id=:activityId";
+
+//        String qry = "select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no," +
+//                    "model,device.imei_no_1 as imeiNo1" +
+//                    " from rdvts_oltp.geo_mapping as geoMapping" +
+//                    " left join rdvts_oltp.activity_m as am on geoMapping.activity_id = am.id" +
+//                    " left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id = geoMapping.activity_status" +
+//                    " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = geoMapping.activity_id" +
+//                    " left join rdvts_oltp.vehicle_m as vehicle on vam.vehicle_id = vehicle.id" +
+//                    " left join rdvts_oltp.vehicle_type as type on type.id = vehicle.vehicle_type_id" +
+//                    " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id = vehicle.id" +
+//                    " left join rdvts_oltp.contractor_m as contractor on contractor.id = owner.contractor_id" +
+//                    " left join rdvts_oltp.vehicle_device_mapping as vehicleDevice on vehicleDevice.vehicle_id = vehicle.id" +
+//                    " left join rdvts_oltp.device_m as device on device.id = vehicleDevice.device_id" +
+//                    " where geoMapping.is_active=true" +
+//                    " and geoMapping.package_id=:packageId and geoMapping.activity_id=:activityId";
+
+
+        String qry = " select distinct vam.vehicle_id,vehicle.vehicle_no, " +
+                " type.name as vehicleTypeName,contractor.name as ownerName,vehicle.speed_limit,vehicle.chassis_no,vehicle.engine_no,vehicle.model,device.imei_no_1 as imeiNo1 " +
+                " from rdvts_oltp.vehicle_activity_mapping as vam " +
+                " left join rdvts_oltp.geo_mapping as geoMapping on vam.geo_mapping_id=geoMapping.id and geoMapping.is_active=true " +
+                " left join rdvts_oltp.vehicle_m as vehicle on vehicle.id=vam.vehicle_id " +
+                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id=vam.vehicle_id " +
+                " left join rdvts_oltp.device_m as device on device.id=vdm.device_id " +
+                " left join rdvts_oltp.vehicle_type as type on type.id = vehicle.vehicle_type_id " +
+                " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id = vehicle.id " +
+                " left join rdvts_oltp.contractor_m as contractor on contractor.id = owner.contractor_id " +
+                " where vam.is_active=true and geoMapping.package_id=:packageId and geoMapping.road_id=:roadId  and geoMapping.activity_id=:activityId " +
+                " order by vam.vehicle_id";
+
         sqlParam.addValue("activityId", activity);
         sqlParam.addValue("packageId", packageId);
+        sqlParam.addValue("roadId", roadId);
 
         if(vehicleId!=null && vehicleId>0)
         {
