@@ -651,7 +651,6 @@ public class RoadRepositoryImpl {
     }
 }
 
-
 //
 //        update+="UPDATE public.asset set geom = ST_GeomFromText('".$str."',4326),length = ST_Length(st_transform(ST_GeomFromText('".$str."',4326),32645))/1000 where id=:roadId"
 //

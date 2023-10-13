@@ -5,6 +5,7 @@ import gov.orsac.RDVTS.entities.ActivityWorkMapping;
 import gov.orsac.RDVTS.entities.AlertTypeEntity;
 import gov.orsac.RDVTS.entities.GeoMappingEntity;
 import gov.orsac.RDVTS.repository.VehicleRepository;
+import gov.orsac.RDVTS.repositoryImpl.ActivityRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.RoadRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.VehicleRepositoryImpl;
@@ -37,6 +38,13 @@ public class ReportController {
 
     @Autowired
     private RoadRepositoryImpl roadRepositoryImpl;
+
+    @Autowired
+    private ActivityService activityService;
+
+    @Autowired
+    private ActivityRepositoryImpl activityRepositoryImpl;
+
 
 @Autowired
 private GeoMasterService geoMasterService;
@@ -324,6 +332,7 @@ try{
                       List<ActivityDto> activityDtoList=alertRepositoryImpl.getActivityByRoadId(pak.getPackageId(),road.getId(),filter.getActivityId());
                       if(activityDtoList!=null && !activityDtoList.isEmpty()){
                           for(ActivityDto activity:activityDtoList) {
+                              //,filter.getRoadId()
                               List<VehicleMasterDto> vehicleMasterDtoList = alertRepositoryImpl.getVehicleByActivityId(pak.getPackageId(),activity.getId(),filter.getVehicleId(),filter.getRoadId());
                               if(vehicleMasterDtoList!=null && !vehicleMasterDtoList.isEmpty()){
                                   for(VehicleMasterDto vehicle:vehicleMasterDtoList) {
@@ -354,6 +363,31 @@ try{
         catch (Exception e) {
             System.out.println(e.getMessage());
             response = new RDVTSListResponse(0, new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage(), result);
+        }
+        return response;
+    }
+
+    @PostMapping("/getActivityByRoadId")
+    public RDVTSResponse getActivityByRoadId(@RequestParam(name = "roadId") Integer roadId,
+                                             @RequestParam(name = "packageId",required = false) Integer packageId)
+    {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+
+            List<ActivityDto> activityByRoadId=activityRepositoryImpl.getActivityByRoadId(roadId,packageId);
+//            result.put("road", road);
+            response.setData(activityByRoadId);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Activity details through roadId");
+        }
+        catch (Exception ex)
+        {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
         }
         return response;
     }
