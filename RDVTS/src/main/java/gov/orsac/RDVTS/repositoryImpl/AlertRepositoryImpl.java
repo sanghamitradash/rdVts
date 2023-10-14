@@ -1122,7 +1122,7 @@ public class AlertRepositoryImpl {
             return null;
         }
     }
-    public List<VehicleMasterDto> getVehicleByActivityId(Integer packageId, Integer roadId, Integer  activity, Integer vehicleId)
+    public List<VehicleMasterDto> getVehicleByActivityId(Integer packageId, Integer  activity, Integer vehicleId,Integer roadId,String startDate, String endDate)
     {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
 
@@ -1139,7 +1139,7 @@ public class AlertRepositoryImpl {
 //                " and gm.activityId=:activityId and gm.packageId=:packageId" ;
 
         String qry = "select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no," +
-                    "model,device.imei_no_1 as imeiNo1" +
+                    " model,device.imei_no_1 as imeiNo1" +
                     " from rdvts_oltp.geo_mapping as geoMapping" +
                     " left join rdvts_oltp.activity_m as am on geoMapping.activity_id = am.id" +
                     " left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id = geoMapping.activity_status" +
@@ -1176,6 +1176,18 @@ public class AlertRepositoryImpl {
             qry+= " and vehicle.id= :vehicleId";
             sqlParam.addValue("vehicleId", vehicleId);
         }
+//        if(startDate!=null && !startDate.isEmpty())
+//        {
+//            qry+= " and vehicleDevice.installation_date = :startDate";
+//            sqlParam.addValue("startDate", startDate);
+//        }
+//        if(endDate!=null && !endDate.isEmpty())
+//        {
+//            qry+= " and vehicleDevice.unassigned_date = :endDate";
+//            sqlParam.addValue("endDate", endDate);
+//        }else{
+//            qry+= " and vehicleDevice.installation_date= now()";
+//        }
         try {
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
         } catch (Exception exception) {

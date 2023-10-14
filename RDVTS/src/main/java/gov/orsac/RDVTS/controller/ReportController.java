@@ -333,7 +333,7 @@ try{
                       if(activityDtoList!=null && !activityDtoList.isEmpty()){
                           for(ActivityDto activity:activityDtoList) {
                               //,filter.getRoadId()
-                              List<VehicleMasterDto> vehicleMasterDtoList = alertRepositoryImpl.getVehicleByActivityId(pak.getPackageId(),activity.getId(),filter.getVehicleId(),filter.getRoadId());
+                              List<VehicleMasterDto> vehicleMasterDtoList = alertRepositoryImpl.getVehicleByActivityId(pak.getPackageId(),activity.getId(),filter.getVehicleId(),road.getId(),activity.getStartDate(),activity.getEndDate());
                               if(vehicleMasterDtoList!=null && !vehicleMasterDtoList.isEmpty()){
                                   for(VehicleMasterDto vehicle:vehicleMasterDtoList) {
                                       List<AlertDto> alert = alertRepositoryImpl.getAlertByVehicleId(vehicle.getVehicleId(), filter.getAlertTypeId());
