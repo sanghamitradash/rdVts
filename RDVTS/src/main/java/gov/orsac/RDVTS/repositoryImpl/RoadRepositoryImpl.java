@@ -630,7 +630,7 @@ public class RoadRepositoryImpl {
     {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> road;
-        String query = "select distinct road.id as id,road_name as roadName,road.sanction_date as sanctionDate,road.sanction_length as sanctionLength,geoMapping.award_date,pmis_finalize_date,completion_date,(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName  from rdvts_oltp.road_m as road \n" +
+        String query = "select distinct road.id as id,road_name as roadName,road.sanction_date as sanctionDate,COALESCE(road.sanction_length,0)as sanctionLength,geoMapping.award_date,pmis_finalize_date,completion_date,(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName  from rdvts_oltp.road_m as road \n" +
                 "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.road_id=road.id where geoMapping.package_id=:packageId ";
 
         sqlParam.addValue("packageId", packageId);
@@ -650,7 +650,6 @@ public class RoadRepositoryImpl {
         return road;
     }
 }
-
 
 //
 //        update+="UPDATE public.asset set geom = ST_GeomFromText('".$str."',4326),length = ST_Length(st_transform(ST_GeomFromText('".$str."',4326),32645))/1000 where id=:roadId"
