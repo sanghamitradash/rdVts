@@ -324,7 +324,7 @@ try{
                       List<ActivityDto> activityDtoList=alertRepositoryImpl.getActivityByRoadId(pak.getPackageId(),road.getId(),filter.getActivityId());
                       if(activityDtoList!=null && !activityDtoList.isEmpty()){
                           for(ActivityDto activity:activityDtoList) {
-                              List<VehicleMasterDto> vehicleMasterDtoList = alertRepositoryImpl.getVehicleByActivityId(pak.getPackageId(),activity.getId(),filter.getVehicleId());
+                              List<VehicleMasterDto> vehicleMasterDtoList = alertRepositoryImpl.getVehicleByActivityId(pak.getPackageId(),road.getId(),activity.getId(),filter.getVehicleId());
                               if(vehicleMasterDtoList!=null && !vehicleMasterDtoList.isEmpty()){
                                   for(VehicleMasterDto vehicle:vehicleMasterDtoList) {
                                       List<AlertDto> alert = alertRepositoryImpl.getAlertByVehicleId(vehicle.getVehicleId(), filter.getAlertTypeId());
