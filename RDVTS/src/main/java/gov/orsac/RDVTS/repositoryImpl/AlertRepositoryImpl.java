@@ -981,9 +981,11 @@ public class AlertRepositoryImpl {
     public PackageDto getPackageData(AlertFilterDto filter) {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
 
-        String qry = "select distinct package.id as packageId,package.package_no as packageNo,piu.name as piuName from rdvts_oltp.package_m as package \n" +
-                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.package_id=package.id\n" +
-                "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id where package.id=:packageId" ;
+        String qry = "select distinct package.id as packageId,package.package_no as packageNo,piu.name as piuName, " +
+                "geoMapping.award_date,geoMapping.pmis_finalize_date,geoMapping.completion_date,(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName " +
+                "from rdvts_oltp.package_m as package " +
+                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.package_id=package.id " +
+                "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id  where package.id=:packageId and geoMapping.award_date is not null" ;
         sqlParam.addValue("packageId", filter.getPackageId());
 
 //        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -1102,12 +1104,12 @@ public class AlertRepositoryImpl {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
 
         String qry = "select distinct activityStatus.name as status,\n" +
-                "activity.id,activity.activity_name,activity_start_date,activity_completion_date,actual_activity_start_date,actual_activity_completion_date,roadm.road_name \n" +
+                "activity.id,COALESCE(activity.activity_name,' ') as activityName,activity_start_date,activity_completion_date,actual_activity_start_date,actual_activity_completion_date,roadm.road_name\n" +
                 "from rdvts_oltp.geo_mapping as geoMapping\n" +
                 "left join rdvts_oltp.activity_m as activity on geoMapping.activity_id=activity.id\n" +
                 "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
                 "left join rdvts_oltp.road_m as roadm on roadm.id = geoMapping.road_id\n" +
-                "where geoMapping.road_id= :roadId and geoMapping.package_id=:packageId" ;
+                "where geoMapping.road_id= 1133 and geoMapping.package_id=:packageId" ;
         sqlParam.addValue("roadId", roadId);
         sqlParam.addValue("packageId", packageId);
 

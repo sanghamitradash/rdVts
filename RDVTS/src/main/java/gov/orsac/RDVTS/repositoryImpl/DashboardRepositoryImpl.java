@@ -185,7 +185,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         if(ids!=null && ids.size()>0 ||  ids.size()==0){
             if(ids.size() == 0)
             {
-                qry+=" and vdm.device_id in(0) AND dam.is_active = true ";
+                qry+=" AND dam.is_active = true ";
             }
             else {
                 qry += " and vdm.device_id in(:deviceIds) AND dam.is_active = true ";
