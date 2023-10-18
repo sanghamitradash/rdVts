@@ -109,7 +109,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 if(ids!=null && ids.size()>0 ||  ids.size()==0){
                     if(ids.size() == 0)
                     {
-                        qry+=" and vdm.device_id in(0) AND dam.is_active = true ";
+                        qry+=" and AND dam.is_active = true ";
                     }
                     else {
                         qry += " and vdm.device_id in(:deviceIds) AND dam.is_active = true ";
@@ -280,7 +280,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         String qry = "SELECT * from rdvts_oltp.dashboard_cron where area_id=:areaId and area_type_id=:areaTypeId";
         sqlParam.addValue("areaId", areaId);
         sqlParam.addValue("areaTypeId", typeId);
-        return namedJdbc.queryForObject(qry,sqlParam,new BeanPropertyRowMapper<>(DashboardCronEntity.class));
+        try {
+            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(DashboardCronEntity.class));
+        } catch (Exception e){
+            return null;
+        }
     }
     public List<DashboardDto> getDistrictWiseDashboardData() {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();

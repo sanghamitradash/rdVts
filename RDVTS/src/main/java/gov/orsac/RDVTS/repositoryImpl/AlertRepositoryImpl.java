@@ -1109,7 +1109,7 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.activity_m as activity on geoMapping.activity_id=activity.id\n" +
                 "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
                 "left join rdvts_oltp.road_m as roadm on roadm.id = geoMapping.road_id\n" +
-                "where geoMapping.road_id= 1133 and geoMapping.package_id=:packageId" ;
+                "where geoMapping.road_id= :roadId and geoMapping.package_id=:packageId" ;
         sqlParam.addValue("roadId", roadId);
         sqlParam.addValue("packageId", packageId);
 
