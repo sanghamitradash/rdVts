@@ -965,7 +965,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 //                "left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id  and contractor.is_active = true " +
 //                "where vm.is_active = true and vam.is_active = true and vt.is_active= true and awm.is_active = true ";
 
-        String qry =" select distinct vm.id,vm.vehicle_no,vm.vehicle_type_id,type.name as vehicleTypeName,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no," +
+        String qry = " select distinct vm.id,vm.vehicle_no,vm.vehicle_type_id,type.name as vehicleTypeName,vm.model,vm.speed_limit,vm.chassis_no,vm.engine_no," +
                 "  owner.is_contractor as contractor, owner.user_id as userId,concat(userM.first_name,' ',userM.middle_name,' ',userM.last_name) as ownerName,owner.contractor_id , \n" +
                 " contractor.name as contractorName, dm.imei_no_1 as imeiNo1 \n" +
                 "from  rdvts_oltp.vehicle_activity_mapping as vam\n" +
@@ -1268,7 +1268,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
             }
 
         }
-       // System.out.println("h");
+        // System.out.println("h");
     }
 
     public List<WorkDto> getPackageHistoryByVehicleId(Integer vehicleId) {
@@ -1290,11 +1290,10 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         String qry = " select id from rdvts_oltp.geo_mapping where is_active=true and activity_id=:activityId and package_id=:packageId  ";
         sqlParam.addValue("activityId", activityId);
         sqlParam.addValue("packageId", packageId);
-        return namedJdbc.queryForObject(qry, sqlParam,Integer.class);
+        return namedJdbc.queryForObject(qry, sqlParam, Integer.class);
     }
 
-    public List<RoadMasterDto> getVehicleByPackageId(Integer packageId)
-    {
+    public List<RoadMasterDto> getVehicleByPackageId(Integer packageId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> vehicle;
         String query = "select  distinct vam.vehicle_id as vehicleId,vm.vehicle_no as vehicleName\n" +
@@ -1307,39 +1306,52 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
         //sqlParam.addValue("packageId", packageId);
         sqlParam.addValue("packageId", packageId);
-        try
-        {
+        try {
             vehicle = namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
-        }
-        catch (EmptyResultDataAccessException e)
-        {
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
         return vehicle;
     }
 
-    public List<RoadMasterDto> getVehicleByRoadId(Integer id ,Integer packageId)
-    {
+    public List<RoadMasterDto> getVehicleByRoadId(Integer id, Integer packageId) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         List<RoadMasterDto> vehicleByRoadId;
-        String query ="Select distinct pm.id as package_id,pm.package_no as package_name,rm.id as road_id,rm.road_name,vam.vehicle_id as vehicle_id,vm.vehicle_no as vehicle_name\n" +
+        String query = "Select distinct pm.id as package_id,pm.package_no as package_name,rm.id as road_id,rm.road_name,vam.vehicle_id as vehicle_id,vm.vehicle_no as vehicle_name\n" +
                 "from rdvts_oltp.road_m as rm\n" +
                 "left join rdvts_oltp.geo_mapping as gm on gm.road_id = rm.id and gm.is_active ='true'\n" +
                 "left join rdvts_oltp.package_m as pm on pm.id = gm.package_id and gm.is_active ='true'\n" +
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id and vam.is_active ='true'\n" +
                 "left join rdvts_oltp.vehicle_m as vm on vam.vehicle_id = vm.id and vm.is_active ='true'\n" +
                 "where package_id = :packageId and rm.id = :id and vam.vehicle_id is not null ";
-        sqlParam.addValue("id",id);
+        sqlParam.addValue("id", id);
         sqlParam.addValue("packageId", packageId);
-        try
-        {
+        try {
             vehicleByRoadId = namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
-        }
-        catch (EmptyResultDataAccessException emx)
-        {
+        } catch (EmptyResultDataAccessException emx) {
             return null;
         }
         return vehicleByRoadId;
     }
+
+//    public Integer updateVehicleOwner(Integer id, Integer contractorId)
+//    {
+//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+//        String query = "UPDATE rdvts_oltp.vehicle_owner_mapping set contractor_id = :contractorId " +
+//                " where vehicle_id = :vehicleId and is_active= true ";
+//        sqlParam.addValue("id",id);
+//        sqlParam.addValue("contractorId",contractorId);
+//     //   sqlParam.addValue("updatedBy",vehicleData.getUpdatedBy());
+//        try
+//        {
+//            Integer update =namedJdbc.update(query, sqlParam);
+//            return  update;
+//        }
+//        catch(Exception e)
+//        {
+//            return null;
+//        }
+//}
+
 }
 

@@ -33,6 +33,7 @@ public interface VehicleService {
     List<VehicleWorkMappingDto> getVehicleWorkMappingList(List<Integer> activityIds) throws ParseException;
 
     VehicleMaster updateVehicle(int id, VehicleMaster vehicle);
+    VehicleOwnerMappingEntity updateVehicleOwner(int vehicleId, VehicleOwnerMappingEntity updateVehicleOwner);
     Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle);
     List<VehicleTypeDto> getVehicleTypeList();
     List<VehicleMasterDto> getUnAssignedVehicleData(Integer userId);

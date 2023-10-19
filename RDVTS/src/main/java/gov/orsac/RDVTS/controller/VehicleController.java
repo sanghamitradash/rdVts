@@ -119,6 +119,7 @@ public class VehicleController {
 
     @Autowired
     private WorkService workService;
+
     @PostMapping("/getVehicleByVId")
     public RDVTSListResponse getVehicleByVId(@RequestParam Integer vehicleId,
                                              @RequestParam Integer userId
@@ -203,7 +204,9 @@ public class VehicleController {
     }
 
     @PostMapping("/updateVehicle")
-    public RDVTSResponse updateVehicle(@RequestParam Integer id, @RequestParam(name = "data") String data) {
+    public RDVTSResponse updateVehicle(@RequestParam Integer id,
+                                       @RequestParam(name = "data") String data)
+    {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
@@ -212,10 +215,42 @@ public class VehicleController {
             VehicleMaster vehicle = vehicleService.updateVehicle(id, updateVehicle);
             result.put("vehicle", vehicle);
             response.setData(result);
-            response.setMessage("Vehicle Update Successfully");
+            response.setMessage("Vehicle was updated successfully");
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/updateVehicleOwner")
+    public RDVTSResponse updateVehicleOwner(@RequestParam Integer vehicleId,
+                                            @RequestParam(name = "data") String data
+                                          )
+    {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+
+        try
+        {
+            ObjectMapper mapper = new ObjectMapper();
+            VehicleOwnerMappingEntity updateVehicleData = mapper.readValue(data, VehicleOwnerMappingEntity.class);
+            VehicleOwnerMappingEntity updateOwner = vehicleService.updateVehicleOwner(vehicleId, updateVehicleData);
+            result.put("updateOwner", updateOwner);
+            response.setData(result);
+            response.setMessage("Vehicle was updated successfully");
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+
+        }
+        catch(Exception e)
+        {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     e.getMessage(),
@@ -714,5 +749,7 @@ public class VehicleController {
         }
         return response;
     }
+
+
 
 }

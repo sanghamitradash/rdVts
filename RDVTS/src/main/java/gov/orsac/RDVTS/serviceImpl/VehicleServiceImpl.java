@@ -27,6 +27,10 @@ public class VehicleServiceImpl implements VehicleService {
        private VehicleMasterSaveRepository vehicleMasterSaveRepository;
        @Autowired
        private VehicleRepository vehicleRepository;
+
+        @Autowired
+        private VehicleOwnerMappingRepository vehicleOwnerMappingRepository;
+
        @Autowired
        private VehicleDeviceRepository vehicleDeviceRepository;
        @Autowired
@@ -41,8 +45,6 @@ public class VehicleServiceImpl implements VehicleService {
 
        @Autowired
        private VehicleActivityMappingRepository vehicleActivityMappingRepository;
-       @Autowired
-       private VehicleOwnerMappingRepository vehicleOwnerMappingRepository;
        @Autowired
        private UserRepositoryImpl userRepositoryImpl;
        @Autowired
@@ -367,9 +369,20 @@ public class VehicleServiceImpl implements VehicleService {
               existingVehicle.setEngineNo(vehicle.getEngineNo());
               existingVehicle.setActive(vehicle.getActive());
               existingVehicle.setUpdatedBy(vehicle.getUpdatedBy());
-
               return vehicleMasterSaveRepository.save(existingVehicle);
        }
+
+    @Override
+    public VehicleOwnerMappingEntity updateVehicleOwner(int vehicleId, VehicleOwnerMappingEntity updateVehicleOwner)
+    {
+        VehicleOwnerMappingEntity existingVehicleData= vehicleOwnerMappingRepository.findByVehicleId(vehicleId);
+        if (existingVehicleData == null) {
+            throw new RecordNotFoundException("Role", "id", vehicleId);
+        }
+        existingVehicleData.setContractorId(updateVehicleOwner.getContractorId());
+        existingVehicleData.setUserId(updateVehicleOwner.getUserId());
+        return vehicleOwnerMappingRepository.save(existingVehicleData);
+    }
 
        @Override
            public Page<VehicleMasterDto> getVehicleList(VehicleFilterDto vehicle) {

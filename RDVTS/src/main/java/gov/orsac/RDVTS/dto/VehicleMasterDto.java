@@ -54,5 +54,4 @@ public class VehicleMasterDto {
     private Integer vehicleId;
     List<AlertCountDto> alertList;
     List<AlertDto> alertDataList;
-
 }
