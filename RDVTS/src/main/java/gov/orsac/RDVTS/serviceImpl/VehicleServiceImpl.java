@@ -376,12 +376,21 @@ public class VehicleServiceImpl implements VehicleService {
     public VehicleOwnerMappingEntity updateVehicleOwner(int vehicleId, VehicleOwnerMappingEntity updateVehicleOwner)
     {
         VehicleOwnerMappingEntity existingVehicleData= vehicleOwnerMappingRepository.findByVehicleId(vehicleId);
-        if (existingVehicleData == null) {
-            throw new RecordNotFoundException("Role", "id", vehicleId);
+        if (existingVehicleData != null && existingVehicleData.isActive() == true) {
+            existingVehicleData.setActive(false);
+            vehicleOwnerMappingRepository.save(existingVehicleData);
         }
-        existingVehicleData.setContractorId(updateVehicleOwner.getContractorId());
-        existingVehicleData.setUserId(updateVehicleOwner.getUserId());
-        return vehicleOwnerMappingRepository.save(existingVehicleData);
+//        if (existingVehicleData == null) {
+//            throw new RecordNotFoundException("Role", "id", vehicleId);
+//        }
+        VehicleOwnerMappingEntity existingVehicleData1 = new VehicleOwnerMappingEntity();
+        existingVehicleData1.setVehicleId(vehicleId);
+        existingVehicleData1.setContractorId(updateVehicleOwner.getContractorId());
+        existingVehicleData1.setUserId(existingVehicleData.getUserId());
+        existingVehicleData1.setContractor(true);
+        existingVehicleData1.setCreatedBy(existingVehicleData.getCreatedBy());
+        existingVehicleData1.setActive(true);
+        return vehicleOwnerMappingRepository.save(existingVehicleData1);
     }
 
        @Override
