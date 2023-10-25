@@ -375,7 +375,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public VehicleOwnerMappingEntity updateVehicleOwner(int vehicleId, VehicleOwnerMappingEntity updateVehicleOwner)
     {
-        VehicleOwnerMappingEntity existingVehicleData= vehicleOwnerMappingRepository.findByVehicleId(vehicleId);
+        VehicleOwnerMappingEntity existingVehicleData= vehicleOwnerMappingRepository.findByVehicleIdAndActive(vehicleId, true);
         if (existingVehicleData != null && existingVehicleData.isActive() == true) {
             existingVehicleData.setActive(false);
             vehicleOwnerMappingRepository.save(existingVehicleData);
@@ -386,9 +386,9 @@ public class VehicleServiceImpl implements VehicleService {
         VehicleOwnerMappingEntity existingVehicleData1 = new VehicleOwnerMappingEntity();
         existingVehicleData1.setVehicleId(vehicleId);
         existingVehicleData1.setContractorId(updateVehicleOwner.getContractorId());
-        existingVehicleData1.setUserId(existingVehicleData.getUserId());
+        existingVehicleData1.setUserId(updateVehicleOwner.getUserId());
         existingVehicleData1.setContractor(true);
-        existingVehicleData1.setCreatedBy(existingVehicleData.getCreatedBy());
+        existingVehicleData1.setCreatedBy(updateVehicleOwner.getCreatedBy());
         existingVehicleData1.setActive(true);
         return vehicleOwnerMappingRepository.save(existingVehicleData1);
     }

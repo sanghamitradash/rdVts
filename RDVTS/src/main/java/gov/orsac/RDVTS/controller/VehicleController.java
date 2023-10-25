@@ -500,7 +500,7 @@ public class VehicleController {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            VehicleOwnerMappingEntity vehicleOwner = vehicleOwnerMappingRepository.findByVehicleId(vehicleOwnerMappingDto.getVehicleId());
+            VehicleOwnerMappingEntity vehicleOwner = vehicleOwnerMappingRepository.findByVehicleIdAndActive(vehicleOwnerMappingDto.getVehicleId(), true);
             if (vehicleOwner == null) {
                 VehicleOwnerMappingEntity saveVehicleOwnerMapping = vehicleService.assignVehicleOwner(vehicleOwnerMappingDto);
                 result.put("saveVehicleOwner", saveVehicleOwnerMapping);
