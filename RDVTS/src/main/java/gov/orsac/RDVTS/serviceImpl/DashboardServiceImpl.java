@@ -110,6 +110,25 @@ public class DashboardServiceImpl implements DashboardService {
         return work;
     }
 
+    @Override
+    public CompletedAndNotCompletedRoadDto getStatusWiseRoadCount(Integer userId) {
+
+        Integer totalRoadCount=dashboardRepositoryImpl.getTotalRoadCountById();
+        int totalIncompleteRoad= dashboardRepositoryImpl.getRoadIncompleted();
+        Integer totalRoadCompleted=totalRoadCount-totalIncompleteRoad;
+//        Double completedPercentage= (Double.valueOf(totalCompleted)/Double.valueOf(totalWork))*100;
+//        Double inCompletedPercentage= (Double.valueOf(totalIncomplete)/Double.valueOf(totalWork))*100;
+        CompletedAndNotCompletedRoadDto road =new CompletedAndNotCompletedRoadDto();
+        road.setTotalRoad(totalRoadCount);
+        road.setTotalCompletedRoad(totalRoadCompleted);
+        road.setTotalInCompletedRoad(totalIncompleteRoad);
+//        work.setCompletedPercentage(completedPercentage);
+//        work.setInCompletedPercentage(inCompletedPercentage);
+
+
+        return road;
+    }
+
 
     @Override
     public List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount(Integer userId) {

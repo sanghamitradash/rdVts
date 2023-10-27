@@ -344,4 +344,23 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
 
     }
+
+    public Integer getTotalRoadCountById() {
+
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " SELECT count(distinct road_id) FROM rdvts_oltp.geo_mapping where is_active = true";
+//        if (i>0){
+//            qry += "and id=:id";
+//            sqlParam.addValue("id",i);
+//        }
+        return namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+    }
+
+    public Integer getRoadIncompleted() {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " SELECT count(distinct road_id) FROM rdvts_oltp.geo_mapping WHERE completion_date is null and is_active = true  ";
+        return   namedJdbc.queryForObject(qry,sqlParam,Integer.class);
+
+
+    }
 }

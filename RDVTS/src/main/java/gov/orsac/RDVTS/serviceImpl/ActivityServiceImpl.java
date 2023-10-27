@@ -48,6 +48,9 @@ public class ActivityServiceImpl implements ActivityService {
     @Autowired
     VehicleActivityMappingRepository vehicleActivityMappingRepository;
 
+    @Autowired
+    ActivityStatusLogRepository activityStatusLogRepository ;
+
 
     @Override
     public List<ActivityEntity> saveActivity(List<ActivityEntity> activityEntity) {
@@ -239,6 +242,11 @@ public class ActivityServiceImpl implements ActivityService {
             responseDto.add(ad);
         }
         return responseDto;
+    }
+
+    @Override
+    public ActivityStatusLogEntity saveActivityStatusLog(ActivityStatusLogEntity activityStatusLogEntity) {
+        return activityStatusLogRepository.save(activityStatusLogEntity);
     }
 
 

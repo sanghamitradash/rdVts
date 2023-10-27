@@ -10,6 +10,7 @@ public interface DashboardService {
     ActiveAndInactiveVehicleDto getActiveAndInactiveVehicle(Integer userId);
     List<DashboardCronEntity>  getActiveAndInactiveVehicleCron(Integer userId);
     CompletedAndNotCompletedWorkDto getStatusWiseWorkCount(Integer userId);
+    CompletedAndNotCompletedRoadDto getStatusWiseRoadCount(Integer userId);
     List<DistrictWiseVehicleDto> getDistrictWiseVehicleCount(Integer userId);
 
     List<DivisionWiseVehicleDto> getDivisionWiseVehicleCount(Integer userId);

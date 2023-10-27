@@ -4,6 +4,7 @@ package gov.orsac.RDVTS.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.*;
+import gov.orsac.RDVTS.exception.RecordExistException;
 import gov.orsac.RDVTS.repositoryImpl.ActivityRepositoryImpl;
 import gov.orsac.RDVTS.repositoryImpl.AlertRepositoryImpl;
 import gov.orsac.RDVTS.service.AWSS3StorageService;
@@ -520,6 +521,28 @@ public class ActivityController {
         }
         catch (Exception ex)
         {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/saveActivityStatusLog")
+    public RDVTSResponse saveActivityStatusLog(@RequestBody ActivityStatusLogEntity activityStatusLogEntity) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ActivityStatusLogEntity activityStatusLog = activityService.saveActivityStatusLog(activityStatusLogEntity);
+
+            result.put("activityStatusLog", activityStatusLog);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage(" Activity Status log Saved Successfully");
+        } catch (Exception ex) {
+            ex.printStackTrace();
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),

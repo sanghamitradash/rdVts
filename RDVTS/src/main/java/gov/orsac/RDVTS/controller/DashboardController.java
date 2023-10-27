@@ -61,6 +61,27 @@ public class DashboardController {
         return response;
     }
 
+    @PostMapping("/getStatusWiseRoadCount")
+    public RDVTSResponse getStatusWiseRoadCount(@RequestParam(name = "userId")Integer userId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            CompletedAndNotCompletedRoadDto road = dashboardService.getStatusWiseRoadCount(userId);
+            result.put("road", road);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("All Road Data");
+
+        } catch (Exception ex) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
     @PostMapping("/getDistrictWiseVehicleCount")
     public RDVTSResponse getDistrictWiseVehicleCount(@RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();

@@ -60,6 +60,9 @@ public interface ActivityService {
     Integer saveContractorId(Integer contractorId, Integer activityId);
 
     List<ActivityAnalysisDto> getActivityAnalysisByPkgId(Integer userId, Integer packageId);
+
+    ActivityStatusLogEntity saveActivityStatusLog(ActivityStatusLogEntity activityStatusLogEntity);
+
 }
 
 
