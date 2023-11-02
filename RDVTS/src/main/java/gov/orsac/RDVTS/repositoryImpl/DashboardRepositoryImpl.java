@@ -363,4 +363,26 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
 
     }
+
+    public List<RoadLengthDto> getRoadLengthByDistIdOrPackageId(Integer distId,Integer packageId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select rdata.packageId,pm.package_no,rdata.sanctionedLength,rdata.completedRoadLength,rdata.distId " +
+                "from (select distinct gm.package_id as packageId,sum(coalesce(rm.sanction_length,0.0)) over(partition by gm.package_id) as sanctionedLength, " +
+                "sum(cLength.completedLength) over(partition by gm.package_id) as completedRoadLength, gm.dist_id as distId " +
+                "from (select distinct package_id,road_id,dist_id,state_id from rdvts_oltp.geo_mapping where is_active=true) as gm " +
+                "left join rdvts_oltp.road_m as rm on rm.id=gm.road_id " +
+                "left join (select distinct road_id,coalesce(completed_road_length,0.0) as completedLength from rdvts_oltp.geo_mapping) as cLength on cLength.road_id=gm.road_id " +
+                "where gm.state_id=1 ";
+        if(distId !=null && distId>0){
+            qry += " and gm.dist_id=:distId ";
+            sqlParam.addValue("distId", distId);
+        }
+        if(packageId !=null && packageId>0){
+            qry += " and gm.package_id=:packageId ";
+            sqlParam.addValue("packageId", packageId);
+        }
+        qry +=" order by gm.package_id) as rdata " +
+                "left join rdvts_oltp.package_m as pm on pm.id=rdata.packageId";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadLengthDto.class));
+    }
 }

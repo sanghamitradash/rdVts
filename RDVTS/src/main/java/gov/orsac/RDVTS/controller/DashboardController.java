@@ -2,6 +2,7 @@ package gov.orsac.RDVTS.controller;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.service.DashboardService;
+import gov.orsac.RDVTS.serviceImpl.DashboardServiceImpl;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,10 @@ import java.util.*;
 public class DashboardController {
     @Autowired
     DashboardService dashboardService;
+
+    @Autowired
+    DashboardServiceImpl dashboardServiceImpl;
+
     @PostMapping("/getActiveAndInactiveVehicle")
     public RDVTSResponse getActiveAndInactiveVehicle(@RequestParam(name = "userId")Integer userId) {
         RDVTSResponse response = new RDVTSResponse();
@@ -67,6 +72,8 @@ public class DashboardController {
         Map<String, Object> result = new HashMap<>();
         try {
             CompletedAndNotCompletedRoadDto road = dashboardService.getStatusWiseRoadCount(userId);
+            ActiveAndInactiveVehicleDto vehicle = dashboardService.getActiveAndInactiveVehicle(userId);
+            result.put("vehicle", vehicle);
             result.put("road", road);
             response.setData(result);
             response.setStatus(1);
@@ -159,6 +166,28 @@ public class DashboardController {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
                     ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+
+    @PostMapping("/getRoadLengthByDistIdOrPackageId")
+    public RDVTSResponse getRoadLengthByDistIdOrPackageId(@RequestParam(required = false)Integer distId,
+                                                                                  @RequestParam(required = false)Integer packageId) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<RoadLengthDto> roadLength = dashboardServiceImpl.getRoadLengthByDistIdOrPackageId(distId,packageId);
+            result.put("packageWiseRoadLength", roadLength);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("package Wise Road Length ");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
                     result);
         }
         return response;

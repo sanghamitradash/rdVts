@@ -1145,7 +1145,7 @@ public class AlertRepositoryImpl {
                     " from rdvts_oltp.geo_mapping as geoMapping" +
                     " left join rdvts_oltp.activity_m as am on geoMapping.activity_id = am.id" +
                     " left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id = geoMapping.activity_status" +
-                    " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.activity_id = geoMapping.activity_id" +
+                    " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = geoMapping.id" +
                     " left join rdvts_oltp.vehicle_m as vehicle on vam.vehicle_id = vehicle.id" +
                     " left join rdvts_oltp.vehicle_type as type on type.id = vehicle.vehicle_type_id" +
                     " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id = vehicle.id" +

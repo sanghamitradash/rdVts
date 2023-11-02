@@ -116,14 +116,14 @@ public class DashboardServiceImpl implements DashboardService {
         Integer totalRoadCount=dashboardRepositoryImpl.getTotalRoadCountById();
         int totalIncompleteRoad= dashboardRepositoryImpl.getRoadIncompleted();
         Integer totalRoadCompleted=totalRoadCount-totalIncompleteRoad;
-//        Double completedPercentage= (Double.valueOf(totalCompleted)/Double.valueOf(totalWork))*100;
-//        Double inCompletedPercentage= (Double.valueOf(totalIncomplete)/Double.valueOf(totalWork))*100;
+        Double completedPercentage= (Double.valueOf(totalRoadCompleted)/Double.valueOf(totalRoadCount))*100;
+        Double inCompletedPercentage= (Double.valueOf(totalIncompleteRoad)/Double.valueOf(totalRoadCount))*100;
         CompletedAndNotCompletedRoadDto road =new CompletedAndNotCompletedRoadDto();
         road.setTotalRoad(totalRoadCount);
         road.setTotalCompletedRoad(totalRoadCompleted);
         road.setTotalInCompletedRoad(totalIncompleteRoad);
-//        work.setCompletedPercentage(completedPercentage);
-//        work.setInCompletedPercentage(inCompletedPercentage);
+        road.setCompletedPercentage(completedPercentage);
+        road.setInCompletedPercentage(inCompletedPercentage);
 
 
         return road;
@@ -191,6 +191,10 @@ public class DashboardServiceImpl implements DashboardService {
             dashboardData=dashboardRepositoryImpl.getDivisionWiseDashboardData();
         }
         return dashboardData;
+    }
+
+    public List<RoadLengthDto> getRoadLengthByDistIdOrPackageId(Integer distId,Integer packageId) {
+        return dashboardRepositoryImpl.getRoadLengthByDistIdOrPackageId(distId,packageId);
     }
 }
 

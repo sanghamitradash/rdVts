@@ -12,5 +12,7 @@ public class CompletedAndNotCompletedRoadDto {
     private Integer totalRoad;
     private Integer totalCompletedRoad;
     private Integer totalInCompletedRoad;
+    private Double completedPercentage;
+    private Double inCompletedPercentage;
 
 }
