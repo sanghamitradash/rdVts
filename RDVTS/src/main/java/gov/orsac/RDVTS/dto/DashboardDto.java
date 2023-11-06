@@ -20,4 +20,5 @@ public class DashboardDto {
         private String districtName;
         private String divisionName;
         private String processTime;
+        private String geom ;
 }

@@ -1153,7 +1153,8 @@ public class AlertRepositoryImpl {
                     " left join rdvts_oltp.vehicle_device_mapping as vehicleDevice on vehicleDevice.vehicle_id = vehicle.id" +
                     " left join rdvts_oltp.device_m as device on device.id = vehicleDevice.device_id" +
                     " where geoMapping.is_active=true" +
-                    " and geoMapping.package_id=:packageId and geoMapping.activity_id=:activityId  and vam.vehicle_id is not null";
+                    " and geoMapping.package_id=:packageId and geoMapping.activity_id=:activityId  and vam.vehicle_id is not null " +
+                    "and vehicleDevice.is_active = true and geoMapping.is_active = true and owner.is_active = true ";
 
 
 //        String qry = " select distinct vam.vehicle_id,vehicle.vehicle_no, " +
