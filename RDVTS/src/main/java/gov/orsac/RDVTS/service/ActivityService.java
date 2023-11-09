@@ -39,7 +39,7 @@ public interface ActivityService {
 
     List<VehicleMaster> unassignVehicleByVehicleTypeId(Integer activityId, Integer vehicleTypeId, Integer userId);
 
-    List<ActivityDto> unassignedActivity(Integer userId, Integer workId);
+    List<ActivityDto> unassignedActivity(Integer userId, Integer packageId);
 
     Boolean activityVehicleDeassign(Integer vehicleId, Integer geoMappingId);
 

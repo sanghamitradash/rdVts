@@ -23,6 +23,7 @@ public class ActivityDto {
     private Date actualActivityCompletionDate;
     private Double executedQuantity;
     private Integer workId;
+    private Integer packageId;
     private Boolean isActive = true;
     private Integer createdBy;
     private Date createdOn;
