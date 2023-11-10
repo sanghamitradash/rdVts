@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -199,11 +200,49 @@ public class DashboardController {
         Map<String, Object> result = new HashMap<>();
         try {
             List<HourlyReportDto> hourlyReport = dashboardServiceImpl.getHourlyReportVehicleTypeWise();
-            result.put("hourlyReport", hourlyReport);
+            List<String> type=new ArrayList<>();
+            for(int i=0;i<hourlyReport.size();i++){
+                if(!type.contains(hourlyReport.get(i).getName())){
+                    type.add(hourlyReport.get(i).getName());
+                }
+            }
+            for(int i=0;i<type.size();i++){
+                String name=type.get(i);
+                List<HourlyReportDto> test=new ArrayList<>();
+                for(int j=0; j < hourlyReport.size(); j++){
+                    if(name.equals(hourlyReport.get(j).getName())){
+                        test.add(hourlyReport.get(j));
+                    }
+                }
+                result.put(name,test);
+
+            }
+            System.out.println(result);
+
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage("Vehicle Type wise Hourly Report ");
+//            Calendar cal = Calendar.getInstance();
+//            System.out.println("Today : " + cal.getTime());
+//            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+//            String format = formatter.format(cal.getTime());
+//            System.out.println("New_Today : " + format);
+//            // Substract 30 days from the calendar
+//            cal.add(Calendar.DATE, -5);
+//            System.out.println("5 days ago: " + cal.getTime());
+//            String format1 = formatter.format(cal.getTime());
+//            System.out.println("New_5days ago : " + format1);
+//
+//            LocalDate start = LocalDate.parse(format1);
+//            LocalDate end = LocalDate.parse(format);
+//            List<LocalDate> totalDates = new ArrayList<>();
+//            while (!start.isAfter(end)) {
+//                totalDates.add(start);
+//                start = start.plusDays(-5);
+//            }
+//            System.out.println("Date Range : " + start);
+
         } catch (Exception e) {
             response = new RDVTSResponse(0,
                     new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
