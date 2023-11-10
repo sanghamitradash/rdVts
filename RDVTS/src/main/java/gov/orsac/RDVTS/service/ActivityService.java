@@ -61,7 +61,7 @@ public interface ActivityService {
 
     List<ActivityAnalysisDto> getActivityAnalysisByPkgId(Integer userId, Integer packageId);
 
-    ActivityStatusLogEntity saveActivityStatusLog(ActivityStatusLogEntity activityStatusLogEntity);
+    List<ActivityStatusLogEntity> saveActivityStatusLog(List<ActivityStatusLogEntity> activityStatusLogEntity);
 
 }
 

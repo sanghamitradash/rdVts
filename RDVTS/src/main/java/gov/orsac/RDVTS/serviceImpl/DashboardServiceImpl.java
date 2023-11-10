@@ -193,8 +193,17 @@ public class DashboardServiceImpl implements DashboardService {
         return dashboardData;
     }
 
+    @Override
+    public Integer saveVehicleTypeWiseHourlyReport() {
+        return dashboardRepositoryImpl.saveVehicleTypeWiseHourlyReport();
+    }
+
     public List<RoadLengthDto> getRoadLengthByDistIdOrPackageId(Integer distId,Integer packageId) {
         return dashboardRepositoryImpl.getRoadLengthByDistIdOrPackageId(distId,packageId);
+    }
+
+    public List<HourlyReportDto> getHourlyReportVehicleTypeWise() {
+        return dashboardRepositoryImpl.getHourlyReportVehicleTypeWise();
     }
 }
 

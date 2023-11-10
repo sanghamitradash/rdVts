@@ -530,11 +530,11 @@ public class ActivityController {
     }
 
     @PostMapping("/saveActivityStatusLog")
-    public RDVTSResponse saveActivityStatusLog(@RequestBody ActivityStatusLogEntity activityStatusLogEntity) {
+    public RDVTSResponse saveActivityStatusLog(@RequestBody List<ActivityStatusLogEntity> activityStatusLogEntity) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try {
-            ActivityStatusLogEntity activityStatusLog = activityService.saveActivityStatusLog(activityStatusLogEntity);
+            List<ActivityStatusLogEntity> activityStatusLog = activityService.saveActivityStatusLog(activityStatusLogEntity);
 
             result.put("activityStatusLog", activityStatusLog);
             response.setData(result);

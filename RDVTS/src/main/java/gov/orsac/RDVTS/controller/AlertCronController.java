@@ -426,6 +426,8 @@ public class AlertCronController {
         try {
             int userId = 1;
             List<DashboardCronEntity> vehicle = dashboardService.getActiveAndInactiveVehicleCron(userId);
+
+
             // System.out.println("TRUE");
 
             result.put("vehicle", vehicle);
@@ -582,6 +584,31 @@ public class AlertCronController {
      return  68;
 
     }
+
+//    @PostMapping("/test")
+@Scheduled(cron = "0 0 */24 * * *")
+    public RDVTSResponse saveVehicleTypeWiseHourlyReport() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Integer insert = dashboardService.saveVehicleTypeWiseHourlyReport();
+            // System.out.println("TRUE");
+            result.put("insert", insert);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage(insert+"Data Inserted");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 
 }

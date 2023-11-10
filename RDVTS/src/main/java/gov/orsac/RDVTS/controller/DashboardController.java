@@ -193,5 +193,25 @@ public class DashboardController {
         return response;
     }
 
+    @PostMapping("/getHourlyReportVehicleTypeWise")
+    public RDVTSResponse getRoadLengthByDistIdOrPackageId() {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<HourlyReportDto> hourlyReport = dashboardServiceImpl.getHourlyReportVehicleTypeWise();
+            result.put("hourlyReport", hourlyReport);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage("Vehicle Type wise Hourly Report ");
+        } catch (Exception e) {
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    e.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
 
 }

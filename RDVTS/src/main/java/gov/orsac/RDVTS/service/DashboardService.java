@@ -15,4 +15,5 @@ public interface DashboardService {
 
     List<DivisionWiseVehicleDto> getDivisionWiseVehicleCount(Integer userId);
     List<DashboardDto> getDashboardData(Integer typeId);
+    Integer saveVehicleTypeWiseHourlyReport();
 }

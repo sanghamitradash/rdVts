@@ -385,4 +385,49 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 "left join rdvts_oltp.package_m as pm on pm.id=rdata.packageId";
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(RoadLengthDto.class));
     }
+
+    public Integer saveVehicleTypeWiseHourlyReport() {
+        truncateHourlyReport();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "insert into rdvts_oltp.hourly_report(imei,dates,hours) " +
+                "select vd.imei,date_time::date,max(date_time)-min(date_time) as totalhours " +
+                "from (select distinct imei,date_time,longitude,latitude " +
+                "from rdvts_oltp.vtu_location where gps_fix::integer=1 and ignition::integer=1 and date_time >= current_date - interval '30 days')as ld " +
+                "join " +
+                "(select distinct vdm.vehicle_id,vdm.device_id,dm.imei_no_1 as imei, vdm.is_active,case when vdm.deactivation_date is null then current_date else vdm.deactivation_date end as deactivation_date " +
+                ",rm.geom roadGeom " +
+                "from rdvts_oltp.vehicle_device_mapping as vdm " +
+                "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id " +
+                "left join rdvts_oltp.geo_mapping as gm on gm.id=vam.geo_mapping_id " +
+                "left join rdvts_oltp.road_m as rm on rm.id=gm.road_id and rm.geom is not null " +
+                "left join rdvts_oltp.device_m as dm on dm.id=vdm.device_id " +
+                "where " +
+                "(case when vdm.deactivation_date is null then current_date else vdm.deactivation_date end) >= current_date - interval '30 days') as vd " +
+                "on ld.imei=vd.imei and ST_Intersects(ST_SetSRID(ST_Point(ld.longitude::numeric,ld.latitude::numeric),4326), ST_Buffer(vd.roadGeom, 50, 'endcap=square join=round'))-- and date_time between data1.start_date and data1.end_date " +
+                "group by vd.imei,date_time::date order by vd.imei,date_time::date ";
+
+        return namedJdbc.update(qry,sqlParam);
+    }
+    public  Integer truncateHourlyReport(){
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "TRUNCATE TABLE rdvts_oltp.hourly_report";
+        return namedJdbc.update(qry,sqlParam);
+    }
+
+
+    public List<HourlyReportDto> getHourlyReportVehicleTypeWise() {
+
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = " select distinct hr.dates,vt.name,sum(hr.hours) as hours " +
+                "from rdvts_oltp.hourly_report as hr " +
+                "left join rdvts_oltp.device_m as dm on dm.imei_no_1=hr.imei " +
+                "left join rdvts_oltp.vehicle_device_mapping as vdm on dm.id=vdm.device_id " +
+                "left join rdvts_oltp.vehicle_m as vm on vm.id=vdm.vehicle_id " +
+                "left join rdvts_oltp.vehicle_type as vt on vt.id=vm.vehicle_type_id " +
+                "where (case when vdm.deactivation_date is null then current_date else vdm.deactivation_date end) >= current_date - interval '30 days' " +
+                "group by hr.dates,vt.name " +
+                "order by vt.name, hr.dates ";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(HourlyReportDto.class));
+
+    }
 }

@@ -245,8 +245,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityStatusLogEntity saveActivityStatusLog(ActivityStatusLogEntity activityStatusLogEntity) {
-        return activityStatusLogRepository.save(activityStatusLogEntity);
+    public List<ActivityStatusLogEntity> saveActivityStatusLog(List<ActivityStatusLogEntity> activityStatusLogEntity) {
+        return activityStatusLogRepository.saveAll(activityStatusLogEntity);
     }
 
 
