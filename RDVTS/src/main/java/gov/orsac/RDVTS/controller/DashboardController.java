@@ -217,7 +217,10 @@ public class DashboardController {
                 result.put(name,test);
 
             }
-            System.out.println(result);
+            Date date = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            String str = formatter.format(date);
+            result.put("Current_Date", str);
 
             response.setData(result);
             response.setStatus(1);

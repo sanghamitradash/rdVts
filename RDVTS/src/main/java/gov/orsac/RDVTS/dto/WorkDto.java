@@ -29,8 +29,9 @@ public class WorkDto {
     private Date updatedOn;
 
     private Date awardDate;
+    private String sanctionDate;
     private Date completionDate;
-    private Date pmisFinalizeDate;
+    private String pmisFinalizeDate;
     private Integer workStatus;
     private Integer approvalStatus;
     private Integer approvedBy;
@@ -57,6 +58,7 @@ public class WorkDto {
     private Integer gWorkId;
     private String activityStatus;
     private String activityName;
+    private Integer roadId;
     private String roadName;
     private Date startDate;
     private Date endDate;

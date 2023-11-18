@@ -1086,7 +1086,7 @@ public class AlertRepositoryImpl {
                 "from rdvts_oltp.alert_data as ad " +
                 "left join rdvts_oltp.alert_type_m as alt on alt.id = ad.alert_type_id " +
                 "where imei in " +
-                "(select imei_no_1 from rdvts_oltp.device_m where id in(select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id=:vehicleId and is_active=true)) " ;
+                "(select imei_no_1 from rdvts_oltp.device_m where id in(select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id=:vehicleId and is_active=true)) order by  ad.created_on  desc limit 50 " ;
         sqlParam.addValue("vehicleId", vehicle);
 
         if(alertId!=null && alertId>0)

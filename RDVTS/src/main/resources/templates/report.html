@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PMGSY VTS - REPORT</title>
+    <link rel="shortcut icon" href="../assets/images/favicon.ico">
+
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="../assets/css/style-pdf.css">
+
+    <!-- <link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/icons.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="../assets/css/app-dark.min.css" rel="stylesheet" type="text/css" id="dark-style" /> -->
+    <!-- <link href="../assets/css/app.min.css" rel="stylesheet" type="text/css" id="light-style" />  -->
+    <style>
+         .roadcl{
+            border: 1px solid #b9b0b0;
+            background-color: lightgrey;
+            padding: 4px;
+            border-radius: 4px;
+        }
+        .package{
+        background-color: rgb(181, 180, 180);
+    text-align: center;
+    padding: 2px;
+    margin-bottom: 10px;
+  }
+    </style>
+</head>
+<body>
+<div id="loadingDiv" style="display: none;"></div>
+<div class="container">
+
+    <br />
+    <div id="element-to-print">
+        <table>
+            <tr>
+                <td style="text-align:left;border-style: none;text-align:center;"><img src="../assets/images/logo-pdf.png" /></td>
+            </tr>
+        </table>
+
+        <div id="package_details">
+            <div class="heading package" ><span><strong>Package Details</strong></span></div>
+            <div class="row">
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>Package Name</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="packageName"></span></p></div>
+
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>PIU Name</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="piuName"></span></p></div>
+            </div>
+<!--             <div class="row">
+               <div class="col-md-3"><p class="font-14 text-white-20"><strong>Road Name</strong></p></div>
+               <div class="col-md-9"><p class="font-14 text-white-20">: <span class="ms-2" id="roadName"></span></p></div>
+
+
+           </div> -->
+            <div class="row">
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>Award Date</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="awardDate"></span></p></div>
+
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>PMIS Finalize Date</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="pmisFinalizeDate"></span></p></div>
+            </div>
+            <!-- <div class="row">
+               <div class="col-md-3"><p class="font-14 text-white-20"><strong>Deactivation Date</strong></p></div>
+               <div class="col-md-3"><p class="font-14 text-white-20">:<span class="ms-2" id="deactivationDate"></span></p></div>
+
+               <div class="col-md-3"><p class="font-14 text-white-20"><strong>Approval Status</strong></p></div>
+               <div class="col-md-3"><p class="font-14 text-white-20">:<span class="ms-2" id="approvalStatus"></span></p></div>
+           </div> -->
+           <div class="row">
+               <!--<div class="col-md-3"><p class="font-14 text-white-20"><strong>Completion Date</strong></p></div>
+              <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="completionDate"></span></p></div> -->
+
+              <div class="col-md-3"><p class="font-14 text-white-20"><strong>Work Status</strong></p></div>
+              <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="workStatus"></span></p></div>
+          </div>
+      </div>
+
+      <div id="roadList">
+          <div class="heading package" ><span><strong>Road Details</strong></span></div>
+          <table class="table table-centered mb-0 table-stripped" id="tablea">
+              <thead class="table-dark">
+              <tr>
+                  <th>Sl No</th>
+                  <th>Road Name</th>
+                  <th>Sanction Date</th>
+                  <th>Road Length</th>
+                  <!-- <th>Status</th> -->
+                    <!-- <th>Action</th> -->
+                </tr>
+                </thead>
+                <tbody id="roadDetails">
+
+                </tbody>
+            </table>
+        </div>
+<!-- New Code -->
+<div id="vehicleArea" >
+
+
+
+
+    <!-- <div id="roadSingle">
+        <div id="">
+
+
+        </div>
+    </div> -->
+    < <div id="activityList">
+        <div class="heading package"><span><strong>Activity Details</strong></span></div>
+        <table class="table table-centered mb-0 table-stripped" id="tableb">
+            <thead class="table-dark">
+                <tr>
+                    <th>Sl No</th>
+                    <th>Activity Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="activityDetails">
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="VechilceListAll">
+        <div id="">
+            <div class="heading package"><span><strong>Vehicle Details</strong></span></div>
+            <div class="row">
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>Vehicle No</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleNo"></span></p></div>
+
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>Vehicle Type</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleTypeId"></span></p></div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>Owner Name</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="ownerName"></span></p></div>
+
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>Speed Limit</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="speedLimit"></span></p></div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>Chassis No</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="chassisNo"></span></p></div>
+
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>Engine No</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="engineNo"></span></p></div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"><p class="font-14 text-white-20"><strong>IMEI</strong></p></div>
+                <div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="imeiNo1"></span></p></div>
+
+            </div>
+        </div>
+    </div>
+
+
+     <div id="alertList">
+        <div class="heading package"><span><strong>Alert Details</strong></span></div>
+        <table class="table table-centered mb-0 table-stripped" id="tablec">
+            <thead class="table-dark">
+                <tr>
+                    <th>Sl No</th>
+                    <th>IMEI</th>
+                    <th>Alert Type</th>
+                    <th>Date</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                </tr>
+            </thead>
+            <tbody id="alertDetails">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- New Code -->
+</div>
+
+</div>
+
+<!-- bundle -->
+<script src="../assets/js/module/alert.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+<script src='https://cdn.bootcss.com/html2pdf.js/0.9.1/html2pdf.bundle.js'></script>
+<!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.1/html2pdf.bundle.min.js'></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js'></script>
+<script src="../assets/js/script-pdf.js"></script>
+<script src="../assets/js/common-function/common-function.js"></script>
+<!-- <script src="../assets/js/module/search-activity.js"></script> -->
+
+<html>
+
+<script>
+    $(document).ready(function () {
+
+        const url = window.location.href;
+        // console.log(url);
+        let paramString = url.split('?')[1];
+        let arrayVal = paramString.split('&');
+        //console.log(arrayVal[1].split('=')[1])
+        var dateFrom = arrayVal[0].split('=')[1]
+        var dateTo = arrayVal[1].split('=')[1]
+        var packageId = arrayVal[3].split('=')[1]
+        var alertType = arrayVal[2].split('=')[1]
+        var roadId = arrayVal[4].split('=')[1]
+        var activityId = arrayVal[5].split('=')[1]
+        // var vehicleId = arrayVal[5].split('=')[1]
+
+        var userId = JSON.parse(localStorage.users_data).user.id;
+        //var form = new FormData();
+        //form.append("userId", userId);
+        var loop_trHTML = '';
+        var road_trHTML = '';
+                    var activity_trhtmlss='';
+                    var vechicle_road_Tr='';
+                    var alertData='';
+                    var road_trHTML2 = '';
+
+        // if (arrayVal[3].split('=')[1] == 1) {
+        //     form.append("vehicleId", arrayVal[4].split('=')[1]);
+
+        //     form.append("roadId", "-1");
+        //     form.append("workId", "-1");
+        //     form.append("packageId", "-1");
+        // }
+
+        // if (arrayVal[3].split('=')[1] == 2) {
+        //     form.append("roadId", arrayVal[4].split('=')[1]);
+
+        //     form.append("vehicleId", "-1");
+        //     form.append("workId", "-1");
+        //     form.append("packageId", "-1");
+        // }
+
+        // if (arrayVal[3].split('=')[1] == 3) {
+        //     form.append("workId", arrayVal[4].split('=')[1]);
+
+        //     form.append("vehicleId", "-1");
+        //     form.append("roadId", "-1");
+        //     form.append("packageId", "-1");
+        // }
+        var jsonData = {
+                            packageId   : packageId,
+                            roadId      : roadId,
+                            activityId  : activityId,
+                            alertTypeId : alertType,
+                            startDate   : dateFrom,
+                            endDate     :  dateTo
+                       };
+        // if (packageId != 0 ) {
+        //     form.append("packageId", packageId);
+
+        //     // form.append("vehicleId", vehicleId);
+        //     // form.append("roadId", roadId);
+
+        // }
+        // form.append("vehicleId", "-1");
+        // form.append("roadId", "-1");
+        // form.append("workId", "-1");
+        // form.append("packageId", "-1");
+        // form.append("alertTypeId", arrayVal[2].split('=')[1]);
+        // form.append("startDate", arrayVal[0].split('=')[1]);
+        // form.append("endDate", arrayVal[1].split('=')[1]);
+        // form.append("alertTypeId", arrayVal[2].split('=')[1]);
+
+// var formData = new FormData();
+// formData.append('id', arrayVal[2].split('=')[1]);
+// formData.append('userId', userId);
+
+        $.ajax({
+            // type: 'get',
+            // data : {},
+            // dataType: 'json',
+            // url: 'http://127.0.0.1:5500/report/testapi.txt',
+
+            method: 'POST',
+            url: apiURL + 'report/getReportData1',
+            data: JSON.stringify(jsonData),
+        //     headers: {
+        //     "Content-Type": "application/json"
+        //      },
+        contentType: 'application/json',
+            beforeSend: function () {
+                $("#loadingDiv").show();
+            },
+            success: function (response) {
+                // console.log(response)
+                var data = '';
+                //console.log("========"+response.data.vehicle)
+                // var alertTypeId;
+                $('#packageName').html(response.data.packageData.packageNo);
+                $('#piuName').html(response.data.packageData.piuName);
+                $('#awardDate').html(response.data.packageData.awardDate != null ? const_formatDate4(response.data.packageData.awardDate): 'Not Available');
+                $('#pmisFinalizeDate').html(response.data.packageData.pmisFinalizeDate ? const_formatDate4(response.data.packageData.pmisFinalizeDate ) : 'Not Available');
+                // $('#completionDate').html(response.data.workList[0].completionDate != null? const_formatDate4(response.data.workList[0].completionDate) : 'Not Available');
+                // $('#deactivationDate').html(response.data.workList[0].deactivationDate != null?const_formatDate4(response.data.workList[0].deactivationDate):'Not Available');
+                // $('#approvalStatus').html(response.data.workList[0].approvalStatusName);
+                $('#workStatus').html(response.data.packageData.workStatusName);
+
+                // $('#roadName').html(response.data.workList[0].roadName);
+
+                // Road List
+                var loop_trHTMLactivity='';
+                var roadtthh='';
+                var loop_trHTML='';
+                vechicle_road_Tr='';
+                alertData='';
+                if (response.data.packageData.road.length > 0) {
+
+
+                    $.each(response.data.packageData.road, function (i, item) {
+                        // console.log("=====sanction:"+item.sanctionDate)
+                        var sanDate = (item.sanctionDate == null) ? 'N/A' : const_formatDate4(item.sanctionDate);
+                        road_trHTML +=
+                            '<tr><td>' +
+                            (i + 1) +
+                            '</td><td>' +
+                            item.roadName +
+                            '</td><td>' +
+                                sanDate +
+                            '</td><td>' +
+                            item.sanctionLength + " KM"+
+                            '</td></tr>';
+
+                            roadtthh ='<div class="heading"><span><strong>Road Name: '+ item.roadName +'</strong></span></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Road Name</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="RDNAME">'+item.roadName+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Sanction Date</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleTypeId">'+sanDate+'</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Sanction Length</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="sanclen">'+item.sanctionLength+'</span></p></div>';
+                        loop_trHTMLactivity='';
+                        $.each(item.activityList, function (z, item2) {
+                            var activityStartDate = (item2.activityStartDate == null) ? 'N/A' : const_formatDate4(item2.activityStartDate);
+                            var activityCompletionDate = (item2.activityCompletionDate == null) ? 'N/A' : const_formatDate4(item2.activityCompletionDate);
+
+                            loop_trHTMLactivity +=
+
+
+                            '<tr><td>' +
+                            (z + 1) +
+                            '</td><td>' +
+                                item2.activityName +
+                            '</td><td>' +
+
+                                activityStartDate +
+                            '</td><td>' +
+                                activityCompletionDate +
+                            '</td><td>' +
+                                item2.status +
+                            '</td></tr>';
+
+                            // vechicle_road_Tr='';
+                            // alertData='';
+                            if(item2.vehicleList.length>0){
+                                vechicle_road_Tr='';
+                                $.each(item2.vehicleList, function (zz, item3) {
+                                vechicle_road_Tr+= '<div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Vehicle No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleNo">'+item3.vehicleNo+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Vehicle Type</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleTypeId">'+item3.vehicleTypeName+'</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Owner Name</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="ownerName">'+item3.ownerName+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Speed Limit</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="speedLimit">'+item3.speedLimit+' KM</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Chassis No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="chassisNo">'+item3.chassisNo+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Engine No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="engineNo">'+item3.engineNo+'</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>IMEI</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="imeiNo1">'+item3.imeiNo1+'</span></p></div>';
+
+                            // loop_trHTML+='<div id="vehicleList"> <div class="heading"><span><strong>Vehicle Details</strong></span></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Vehicle No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleNo">'+item3.vehicleNo+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Vehicle Type</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleTypeId">'+item3.vehicleTypeName+'</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Owner Name</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="ownerName">'+item3.ownerName+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Speed Limit</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="speedLimit">'+item3.speedLimit+' KM</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Chassis No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="chassisNo">'+item3.chassisNo+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Engine No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="engineNo">'+item3.engineNo+'</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>IMEI</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="imeiNo1">'+item3.imeiNo1+'</span></p></div></div></div>';
+                            alertData='';
+                                $.each(item3.alertDataList, function (zzz, item4) {
+                                // alertData='';
+                                alertData +='<tr><td>'+(zzz+1)+'</td><td>'+item4.imei+'</td><td>'+item4.alertTypeName+'</td><td>'+const_formatDate4(item4.gpsDtm)+'</td><td>'+item4.latitude+'</td><td>'+item4.longitude+'</td></tr>'
+
+                                });
+                            });
+
+                            }
+                            else{
+                            // vechicle_road_Tr=  "<div id='vehicleList'><div class='heading'><span><strong>Vehicle Details</strong> </span></div><div class='row text-center' > No data</div> </div><div>"
+                            }
+
+
+                        });
+                        loop_trHTML+='<section class="roadcl">'
+                        //loop_trHTML += '<div id="Tests" style="border:2px solid red;">'
+                    loop_trHTML+='<div id="roadlistsList'+i +'" style="1px solid red;">'+ roadtthh +' </div>';
+                    loop_trHTML+='<div id="activityList">' +
+                    '<div class="heading"><span><strong>Activity Details</strong></span></div>' +
+                    '<table class="table table-centered mb-0 table-stripped" id="tablea">' +
+                        '<thead class="table-dark">' +
+                            '<tr>' +
+                            '<th>Sl No</th>' +
+                                '<th>Activity Name</th>' +
+                                '<th>Start Date</th>' +
+                                '<th>End Date</th>' +
+                                '<th>Status</th>' +
+                            '</tr>' +
+                    '</thead><tbody id="activityDetails">'+loop_trHTMLactivity +' </tbody></table>' +
+                    '</div>'
+                    //loop_trHTML+='</div>'
+                    loop_trHTML+='<div id="vehicleList"> <div class="heading"><span><strong>Vehicle Details</strong></span></div>'+ vechicle_road_Tr +'</div></div>';
+                    loop_trHTML+= '<div id="alertList">' +
+                    '<div class="heading"><span><strong>Alert Details</strong></span></div>' +
+                    '<table class="table table-centered mb-0 table-stripped" id="tablea">' +
+                        '<thead class="table-dark">' +
+                            '<tr>' +
+                                '<th>Sl No</th>' +
+                                '<th>IMEI</th>' +
+                                '<th>Alert Type</th>' +
+                                '<th>Date</th>' +
+                                '<th>Latitude</th>' +
+                                '<th>Longitude</th>' +
+                            '</tr>' +
+                        '</thead>' +
+                        '<tbody id="alertDetails">'+ alertData +'</tbody>' +
+                    '</table>' +
+                '</div>';
+                loop_trHTML+="</section>"
+                loop_trHTML+="<hr/>"
+                    $('#vehicleArea').html(loop_trHTML);
+
+                    });
+
+
+
+
+                    $('#roadDetails').html(road_trHTML);
+
+
+                // //Vehicle List
+                // if (response.data.packageData.road.length> 0) {
+                //     var activity_trHTML = '';
+                //     // console.log(response.data.packageData.vehicle.length);
+                //     $.each(response.data.packageData.road, function (i, item) {
+
+                //         // Activity Details
+
+                //         var actv = "";
+                //         // console.log(response.data.packageData.vehicle[i].activityList.length)
+                //         if (response.data.packageData.road[i].activityList.length > 0) {
+                //             var newA_I = 1;
+                //             $.each(response.data.packageData.road[i].activityList, function (iS, itemS) {
+
+                //                 actv +='<tr><td>'+newA_I+'</td><td>'+response.data.packageData.road[i].activityList[iS].activityName+'</td><td>'+response.data.packageData.road[i].activityList[iS].activityStartDate+'</td><td>'+response.data.packageData.road[i].activityList[iS].activityCompletionDate+'</td><td>'+response.data.packageData.road[i].activityList[iS].activityStatusName+'</td></tr>'
+                //                 newA_I++;
+                //             });
+
+                //         }else{
+                //             console.log("No Data")
+                //         }
+
+                //         // Activity Details
+
+                //         // Alert Details
+
+                //         var alrt = "";
+                //         // console.log(response.data.packageData.vehicle[i].activityList.length)
+                //         if (response.data.packageData.road[i].activityList[iS].length > 0) {
+                //             var newB_I = 1;
+                //             $.each(response.data.packageData.road[i].activityList[iS].vehicleList, function (iT, itemS) {
+
+                //                 alrt +='<tr><td>'+newB_I+'</td><td>'+response.data.road[i].activityList[iS].vehicleList[iT].vehicleName+'</td><td>'+response.data.road[i].activityList[iS].vehicleList[iT].vehicleName+'</td><td>'+response.data.road[i].activityList[iS].vehicleList[iT].vehicleName+'</td><td>'+response.data.road[i].activityList[iS].vehicleList[iT].vehicleName+'</td><td>'+response.data.road[i].activityList[iS].vehicleList[iT].vehicleName+'</td></tr>'
+                //                 newB_I++;
+                //             });
+
+                //         }else{
+                //             console.log("No Data")
+                //         }
+
+                //         // Alert Details
+
+                //         var activityDetailss = actv;
+                //         var alertDetailss = alrt;
+                //         // activity_trHTML +='<div id="vehicleList"> <div class="heading"><span><strong>Vehicle Details</strong></span></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Vehicle No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleNo">'+response.data.packageData.vehicle[i].vehicleNo+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Vehicle Type</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleTypeId">'+response.data.packageData.vehicle[i].vehicleTypeName+'</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Owner Name</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="ownerName">'+response.data.packageData.vehicle[i].ownerName+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Speed Limit</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="speedLimit">'+response.data.packageData.vehicle[i].speedLimit+' KM</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Chassis No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="chassisNo">'+response.data.packageData.vehicle[i].chassisNo+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Engine No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="engineNo">'+response.data.packageData.vehicle[i].engineNo+'</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>IMEI</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="imeiNo1">'+response.data.packageData.vehicle[i].imeiNo1+'</span></p></div></div></div><div id="activityList"> <div class="heading"><span><strong>Activity Details</strong></span></div><table class="table table-centered mb-0 table-stripped" id="tablea"> <thead class="table-dark"> <tr> <th>Sl No</th> <th>Activity Name</th> <th>Start Date</th> <th>End Date</th> <th>Status</th> </tr></thead> <tbody id="activityDetails"> '+activityDetailss+' </tbody> </table> </div><div id="alertList"> <div class="heading"><span><strong>Alert Details</strong></span></div><table class="table table-centered mb-0 table-stripped" id="tablea"> <thead class="table-dark"> <tr> <th>Sl No</th> <th>IMEI</th> <th>Alert Type</th> <th>Date</th> <th>Latitude</th> <th>Longitude</th> </tr></thead> <tbody id="alertDetails">'+alertDetailss+'</tbody> </table> </div>';
+                //         activity_trHTML +='<div id="vehicleList"> <div class="heading"><span><strong>Vehicle Details</strong></span></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Vehicle No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleNo">'+response.data.packageData.vehicle[i].vehicleNo+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Vehicle Type</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="vehicleTypeId">'+response.data.packageData.vehicle[i].vehicleTypeName+'</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Owner Name</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="ownerName">'+response.data.packageData.vehicle[i].ownerName+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Speed Limit</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="speedLimit">'+response.data.packageData.vehicle[i].speedLimit+' KM</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>Chassis No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="chassisNo">'+response.data.packageData.vehicle[i].chassisNo+'</span></p></div><div class="col-md-3"><p class="font-14 text-white-20"><strong>Engine No</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="engineNo">'+response.data.packageData.vehicle[i].engineNo+'</span></p></div></div><div class="row"> <div class="col-md-3"><p class="font-14 text-white-20"><strong>IMEI</strong></p></div><div class="col-md-3"><p class="font-14 text-white-20">: <span class="ms-2" id="imeiNo1">'+response.data.packageData.vehicle[i].imeiNo1+'</span></p></div></div></div><div id="activityList"> <div class="heading"><span><strong>Activity Details</strong></span></div><table class="table table-centered mb-0 table-stripped" id="tablea"> <thead class="table-dark"> <tr> <th>Sl No</th> <th>Activity Name</th> <th>Start Date</th> <th>End Date</th> <th>Status</th> </tr></thead> <tbody id="activityDetails"> '+activityDetailss+' </tbody> </table> </div><div id="alertList"> <div class="heading"><span><strong>Alert Details</strong></span></div><table class="table table-centered mb-0 table-stripped" id="tablea"> <thead class="table-dark"> <tr> <th>Sl No</th> <th>IMEI</th> <th>Alert Type</th> <th>Date</th> <th>Latitude</th> <th>Longitude</th> </tr></thead> <tbody id="alertDetails">'+alertDetailss+'</tbody> </table> </div>';
+                //     });
+                //     $('#vehicleArea').html(activity_trHTML)
+
+                // } else {
+                //     $('#vehicleArea').html(
+                //         '<div align="center">No Vehicle records</div>');
+                // }
+                //End Vehicle List
+
+
+                }
+
+            },
+            complete: function () {
+                $("#loadingDiv").hide();
+            },
+        });
+
+
+    });
+
+</script>

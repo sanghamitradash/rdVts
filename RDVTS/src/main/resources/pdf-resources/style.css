@@ -1,0 +1,73 @@
+/* Resetting default margin and padding */
+body,
+html {
+    margin: 0;
+    padding: 0;
+}
+
+/* Style for the package class */
+.package {
+    background-color: #333; /* Change this color to suit your design */
+    color: #fff; /* Text color */
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+/* Style for roadcl class */
+.roadcl {
+    border: 1px solid #b9b0b0;
+    background-color: lightgrey;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+/* Additional styles for specific elements */
+/* You can add more styles based on your requirements */
+
+/* Example for styling images */
+img {
+    max-width: 100%; /* Make sure images don't overflow their containers */
+}
+
+/* Example for table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Add more table styling if needed */
+}
+
+/* Example for table header styles */
+th {
+    background-color: #333;
+    color: #fff;
+    padding: 8px;
+}
+
+/* Example for table row styles */
+td {
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+/* You can target specific IDs and classes from your HTML here */
+
+/* IDs */
+#element-to-print {
+    /* Your styles here */
+}
+
+#package_details {
+    /* Your styles here */
+}
+
+/* Classes */
+.font-14 {
+    font-size: 14px;
+    /* Additional font styles */
+}
+
+.text-white-20 {
+    color: #fff; /* Change color as needed */
+    /* Additional styles */
+}

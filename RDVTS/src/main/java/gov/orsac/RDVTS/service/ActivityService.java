@@ -2,7 +2,6 @@ package gov.orsac.RDVTS.service;
 
 import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.dto.ActivityDto;
-import gov.orsac.RDVTS.dto.VehicleActivityMappingDto;
 import gov.orsac.RDVTS.entities.*;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,6 +61,10 @@ public interface ActivityService {
     List<ActivityAnalysisDto> getActivityAnalysisByPkgId(Integer userId, Integer packageId);
 
     List<ActivityStatusLogEntity> saveActivityStatusLog(List<ActivityStatusLogEntity> activityStatusLogEntity);
+
+    GeoMappingEntity assignWorkActivity(GeoMappingEntity geoMappingEntity);
+
+    List<ActivityPatchDetailsEntity> savePatchActivityDetails(List<ActivityPatchDetailsEntity> activityPatchDetailsEntityList);
 
 }
 

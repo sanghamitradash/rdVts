@@ -36,4 +36,7 @@ oiipcra-app:
   messages:
     record-not-found: "Record Not Found"
 
+    spring:
+      jpa:
+        open-in-view: false
 

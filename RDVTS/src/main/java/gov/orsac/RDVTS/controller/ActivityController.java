@@ -262,12 +262,13 @@ public class ActivityController {
     }
 
     @PostMapping("/assignWorkActivityMapping")
-    public RDVTSResponse updateWorkActivity(@RequestBody ActivityWorkDto activityWork) {
+    public RDVTSResponse assignWorkActivity(@RequestBody GeoMappingEntity geoMappingEntity) {
         RDVTSResponse response = new RDVTSResponse();
         Map<String, Object> result = new HashMap<>();
         try
         {
-            Integer updateWorkId = activityService.updateWorkActivity(activityWork);
+            GeoMappingEntity geoMapping = activityService.assignWorkActivity(geoMappingEntity);
+            result.put("geoMapping",geoMapping);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.CREATED));
@@ -535,12 +536,33 @@ public class ActivityController {
         Map<String, Object> result = new HashMap<>();
         try {
             List<ActivityStatusLogEntity> activityStatusLog = activityService.saveActivityStatusLog(activityStatusLogEntity);
-
             result.put("activityStatusLog", activityStatusLog);
             response.setData(result);
             response.setStatus(1);
             response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
             response.setMessage(" Activity Status log Saved Successfully");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response = new RDVTSResponse(0,
+                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR),
+                    ex.getMessage(),
+                    result);
+        }
+        return response;
+    }
+
+    @PostMapping("/savePatchActivityDetails")
+    public RDVTSResponse savePatchActivityDetails(@RequestBody List<ActivityPatchDetailsEntity> activityPatchDetailsEntityList) {
+        RDVTSResponse response = new RDVTSResponse();
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<ActivityPatchDetailsEntity> activityPatchDetails = activityService.savePatchActivityDetails(activityPatchDetailsEntityList);
+
+            result.put("activityPatchDetails", activityPatchDetails);
+            response.setData(result);
+            response.setStatus(1);
+            response.setStatusCode(new ResponseEntity<>(HttpStatus.OK));
+            response.setMessage(" Activity Patch Details Saved Successfully");
         } catch (Exception ex) {
             ex.printStackTrace();
             response = new RDVTSResponse(0,

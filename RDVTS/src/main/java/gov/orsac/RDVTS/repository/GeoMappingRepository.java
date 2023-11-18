@@ -11,12 +11,12 @@ import javax.transaction.Transactional;
 public interface GeoMappingRepository extends JpaRepository <GeoMappingEntity, Integer> {
 
 
-    @Transactional
-    @Modifying
-    @Query(
-            value = "truncate table rdvts_oltp.geo_mapping",
-            nativeQuery = true
-    )
-    void truncateMyTable();
+//    @Transactional
+//    @Modifying
+//    @Query(
+//            value = "truncate table rdvts_oltp.geo_mapping",
+//            nativeQuery = true
+//    )
+//    void truncateMyTable();
 
 }

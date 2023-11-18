@@ -25,6 +25,8 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     ActivityMasterRepository activityMasterRepository;
+    @Autowired
+    GeoMappingRepository geoMappingRepository;
 
 
     @Value("${accessImagePath}")
@@ -50,6 +52,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     ActivityStatusLogRepository activityStatusLogRepository ;
+
+    @Autowired
+    ActivityPatchDetailsRepository activityPatchDetailsRepository;
 
 
     @Override
@@ -247,6 +252,16 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public List<ActivityStatusLogEntity> saveActivityStatusLog(List<ActivityStatusLogEntity> activityStatusLogEntity) {
         return activityStatusLogRepository.saveAll(activityStatusLogEntity);
+    }
+
+    @Override
+    public List<ActivityPatchDetailsEntity> savePatchActivityDetails(List<ActivityPatchDetailsEntity> activityPatchDetailsEntityList) {
+        return activityPatchDetailsRepository.saveAll(activityPatchDetailsEntityList);
+    }
+
+    @Override
+    public GeoMappingEntity assignWorkActivity(GeoMappingEntity geoMappingEntity) {
+        return geoMappingRepository.save(geoMappingEntity);
     }
 
 

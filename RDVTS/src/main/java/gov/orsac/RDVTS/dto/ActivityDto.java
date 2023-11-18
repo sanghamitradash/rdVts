@@ -32,6 +32,7 @@ public class ActivityDto {
     private Integer activityStatus;
     private String activityStatusName;
     private Integer slNo;
+    private Integer roadId;
     private String roadName;
     private String status;
     private String workName;

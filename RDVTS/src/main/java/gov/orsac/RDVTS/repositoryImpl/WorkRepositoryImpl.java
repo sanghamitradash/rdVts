@@ -89,7 +89,8 @@ public class WorkRepositoryImpl {
 //                " where wm.is_active = true ";
 
 
-        String qry = "select  distinct pm.id,piu.name as piuName,pm.package_no as packageName," +
+        String qry = "select  distinct pm.id ,piu.id as piuId,piu.name as piuName,pm.package_no as packageName,rm.id as roadId, " +
+                "gm.dist_id,gm.pmis_finalize_date,gm.sanction_date, " +
                 " (case when (completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName, rm.road_name as roadName " +
                 " from rdvts_oltp.geo_mapping gm " +
                 "LEFT join rdvts_oltp.package_m pm on pm.id = gm.package_id " +

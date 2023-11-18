@@ -357,7 +357,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
 
         String qry = " select distinct activity.id as activityId,activity.activity_name,activityStatus.name as status,activity_start_date,\n" +
-                "activity_completion_date,actual_activity_start_date,actual_activity_completion_date from rdvts_oltp.activity_m as activity\n" +
+                "activity_completion_date,actual_activity_start_date,actual_activity_completion_date,geoMapping.road_id from rdvts_oltp.activity_m as activity\n" +
                 "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.activity_id=activity.id\n" +
                 "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
                 "where geoMapping.road_id=:roadId " ;
