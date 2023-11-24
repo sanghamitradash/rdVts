@@ -27,4 +27,8 @@ public class PackageDto
     private String workStatusName;
     //List<VehicleMasterDto> vehicle;
     List<RoadMasterDto> road;
+
+    private String awardDateStr;
+    private String pmisFinalizeDateStr;
+
 }

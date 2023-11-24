@@ -326,7 +326,7 @@ try{
         try{
             PackageDto pak = alertRepositoryImpl.getPackageData(filter);
             if(pak!=null){
-                List<RoadMasterDto> roadMasterDtoList=roadRepositoryImpl.getRoadByPackageIdAndRoadId(filter.getPackageId(),filter.getRoadId());
+                List<RoadMasterDto> roadMasterDtoList=roadRepositoryImpl.getRoadNameByPackageIdAndRoadId(filter.getPackageId(),filter.getRoadId());
                 if(roadMasterDtoList!=null && !roadMasterDtoList.isEmpty()) {
                     for (RoadMasterDto road : roadMasterDtoList) {
                       List<ActivityDto> activityDtoList=alertRepositoryImpl.getActivityByRoadId(pak.getPackageId(),road.getId(),filter.getActivityId());

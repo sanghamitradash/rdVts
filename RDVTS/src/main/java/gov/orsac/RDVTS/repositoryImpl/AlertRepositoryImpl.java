@@ -4,6 +4,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertTypeEntity;
 import gov.orsac.RDVTS.entities.WorkCronEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -978,7 +979,7 @@ public class AlertRepositoryImpl {
 
 
     }
-    public PackageDto getPackageData(AlertFilterDto filter) {
+    public PackageDto getPackageDataDetails(Integer packageNumber) {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
 
         String qry = "select distinct package.id as packageId,package.package_no as packageNo,piu.name as piuName, " +
@@ -986,7 +987,7 @@ public class AlertRepositoryImpl {
                 "from rdvts_oltp.package_m as package " +
                 "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.package_id=package.id " +
                 "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id  where package.id=:packageId and geoMapping.award_date is not null" ;
-        sqlParam.addValue("packageId", filter.getPackageId());
+        sqlParam.addValue("packageId", packageNumber);
 
 //        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 //        if (filter.getStartDate() != null && !filter.getStartDate().isEmpty()) {
@@ -1104,7 +1105,7 @@ public class AlertRepositoryImpl {
         MapSqlParameterSource sqlParam=new MapSqlParameterSource();
 
         String qry = "select distinct activityStatus.name as status,\n" +
-                "activity.id,COALESCE(activity.activity_name,' ') as activityName,activity_start_date,activity_completion_date,actual_activity_start_date,actual_activity_completion_date,roadm.road_name\n" +
+                "activity.id,COALESCE(activity.activity_name,' ') as activityName,activity_start_date,activity_completion_date,actual_activity_start_date,actual_activity_completion_date,road.road_name\n" +
                 "from rdvts_oltp.geo_mapping as geoMapping\n" +
                 "left join rdvts_oltp.activity_m as activity on geoMapping.activity_id=activity.id\n" +
                 "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
@@ -1201,4 +1202,191 @@ public class AlertRepositoryImpl {
 
 //    public List<AlertCountDto> getTotalAlertToday(int id) {
 //    }
+
+
+
+    public PackageDto getPackageData(AlertFilterDto filter) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = "select distinct package.id as packageId,package.package_no as packageNo,piu.name as piuName, " +
+                "geoMapping.award_date,geoMapping.pmis_finalize_date,geoMapping.completion_date,(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName " +
+                "from rdvts_oltp.package_m as package " +
+                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.package_id=package.id " +
+                "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id  where package.id=:packageId and geoMapping.award_date is not null" ;
+        sqlParam.addValue("packageId", filter.getPackageId());
+
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//        if (filter.getStartDate() != null && !filter.getStartDate().isEmpty()) {
+//            qry += " AND date(contract.contract_date) >= :uploadFromDate";
+//            Date uploadFromDate = null;
+//            try {
+//                uploadFromDate = format.parse(filter.getStartDate());
+//            } catch (Exception exception) {
+//                log.info("From Date Parsing exception : {}", exception.getMessage());
+//            }
+//            sqlParam.addValue("uploadFromDate", uploadFromDate, Types.DATE);
+//        }
+//        if (filter.getEndDate() != null && !filter.getEndDate().isEmpty()) {
+//            qry += " AND date(contract.contract_date) <= :uploadToDate";
+//            Date uploadToDate = null;
+//            try {
+//                uploadToDate = format.parse(filter.getEndDate());
+//            } catch (Exception exception) {
+//                log.info("To Date Parsing exception : {}", exception.getMessage());
+//            }
+//            sqlParam.addValue("uploadToDate", uploadToDate, Types.DATE);
+//        }
+
+        try
+        {
+            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(PackageDto.class));
+        }
+        catch (Exception exception)
+        {
+            return null;
+        }
+    }
+
+    public PackageDto getPackageById(Integer packageNumber) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = "select distinct package.id as packageId,package.package_no as packageNo, "+ "piu.name as piuName, " +
+                "geoMapping.award_date as awardDateStr,geoMapping.pmis_finalize_date as pmisFinalizeDateStr, " + "geoMapping.completion_date, " + "(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName " +
+                "from rdvts_oltp.package_m as package " +
+                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.package_id=package.id " +
+                "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id  where package.id=:packageId and geoMapping.award_date is not null" ;
+        sqlParam.addValue("packageId", packageNumber);
+        try
+        {
+            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(PackageDto.class));
+        }
+        catch (Exception exception)
+        {
+            return null;
+        }
+
+    }
+
+    public List<ActivityDto> getActivityByRoadId(Integer packageId) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = "select distinct activityStatus.name as status,\n" +
+                "activity.id,COALESCE(activity.activity_name,' ') as activityName,activity_start_date as activityStartDateStr,activity_completion_date as activityCompletionDateStr, actual_activity_start_date," +
+                "actual_activity_completion_date\n" +
+                "from rdvts_oltp.geo_mapping as geoMapping\n" +
+                "left join rdvts_oltp.activity_m as activity on geoMapping.activity_id=activity.id\n" +
+                "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
+                "left join rdvts_oltp.road_m as roadm on roadm.id = geoMapping.road_id\n" +
+                "where geoMapping.package_id=:packageId" ;
+        sqlParam.addValue("packageId", packageId);
+
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public List<ActivityDto> getActivityDetailsByRoadId(Integer packageId, Integer roadId, Integer activityId) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+        String qry = "select distinct activityStatus.name as status,\n" +
+                "activity.id,COALESCE(activity.activity_name,' ') as activityName,activity_start_date as activityStartDateStr," +
+                "activity_completion_date as activityCompletionDateStr," +
+                "actual_activity_start_date," +
+                "actual_activity_completion_date," +
+                "roadm.road_name\n" +
+                "from rdvts_oltp.geo_mapping as geoMapping\n" +
+                "left join rdvts_oltp.activity_m as activity on geoMapping.activity_id=activity.id\n" +
+                "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
+                "left join rdvts_oltp.road_m as roadm on roadm.id = geoMapping.road_id\n" +
+                "where geoMapping.road_id= :roadId and geoMapping.package_id=:packageId" ;
+        sqlParam.addValue("roadId", roadId);
+        sqlParam.addValue("packageId", packageId);
+
+        if(activityId!=null && activityId>0)
+        {
+            qry+= " and activity.id= :activityId";
+            sqlParam.addValue("activityId", activityId);
+        }
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public List<VehicleMasterDto> getVehicleDetailsByActivityId(Integer packageId, Integer activityId, Integer vehicleId, Integer roadId, String activityStartDate, String activityendDate) {
+        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+//        String qry = " select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no,model,device.imei_no_1 as imeiNo1 from rdvts_oltp.vehicle_m as vehicle\n" +
+//                "left join rdvts_oltp.vehicle_activity_mapping as vehicleActivity on vehicleActivity.vehicle_id=vehicle.id\n" +
+//                "left join rdvts_oltp.vehicle_type as type on type.id=vehicle.vehicle_type_id\n" +
+//                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vehicle.id\n" +
+//                "left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id\n" +
+//                "left join rdvts_oltp.vehicle_device_mapping as vehicleDevice on vehicleDevice.vehicle_id=vehicle.id\n" +
+//                "left join rdvts_oltp.device_m as device on device.id=vehicleDevice.device_id\n" +
+//                "left join rdvts_oltp.geo_mapping as gm on gm.id=vehicleActivity.geo_mapping_id" +
+//                " where  vehicle.is_active=true and vehicleActivity.is_active=true and type.is_active=true \n" +
+//                " and owner.is_active=true and contractor.is_active=true and vehicleDevice.is_active=true and device.is_active=true \n" +
+//                " and gm.activityId=:activityId and gm.packageId=:packageId" ;
+
+        String qry = "select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no," +
+                " model,device.imei_no_1 as imeiNo1" +
+                " from rdvts_oltp.geo_mapping as geoMapping" +
+                " left join rdvts_oltp.activity_m as am on geoMapping.activity_id = am.id" +
+                " left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id = geoMapping.activity_status" +
+                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = geoMapping.id" +
+                " left join rdvts_oltp.vehicle_m as vehicle on vam.vehicle_id = vehicle.id" +
+                " left join rdvts_oltp.vehicle_type as type on type.id = vehicle.vehicle_type_id" +
+                " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id = vehicle.id" +
+                " left join rdvts_oltp.contractor_m as contractor on contractor.id = owner.contractor_id" +
+                " left join rdvts_oltp.vehicle_device_mapping as vehicleDevice on vehicleDevice.vehicle_id = vehicle.id" +
+                " left join rdvts_oltp.device_m as device on device.id = vehicleDevice.device_id" +
+                " where geoMapping.is_active=true" +
+                " and geoMapping.package_id=:packageId and geoMapping.activity_id=:activityId  and vam.vehicle_id is not null " +
+                "and vehicleDevice.is_active = true and geoMapping.is_active = true and owner.is_active = true ";
+
+
+//        String qry = " select distinct vam.vehicle_id,vehicle.vehicle_no, " +
+//                " type.name as vehicleTypeName,contractor.name as ownerName,vehicle.speed_limit,vehicle.chassis_no,vehicle.engine_no,vehicle.model,device.imei_no_1 as imeiNo1 " +
+//                " from rdvts_oltp.vehicle_activity_mapping as vam " +
+//                " left join rdvts_oltp.geo_mapping as geoMapping on vam.geo_mapping_id=geoMapping.id and geoMapping.is_active=true " +
+//                " left join rdvts_oltp.vehicle_m as vehicle on vehicle.id=vam.vehicle_id " +
+//                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id=vam.vehicle_id " +
+//                " left join rdvts_oltp.device_m as device on device.id=vdm.device_id " +
+//                " left join rdvts_oltp.vehicle_type as type on type.id = vehicle.vehicle_type_id " +
+//                " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id = vehicle.id " +
+//                " left join rdvts_oltp.contractor_m as contractor on contractor.id = owner.contractor_id " +
+//                " where vam.is_active=true and geoMapping.package_id=:packageId and geoMapping.road_id=:roadId  and geoMapping.activity_id=:activityId " +
+//                " order by vam.vehicle_id";
+
+        sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("packageId", packageId);
+        sqlParam.addValue("roadId", roadId);
+
+        if(vehicleId!=null && vehicleId>0)
+        {
+            qry+= " and vehicle.id= :vehicleId";
+            sqlParam.addValue("vehicleId", vehicleId);
+        }
+//        if(startDate!=null && !startDate.isEmpty())
+//        {
+//            qry+= " and vehicleDevice.installation_date = :startDate";
+//            sqlParam.addValue("startDate", startDate);
+//        }
+//        if(endDate!=null && !endDate.isEmpty())
+//        {
+//            qry+= " and vehicleDevice.unassigned_date = :endDate";
+//            sqlParam.addValue("endDate", endDate);
+//        }else{
+//            qry+= " and vehicleDevice.installation_date= now()";
+//        }
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
 }
+

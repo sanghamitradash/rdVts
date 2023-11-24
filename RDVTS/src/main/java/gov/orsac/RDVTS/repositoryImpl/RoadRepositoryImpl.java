@@ -2,11 +2,8 @@ package gov.orsac.RDVTS.repositoryImpl;
 
 import gov.orsac.RDVTS.dto.GeoMasterDto;
 import gov.orsac.RDVTS.dto.RoadMasterDto;
-import gov.orsac.RDVTS.dto.VehicleWorkMappingDto;
 import gov.orsac.RDVTS.dto.*;
-import gov.orsac.RDVTS.entities.RoadEntity;
 import gov.orsac.RDVTS.entities.RoadLocationEntity;
-import gov.orsac.RDVTS.repository.RoadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -18,7 +15,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class RoadRepositoryImpl {
@@ -633,7 +629,7 @@ public class RoadRepositoryImpl {
         String query = "select distinct road.id as id,road_name as roadName,road.sanction_date as sanctionDate, " +
                 "COALESCE(road.sanction_length,0)as sanctionLength " +
                 "from rdvts_oltp.road_m as road " +
-                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.road_id=road.id where geoMapping.package_id=:packageId ";
+                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.road_id=road.id where geoMapping.package_id=:packageId and road.id=:roadId";
 
         sqlParam.addValue("packageId", packageId);
         if (roadId!=null && roadId>0)
@@ -651,36 +647,74 @@ public class RoadRepositoryImpl {
         }
         return road;
     }
-}
 
+//    public List<RoadMasterDto> getPackageByNumber(Integer packageId) {
+//        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+//        List<RoadMasterDto> road;
+//        String query = "select distinct road.id as id,road_name as roadName,road.sanction_date as sanctionDate, " +
+//                "COALESCE(road.sanction_length,0)as sanctionLength " +
+//                "from rdvts_oltp.road_m as road " +
+//                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.road_id=road.id where geoMapping.package_id=:packageId ";
 //
-//        update+="UPDATE public.asset set geom = ST_GeomFromText('".$str."',4326),length = ST_Length(st_transform(ST_GeomFromText('".$str."',4326),32645))/1000 where id=:roadId"
-//
-//        update += " UPDATE rdvts_oltp.geo_construction_m " +
-//                "  SET geom=st_setsrid(ST_GeomFromText('" + latitude + "', '" + latitude +"'),4326)  " +
-//                "  WHERE id=:roadId and is_active=true";
-//
-//        sqlParam.addValue("roadId", roadId);
-//        sqlParam.addValue("latitude", latitude);
-//        sqlParam.addValue("longitude", longitude);
-//        sqlParam.addValue("userId", userId);
-//        return namedJdbc.update(update, sqlParam);
+//        sqlParam.addValue("packageId", packageId);
+//        try
+//        {
+//            road = namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
+//        }
+//        catch (EmptyResultDataAccessException e)
+//        {
+//            return null;
+//        }
+//        return road;
 //    }
-//}
-//if($geom_type == 'Line')
-//        {
-//        $sql = "select * from public.asset_boundary where asset_id='".$asset_id."'";
-//        $result = $this->db->query($sql)->result();
-//        if(count($result)>1)
-//        {
-//        $str = "LINESTRING(";
-//        for($i=0;$i<count($result);$i++)
-//        {
-//        $str = $str.$result[$i]->longitude." ".$result[$i]->latitude.",";
-//        }
-//        $str = substr($str,0,-1);
-//        $str = $str.")";
-//        $update = "UPDATE public.asset set geom = ST_GeomFromText('".$str."',4326),length = ST_Length(st_transform(ST_GeomFromText('".$str."',4326),32645))/1000 where id='".$asset_id."'";
-//        $this->db->query($update);
-//        }
-//        }
+
+    public List<RoadMasterDto> getRoadDetails(Integer packageId, Integer roadId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        List<RoadMasterDto> road;
+        String query = "select distinct road.id as road_id,road.road_name, road.sanction_date as sanctionDateStr, road.sanction_length as road_length\n" +
+                "from rdvts_oltp.package_m as pm\n" +
+                "left join rdvts_oltp.geo_mapping as gm on gm.package_id = pm.id and gm.is_active ='true'\n" +
+                "left join rdvts_oltp.road_m as road on road.id = gm.road_id and road.is_active= 'true'\n" +
+                "where road.is_active = 'true' and pm.id =:packageId";
+
+        sqlParam.addValue("packageId", packageId);
+        try
+        {
+            road = namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
+        }
+        catch (EmptyResultDataAccessException e)
+        {
+            return null;
+        }
+        return road;
+    }
+
+    public List<RoadMasterDto> getRoadNameByPackageIdAndRoadId(Integer packageId, Integer roadId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        List<RoadMasterDto> road;
+        String query = "select distinct road.id as id,road_name as roadName,road.sanction_date as sanctionDateStr, " +
+                "COALESCE(road.sanction_length,0)as sanctionLength " +
+                "from rdvts_oltp.road_m as road " +
+                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.road_id=road.id where geoMapping.package_id=:packageId and road.id=:roadId";
+
+        sqlParam.addValue("packageId", packageId);
+        if (roadId!=null && roadId>0)
+        {
+            query+= " and road.id = :roadId";
+            sqlParam.addValue("roadId", roadId);
+        }
+        try
+        {
+            road = namedJdbc.query(query, sqlParam, new BeanPropertyRowMapper<>(RoadMasterDto.class));
+        }
+        catch (EmptyResultDataAccessException e)
+        {
+            return null;
+        }
+        return road;
+    }
+    }
+
+
+
+

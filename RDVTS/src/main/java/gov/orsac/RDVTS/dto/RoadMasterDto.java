@@ -84,4 +84,7 @@ public class RoadMasterDto {
 
     private String vehicleName;
     private List<ActivityDto> activityList;
+
+    private String sanctionDateStr;
+
 }

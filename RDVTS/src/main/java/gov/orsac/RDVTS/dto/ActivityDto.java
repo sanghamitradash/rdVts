@@ -52,4 +52,7 @@ public class ActivityDto {
 
 
     List<VehicleActivityMappingEntity> vehicleActivity;
+
+    private String activityStartDateStr;
+    private String activityCompletionDateStr;
 }
