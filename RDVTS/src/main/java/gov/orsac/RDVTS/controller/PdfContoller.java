@@ -13,20 +13,16 @@ import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/pdf")
+@CrossOrigin("*")
 
 public class PdfContoller {
     @Autowired
     private PdfService pdfService;
     @PostMapping("/createPdf")
-    public void generatePdf(HttpServletResponse exportResponse, @RequestParam(value = "packageNumber",required = false)Integer packageNumber,
-                            @RequestParam(value = "roadId",required = false)Integer roadId,
-                            @RequestParam(value = "activityId",required = false)Integer activityId,
-                            @RequestParam(value = "vehicleId",required = false)Integer vehicleId,
-                            @RequestParam(value = "activityStartDate",required = false)String activityStartDate,
-                            @RequestParam(value = "activityEndDate",required = false)String activityEndDate)
+    public void generatePdf(HttpServletResponse exportResponse, @RequestBody AlertFilterDto filter)
     {
         try {
-            Path file = Paths.get(pdfService.generatePdf(exportResponse,packageNumber, roadId,activityId, vehicleId, activityStartDate,activityEndDate ).getAbsolutePath());
+            Path file = Paths.get(pdfService.generatePdf(exportResponse,filter).getAbsolutePath());
             if(Files.exists(file)){
                 exportResponse.setContentType("application/pdf");
                 exportResponse.addHeader("Content-Disposition", "attachment; filename"+ file.getFileName());

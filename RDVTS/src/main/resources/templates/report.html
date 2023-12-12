@@ -52,6 +52,24 @@
   background-color: #f2f2f2;
 }
 
+.table {
+            -fs-table-paginate: paginate;
+        }
+
+   @page {
+  @top-right {
+    content: "Page " counter(page) " of " counter(pages);
+  }
+}
+
+@page {
+        @bottom-right {
+            content: element(footer);
+        }
+    }
+
+
+
 
     </style>
 </head>
@@ -61,11 +79,14 @@
 
     <br />
     <div id="element-to-print">
-        <table>
-            <tr>
-                <td style="text-align:left;border-style: none;text-align:center;"><img src="../assets/images/logo-pdf.png" /></td>
-            </tr>
-        </table>
+<!--        <table>-->
+<!--            <tr>-->
+<!--                <td style="text-align:center;border-style: none;text-align:center !important;"><img src="/Users/orsac/Downloads/RD_VTS_Backend/RDVTS/src/main/resources/image/logo-pdf.png" /></td>-->
+<!--            </tr>-->
+<!--        </table>-->
+        <div style="text-align:center;">
+            <img src="../pdf-resources/images/logo-pdf.png" />
+        </div>
 
        <div id="package_details">
             <div class="heading package" ><span><strong>Package Details</strong></span></div>
@@ -162,7 +183,7 @@
             </table>
         <br/>
 
-                <div id="">
+                <div id="vehicle_details">
                     <div class="heading package"><span><strong>Vehicle Details</strong></span></div>
 
                     <table style="width:100%;!important">
@@ -198,6 +219,7 @@
 
                         </tr>
                     </table>
+                </div>
                     <br/>
 
 

@@ -35,4 +35,7 @@ public class AlertDto {
     private Integer count;
     private Integer slNo;
 
+   private String gpsDtmStr;
+
+
 }

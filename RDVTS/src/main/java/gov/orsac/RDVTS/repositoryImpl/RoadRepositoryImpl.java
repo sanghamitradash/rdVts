@@ -695,7 +695,7 @@ public class RoadRepositoryImpl {
         String query = "select distinct road.id as id,road_name as roadName,road.sanction_date as sanctionDateStr, " +
                 "COALESCE(road.sanction_length,0)as sanctionLength " +
                 "from rdvts_oltp.road_m as road " +
-                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.road_id=road.id where geoMapping.package_id=:packageId and road.id=:roadId";
+                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.road_id=road.id where geoMapping.package_id=:packageId and road.sanction_date is not null ";
 
         sqlParam.addValue("packageId", packageId);
         if (roadId!=null && roadId>0)
@@ -713,7 +713,8 @@ public class RoadRepositoryImpl {
         }
         return road;
     }
-    }
+
+}
 
 
 

@@ -4,9 +4,7 @@ import gov.orsac.RDVTS.dto.*;
 import gov.orsac.RDVTS.entities.AlertTypeEntity;
 import gov.orsac.RDVTS.entities.WorkCronEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -68,7 +66,7 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
                 "where awm.is_active=true and wm.id=:workId and ad.gps_dtm >=:currentDateTime::timestamp  ";
         sqlParam.addValue("workId", id);
-        sqlParam.addValue("currentDateTime",currentDateTime);
+        sqlParam.addValue("currentDateTime", currentDateTime);
 
 //        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
 //            qry += " AND ad.alert_type_id=:alertTypeId ";
@@ -105,6 +103,7 @@ public class AlertRepositoryImpl {
 //        List<AlertCountDto> list = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
 //        return new PageImpl<>(list, pageable, resultCount);
     }
+
     public List<AlertCountDto> getTotalAlertWork(/*AlertFilterDto filterDto,*/ Integer id, Integer userId) {
 //        PageRequest pageable = null;
 //
@@ -123,7 +122,7 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.device_m as dm on vdm.device_id=dm.id and dm.is_active=true " +
                 "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
-                "where awm.is_active=true and wm.id=:workId  "  ;
+                "where awm.is_active=true and wm.id=:workId  ";
         sqlParam.addValue("workId", id);
 //        if (filterDto.getAlertTypeId() != null && filterDto.getAlertTypeId() > 0) {
 //            qry += " AND ad.alert_type_id=:alertTypeId ";
@@ -150,7 +149,7 @@ public class AlertRepositoryImpl {
 //            }
 //            sqlParam.addValue("endDate", endDate, Types.DATE);
 //        }
-        return  namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertCountDto.class));
 
 //        resultCount = count(qry, sqlParam);
 //        if (filterDto.getLimit() > 0){
@@ -168,40 +167,38 @@ public class AlertRepositoryImpl {
 //        (select activity_id from rdvts_oltp.activity_work_mapping where work_id in (select id from rdvts_oltp.work_m))))) and date(created_on)=date(now())
 
 
+    public Boolean checkAlertExists(Long imei, Integer noDataAlertId) {
 
-    public Boolean checkAlertExists(Long imei, Integer noDataAlertId){
-
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
 
         currentDateTime = currentDateTime + " 00:00:00";
-        AlertDto alertDto=new AlertDto();
+        AlertDto alertDto = new AlertDto();
         String qry = " select case when count(*) >0 then true else false  end as bool FROM rdvts_oltp.alert_data  " +
-                "WHERE imei=:imei AND alert_type_id=:noDataAlertId AND gps_dtm >=:currentDateTime::timestamp AND is_resolve = false  " ;
+                "WHERE imei=:imei AND alert_type_id=:noDataAlertId AND gps_dtm >=:currentDateTime::timestamp AND is_resolve = false  ";
 
-        sqlParam.addValue("currentDateTime",currentDateTime);
+        sqlParam.addValue("currentDateTime", currentDateTime);
         sqlParam.addValue("imei", imei);
-        sqlParam.addValue("noDataAlertId",noDataAlertId);
+        sqlParam.addValue("noDataAlertId", noDataAlertId);
         return namedJdbc.queryForObject(qry, sqlParam, (Boolean.class));
 
 
         //return locationDto;
 
 
-
         //return true;
     }
 
-    public Boolean updateResolve(Long imei1, Integer noDataAlertId){
+    public Boolean updateResolve(Long imei1, Integer noDataAlertId) {
 
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = "Update rdvts_oltp.alert_data al  SET is_resolve = true WHERE al.imei =:imei and al.alert_type_id =:noDataAlertId " ;
+        String qry = "Update rdvts_oltp.alert_data al  SET is_resolve = true WHERE al.imei =:imei and al.alert_type_id =:noDataAlertId ";
 
 
         sqlParam.addValue("imei", imei1);
-        sqlParam.addValue("noDataAlertId",noDataAlertId);
+        sqlParam.addValue("noDataAlertId", noDataAlertId);
         int update = namedJdbc.update(qry, sqlParam);
         boolean result = false;
         if (update > 0) {
@@ -212,7 +209,7 @@ public class AlertRepositoryImpl {
     }
 
     public List<Long> getImeiForNoMovement() {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
 
@@ -223,17 +220,17 @@ public class AlertRepositoryImpl {
                 " JOIN (select * from rdvts_oltp.vtu_location  " +
                 "  Where id IN (Select max(id) from rdvts_oltp.vtu_location where gps_fix::numeric=1 group by imei) and gps_fix::numeric=1 " +
                 " AND date_time >=:currentDateTime::timestamp " +
-                "  order by id desc) as l ON l.imei = tl.imei_no_1 " ;
-        sqlParam.addValue("currentDateTime",currentDateTime);
+                "  order by id desc) as l ON l.imei = tl.imei_no_1 ";
+        sqlParam.addValue("currentDateTime", currentDateTime);
 
 
-        return namedJdbc.queryForList(qry, sqlParam,Long.class);
+        return namedJdbc.queryForList(qry, sqlParam, Long.class);
     }
 
-    public List<VtuLocationDto> getLocationRecordByFrequency(Long imei1,Integer recordLimit, Date startTime, Date endTime) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+    public List<VtuLocationDto> getLocationRecordByFrequency(Long imei1, Integer recordLimit, Date startTime, Date endTime) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "SELECT * FROM rdvts_oltp.vtu_location where imei =:imei1  and gps_fix::numeric=1" +
-                "     and date_time between :startTime and :endTime ORDER BY date_time ASC limit :recordLimit" ;
+                "     and date_time between :startTime and :endTime ORDER BY date_time ASC limit :recordLimit";
 
         sqlParam.addValue("imei1", imei1);
         sqlParam.addValue("recordLimit", recordLimit);
@@ -244,55 +241,55 @@ public class AlertRepositoryImpl {
     }
 
     public List<BufferDto> getBuffer(Long item) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-        String qry = "" ;
-       // sqlParam.addValue("imei1", 864180069579428);
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "";
+        // sqlParam.addValue("imei1", 864180069579428);
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(BufferDto.class));
     }
 
     public Boolean checkIntersected(String longitude, String latitude, String vtuItemLongitude, String vtuItemLatitude) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-        String qry = "SELECT ST_Intersects(st_setsrid(st_geomfromtext(st_astext(ST_BUFFER( ST_SetSRID(ST_MakePoint("+longitude+", "+latitude+"),4326)::geography,100)::geometry)),4326), " +
-                "                                'SRID=4326;POINT("+vtuItemLongitude+" "+vtuItemLatitude+" )'::geometry)" ;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT ST_Intersects(st_setsrid(st_geomfromtext(st_astext(ST_BUFFER( ST_SetSRID(ST_MakePoint(" + longitude + ", " + latitude + "),4326)::geography,100)::geometry)),4326), " +
+                "                                'SRID=4326;POINT(" + vtuItemLongitude + " " + vtuItemLatitude + " )'::geometry)";
 
 //        sqlParam.addValue("roadBuffer", roadBuffer);
 //        sqlParam.addValue("latitude", latitude);
 //        sqlParam.addValue("longitude", longitude);
 
-        return namedJdbc.queryForObject(qry, sqlParam,(Boolean.class));
+        return namedJdbc.queryForObject(qry, sqlParam, (Boolean.class));
     }
 
     public Boolean bufferQuery(String bufferPointLongitude, String bufferPointLatitude, String longitude, String latitude) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-        String qry = "SELECT ST_Intersects(st_buffer(st_setsrid(st_makepoint("+bufferPointLongitude+","+bufferPointLatitude+"),4326)::geography,100)::geometry, " +
-                "   'SRID=4326;POINT("+longitude+" "+latitude+" )'::geometry) as inFlag" ;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT ST_Intersects(st_buffer(st_setsrid(st_makepoint(" + bufferPointLongitude + "," + bufferPointLatitude + "),4326)::geography,100)::geometry, " +
+                "   'SRID=4326;POINT(" + longitude + " " + latitude + " )'::geometry) as inFlag";
 
 //        sqlParam.addValue("roadBuffer", roadBuffer);
 //        sqlParam.addValue("latitude", latitude);
 //        sqlParam.addValue("longitude", longitude);
 
-        return namedJdbc.queryForObject(qry, sqlParam,(Boolean.class));
+        return namedJdbc.queryForObject(qry, sqlParam, (Boolean.class));
     }
 
     public Boolean checkGeoFenceIntersected(String geom, String longitude, String latitude) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-        String geomText ="'"+geom+"'";
-        String qry = "  select ST_Intersects(st_setsrid(st_geomfromtext(  st_astext(ST_BUFFER("+geomText+"::geography,50)::geometry)  " +
-                " ),4326),  'SRID=4326;POINT("+longitude+" "+latitude+" )'::geometry) as inFlag" ;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String geomText = "'" + geom + "'";
+        String qry = "  select ST_Intersects(st_setsrid(st_geomfromtext(  st_astext(ST_BUFFER(" + geomText + "::geography,50)::geometry)  " +
+                " ),4326),  'SRID=4326;POINT(" + longitude + " " + latitude + " )'::geometry) as inFlag";
 
-        return namedJdbc.queryForObject(qry, sqlParam,(Boolean.class));
+        return namedJdbc.queryForObject(qry, sqlParam, (Boolean.class));
 
 
         //return null;
     }
 
     public List<AlertDto> getAllDeviceByVehicle() {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = " SELECT distinct vm.id, vm.speed_limit as speedLimit, vdm.vehicle_id as vehicleId,vdm.device_id as deviceId,dm.imei_no_1 as imei" +
                 " FROM rdvts_oltp.vehicle_m vm " +
                 "  join rdvts_oltp.vehicle_device_mapping vdm on vdm.vehicle_id=vm.id " +
-                "  join rdvts_oltp.device_m dm on vdm.device_id= dm.id" ;
+                "  join rdvts_oltp.device_m dm on vdm.device_id= dm.id";
 
         return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
     }
@@ -313,12 +310,12 @@ public class AlertRepositoryImpl {
 //        DateTime dateTime = new DateTime();
 //        dateTime = dateTime.minusMinutes(5);
 //        Date modifiedDate = dateTime.toDate();
-        Date currentDate=new Date();
+        Date currentDate = new Date();
 
 
         qry += "   AND date_time BETWEEN :startTime AND :startTime  order by date_time ASC ";
         sqlParam.addValue("imei1", imei);
-        sqlParam.addValue("currentDateTime",currentDateTime);
+        sqlParam.addValue("currentDateTime", currentDateTime);
 
         sqlParam.addValue("currentDateMinus", currentDateMinus);
         sqlParam.addValue("speedLimit", speedLimit);
@@ -327,26 +324,26 @@ public class AlertRepositoryImpl {
         sqlParam.addValue("endTime", endTime);
 
 
-        List<VtuLocationDto> vtuLocationDtoList= namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
-      return vtuLocationDtoList;
+        List<VtuLocationDto> vtuLocationDtoList = namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VtuLocationDto.class));
+        return vtuLocationDtoList;
 
 
     }
 
     public AlertTypeEntity getAlertTypeDetails(int i) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-        String qry = "SELECT * FROM rdvts_oltp.alert_type_m where is_active=true and id=:id" ;
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT * FROM rdvts_oltp.alert_type_m where is_active=true and id=:id";
 
         sqlParam.addValue("id", i);
 
-        return namedJdbc.queryForObject(qry, sqlParam,new BeanPropertyRowMapper<>(AlertTypeEntity.class));
+        return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(AlertTypeEntity.class));
     }
 
 
     public List<AlertTypeEntity> getAlertTypeDetails() {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-        String qry = "SELECT * FROM rdvts_oltp.alert_type_m where is_active=true " ;
-        return namedJdbc.query(qry, sqlParam,new BeanPropertyRowMapper<>(AlertTypeEntity.class));
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        String qry = "SELECT * FROM rdvts_oltp.alert_type_m where is_active=true ";
+        return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertTypeEntity.class));
     }
 
     public Page<AlertCountDto> getAlertToday(AlertFilterDto filterDto) {
@@ -357,11 +354,11 @@ public class AlertRepositoryImpl {
         currentDateTime = currentDateTime + " 00:00:00";
         PageRequest pageable = null;
 
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
+        pageable = PageRequest.of(filterDto.getDraw() - 1, filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
-        int resultCount=0;
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        int resultCount = 0;
         String qry = " select distinct wm.id as workId, ad.id as alertId, ad.alert_type_id as alertTypeId,atm.alert_type as alertType, ad.latitude, ad.longitude, ad.accuracy, ad.speed, ad.altitude, \n" +
                 "ad.gps_dtm as gpsDtm, ad.is_resolve as isResolve, ad.resolved_by as resolvedBy, count(ad.id) over (partition by ad.alert_type_id,wm.id) " +
                 "from rdvts_oltp.work_m as wm " +
@@ -372,7 +369,7 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.alert_data as ad on dm.imei_no_1=ad.imei and dm.is_active=true " +
                 "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id " +
                 "where awm.is_active=true and ad.gps_dtm >=:currentDateTime::timestamp  ";
-        sqlParam.addValue("currentDateTime",currentDateTime);
+        sqlParam.addValue("currentDateTime", currentDateTime);
         if (filterDto.getWorkId() != null && filterDto.getWorkId() > 0) {
             qry += " and wm.id=:workId ";
             sqlParam.addValue("workId", filterDto.getWorkId());
@@ -405,7 +402,7 @@ public class AlertRepositoryImpl {
 
 
         resultCount = count(qry, sqlParam);
-        if (filterDto.getLimit() > 0){
+        if (filterDto.getLimit() > 0) {
             qry += " Order by wm.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
         }
 
@@ -417,11 +414,11 @@ public class AlertRepositoryImpl {
     public Page<AlertCountDto> getWorkAlertTotal(AlertFilterDto filterDto) {
         PageRequest pageable = null;
 
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
+        pageable = PageRequest.of(filterDto.getDraw() - 1, filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
-        int resultCount=0;
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        int resultCount = 0;
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         String qry = "  select distinct ad.id as alertId, ad.alert_type_id as alertTypeId, gm.work_id as workId, ad.speed as speed,atm.alert_type as alertType, ad.latitude,  " +
                 "ad.longitude, ad.accuracy, ad.speed, ad.altitude, ad.gps_dtm as gpsDtm, " +
@@ -432,7 +429,7 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id = vdm.vehicle_id and vam.is_active=true " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id " +
                 "left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id " +
-                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id  where ad.is_active=true  " ;
+                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id  where ad.is_active=true  ";
 //        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
 //            qry += " and gm.block_id=:blockId ";
 //            sqlParam.addValue("blockId", filterDto.getBlockId());
@@ -499,14 +496,12 @@ public class AlertRepositoryImpl {
         if (user.getUserLevelId() == 5) {
             qry += " AND gm.contractor_id=:contractorId ";
             sqlParam.addValue("contractorId", user.getUserLevelId());
-        }
-
-        else if (user.getUserLevelId() == 2) {
+        } else if (user.getUserLevelId() == 2) {
             List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(filterDto.getUserId());
             List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
             List<Integer> workIds = masterRepositoryImpl.getWorkIdsByBlockAndDivision(blockIds, divisionIds, distIds);
-            if(workIds != null && workIds.size() > 0){
+            if (workIds != null && workIds.size() > 0) {
                 if (qry != null && qry.length() > 0) {
                     qry += " AND  gm.work_id in(:workIds) ";
                     sqlParam.addValue("workIds", workIds);
@@ -515,25 +510,21 @@ public class AlertRepositoryImpl {
                     sqlParam.addValue("workIds", workIds);
                 }
             }
-        }
-
-        else if(user.getUserLevelId()==3){
-            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
-            List<Integer> workIds  = masterRepositoryImpl.getWorkIdsByBlockIds(blockIds);
-            if(qry != null && qry.length() > 0){
+        } else if (user.getUserLevelId() == 3) {
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
+            List<Integer> workIds = masterRepositoryImpl.getWorkIdsByBlockIds(blockIds);
+            if (qry != null && qry.length() > 0) {
                 qry += " AND  gm.work_id in(:workIds) ";
-                sqlParam.addValue("workIds",workIds);
+                sqlParam.addValue("workIds", workIds);
             } else {
                 qry += " WHERE  gm.work_id in(:workIds) ";
-                sqlParam.addValue("workIds",workIds);
+                sqlParam.addValue("workIds", workIds);
             }
-        }
-
-        else if(user.getUserLevelId() == 4){
+        } else if (user.getUserLevelId() == 4) {
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(filterDto.getUserId());
             List<Integer> workIds = masterRepositoryImpl.getWorkIdByDivisionId(divisionIds);
-            if(workIds != null && workIds.size() > 0){
-                if(qry != null && qry.length() > 0){
+            if (workIds != null && workIds.size() > 0) {
+                if (qry != null && qry.length() > 0) {
                     qry += " and gm.work_id in(:workIds) ";
                     sqlParam.addValue("workIds", workIds);
                 } else {
@@ -544,7 +535,7 @@ public class AlertRepositoryImpl {
         }
 
         resultCount = count(qry, sqlParam);
-        if (filterDto.getLimit() > 0){
+        if (filterDto.getLimit() > 0) {
             qry += " order by ad.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
         }
 
@@ -557,11 +548,11 @@ public class AlertRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
 
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
+        pageable = PageRequest.of(filterDto.getDraw() - 1, filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
-        int resultCount=0;
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        int resultCount = 0;
 
         String qry = "select imei,alert.id as alertId, alert_type_id,type.alert_type as alertType,latitude,longitude,altitude,accuracy,speed,gps_dtm,vdm.vehicle_id as vehicleId, \n" +
                 " is_resolve,resolved_by as resolvedBy,userM.first_name as resolvedByUser, count(alert.id) over (partition by alert.alert_type_id)    \n" +
@@ -572,7 +563,7 @@ public class AlertRepositoryImpl {
                 " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.device_id=dm.id and vdm.is_active=true \n" +
                 " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id and vam.is_active=true \n" +
                 " left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id  and awm.is_active=true \n" +
-                "  left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  where alert.is_active=true   " ;
+                "  left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id  where alert.is_active=true   ";
 //        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
 //            qry += " and gm.block_id=:blockIds ";
 //            sqlParam.addValue("blockId", filterDto.getBlockId());
@@ -638,9 +629,7 @@ public class AlertRepositoryImpl {
         if (user.getUserLevelId() == 5) {
             qry += " AND gm.contractor_id=:contractorId ";
             sqlParam.addValue("contractorId", user.getUserLevelId());
-        }
-
-        else if (user.getUserLevelId() == 2) {
+        } else if (user.getUserLevelId() == 2) {
             List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(filterDto.getUserId());
             List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
@@ -652,27 +641,23 @@ public class AlertRepositoryImpl {
                 qry += " where vdm.vehicle_id in(:vehicleIds) ";
                 sqlParam.addValue("vehicleIds", vehicleIds);
             }
-        }
-
-        else if(user.getUserLevelId()==3){
-            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
+        } else if (user.getUserLevelId() == 3) {
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
             List<Integer> vehicleId = masterRepositoryImpl.getVehicleIdsByBlockIds(blockIds);
-            if(vehicleId != null && vehicleId.size() > 0) {
-                if(qry != null && qry.length() > 0){
+            if (vehicleId != null && vehicleId.size() > 0) {
+                if (qry != null && qry.length() > 0) {
                     qry += " AND vdm.vehicle_id in(:vehicleIds) ";
-                    sqlParam.addValue("vehicleIds",vehicleId);
+                    sqlParam.addValue("vehicleIds", vehicleId);
                 } else {
                     qry += " where vdm.vehicle_id in(:vehicleIds) ";
-                    sqlParam.addValue("vehicleIds",vehicleId);
+                    sqlParam.addValue("vehicleIds", vehicleId);
                 }
             }
-        }
-
-        else if(user.getUserLevelId()==4){
+        } else if (user.getUserLevelId() == 4) {
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(filterDto.getUserId());
             List<Integer> vehicleIds = userRepositoryImpl.getVehicleIdByDivisionId(divisionIds);
-            if(vehicleIds != null && vehicleIds.size() > 0){
-                if(qry != null && qry.length() > 0){
+            if (vehicleIds != null && vehicleIds.size() > 0) {
+                if (qry != null && qry.length() > 0) {
                     qry += " AND vdm.vehicle_id in(:vehicleIds) ";
                     sqlParam.addValue("vehicleIds", vehicleIds);
                 } else {
@@ -683,7 +668,7 @@ public class AlertRepositoryImpl {
         }
 
         resultCount = count(qry, sqlParam);
-        if (filterDto.getLimit() > 0){
+        if (filterDto.getLimit() > 0) {
             qry += " Order by alert.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
         }
 
@@ -696,11 +681,11 @@ public class AlertRepositoryImpl {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
         PageRequest pageable = null;
 
-        Sort.Order order = new Sort.Order(Sort.Direction.DESC,"id");
-        pageable = PageRequest.of(filterDto.getDraw()-1,filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "id");
+        pageable = PageRequest.of(filterDto.getDraw() - 1, filterDto.getLimit(), Sort.Direction.fromString("desc"), "id");
 
-        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC,"id");
-        int resultCount=0;
+        order = !pageable.getSort().isEmpty() ? pageable.getSort().toList().get(0) : new Sort.Order(Sort.Direction.DESC, "id");
+        int resultCount = 0;
         String qry = "  select distinct ad.id as alertId, ad.alert_type_id as alertTypeId, atm.alert_type as alertType, ad.gps_dtm, ad.latitude, ad.longitude, ad.altitude, ad.accuracy, ad.speed, ad.is_resolve, " +
                 "ad.resolved_by, count(ad.id) over (partition by ad.alert_type_id)  " +
                 "from rdvts_oltp.alert_data as ad " +
@@ -709,7 +694,7 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.vehicle_id=vdm.vehicle_id and vam.is_active=true " +
                 "left join rdvts_oltp.activity_work_mapping as awm on awm.activity_id=vam.activity_id and awm.is_active=true " +
                 "left join rdvts_oltp.geo_master as gm on gm.work_id=awm.work_id and gm.is_active=true " +
-                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where ad.is_active=true " ;
+                "left join rdvts_oltp.alert_type_m as atm on atm.id=ad.alert_type_id where ad.is_active=true ";
 //        if(filterDto.getBlockId() != null && filterDto.getBlockId() > 0){
 //            qry += " and gm.block_id=:blockIds ";
 //            sqlParam.addValue("blockIds", filterDto.getBlockId());
@@ -775,25 +760,23 @@ public class AlertRepositoryImpl {
         if (user.getUserLevelId() == 5) {
             qry += " AND gm.contractor_id=:contractorId ";
             sqlParam.addValue("contractorId", user.getUserLevelId());
-        }
-        else if (user.getUserLevelId() == 2) {
+        } else if (user.getUserLevelId() == 2) {
             List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(filterDto.getUserId());
             List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
             List<Integer> roadIds = masterRepositoryImpl.getRoadIdsByBlockAndDivision(distIds, blockIds, divisionIds);
-            if(qry != null && qry.length() > 0){
+            if (qry != null && qry.length() > 0) {
                 qry += " and gm.road_id in (:roadIds) ";
                 sqlParam.addValue("roadIds", roadIds);
             } else {
                 qry += " where gm.road_id in (:roadIds) ";
                 sqlParam.addValue("roadIds", roadIds);
             }
-        }
-        else if(user.getUserLevelId()==3){
-            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
+        } else if (user.getUserLevelId() == 3) {
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
             List<Integer> roadIds = masterRepositoryImpl.getRoadIdsByBlockIds(blockIds);
-            if(roadIds != null && roadIds.size() > 0) {
-                if(qry != null && qry.length() > 0){
+            if (roadIds != null && roadIds.size() > 0) {
+                if (qry != null && qry.length() > 0) {
                     qry += " and gm.road_id in (:roadIds) ";
                     sqlParam.addValue("roadIds", roadIds);
                 } else {
@@ -801,12 +784,11 @@ public class AlertRepositoryImpl {
                     sqlParam.addValue("roadIds", roadIds);
                 }
             }
-        }
-        else if(user.getUserLevelId()==4){
+        } else if (user.getUserLevelId() == 4) {
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(filterDto.getUserId());
             List<Integer> roadIds = userRepositoryImpl.getRoadIdByDivisionId(divisionIds);
-            if(roadIds != null && roadIds.size() > 0){
-                if(qry != null && qry.length() > 0){
+            if (roadIds != null && roadIds.size() > 0) {
+                if (qry != null && qry.length() > 0) {
                     qry += " and gm.road_id in(:roadIds) ";
                     sqlParam.addValue("roadIds", roadIds);
                 } else {
@@ -817,7 +799,7 @@ public class AlertRepositoryImpl {
         }
 
         resultCount = count(qry, sqlParam);
-        if (filterDto.getLimit() > 0){
+        if (filterDto.getLimit() > 0) {
             qry += " Order by ad.id desc LIMIT " + filterDto.getLimit() + " OFFSET " + filterDto.getOffSet();
         }
 
@@ -826,25 +808,24 @@ public class AlertRepositoryImpl {
     }
 
 
+    public List<VtuLocationDto> GeoFenceIntersectedRecords(String geom, List<VtuLocationDto> vtuLocationDto) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-    public List<VtuLocationDto>  GeoFenceIntersectedRecords(String geom, List<VtuLocationDto> vtuLocationDto) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        List<VtuLocationDto> vtuLocationDto1 = new ArrayList<>();
 
-        List<VtuLocationDto> vtuLocationDto1=new ArrayList<>();
+        VtuLocationDto vtuLocationDto2 = new VtuLocationDto();
 
-        VtuLocationDto vtuLocationDto2=new VtuLocationDto();
-
-        for (VtuLocationDto item:vtuLocationDto) {
-            String geomText ="'"+geom+"'";
-            String qry = "  select ST_Intersects(st_setsrid(st_geomfromtext(  st_astext(ST_BUFFER("+geomText+"::geography,50)::geometry)  " +
-                    " ),4326),  'SRID=4326;POINT("+item.getLongitude()+" "+item.getLongitude()+" )'::geometry) as inFlag" ;
-           Boolean b= namedJdbc.queryForObject(qry, sqlParam,(Boolean.class));
-           if (b){
-               vtuLocationDto2.setLatitude(item.getLatitude());
-               vtuLocationDto2.setLongitude(item.getLongitude());
-               vtuLocationDto1.add(vtuLocationDto2);
-               //Filter and push geo fenced Lat lon
-           }
+        for (VtuLocationDto item : vtuLocationDto) {
+            String geomText = "'" + geom + "'";
+            String qry = "  select ST_Intersects(st_setsrid(st_geomfromtext(  st_astext(ST_BUFFER(" + geomText + "::geography,50)::geometry)  " +
+                    " ),4326),  'SRID=4326;POINT(" + item.getLongitude() + " " + item.getLongitude() + " )'::geometry) as inFlag";
+            Boolean b = namedJdbc.queryForObject(qry, sqlParam, (Boolean.class));
+            if (b) {
+                vtuLocationDto2.setLatitude(item.getLatitude());
+                vtuLocationDto2.setLongitude(item.getLongitude());
+                vtuLocationDto1.add(vtuLocationDto2);
+                //Filter and push geo fenced Lat lon
+            }
         }
 
 
@@ -914,9 +895,7 @@ public class AlertRepositoryImpl {
         if (user.getUserLevelId() == 5) {
             qry += " AND gm.contractor_id=:contractorId ";
             sqlParam.addValue("contractorId", user.getUserLevelId());
-        }
-
-        else if (user.getUserLevelId() == 2) {
+        } else if (user.getUserLevelId() == 2) {
             List<Integer> distIds = userRepositoryImpl.getDistIdByUserId(filterDto.getUserId());
             List<Integer> blockIds = userRepositoryImpl.getBlockIdByDistId(distIds);
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByDistId(distIds);
@@ -928,27 +907,23 @@ public class AlertRepositoryImpl {
                 qry += " where vdm.vehicle_id in(:vehicleIds) ";
                 sqlParam.addValue("vehicleIds", vehicleIds);
             }
-        }
-
-        else if(user.getUserLevelId()==3){
-            List<Integer> blockIds=userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
+        } else if (user.getUserLevelId() == 3) {
+            List<Integer> blockIds = userRepositoryImpl.getBlockIdByUserId(filterDto.getUserId());
             List<Integer> vehicleId = masterRepositoryImpl.getVehicleIdsByBlockIds(blockIds);
-            if(vehicleId != null && vehicleId.size() > 0) {
-                if(qry != null && qry.length() > 0){
+            if (vehicleId != null && vehicleId.size() > 0) {
+                if (qry != null && qry.length() > 0) {
                     qry += " AND vdm.vehicle_id in(:vehicleIds) ";
-                    sqlParam.addValue("vehicleIds",vehicleId);
+                    sqlParam.addValue("vehicleIds", vehicleId);
                 } else {
                     qry += " where vdm.vehicle_id in(:vehicleIds) ";
-                    sqlParam.addValue("vehicleIds",vehicleId);
+                    sqlParam.addValue("vehicleIds", vehicleId);
                 }
             }
-        }
-
-        else if(user.getUserLevelId()==4){
+        } else if (user.getUserLevelId() == 4) {
             List<Integer> divisionIds = userRepositoryImpl.getDivisionByUserId(filterDto.getUserId());
             List<Integer> vehicleIds = userRepositoryImpl.getVehicleIdByDivisionId(divisionIds);
-            if(vehicleIds != null && vehicleIds.size() > 0){
-                if(qry != null && qry.length() > 0){
+            if (vehicleIds != null && vehicleIds.size() > 0) {
+                if (qry != null && qry.length() > 0) {
                     qry += " AND vdm.vehicle_id in(:vehicleIds) ";
                     sqlParam.addValue("vehicleIds", vehicleIds);
                 } else {
@@ -965,10 +940,10 @@ public class AlertRepositoryImpl {
 
 
     public WorkCronEntity getWorkCronByWorkId(Integer workId) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "SELECT id, imei_no, total_speed_work, avg_speed_today, total_active_vehicle, total_distance, today_distance, work_id " +
-                "FROM rdvts_oltp.work_cron where work_id=:workId " ;
+                "FROM rdvts_oltp.work_cron where work_id=:workId ";
         sqlParam.addValue("workId", workId);
 
         try {
@@ -979,14 +954,15 @@ public class AlertRepositoryImpl {
 
 
     }
+
     public PackageDto getPackageDataDetails(Integer packageNumber) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "select distinct package.id as packageId,package.package_no as packageNo,piu.name as piuName, " +
                 "geoMapping.award_date,geoMapping.pmis_finalize_date,geoMapping.completion_date,(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName " +
                 "from rdvts_oltp.package_m as package " +
                 "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.package_id=package.id " +
-                "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id  where package.id=:packageId and geoMapping.award_date is not null" ;
+                "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id  where package.id=:packageId and geoMapping.award_date is not null";
         sqlParam.addValue("packageId", packageNumber);
 
 //        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -1011,17 +987,15 @@ public class AlertRepositoryImpl {
 //            sqlParam.addValue("uploadToDate", uploadToDate, Types.DATE);
 //        }
 
-        try
-        {
+        try {
             return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(PackageDto.class));
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             return null;
         }
     }
-    public List<Integer> getVehicleByRoadId(Integer roadId){
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+    public List<Integer> getVehicleByRoadId(Integer roadId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "Select distinct vam.vehicle_id \n" +
                 "from rdvts_oltp.road_m as rm\n" +
@@ -1029,49 +1003,43 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.package_m as pm on pm.id = gm.package_id and gm.is_active ='true'\n" +
                 "left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = gm.id and vam.is_active ='true'\n" +
                 "left join rdvts_oltp.vehicle_m as vm on vam.vehicle_id = vm.id and vm.is_active ='true'\n" +
-                "where rm.id = :roadId and vam.vehicle_id is not null" ;
+                "where rm.id = :roadId and vam.vehicle_id is not null";
         sqlParam.addValue("roadId", roadId);
         return namedJdbc.queryForList(qry, sqlParam, Integer.class);
     }
-    public List<VehicleMasterDto> getVehicleByPackageIdAndFilter(AlertFilterDto filter,Integer roadId) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-        List<Integer> vehicleIdList= new ArrayList<>();
-        if(filter.getVehicleId()==null )
-        {
-          List<Integer> vehicle= getVehicleByRoadId(roadId);
+
+    public List<VehicleMasterDto> getVehicleByPackageIdAndFilter(AlertFilterDto filter, Integer roadId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+        List<Integer> vehicleIdList = new ArrayList<>();
+        if (filter.getVehicleId() == null) {
+            List<Integer> vehicle = getVehicleByRoadId(roadId);
             vehicleIdList.addAll(vehicle);
         }
         String qry = "Select * from  rdvts_oltp.vehicle_m  where is_active=true ";
-        if(vehicleIdList!=null && vehicleIdList.size()>0){
-            qry+= " and id in(:vehicleIds) ";
+        if (vehicleIdList != null && vehicleIdList.size() > 0) {
+            qry += " and id in(:vehicleIds) ";
             sqlParam.addValue("vehicleIds", vehicleIdList);
-        }
-        else
-        {
-            if( filter.getVehicleId()!=null &&   filter.getVehicleId() >0)
-            {
+        } else {
+            if (filter.getVehicleId() != null && filter.getVehicleId() > 0) {
 
-            qry+= " and id=:vehicleId ";
-            sqlParam.addValue("vehicleId", filter.getVehicleId());
-            }
-            else
-            {
-                qry+= "and id = 0 ";
+                qry += " and id=:vehicleId ";
+                sqlParam.addValue("vehicleId", filter.getVehicleId());
+            } else {
+                qry += "and id = 0 ";
             }
         }
 
         try {
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
-        } catch (Exception exception)
-        {
+        } catch (Exception exception) {
             return null;
         }
     }
 
-    public List<ActivityDto> getActivityByVehicleId(Integer  vehicleId) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+    public List<ActivityDto> getActivityByVehicleId(Integer vehicleId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
-        String qry = " select * from rdvts_oltp.activity_m where id in(select activity_id from rdvts_oltp.vehicle_activity_mapping where vehicle_id=:vehicleId)" ;
+        String qry = " select * from rdvts_oltp.activity_m where id in(select activity_id from rdvts_oltp.vehicle_activity_mapping where vehicle_id=:vehicleId)";
         sqlParam.addValue("vehicleId", vehicleId);
 
         try {
@@ -1080,19 +1048,19 @@ public class AlertRepositoryImpl {
             return null;
         }
     }
-    public List<AlertDto> getAlertByVehicleId(Integer  vehicle, Integer alertId) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+    public List<AlertDto> getAlertByVehicleId(Integer vehicle, Integer alertId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = " select ad.id, ad.alert_type_id, alt.alert_type as alert_type_name, ad.imei,ad.latitude, ad.longitude, ad.altitude, ad.gps_dtm " +
                 "from rdvts_oltp.alert_data as ad " +
                 "left join rdvts_oltp.alert_type_m as alt on alt.id = ad.alert_type_id " +
                 "where imei in " +
-                "(select imei_no_1 from rdvts_oltp.device_m where id in(select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id=:vehicleId and is_active=true)) order by  ad.created_on  desc limit 50 " ;
+                "(select imei_no_1 from rdvts_oltp.device_m where id in(select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id=:vehicleId and is_active=true)) order by  ad.created_on  desc limit 50 ";
         sqlParam.addValue("vehicleId", vehicle);
 
-        if(alertId!=null && alertId>0)
-        {
-            qry+= " and alert_type_id = :alertTypeId";
+        if (alertId != null && alertId > 0) {
+            qry += " and alert_type_id = :alertTypeId";
             sqlParam.addValue("alertTypeId", alertId);
         }
         try {
@@ -1101,8 +1069,9 @@ public class AlertRepositoryImpl {
             return null;
         }
     }
-    public List<ActivityDto> getActivityByRoadId(Integer packageId, Integer  roadId, Integer activityId) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+
+    public List<ActivityDto> getActivityByRoadId(Integer packageId, Integer roadId, Integer activityId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "select distinct activityStatus.name as status,\n" +
                 "activity.id,COALESCE(activity.activity_name,' ') as activityName,activity_start_date,activity_completion_date,actual_activity_start_date,actual_activity_completion_date,road.road_name\n" +
@@ -1110,203 +1079,12 @@ public class AlertRepositoryImpl {
                 "left join rdvts_oltp.activity_m as activity on geoMapping.activity_id=activity.id\n" +
                 "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
                 "left join rdvts_oltp.road_m as roadm on roadm.id = geoMapping.road_id\n" +
-                "where geoMapping.road_id= :roadId and geoMapping.package_id=:packageId" ;
+                "where geoMapping.road_id= :roadId and geoMapping.package_id=:packageId";
         sqlParam.addValue("roadId", roadId);
         sqlParam.addValue("packageId", packageId);
 
-        if(activityId!=null && activityId>0)
-        {
-            qry+= " and activity.id= :activityId";
-            sqlParam.addValue("activityId", activityId);
-        }
-        try {
-            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
-        } catch (Exception exception) {
-            return null;
-        }
-    }
-    public List<VehicleMasterDto> getVehicleByActivityId(Integer packageId, Integer  activity, Integer vehicleId,Integer roadId,String startDate, String endDate)
-    {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-
-//        String qry = " select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no,model,device.imei_no_1 as imeiNo1 from rdvts_oltp.vehicle_m as vehicle\n" +
-//                "left join rdvts_oltp.vehicle_activity_mapping as vehicleActivity on vehicleActivity.vehicle_id=vehicle.id\n" +
-//                "left join rdvts_oltp.vehicle_type as type on type.id=vehicle.vehicle_type_id\n" +
-//                "left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id=vehicle.id\n" +
-//                "left join rdvts_oltp.contractor_m as contractor on contractor.id=owner.contractor_id\n" +
-//                "left join rdvts_oltp.vehicle_device_mapping as vehicleDevice on vehicleDevice.vehicle_id=vehicle.id\n" +
-//                "left join rdvts_oltp.device_m as device on device.id=vehicleDevice.device_id\n" +
-//                "left join rdvts_oltp.geo_mapping as gm on gm.id=vehicleActivity.geo_mapping_id" +
-//                " where  vehicle.is_active=true and vehicleActivity.is_active=true and type.is_active=true \n" +
-//                " and owner.is_active=true and contractor.is_active=true and vehicleDevice.is_active=true and device.is_active=true \n" +
-//                " and gm.activityId=:activityId and gm.packageId=:packageId" ;
-
-        String qry = "select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no," +
-                    " model,device.imei_no_1 as imeiNo1" +
-                    " from rdvts_oltp.geo_mapping as geoMapping" +
-                    " left join rdvts_oltp.activity_m as am on geoMapping.activity_id = am.id" +
-                    " left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id = geoMapping.activity_status" +
-                    " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = geoMapping.id" +
-                    " left join rdvts_oltp.vehicle_m as vehicle on vam.vehicle_id = vehicle.id" +
-                    " left join rdvts_oltp.vehicle_type as type on type.id = vehicle.vehicle_type_id" +
-                    " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id = vehicle.id" +
-                    " left join rdvts_oltp.contractor_m as contractor on contractor.id = owner.contractor_id" +
-                    " left join rdvts_oltp.vehicle_device_mapping as vehicleDevice on vehicleDevice.vehicle_id = vehicle.id" +
-                    " left join rdvts_oltp.device_m as device on device.id = vehicleDevice.device_id" +
-                    " where geoMapping.is_active=true" +
-                    " and geoMapping.package_id=:packageId and geoMapping.activity_id=:activityId  and vam.vehicle_id is not null " +
-                    "and vehicleDevice.is_active = true and geoMapping.is_active = true and owner.is_active = true ";
-
-
-//        String qry = " select distinct vam.vehicle_id,vehicle.vehicle_no, " +
-//                " type.name as vehicleTypeName,contractor.name as ownerName,vehicle.speed_limit,vehicle.chassis_no,vehicle.engine_no,vehicle.model,device.imei_no_1 as imeiNo1 " +
-//                " from rdvts_oltp.vehicle_activity_mapping as vam " +
-//                " left join rdvts_oltp.geo_mapping as geoMapping on vam.geo_mapping_id=geoMapping.id and geoMapping.is_active=true " +
-//                " left join rdvts_oltp.vehicle_m as vehicle on vehicle.id=vam.vehicle_id " +
-//                " left join rdvts_oltp.vehicle_device_mapping as vdm on vdm.vehicle_id=vam.vehicle_id " +
-//                " left join rdvts_oltp.device_m as device on device.id=vdm.device_id " +
-//                " left join rdvts_oltp.vehicle_type as type on type.id = vehicle.vehicle_type_id " +
-//                " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id = vehicle.id " +
-//                " left join rdvts_oltp.contractor_m as contractor on contractor.id = owner.contractor_id " +
-//                " where vam.is_active=true and geoMapping.package_id=:packageId and geoMapping.road_id=:roadId  and geoMapping.activity_id=:activityId " +
-//                " order by vam.vehicle_id";
-
-        sqlParam.addValue("activityId", activity);
-        sqlParam.addValue("packageId", packageId);
-        sqlParam.addValue("roadId", roadId);
-
-        if(vehicleId!=null && vehicleId>0)
-        {
-            qry+= " and vehicle.id= :vehicleId";
-            sqlParam.addValue("vehicleId", vehicleId);
-        }
-//        if(startDate!=null && !startDate.isEmpty())
-//        {
-//            qry+= " and vehicleDevice.installation_date = :startDate";
-//            sqlParam.addValue("startDate", startDate);
-//        }
-//        if(endDate!=null && !endDate.isEmpty())
-//        {
-//            qry+= " and vehicleDevice.unassigned_date = :endDate";
-//            sqlParam.addValue("endDate", endDate);
-//        }else{
-//            qry+= " and vehicleDevice.installation_date= now()";
-//        }
-        try {
-            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
-        } catch (Exception exception) {
-            return null;
-        }
-    }
-
-
-//    public List<AlertCountDto> getTotalAlertToday(int id) {
-//    }
-
-
-
-    public PackageDto getPackageData(AlertFilterDto filter) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-
-        String qry = "select distinct package.id as packageId,package.package_no as packageNo,piu.name as piuName, " +
-                "geoMapping.award_date,geoMapping.pmis_finalize_date,geoMapping.completion_date,(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName " +
-                "from rdvts_oltp.package_m as package " +
-                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.package_id=package.id " +
-                "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id  where package.id=:packageId and geoMapping.award_date is not null" ;
-        sqlParam.addValue("packageId", filter.getPackageId());
-
-//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//        if (filter.getStartDate() != null && !filter.getStartDate().isEmpty()) {
-//            qry += " AND date(contract.contract_date) >= :uploadFromDate";
-//            Date uploadFromDate = null;
-//            try {
-//                uploadFromDate = format.parse(filter.getStartDate());
-//            } catch (Exception exception) {
-//                log.info("From Date Parsing exception : {}", exception.getMessage());
-//            }
-//            sqlParam.addValue("uploadFromDate", uploadFromDate, Types.DATE);
-//        }
-//        if (filter.getEndDate() != null && !filter.getEndDate().isEmpty()) {
-//            qry += " AND date(contract.contract_date) <= :uploadToDate";
-//            Date uploadToDate = null;
-//            try {
-//                uploadToDate = format.parse(filter.getEndDate());
-//            } catch (Exception exception) {
-//                log.info("To Date Parsing exception : {}", exception.getMessage());
-//            }
-//            sqlParam.addValue("uploadToDate", uploadToDate, Types.DATE);
-//        }
-
-        try
-        {
-            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(PackageDto.class));
-        }
-        catch (Exception exception)
-        {
-            return null;
-        }
-    }
-
-    public PackageDto getPackageById(Integer packageNumber) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-
-        String qry = "select distinct package.id as packageId,package.package_no as packageNo, "+ "piu.name as piuName, " +
-                "geoMapping.award_date as awardDateStr,geoMapping.pmis_finalize_date as pmisFinalizeDateStr, " + "geoMapping.completion_date, " + "(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName " +
-                "from rdvts_oltp.package_m as package " +
-                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.package_id=package.id " +
-                "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id  where package.id=:packageId and geoMapping.award_date is not null" ;
-        sqlParam.addValue("packageId", packageNumber);
-        try
-        {
-            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(PackageDto.class));
-        }
-        catch (Exception exception)
-        {
-            return null;
-        }
-
-    }
-
-    public List<ActivityDto> getActivityByRoadId(Integer packageId) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-
-        String qry = "select distinct activityStatus.name as status,\n" +
-                "activity.id,COALESCE(activity.activity_name,' ') as activityName,activity_start_date as activityStartDateStr,activity_completion_date as activityCompletionDateStr, actual_activity_start_date," +
-                "actual_activity_completion_date\n" +
-                "from rdvts_oltp.geo_mapping as geoMapping\n" +
-                "left join rdvts_oltp.activity_m as activity on geoMapping.activity_id=activity.id\n" +
-                "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
-                "left join rdvts_oltp.road_m as roadm on roadm.id = geoMapping.road_id\n" +
-                "where geoMapping.package_id=:packageId" ;
-        sqlParam.addValue("packageId", packageId);
-
-        try {
-            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
-        } catch (Exception exception) {
-            return null;
-        }
-    }
-
-    public List<ActivityDto> getActivityDetailsByRoadId(Integer packageId, Integer roadId, Integer activityId) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
-
-        String qry = "select distinct activityStatus.name as status,\n" +
-                "activity.id,COALESCE(activity.activity_name,' ') as activityName,activity_start_date as activityStartDateStr," +
-                "activity_completion_date as activityCompletionDateStr," +
-                "actual_activity_start_date," +
-                "actual_activity_completion_date," +
-                "roadm.road_name\n" +
-                "from rdvts_oltp.geo_mapping as geoMapping\n" +
-                "left join rdvts_oltp.activity_m as activity on geoMapping.activity_id=activity.id\n" +
-                "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
-                "left join rdvts_oltp.road_m as roadm on roadm.id = geoMapping.road_id\n" +
-                "where geoMapping.road_id= :roadId and geoMapping.package_id=:packageId" ;
-        sqlParam.addValue("roadId", roadId);
-        sqlParam.addValue("packageId", packageId);
-
-        if(activityId!=null && activityId>0)
-        {
-            qry+= " and activity.id= :activityId";
+        if (activityId != null && activityId > 0) {
+            qry += " and activity.id= :activityId";
             sqlParam.addValue("activityId", activityId);
         }
         try {
@@ -1316,8 +1094,8 @@ public class AlertRepositoryImpl {
         }
     }
 
-    public List<VehicleMasterDto> getVehicleDetailsByActivityId(Integer packageId, Integer activityId, Integer vehicleId, Integer roadId, String activityStartDate, String activityendDate) {
-        MapSqlParameterSource sqlParam=new MapSqlParameterSource();
+    public List<VehicleMasterDto> getVehicleByActivityId(Integer packageId, Integer activity, Integer vehicleId, Integer roadId, String startDate, String endDate) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
 //        String qry = " select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no,model,device.imei_no_1 as imeiNo1 from rdvts_oltp.vehicle_m as vehicle\n" +
 //                "left join rdvts_oltp.vehicle_activity_mapping as vehicleActivity on vehicleActivity.vehicle_id=vehicle.id\n" +
@@ -1361,13 +1139,12 @@ public class AlertRepositoryImpl {
 //                " where vam.is_active=true and geoMapping.package_id=:packageId and geoMapping.road_id=:roadId  and geoMapping.activity_id=:activityId " +
 //                " order by vam.vehicle_id";
 
-        sqlParam.addValue("activityId", activityId);
+        sqlParam.addValue("activityId", activity);
         sqlParam.addValue("packageId", packageId);
         sqlParam.addValue("roadId", roadId);
 
-        if(vehicleId!=null && vehicleId>0)
-        {
-            qry+= " and vehicle.id= :vehicleId";
+        if (vehicleId != null && vehicleId > 0) {
+            qry += " and vehicle.id= :vehicleId";
             sqlParam.addValue("vehicleId", vehicleId);
         }
 //        if(startDate!=null && !startDate.isEmpty())
@@ -1388,5 +1165,181 @@ public class AlertRepositoryImpl {
             return null;
         }
     }
-}
 
+
+//    public List<AlertCountDto> getTotalAlertToday(int id) {
+//    }
+
+
+    public PackageDto getPackageData(AlertFilterDto filter) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "select distinct package.id as packageId,package.package_no as packageNo,piu.name as piuName, " +
+                "geoMapping.award_date,geoMapping.pmis_finalize_date,geoMapping.completion_date,(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName " +
+                "from rdvts_oltp.package_m as package " +
+                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.package_id=package.id " +
+                "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id  where package.id=:packageId and geoMapping.award_date is not null";
+        sqlParam.addValue("packageId", filter.getPackageId());
+
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//        if (filter.getStartDate() != null && !filter.getStartDate().isEmpty()) {
+//            qry += " AND date(contract.contract_date) >= :uploadFromDate";
+//            Date uploadFromDate = null;
+//            try {
+//                uploadFromDate = format.parse(filter.getStartDate());
+//            } catch (Exception exception) {
+//                log.info("From Date Parsing exception : {}", exception.getMessage());
+//            }
+//            sqlParam.addValue("uploadFromDate", uploadFromDate, Types.DATE);
+//        }
+//        if (filter.getEndDate() != null && !filter.getEndDate().isEmpty()) {
+//            qry += " AND date(contract.contract_date) <= :uploadToDate";
+//            Date uploadToDate = null;
+//            try {
+//                uploadToDate = format.parse(filter.getEndDate());
+//            } catch (Exception exception) {
+//                log.info("To Date Parsing exception : {}", exception.getMessage());
+//            }
+//            sqlParam.addValue("uploadToDate", uploadToDate, Types.DATE);
+//        }
+
+        try {
+            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(PackageDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public PackageDto getPackageById(AlertFilterDto filter) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "select distinct package.id as packageId,package.package_no as packageNo, " + "piu.name as piuName, " +
+                "geoMapping.award_date as awardDateStr,geoMapping.pmis_finalize_date as pmisFinalizeDateStr, " + "geoMapping.completion_date, " + "(case when (geoMapping.completion_date is null) then 'IN-PROGRESS' else 'COMPLETED' end) as workStatusName " +
+                "from rdvts_oltp.package_m as package " +
+                "left join rdvts_oltp.geo_mapping as geoMapping on geoMapping.package_id=package.id " +
+                "left join rdvts_oltp.piu_id as piu on piu.id=geoMapping.piu_id  where package.id=:packageId and geoMapping.award_date is not null";
+        sqlParam.addValue("packageId", filter.getPackageId());
+        try {
+            return namedJdbc.queryForObject(qry, sqlParam, new BeanPropertyRowMapper<>(PackageDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+
+    }
+
+    public List<ActivityDto> getActivityByRoadId(Integer packageId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "select distinct activityStatus.name as status,\n" +
+                "activity.id,COALESCE(activity.activity_name,' ') as activityName,activity_start_date as activityStartDateStr,activity_completion_date as activityCompletionDateStr, actual_activity_start_date," +
+                "actual_activity_completion_date\n" +
+                "from rdvts_oltp.geo_mapping as geoMapping\n" +
+                "left join rdvts_oltp.activity_m as activity on geoMapping.activity_id=activity.id\n" +
+                "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
+                "left join rdvts_oltp.road_m as roadm on roadm.id = geoMapping.road_id\n" +
+                "where geoMapping.package_id=:packageId";
+        sqlParam.addValue("packageId", packageId);
+
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public List<ActivityDto> getActivityDetailsByRoadId(Integer packageId, Integer roadId, Integer activityId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "select distinct activityStatus.name as status,\n" +
+                "activity.id,COALESCE(activity.activity_name,' ') as activityName,activity_start_date as activityStartDateStr," +
+                "activity_completion_date as activityCompletionDateStr," +
+                "actual_activity_start_date," +
+                "actual_activity_completion_date," +
+                "roadm.road_name\n" +
+                "from rdvts_oltp.geo_mapping as geoMapping\n" +
+                "left join rdvts_oltp.activity_m as activity on geoMapping.activity_id=activity.id\n" +
+                "left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id=geoMapping.activity_status\n" +
+                "left join rdvts_oltp.road_m as roadm on roadm.id = geoMapping.road_id\n" +
+                "where geoMapping.road_id= :roadId and geoMapping.package_id=:packageId";
+        sqlParam.addValue("roadId", roadId);
+        sqlParam.addValue("packageId", packageId);
+
+        if (activityId != null && activityId > 0) {
+            qry += " and activity.id= :activityId";
+            sqlParam.addValue("activityId", activityId);
+        }
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(ActivityDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public List<VehicleMasterDto> getVehicleDetailsByActivityId(Integer packageId, Integer id, Integer id1, Integer vehicleId, String startDate, String endDate) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = "select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no," +
+                " model,device.imei_no_1 as imeiNo1" +
+                " from rdvts_oltp.geo_mapping as geoMapping" +
+                " left join rdvts_oltp.activity_m as am on geoMapping.activity_id = am.id" +
+                " left join rdvts_oltp.activity_status_m as activityStatus on activityStatus.id = geoMapping.activity_status" +
+                " left join rdvts_oltp.vehicle_activity_mapping as vam on vam.geo_mapping_id = geoMapping.id" +
+                " left join rdvts_oltp.vehicle_m as vehicle on vam.vehicle_id = vehicle.id" +
+                " left join rdvts_oltp.vehicle_type as type on type.id = vehicle.vehicle_type_id" +
+                " left join rdvts_oltp.vehicle_owner_mapping as owner on owner.vehicle_id = vehicle.id" +
+                " left join rdvts_oltp.contractor_m as contractor on contractor.id = owner.contractor_id" +
+                " left join rdvts_oltp.vehicle_device_mapping as vehicleDevice on vehicleDevice.vehicle_id = vehicle.id" +
+                " left join rdvts_oltp.device_m as device on device.id = vehicleDevice.device_id" +
+                " where geoMapping.is_active=true" +
+                " and geoMapping.package_id=:packageId and geoMapping.activity_id=:activityId  and vam.vehicle_id is not null " +
+                "and vehicleDevice.is_active = true and geoMapping.is_active = true and owner.is_active = true ";
+
+        sqlParam.addValue("activityId", id);
+        sqlParam.addValue("packageId", packageId);
+        sqlParam.addValue("roadId", id1);
+
+        if (vehicleId != null && vehicleId > 0) {
+            qry += " and vehicle.id= :vehicleId";
+            sqlParam.addValue("vehicleId", vehicleId);
+        }
+//        if(startDate!=null && !startDate.isEmpty())
+//        {
+//            qry+= " and vehicleDevice.installation_date = :startDate";
+//            sqlParam.addValue("startDate", startDate);
+//        }
+//        if(endDate!=null && !endDate.isEmpty())
+//        {
+//            qry+= " and vehicleDevice.unassigned_date = :endDate";
+//            sqlParam.addValue("endDate", endDate);
+//        }else{
+//            qry+= " and vehicleDevice.installation_date= now()";
+//        }
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public List<AlertDto> getAlertDetailsByVehicleId(Integer vehicle, Integer alertId) {
+        MapSqlParameterSource sqlParam = new MapSqlParameterSource();
+
+        String qry = " select ad.id, ad.alert_type_id, alt.alert_type as alert_type_name, ad.imei,ad.latitude, ad.longitude, ad.altitude, ad.gps_dtm as gpsDtm,(ad.gps_dtm::date)as gpsDtmStr " +
+                "from rdvts_oltp.alert_data as ad " +
+                "left join rdvts_oltp.alert_type_m as alt on alt.id = ad.alert_type_id " +
+                "where imei in " +
+                "(select imei_no_1 from rdvts_oltp.device_m where id in(select device_id from rdvts_oltp.vehicle_device_mapping where vehicle_id=:vehicleId and is_active=true))";
+        sqlParam.addValue("vehicleId", vehicle);
+
+        if (alertId != null && alertId > 0) {
+            qry += " and alert_type_id = :alertTypeId";
+            sqlParam.addValue("alertTypeId", alertId);
+        }
+        try {
+            return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(AlertDto.class));
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+}

@@ -8,6 +8,5 @@ import java.io.File;
 
 @Service
 public interface PdfService {
-    File generatePdf(HttpServletResponse exportResponse, Integer packageId, Integer roadId, Integer activityId,
-                     Integer vehicleId, String activityStartDate, String activityEndDate) throws Exception;
+    File generatePdf(HttpServletResponse exportResponse, AlertFilterDto filter) throws Exception;
 }
