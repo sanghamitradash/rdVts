@@ -1275,7 +1275,7 @@ public class AlertRepositoryImpl {
         }
     }
 
-    public List<VehicleMasterDto> getVehicleDetailsByActivityId(Integer packageId, Integer id, Integer id1, Integer vehicleId, String startDate, String endDate) {
+    public List<VehicleMasterDto> getVehicleDetailsByActivityId(Integer packageId, List<Integer> id, Integer id1, Integer vehicleId,Date startDate,Date endDate) {
         MapSqlParameterSource sqlParam = new MapSqlParameterSource();
 
         String qry = "select distinct vehicle.id as vehicleId,vehicle_no,type.name as vehicleTypeName,contractor.name as ownerName,speed_limit,chassis_no,engine_no," +
@@ -1291,7 +1291,7 @@ public class AlertRepositoryImpl {
                 " left join rdvts_oltp.vehicle_device_mapping as vehicleDevice on vehicleDevice.vehicle_id = vehicle.id" +
                 " left join rdvts_oltp.device_m as device on device.id = vehicleDevice.device_id" +
                 " where geoMapping.is_active=true" +
-                " and geoMapping.package_id=:packageId and geoMapping.activity_id=:activityId  and vam.vehicle_id is not null " +
+                " and geoMapping.package_id=:packageId and geoMapping.activity_id in(:activityId)  and vam.vehicle_id is not null " +
                 "and vehicleDevice.is_active = true and geoMapping.is_active = true and owner.is_active = true ";
 
         sqlParam.addValue("activityId", id);
@@ -1302,18 +1302,20 @@ public class AlertRepositoryImpl {
             qry += " and vehicle.id= :vehicleId";
             sqlParam.addValue("vehicleId", vehicleId);
         }
-//        if(startDate!=null && !startDate.isEmpty())
-//        {
-//            qry+= " and vehicleDevice.installation_date = :startDate";
-//            sqlParam.addValue("startDate", startDate);
-//        }
-//        if(endDate!=null && !endDate.isEmpty())
-//        {
-//            qry+= " and vehicleDevice.unassigned_date = :endDate";
-//            sqlParam.addValue("endDate", endDate);
-//        }else{
-//            qry+= " and vehicleDevice.installation_date= now()";
-//        }
+        if(startDate!=null  && endDate!=null )
+        {
+            qry+= " and (vehicleDevice.installation_date  between :startDate and :endDate )";
+            sqlParam.addValue("startDate", startDate);
+            sqlParam.addValue("endDate", endDate);
+        }
+        else if(startDate!=null ){
+            qry+= " and vehicleDevice.installation_date >= :startDate";
+            sqlParam.addValue("startDate", startDate);
+        }
+        else if(endDate!=null ){
+            qry+= " and vehicleDevice.deactivation_date <= :endDate";
+            sqlParam.addValue("endDate", endDate);
+        }
         try {
             return namedJdbc.query(qry, sqlParam, new BeanPropertyRowMapper<>(VehicleMasterDto.class));
         } catch (Exception exception) {

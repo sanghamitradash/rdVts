@@ -197,6 +197,7 @@ public class PdfServiceImpl implements PdfService {
                 "\n";
 
         List<RoadMasterDto> road = roadRepositoryImpl.getRoadNameByPackageIdAndRoadId(filter.getPackageId(),filter.getRoadId());
+        //List<Integer> roadIds = roadRepositoryImpl.getRoadIds(filter.getPackageId());
         int i = 1;
 
         for (RoadMasterDto data1 : road) {
@@ -285,88 +286,105 @@ public class PdfServiceImpl implements PdfService {
                     "\n" +
                     "\n";
 
-            for (ActivityDto data : activity) {
-                List<VehicleMasterDto> vehicleMasterDtoList = alertRepositoryImpl.getVehicleDetailsByActivityId(packageDto.getPackageId(), data.getId(), data1.getRoadId(), filter.getVehicleId(), data.getStartDate(), data.getEndDate());
-//                html += "<div id=\"vehicle_details\">\n" +
-//                        "    <div class=\"heading package\"><span><strong>Vehicle Details</strong></span></div>\n"+
-//                        "</div>\n" ;
-
-                for (VehicleMasterDto vehicle : vehicleMasterDtoList) {
-
-                    html += "    <div class=\"heading package\"><span><strong>Vehicle Details</strong></span></div>\n" +
-                            "    <table style=\"width:100%;\">\n" +
-                            "        <tr>\n" +
-                            "            <td><strong>Vehicle No</strong></td>\n" +
-                            "            <td>:" + vehicle.getVehicleNo() + "</td>\n" +
-                            "            <td><strong>Vehicle Type</strong></td>\n" +
-                            "            <td>:" + vehicle.getVehicleTypeName() + "</td>\n" +
-                            "        </tr>\n" +
-                            "        <tr>\n" +
-                            "            <td><strong>Owner Name</strong></td>\n" +
-                            "            <td>:" + vehicle.getOwnerName() + "</td>\n" +
-                            "            <td><strong>Speed Limit</strong></td>\n" +
-                            "            <td>:" + vehicle.getSpeedLimit() + "</td>\n" +
-                            "        </tr>\n" +
-                            "        <tr>\n" +
-                            "            <td><strong>Chassis No</strong></td>\n" +
-                            "            <td>:" + vehicle.getChassisNo() + "</td>\n" +
-                            "            <td><strong>Engine No</strong></td>\n" +
-                            "            <td>:" + vehicle.getEngineNo() + "</td>\n" +
-                            "        </tr>\n" +
-                            "        <tr>\n" +
-                            "            <td><strong>IMEI</strong></td>\n" +
-                            "            <td>:" + vehicle.getImeiNo1() + "</td>\n" +
-                            "        </tr>\n" +
-                            "    </table>\n" +
-//                                "</div>\n" +
-                            "<br/>\n";
-                    // Add a page break after the Vehicle Details section
-                    html += "<div class=\"page-break\"></div>\n"; // This will create a page break
-
-
-                    html += " <div class=\"heading package\"><span><strong>Alert Details</strong></span></div>\n" +
-                            "                <table class=\"table table-striped\" style=\"width:100%;\">\n" +
-                            "                    <thead style=\"background-color: #c3c3c3;\">\n" +
-                            "\n" +
-                            "                    <tr>\n" +
-                            "                        <th style=\"width:4% ;\">Sl No</th>\n" +
-                            "                        <th style=\"width:8% ;\">IMEI</th>\n" +
-                            "                        <th style=\"width:11% ;\">Alert Type</th>\n" +
-                            "                        <th style=\"width:12% ;\">Date</th>\n" +
-                            "                        <th style=\"width:12% ;\">Latitude</th>\n" +
-                            "                        <th style=\"width:12% ;\">Longitude</th>\n" +
-                            "\n" +
-                            "                </tr>\n" +
-                            "                </thead>\n" +
-                            "                <tbody>\n" +
-                            "\n";
-
-                    List<AlertDto> alert = alertRepositoryImpl.getAlertDetailsByVehicleId(vehicle.getVehicleId(), filter.getAlertTypeId());
-                    int k = 1;
-                    for (AlertDto alerts : alert) {
-
-                        html += "<tr>\n" +
-                                "    <td style=\"text-align:left;\">" + k++ + "</td>\n" +
-                                "    <td style=\"text-align:left;\">" + alerts.getImei() + "</td>\n" +
-                                "    <td style=\"text-align:left;\">" + alerts.getAlertTypeName() + "</td>\n" +
-                                "    <td style = \"text-align:left\">" + alerts.getGpsDtmStr() + "</td>\n" +
-                                "    <td style=\"text-align:left;\">" + alerts.getLatitude() + "</td>\n" +
-                                "    <td style=\"text-align:left;\">" + alerts.getLongitude() + "</td>\n" +
-                                "    </tr>\n";
-                    }
-
-                    html += "</tbody>\n" +
-                            "</table>\n" +
-                            "<br/>\n" +
-                            "\n" +
-                            "\n";
-
-                    // Add a page break after the Vehicle Details section
-                    html += "<div class=\"page-break\"></div>\n"; // This will create a page break
-
-                }
+            List<Integer> activityIds = new ArrayList<>();
+            for(ActivityDto act:activity){
+                activityIds.add(act.getId());
             }
-        }
+
+                List<VehicleMasterDto> vehicleMasterDtoList = alertRepositoryImpl.getVehicleDetailsByActivityId(packageDto.getPackageId(), activityIds, data1.getRoadId(), filter.getVehicleId(),filter.getStart(),filter.getEnd());
+
+                    if(vehicleMasterDtoList!=null && vehicleMasterDtoList.size()>0){
+                        for (VehicleMasterDto vehicle : vehicleMasterDtoList) {
+
+                        html += " <div class=\"heading package\"><span><strong>Vehicle Details</strong></span></div>\n" +
+                                "     <table style=\"width:100%;\">\n" +
+                                "        <tr>\n" +
+                                "            <td><strong>Vehicle No</strong></td>\n" +
+                                "            <td>:" + vehicle.getVehicleNo() + "</td>\n" +
+                                "            <td><strong>Vehicle Type</strong></td>\n" +
+                                "            <td>:" + vehicle.getVehicleTypeName() + "</td>\n" +
+                                "        </tr>\n" +
+                                "        <tr>\n" +
+                                "            <td><strong>Owner Name</strong></td>\n" +
+                                "            <td>:" + vehicle.getOwnerName() + "</td>\n" +
+                                "            <td><strong>Speed Limit</strong></td>\n" +
+                                "            <td>:" + vehicle.getSpeedLimit() + "</td>\n" +
+                                "        </tr>\n" +
+                                "        <tr>\n" +
+                                "            <td><strong>Chassis No</strong></td>\n" +
+                                "            <td>:" + vehicle.getChassisNo() + "</td>\n" +
+                                "            <td><strong>Engine No</strong></td>\n" +
+                                "            <td>:" + vehicle.getEngineNo() + "</td>\n" +
+                                "        </tr>\n" +
+                                "        <tr>\n" +
+                                "            <td><strong>IMEI</strong></td>\n" +
+                                "            <td>:" + vehicle.getImeiNo1() + "</td>\n" +
+                                "        </tr>\n" +
+                                "    </table>\n" +
+//                                "</div>\n" +
+                                "<br/>\n";
+                        // Add a page break after the Vehicle Details section
+                        html += "<div class=\"page-break\"></div>\n";// This will create a page break
+
+                        html += " <div class=\"heading package\"><span><strong>Alert Details</strong></span></div>\n" +
+                                "                <table class=\"table table-striped\" style=\"width:100%;\">\n" +
+                                "                    <thead style=\"background-color: #c3c3c3;\">\n" +
+                                "\n" +
+                                "                    <tr>\n" +
+                                "                        <th style=\"width:4% ;\">Sl No</th>\n" +
+                                "                        <th style=\"width:8% ;\">IMEI</th>\n" +
+                                "                        <th style=\"width:11% ;\">Alert Type</th>\n" +
+                                "                        <th style=\"width:12% ;\">Date</th>\n" +
+                                "                        <th style=\"width:12% ;\">Latitude</th>\n" +
+                                "                        <th style=\"width:12% ;\">Longitude</th>\n" +
+                                "\n" +
+                                "                </tr>\n" +
+                                "                </thead>\n" +
+                                "                <tbody>\n" +
+                                "\n";
+
+                        List<AlertDto> alert = alertRepositoryImpl.getAlertDetailsByVehicleId(vehicle.getVehicleId(), filter.getAlertTypeId());
+                        int k = 1;
+                        for (AlertDto alerts : alert) {
+
+                            html += "<tr>\n" +
+                                    "    <td style=\"text-align:left;\">" + k++ + "</td>\n" +
+                                    "    <td style=\"text-align:left;\">" + alerts.getImei() + "</td>\n" +
+                                    "    <td style=\"text-align:left;\">" + alerts.getAlertTypeName() + "</td>\n" +
+                                    "    <td style = \"text-align:left\">" + alerts.getGpsDtmStr() + "</td>\n" +
+                                    "    <td style=\"text-align:left;\">" + alerts.getLatitude() + "</td>\n" +
+                                    "    <td style=\"text-align:left;\">" + alerts.getLongitude() + "</td>\n" +
+                                    "    </tr>\n";
+                        }
+
+                        html += "</tbody>\n" +
+                                "</table>\n" +
+                                "<br/>\n" +
+                                "\n" +
+                                "\n";
+
+
+                        // Add a page break after the Vehicle Details section
+                        html += "<div class=\"page-break\"></div>\n"; // This will create a page break
+                    }
+                    }
+            else{
+                html += "\n" +
+                        "<div class=\"heading package \"><span><strong>Vehicle Details</strong></span></div>  \n" +
+                        "<tr> " +
+                        "  <td><strong>No vehicle records found.</strong></td>\n" +
+                        "    </tr> \n" +
+                        "\n" ;
+            }
+               // }
+//                else{
+//                    html += "<div><strong>No records found for this activity.</strong></div><br/>";
+//
+//                }
+
+                   // }
+                }
+        //}
 
 
         html += "    </div>\n" +

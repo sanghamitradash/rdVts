@@ -23,6 +23,7 @@ public class AlertFilterDto {
 
     private String startDate;
     private String endDate;
+
     private Integer alertTypeId;
 
     private Integer draw;
@@ -32,4 +33,6 @@ public class AlertFilterDto {
     private Integer userId;
     private Integer alertId;
     private Integer packageId;
+    private Date start;
+    private Date end;
 }
